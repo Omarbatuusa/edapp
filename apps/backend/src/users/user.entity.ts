@@ -47,7 +47,7 @@ export class User {
     lastLoginAt: Date;
 
     @Column({ type: 'timestamp', nullable: true })
-    lockedUntil: Date; // progressive lockout
+    lockedUntil: Date | null; // progressive lockout
 
     // Push Notifications (FCM)
     @Column({ type: 'simple-array', nullable: true })
