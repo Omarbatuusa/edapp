@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Wallet POS (Staff)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "surface-dark": "#182735",
+                        "surface-light": "#ffffff",
+                        "input-dark": "#21364a",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for horizontal lists */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white relative min-h-screen pb-24">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-20 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<button class="p-2 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
+<span class="material-symbols-outlined text-slate-900 dark:text-white">arrow_back</span>
+</button>
+<h1 class="text-lg font-bold tracking-tight">POS Terminal</h1>
+</div>
+<!-- Connectivity Status -->
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+</span>
+<span class="text-xs font-medium text-amber-500 whitespace-nowrap">2 Queued</span>
+<span class="material-symbols-outlined text-amber-500 text-[16px]">wifi_off</span>
+</div>
+</header>
+<!-- Main Content Container -->
+<div class="p-4 space-y-4 max-w-md mx-auto w-full">
+<!-- Learner Identification Card -->
+<div class="rounded-xl bg-surface-light dark:bg-surface-dark p-4 shadow-sm border border-gray-200 dark:border-gray-800">
+<div class="flex items-start justify-between gap-4">
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">Grade 5B</span>
+<!-- Allergy Warning -->
+<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300 flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]">warning</span> Nut Allergy
+                        </span>
+</div>
+<h2 class="text-xl font-bold truncate">Thabo Mbeki</h2>
+<p class="text-slate-500 dark:text-[#8eaecc] text-sm mt-1">Balance: <span class="text-emerald-600 dark:text-emerald-400 font-bold">R 450.00</span></p>
+</div>
+<div class="w-16 h-16 rounded-xl bg-gray-200 dark:bg-gray-700 bg-center bg-cover flex-shrink-0 border-2 border-primary/20" data-alt="Portrait of a young student smiling" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCUfpAC2sKPMpre0OwqDll4ivW9kZiEYTDoK6OYzfuJEL2RB_5ObT469-dpOcVv_mqnopI3QoAVur6ChwL-muIdA5-Pt6-nYWlJ0E5VfkUq7UHgxj4xesFCoCc-odDnz0v0E_qbk-I6ezQUfEY8C2REBqnHvtkoD9_izC1j78YtwJLEijK4DiN5gHfDhTM_Qw5kfyOuOOiZlxdm4FOGzn4YvItOQzaw-l1vtenh2ZjUNV3U1oDlBwNQI69nG5qZystRMN3B3klT0YU');">
+</div>
+</div>
+<div class="mt-4 flex gap-3">
+<button class="flex-1 h-9 flex items-center justify-center gap-2 rounded-lg bg-gray-100 dark:bg-input-dark hover:bg-gray-200 dark:hover:bg-opacity-80 transition text-sm font-medium">
+<span class="material-symbols-outlined text-[18px]">person_search</span>
+                    Change
+                </button>
+<button class="flex-1 h-9 flex items-center justify-center gap-2 rounded-lg bg-gray-100 dark:bg-input-dark hover:bg-gray-200 dark:hover:bg-opacity-80 transition text-sm font-medium">
+<span class="material-symbols-outlined text-[18px]">history</span>
+                    History
+                </button>
+</div>
+</div>
+<!-- Search Bar -->
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-gray-400">search</span>
+</div>
+<input class="block w-full pl-10 pr-10 py-3 rounded-xl border-none bg-surface-light dark:bg-input-dark text-slate-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-primary/50 shadow-sm" placeholder="Search items or scan..." type="text"/>
+<button class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer">
+<span class="material-symbols-outlined text-gray-400 hover:text-primary transition-colors">qr_code_scanner</span>
+</button>
+</div>
+<!-- Categories (Chips) -->
+<div class="flex gap-2 overflow-x-auto hide-scrollbar pb-1 -mx-4 px-4">
+<button class="flex h-9 shrink-0 items-center justify-center px-4 rounded-lg bg-primary text-white font-medium text-sm shadow-md shadow-primary/20 whitespace-nowrap transition-transform active:scale-95">
+                Tuckshop
+            </button>
+<button class="flex h-9 shrink-0 items-center justify-center px-4 rounded-lg bg-surface-light dark:bg-input-dark text-slate-600 dark:text-gray-300 font-medium text-sm whitespace-nowrap border border-gray-200 dark:border-transparent transition-transform active:scale-95">
+                Uniform
+            </button>
+<button class="flex h-9 shrink-0 items-center justify-center px-4 rounded-lg bg-surface-light dark:bg-input-dark text-slate-600 dark:text-gray-300 font-medium text-sm whitespace-nowrap border border-gray-200 dark:border-transparent transition-transform active:scale-95">
+                Events
+            </button>
+<button class="flex h-9 shrink-0 items-center justify-center px-4 rounded-lg bg-surface-light dark:bg-input-dark text-slate-600 dark:text-gray-300 font-medium text-sm whitespace-nowrap border border-gray-200 dark:border-transparent transition-transform active:scale-95">
+                Aftercare
+            </button>
+</div>
+<!-- Product Grid -->
+<div class="grid grid-cols-2 gap-3 pb-6">
+<!-- Item 1 -->
+<div class="bg-surface-light dark:bg-surface-dark p-3 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 flex flex-col gap-2 relative overflow-hidden group active:border-primary transition-colors">
+<div class="w-full aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg bg-center bg-cover relative" data-alt="Grilled cheese sandwich on a plate" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD9WYcEU2eKqtueP9-_WHBoGQ8HbWue3OoWf3lay3JtkjPENIA-6j_nDBWh2RmVOCoOMNgqfXMTbsUaxAZiJiwLP9ByJnQml0xGqIQTk-qLBZpX4Wx16bWImCKMUmyWc3D2aiA1pN2ohZc5QuOg_TmV871l2x84v1F2xN3Cbo6zkaODguzVxcs6NflNEVR91vPgP1Itqk3L_lKgvX4NyySz2rlqQd5wwPSGIgl2sVQ8V0eebZhBCoKGD_0WsbMPTAPD53-BwV29pFs');">
+<!-- Badge -->
+<div class="absolute bottom-2 right-2 h-8 w-8 bg-white dark:bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-primary text-[20px]">add</span>
+</div>
+</div>
+<div>
+<h3 class="text-sm font-semibold leading-tight text-slate-900 dark:text-white line-clamp-1">Toasted Cheese</h3>
+<p class="text-xs text-slate-500 dark:text-[#8eaecc] mt-1">R 25.00</p>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="bg-surface-light dark:bg-surface-dark p-3 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 flex flex-col gap-2 relative overflow-hidden group active:border-primary transition-colors">
+<div class="w-full aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg bg-center bg-cover relative" data-alt="Bottle of still water" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCB4MYomlEcYWOfURb4LVgP87TZf7iNqlkizF_Cc6IlRvwE4fUliLIZRVHCnZKXXass0ZVzC_rldvMASw1-llYqCQvJy4xI-rVbDHGYuRBNMLxdxmVqtBCc-bRNoVH2zy4wn69pE3vwLLETE6fSR2Ddl7smGqPmhqwlhrlU0uZ2fWVxM_rEqVrj5YfR1sFblDErdTBfQboAsI5-PBl0U0EJULuO3BZKcvrQ6nUMnWZ2SqExGtGS3Zofdz2QLufVjunANPWBYdnD5L8');">
+<div class="absolute bottom-2 right-2 h-8 w-8 bg-white dark:bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-primary text-[20px]">add</span>
+</div>
+</div>
+<div>
+<h3 class="text-sm font-semibold leading-tight text-slate-900 dark:text-white line-clamp-1">Water 500ml</h3>
+<p class="text-xs text-slate-500 dark:text-[#8eaecc] mt-1">R 10.00</p>
+</div>
+</div>
+<!-- Item 3 (Selected State Simulation) -->
+<div class="bg-surface-light dark:bg-surface-dark p-3 rounded-xl shadow-sm border border-primary ring-1 ring-primary flex flex-col gap-2 relative overflow-hidden group">
+<div class="w-full aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg bg-center bg-cover relative" data-alt="Carton of apple juice" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB6f4vlLFCf9_GA4lAMqBOTk18UONrrgWgS14WFSvoep7f2hm9bYAfFHNsWdcb7M6Pr6qXVi1uOc_2TmOYZAFih_H9UNgIDJD7Cm-hkAcPBPHZ6n6UOE-JKg0A-AFP4Z6YHsQvSGBvdrq8HKnWlTQ1CZ-Th10t9dT9HJ6brVIUXAPiFKa3oImngsCJyjCI5WdpVfnNyofSQEiLo9o3JRkk7FFMbhcN21m0ogGkpIHbAtpUUJe9HT9FvGLk-VOTUuIDjQKHHbYRcwho');">
+<div class="absolute top-2 left-2 bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">2x</div>
+<div class="absolute bottom-2 right-2 h-8 w-8 bg-primary text-white rounded-full flex items-center justify-center shadow-lg">
+<span class="text-xs font-bold">2</span>
+</div>
+</div>
+<div>
+<h3 class="text-sm font-semibold leading-tight text-slate-900 dark:text-white line-clamp-1">Apple Juice</h3>
+<p class="text-xs text-slate-500 dark:text-[#8eaecc] mt-1">R 12.00</p>
+</div>
+</div>
+<!-- Item 4 (Blocked/Allergy) -->
+<div class="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-xl border border-dashed border-gray-300 dark:border-gray-700 flex flex-col gap-2 relative opacity-70">
+<div class="w-full aspect-square bg-gray-200 dark:bg-gray-800 rounded-lg bg-center bg-cover relative grayscale" data-alt="Pack of peanuts" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCImB_26oUG1k0Nkp7s41CACRiUcIl33QB3y5Wg0qB9w1mVUq-x8kq0qJjKy2n6UbyAvSRwP3vJjdn1_CXETHSGoQxpXzl0oH4AnPwHYn6aQ3g7gMg-XwuH9PJnbI9ZrNYAHuy2j05Zvo0Q48sXmQWApH6u1Ud1j37rstupKnQbO1eZXfJSA81x30BAegAOTllWIjRBSRzs8sTSoFkv5g7ujatkZqaQbSfeh5mTswaBw4KQLWhoBS0QuMenJjtSQxFNYaLGevPe0Ms');">
+<div class="absolute inset-0 bg-black/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-white drop-shadow-md text-4xl">block</span>
+</div>
+</div>
+<div>
+<h3 class="text-sm font-semibold leading-tight text-slate-500 dark:text-gray-400 line-clamp-1">Peanut Bar</h3>
+<div class="flex justify-between items-center mt-1">
+<p class="text-xs text-slate-400 dark:text-gray-500">R 15.00</p>
+<span class="text-[10px] text-red-500 font-bold uppercase">Restricted</span>
+</div>
+</div>
+</div>
+<!-- Item 5 -->
+<div class="bg-surface-light dark:bg-surface-dark p-3 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 flex flex-col gap-2 relative overflow-hidden group active:border-primary transition-colors">
+<div class="w-full aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg bg-center bg-cover relative" data-alt="Beef burger" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCfrHQXyHVVAW7g8_3jFx7euCONa8cVn6BdygPaIRi638kyw7t6ALgGu4Y-2c4Lqx4Tf5rUvF3mde3I5mSyhALpJU9gkDNj8qdcfg5VwiPLMfTNqOTtE80rmck47Gjmq9-Jh5OWJ-bcKstBFkHa5th-Me8-tMB6DWof1EhFu-H0Pufzw9-wW8phcNI8_nTxaxCHi1bNbPeH_-bRFesbJVDD6uAOKcD2OzH4MJp28RplRrzNt2LzApSy2tJe-0gDh9jyDb0XJ58qGS4');">
+<div class="absolute bottom-2 right-2 h-8 w-8 bg-white dark:bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-primary text-[20px]">add</span>
+</div>
+</div>
+<div>
+<h3 class="text-sm font-semibold leading-tight text-slate-900 dark:text-white line-clamp-1">Beef Burger</h3>
+<p class="text-xs text-slate-500 dark:text-[#8eaecc] mt-1">R 35.00</p>
+</div>
+</div>
+<!-- Item 6 -->
+<div class="bg-surface-light dark:bg-surface-dark p-3 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 flex flex-col gap-2 relative overflow-hidden group active:border-primary transition-colors">
+<div class="w-full aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg bg-center bg-cover relative" data-alt="Packet of potato chips" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBfLCQcyiqomQ4jYddD1jq3uaS1Zsp5AFtuNJG-jmkboGi6ORNU8CctbULy8rBrqbk0YdJoT_OFOe5eqVzodU0C-wkL8blrG4DkUH_s85FMjNj02r-f8UJAuC_4_lja4-89tUlSmH0nlGnpGGvZQnGZYgsRQl1fFeKBmshbsfQVDpLOnX03bHHKskHnLk9fAlsSSoQWHh4l8FnKJjPP6Ke1sKdqWfPUa1RZM9Elbe6oFQJyAi7VW4biVtVrzBHkASL7-JCpgFsHWu0');">
+<div class="absolute bottom-2 right-2 h-8 w-8 bg-white dark:bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-primary text-[20px]">add</span>
+</div>
+</div>
+<div>
+<h3 class="text-sm font-semibold leading-tight text-slate-900 dark:text-white line-clamp-1">Potato Chips</h3>
+<p class="text-xs text-slate-500 dark:text-[#8eaecc] mt-1">R 8.00</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Sticky Cart Footer -->
+<footer class="fixed bottom-0 left-0 w-full z-30 bg-surface-light dark:bg-[#15202b] border-t border-gray-200 dark:border-gray-800 shadow-[0_-4px_20px_rgba(0,0,0,0.2)] pb-safe">
+<div class="max-w-md mx-auto p-4">
+<!-- Cart Preview Handle -->
+<div class="w-full flex justify-center -mt-6 mb-2">
+<div class="h-1.5 w-12 bg-gray-300 dark:bg-gray-700 rounded-full"></div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex-1">
+<p class="text-xs text-slate-500 dark:text-gray-400 font-medium uppercase tracking-wide">Total (3 Items)</p>
+<div class="flex items-baseline gap-1">
+<span class="text-2xl font-bold text-slate-900 dark:text-white">R 59.00</span>
+</div>
+</div>
+<button class="flex-none bg-primary hover:bg-blue-500 text-white font-bold h-14 rounded-xl px-8 flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 transition-all active:scale-95">
+<span>Charge</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</footer>
+<style>
+        /* Safe area spacing for mobile devices with home indicators */
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+        }
+    </style>
+</body></html>

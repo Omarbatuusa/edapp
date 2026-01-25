@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Community Feed</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Lexend', "Noto Sans", sans-serif;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#0d151c] dark:text-white">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden pb-20">
+<!-- TopAppBar -->
+<header class="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center p-4 pb-2 justify-between max-w-md mx-auto w-full">
+<div class="flex items-center gap-3">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-white dark:border-slate-700 shadow-sm" data-alt="School logo with abstract shield emblem" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBB2ZIeetZds698wozwfK3t7bvkGJFa5jtuRpkB-8pGCFRWfxG80a3A-5hkappgkLa2ro4EedymwzgWeweRNTr7xQ4aolIiO9zUweInmwDD0o-iGFa_I4CYwlglUSI1WfIt5nIYehvT76uSsJTJcWf6HyrdbCt3vQ2I9Ee4IabQ0E-pnE8YLQ0_kQha0RXM6QzySZeDsIuc2qjDtoZyTKtZbNEXeMNpsw_roR_lScnOSKIWeU7oaqy_cWcqtCvI2XtI-cgHw_cqcNU");'></div>
+<h2 class="text-[#0d151c] dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]">Community</h2>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex items-center justify-center rounded-full size-10 bg-white dark:bg-slate-800 text-[#0d151c] dark:text-white shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border border-white dark:border-slate-800"></span>
+</button>
+<button class="flex items-center justify-center rounded-full size-10 bg-slate-200 dark:bg-slate-700 overflow-hidden">
+<div class="bg-center bg-no-repeat bg-cover w-full h-full" data-alt="User profile picture placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuABD9U8qjzGhbxlJQRsvzDuKhWCFJrn_lyj6XKt2ojxMVEWNBYedQZiDmQe8wTyT6bm0GZZNgvFX-IcUe_K4i5Ht7sOJ-bw-lXru1Np41NKfJ5QdNZN2SxBPwnfZ6J-u0JdICgm6SL3VYgaLY5Ufql7XvAoacItW7w4iHFu3DNxyFULGDoCFsUlgooF-6kAd2uoPrQQXuDWPcigEFFRIq7N4E_q6bt-fhXULilyegDpOeP47C-zARakCVhTAf_PBzUvAnsXyfpKv_A");'></div>
+</button>
+</div>
+</div>
+<!-- Chips / Filters -->
+<div class="flex w-full max-w-md mx-auto overflow-x-auto hide-scrollbar gap-3 px-4 py-3">
+<button class="flex h-9 shrink-0 items-center justify-center px-5 rounded-full bg-[#0d151c] dark:bg-primary text-white shadow-sm transition-transform active:scale-95">
+<p class="text-sm font-medium leading-normal">All</p>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center px-5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 shadow-sm transition-transform active:scale-95">
+<p class="text-sm font-medium leading-normal">Grade 5</p>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center px-5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 shadow-sm transition-transform active:scale-95">
+<p class="text-sm font-medium leading-normal">Sports</p>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center px-5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 shadow-sm transition-transform active:scale-95">
+<p class="text-sm font-medium leading-normal">Campus</p>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center px-5 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 shadow-sm transition-transform active:scale-95">
+<p class="text-sm font-medium leading-normal">Staff</p>
+</button>
+</div>
+</header>
+<main class="flex flex-col gap-5 max-w-md mx-auto w-full px-4 pt-4">
+<!-- Pinned Carousel -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wider px-1">
+<span class="material-symbols-outlined text-[16px]">push_pin</span>
+<span>Pinned</span>
+</div>
+<div class="flex overflow-x-auto hide-scrollbar gap-3 pb-2 -mx-4 px-4 snap-x">
+<!-- Pinned Item 1 -->
+<div class="snap-center shrink-0 w-72 bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/5 border border-primary/20 rounded-xl p-4 flex gap-3 relative overflow-hidden group">
+<div class="absolute top-0 left-0 bottom-0 w-1 bg-primary"></div>
+<div class="flex-1 flex flex-col justify-center z-10">
+<h3 class="text-[#0d151c] dark:text-white text-sm font-bold leading-tight mb-1">Urgent: Early Dismissal Friday</h3>
+<p class="text-slate-600 dark:text-slate-300 text-xs leading-normal">Pickup by 1:00 PM due to weather warning.</p>
+</div>
+<div class="bg-primary/20 rounded-full p-2 h-fit text-primary self-center">
+<span class="material-symbols-outlined">warning</span>
+</div>
+</div>
+<!-- Pinned Item 2 -->
+<div class="snap-center shrink-0 w-72 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 flex gap-3 shadow-sm relative overflow-hidden">
+<div class="absolute top-0 left-0 bottom-0 w-1 bg-amber-400"></div>
+<div class="flex-1 flex flex-col justify-center">
+<h3 class="text-[#0d151c] dark:text-white text-sm font-bold leading-tight mb-1">Term 3 Assessment Dates</h3>
+<p class="text-slate-600 dark:text-slate-300 text-xs leading-normal">Click to view the updated exam schedule.</p>
+</div>
+<div class="bg-amber-100 dark:bg-amber-900/30 rounded-full p-2 h-fit text-amber-600 dark:text-amber-400 self-center">
+<span class="material-symbols-outlined">calendar_month</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Feed Section -->
+<div class="flex flex-col gap-5">
+<!-- Card 1: Event with Action -->
+<article class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+<!-- Header -->
+<div class="flex items-center gap-3 p-4 pb-2">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10" data-alt="Sports department icon showing a ball" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAef3sDS4GKjYG_X6WNtPaVYFmP9Lj-7cbruTT3WuchAxAUSN4M38emcBKDsk9bF3-6N9wl45bCQwZpDIxZqjxoP76FguYb15NwVid9XBPbGSRRz07rDcMZID6GAf71_UtUa28s3b6GzbMrH1kDLB-nhlnitY8mAwUe7swqkfVIb1gf_x25D9MD8bFrpKt85izBEzWbYOQ42qmCtyP-u20STqXEEVRtKq5ssoNpJIpe2dzIYeUryHGYU-pJoru6SNd8jlCj1-0FRGc");'></div>
+<div class="flex flex-col flex-1">
+<div class="flex items-center gap-2">
+<p class="text-[#0d151c] dark:text-white text-sm font-bold">Sports Department</p>
+<span class="bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-[10px] px-1.5 py-0.5 rounded font-medium">Grade 4</span>
+</div>
+<p class="text-slate-500 text-xs">2 hrs ago</p>
+</div>
+<button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+<!-- Body -->
+<div class="px-4 py-2">
+<h3 class="text-base font-bold text-[#0d151c] dark:text-white mb-2">Annual Sports Day</h3>
+<p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-3">
+                            The annual Grade 4 Sports Day is coming up next Tuesday! We will be hosting track events in the morning and team sports in the afternoon. Please ensure all students bring their kits.
+                        </p>
+<div class="flex items-center gap-2 text-slate-500 text-sm mb-4">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span>Main Sports Field</span>
+</div>
+</div>
+<!-- Action Area -->
+<div class="mx-4 mb-4 p-4 bg-slate-50 dark:bg-slate-700/50 rounded-xl border border-slate-100 dark:border-slate-700 flex flex-col gap-3">
+<div class="flex justify-between items-center">
+<span class="text-sm font-medium text-slate-700 dark:text-slate-200">Consent Required</span>
+<span class="text-xs text-orange-500 font-medium">Due Friday</span>
+</div>
+<button class="w-full h-10 bg-primary hover:bg-blue-600 text-white font-medium text-sm rounded-lg shadow-sm transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">edit_document</span>
+                            Sign Permission Slip
+                        </button>
+</div>
+<!-- Footer / Reactions -->
+<div class="px-4 py-3 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
+<div class="flex -space-x-2">
+<div class="size-6 rounded-full ring-2 ring-white dark:ring-slate-800 bg-slate-200 flex items-center justify-center text-[10px]" title="User 1">👍</div>
+<div class="size-6 rounded-full ring-2 ring-white dark:ring-slate-800 bg-slate-200 flex items-center justify-center text-[10px]" title="User 2">❤️</div>
+<div class="size-6 rounded-full ring-2 ring-white dark:ring-slate-800 bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-xs text-slate-500 font-medium pl-1">+12</div>
+</div>
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-weight="300">thumb_up</span>
+<span class="text-sm font-medium">Like</span>
+</button>
+</div>
+</article>
+<!-- Card 2: Image Post -->
+<article class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+<div class="flex items-center gap-3 p-4 pb-2">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10" data-alt="Science teacher portrait" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCrQijHLsEQuhESPVElmqhMRcU9h7yqdliwJz_DM5Pw7RP1TJm1D5M9lmkP0oDD4XqdgpHQo7C51NelPHTFCXOK49snt0jpIw8wWetdbTTwsabZZkmI6zDOG2_f0XSXWOaKo51ejHzhnPMRpyqIlZVJcTEknF0QmXADmIuZyd8MKxjCnETFNHYDV-FT0Ljn3ga4RZAVSt3gJbturo5zSE-vDRXDrv-jYP7Dr2iDnJckS6CmAiVH67u5J_dMtXCGilaIixLRc_RE8D0");'></div>
+<div class="flex flex-col flex-1">
+<p class="text-[#0d151c] dark:text-white text-sm font-bold">Science Faculty</p>
+<p class="text-slate-500 text-xs">Yesterday at 3:45 PM</p>
+</div>
+<button class="text-slate-400">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+<div class="px-4 py-2">
+<p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-3">
+                            Congratulations to our Grade 7 scientists! 🧪 The projects this year were outstanding. Special mention to the winning team for their renewable energy model.
+                        </p>
+</div>
+<div class="w-full aspect-video bg-slate-100 relative group overflow-hidden">
+<div class="absolute inset-0 bg-center bg-no-repeat bg-cover transition-transform duration-700 group-hover:scale-105" data-alt="Students presenting a science project with a volcano model" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDw9I_XWiBXZhMPjCkAGdDvxoDCmpnAAJqLJMjjpItIlnMEqVI5h3JMZIolk3V6mib34v2tWsKvfRrKuIn-Hiyt70qdaodsLcZ_hJpDksG_oChh-0gw3TrifruDTpW-qDHrN4e3kZHsAX3NHCAhze76hrW-m5VwA4w1S-PrwMe3vQiQ_vrO05iCnL5qhMAx12WpZsEdWG9mGvTt2MqemqA89OdqCmKuhQULZHeZ5Kyi398S8zacU20a9gb86iQU33S58Y-OKNFg080");'></div>
+</div>
+<div class="px-4 py-3 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
+<div class="flex items-center gap-1 text-xs text-slate-500">
+<span class="material-symbols-outlined text-[16px] text-yellow-500">celebration</span>
+<span>45 Celebrations</span>
+</div>
+<div class="flex gap-4">
+<button class="flex items-center gap-1.5 text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px] fill-current">celebration</span>
+<span class="text-sm font-medium">Celebrate</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Card 3: Link Preview -->
+<article class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+<div class="flex items-center gap-3 p-4 pb-2">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10" data-alt="Admin user portrait" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCXEGg3xRcjS-tG1abxtW4LBk1pBjfjLEnP7MF6pDFVkY2NXsVr3cTnsnjv-fRCGYetjce94MCNkHQbtIBhsc2dN-sc1hc0Fhu8YQRkWP1YWk5Dn2nCy5LpFccLl_GpCsCR1NxtP3p9ixXLMyusfZTMMLyHLLsOARDgr4eo8j6_jGP6NhV_VdxmzVNDhvqTzVJRHKK9p2dXQ639BseHxaZQSfAu8i7Tt3SK4FH6RDZWkMmoAtGm4SbdBZjrZY4MVhm7SnlWMxdj0-U");'></div>
+<div class="flex flex-col flex-1">
+<div class="flex items-center gap-2">
+<p class="text-[#0d151c] dark:text-white text-sm font-bold">Principal Office</p>
+<span class="bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 text-[10px] px-1.5 py-0.5 rounded font-medium">Whole School</span>
+</div>
+<p class="text-slate-500 text-xs">Yesterday</p>
+</div>
+<button class="text-slate-400">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+<div class="px-4 py-2">
+<p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-3">
+                            The Term 3 Curriculum Overview is now available. Please review the key learning areas for your child's grade.
+                        </p>
+<!-- Link Preview -->
+<a class="flex flex-col rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden bg-slate-50 dark:bg-slate-700/30 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors group" href="#">
+<div class="h-32 bg-slate-200 w-full bg-cover bg-center" data-alt="Abstract geometric pattern representing curriculum documents" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCzjvVkN0gB4UiaRegDZ7SRaRhTTeK7VVHlCdTWq25LlVSnV7YwMCM6tjZd6odJTP679Iq2mtA4VY7V8hxCvqlZtGvkj1S9e-EabJLLJ5XH7pTtf0vCs8pmy51-7E9VEfxW9GJqd_YMr2l4we23hgdBh9YZwWKkJgmZUjnypuQZ0vmmWCTYzFz0oBaTqq6th-wtSbYwezNagaoumS6V6pXsl75-UAq_ty-TQ425WUaoogWYNthg9ww8rYGY2qUP9PIU__NBTiEZ5X8");'></div>
+<div class="p-3">
+<p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase mb-1">PDF • 2.4 MB</p>
+<h4 class="text-sm font-bold text-[#0d151c] dark:text-white group-hover:text-primary transition-colors">Term 3 Curriculum Overview - 2024</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-1">edapp.school/documents/term3-overview.pdf</p>
+</div>
+</a>
+</div>
+<div class="px-4 py-3 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
+<div class="text-xs text-slate-500">24 Appreciations</div>
+<button class="flex items-center gap-1.5 text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">favorite</span>
+<span class="text-sm font-medium">Appreciate</span>
+</button>
+</div>
+</article>
+<!-- Admin Moderation Cue Example -->
+<article class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-yellow-200 dark:border-yellow-900 overflow-hidden opacity-90">
+<div class="absolute top-3 right-3 flex items-center gap-1 bg-yellow-100 text-yellow-800 text-[10px] font-bold px-2 py-1 rounded-full z-10">
+<span class="material-symbols-outlined text-[14px]">shield</span>
+                        PENDING
+                    </div>
+<div class="flex items-center gap-3 p-4 pb-2 opacity-60">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 grayscale" data-alt="Staff member portrait" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDLHK5-uZBgIFrTZiYtr3npLJbXsZ_fzpkaESv_-BQPETsfJGGj-YRgWK35zJu2l1WrQvL4ACWYM4wz_qzxr0z3WQkaUbY2mO7RsZNjqO5bL1pwv0NUJx7V_ZEDEXj95ssPlS09i_VTJIMCrIwSh_VoBTVtw3ic96zUPtTxkDT3gDslUHFwdhRsw34j9GTA-RufcSyvfNOBgV-A8L363hZ7U4T__x8k-BgYDYftHT60oAZOqBb4nR2FbxR3lbaJw7PU3nPpI-_f3KA");'></div>
+<div class="flex flex-col flex-1">
+<p class="text-[#0d151c] dark:text-white text-sm font-bold">Mr. Johnson</p>
+<p class="text-slate-500 text-xs">Just now</p>
+</div>
+</div>
+<div class="px-4 py-2 pb-6">
+<p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed italic">
+                            [Draft] Quick reminder about the choir practice moved to Thursday...
+                        </p>
+</div>
+<div class="bg-yellow-50 dark:bg-yellow-900/20 p-2 flex justify-end gap-2 px-4">
+<button class="text-xs font-medium text-slate-500 hover:text-slate-700">Decline</button>
+<button class="text-xs font-medium text-primary hover:text-blue-700">Approve</button>
+</div>
+</article>
+</div>
+<!-- "All Caught Up" Footer -->
+<div class="flex flex-col items-center justify-center py-12 gap-3 opacity-60">
+<div class="size-24 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-2">
+<span class="material-symbols-outlined text-4xl text-primary/50">check_circle</span>
+</div>
+<h3 class="text-lg font-bold text-slate-700 dark:text-slate-300">You're all caught up!</h3>
+<p class="text-sm text-slate-500 text-center max-w-[200px]">Check back later for more updates from your community.</p>
+</div>
+</main>
+<!-- Floating Action Button (FAB) -->
+<div class="fixed bottom-6 right-6 z-40">
+<button class="flex items-center justify-center size-14 bg-[#0d151c] dark:bg-primary text-white rounded-2xl shadow-lg hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+</div>
+</div>
+</body></html>

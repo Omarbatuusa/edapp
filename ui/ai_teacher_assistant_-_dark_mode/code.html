@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI Teacher Assistant - Dark Mode</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "surface-dark": "#182735",
+                        "surface-dark-highlight": "#21364a",
+                        "text-secondary": "#8eaecc",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased overflow-x-hidden">
+<!-- Mobile Container -->
+<div class="relative mx-auto min-h-screen w-full max-w-md bg-background-light dark:bg-background-dark flex flex-col pb-6">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-10 flex items-center justify-between bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md px-4 py-3">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="size-10 rounded-full bg-cover bg-center border-2 border-primary/20" data-alt="Profile picture of the teacher" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuALc0t2iLtQgMWIJrU3vLbf7nb0myfx2pZx1nyyERVE4i5bTJZlyVUfRrcakvyiCsymORuORsqD-5mTmdo-osIhI4MRLjibASSAbbW6etdya4G8Mex7bXMDU8sRi11DCejb7J_qcqgXyTC12sNk8GR9iBe5RA5cVSmCIHRc_6aC3iOR1o01OZLAUICalUAJzANK7dZFyomEnJ92qshgENuA37T7CGsvEMeDUdb00_maacjUITAG2dWhU68JNwqizFkVsd3OtRXiI_I");'></div>
+<div class="absolute bottom-0 right-0 size-3 rounded-full bg-green-500 border-2 border-background-dark"></div>
+</div>
+<h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">AI Assistant</h1>
+</div>
+<button class="flex size-10 items-center justify-center rounded-xl bg-surface-dark-highlight/50 hover:bg-surface-dark-highlight transition-colors text-white">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col px-4 gap-6">
+<!-- Mode Switcher -->
+<div class="w-full">
+<div class="flex h-12 w-full items-center justify-center rounded-xl bg-surface-dark-highlight p-1">
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 has-[:checked]:bg-primary has-[:checked]:text-white has-[:checked]:shadow-md transition-all text-text-secondary text-sm font-semibold">
+<span class="truncate">Lesson Planner</span>
+<input class="invisible w-0 absolute" name="mode-toggle" type="radio" value="planner"/>
+</label>
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 has-[:checked]:bg-primary has-[:checked]:text-white has-[:checked]:shadow-md transition-all text-text-secondary text-sm font-semibold">
+<span class="truncate">Grading Assistant</span>
+<input checked="" class="invisible w-0 absolute" name="mode-toggle" type="radio" value="grading"/>
+</label>
+</div>
+</div>
+<!-- Context Selector -->
+<section>
+<div class="flex items-center justify-between mb-2">
+<label class="text-sm font-medium text-text-secondary uppercase tracking-wider">Current Class</label>
+</div>
+<div class="relative">
+<select class="w-full appearance-none rounded-xl bg-surface-dark border border-surface-dark-highlight text-white py-3.5 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-shadow text-base">
+<option>Grade 10 - History (The Cold War)</option>
+<option>Grade 11 - Geography (Climate Change)</option>
+<option>Grade 9 - Life Orientation</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-text-secondary">
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</div>
+</section>
+<!-- Student Chips (Horizontal Scroll) -->
+<section>
+<div class="flex items-center justify-between mb-2">
+<h3 class="text-white text-lg font-bold">Student Feedback</h3>
+<button class="text-xs font-medium text-primary hover:text-primary/80">View All</button>
+</div>
+<div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
+<!-- Active Chip -->
+<button class="flex h-10 shrink-0 items-center gap-2 rounded-full bg-primary pl-1 pr-4 transition-transform active:scale-95">
+<div class="size-8 rounded-full bg-cover bg-center border border-white/20" data-alt="Portrait of student Thabo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAmUEsQNU4RBlVQRIH27uunoKkz_fgsaPMgwFg9wz1oLiapHmMccd_46VQVchq_O8FP7gh9TaSCNfCmsRMUd588MgpkH_D8UKpFkZ3vQYXaGBwc6XUtlAl9Z_EtyD2NiU9jmRTF_NkPx_YRpYQKSh1UnAj4BkfKgpTfq-SNjLybn9WGOXp2-P4WDgR6Ehm9ogjeLfy4L13wPzuDup3da6BVGn6OxRPk_I8bq0jWvfynvhxEZLevWBA_gaKhc4u34j8wvwAcdJV2SMQ");'></div>
+<span class="text-white text-sm font-medium">Thabo M.</span>
+</button>
+<!-- Inactive Chips -->
+<button class="flex h-10 shrink-0 items-center gap-2 rounded-full bg-surface-dark-highlight border border-transparent hover:border-surface-dark pl-1 pr-4 transition-transform active:scale-95">
+<div class="size-8 rounded-full bg-cover bg-center opacity-80" data-alt="Portrait of student Sarah" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC2KVmOON0gfUNIlej29JrmYhv9XBjaFvf8MrfHzL79maHzU4YRnDFNm9tPgLl9LAcXRTp1XMyfRtBAs1VAAWZ5xM4obZ75tW8DW-vyPBXZ8mx2MmG0LXAoLVcViAwHd-5aB2l9DTpnTEJJkRnLoevUK3jjbcOE4hHDtDjy3OcVy4YmmPQy8_oBduEtF5BbopQpkeZIV5fPR5cVB2s7eW2p_UWY5r_hupLEBEGGNkhFyayd5hhFNBAQ43fgFJhLz2G5lFP2aa2scDY");'></div>
+<span class="text-text-secondary text-sm font-medium">Sarah J.</span>
+</button>
+<button class="flex h-10 shrink-0 items-center gap-2 rounded-full bg-surface-dark-highlight border border-transparent hover:border-surface-dark pl-1 pr-4 transition-transform active:scale-95">
+<div class="size-8 rounded-full bg-cover bg-center opacity-80" data-alt="Portrait of student David" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBVfd-2P9tdy1iQiADhczU7fNMWjldlLnTzTu9dGuFf5WeH9AQ5jPd1mhf-4al-SgectDv_P6-96zqfR7XMtHbuzU6hOPhHW6hHjcdFAOUpksFVLeXjZTLhl7ed7omQoac0hrkIuVeWrbsilwgGunisjYJltp8oL7VQkM0UBPdIJ7VURChiX81f__ifAjZjhqp7zy_UgnT85XPBdFhYvgD5LU-SvHqbMWVUC4irs551vh4HJdUAoSwLs79dFPLVuVD-a0jMNkHnL_Y");'></div>
+<span class="text-text-secondary text-sm font-medium">David B.</span>
+</button>
+</div>
+</section>
+<!-- AI Suggestion Card -->
+<section class="flex flex-col gap-4">
+<!-- Data Source Badge -->
+<div class="flex items-center gap-2 px-1">
+<span class="flex items-center justify-center size-5 rounded-full bg-emerald-500/20 text-emerald-400">
+<span class="material-symbols-outlined text-[14px]">analytics</span>
+</span>
+<span class="text-xs font-medium text-emerald-400">Based on recent Module 3 Quiz score (75%)</span>
+</div>
+<div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-surface-dark-highlight to-surface-dark border border-primary/30 p-5 shadow-lg">
+<!-- AI Indicator -->
+<div class="absolute right-0 top-0 rounded-bl-xl bg-primary/10 px-3 py-1.5 backdrop-blur-sm">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-sm">auto_awesome</span>
+<span class="text-[10px] font-bold uppercase tracking-wider text-primary">AI Draft</span>
+</div>
+</div>
+<!-- Content -->
+<div class="mt-2 space-y-3">
+<div class="flex items-start gap-3">
+<div class="mt-1 flex-1">
+<h4 class="text-base font-semibold text-white">Suggested Feedback</h4>
+<p class="mt-2 text-sm leading-relaxed text-gray-300 font-light">
+                                    "Thabo, good effort on the essay structure. You've clearly outlined your main arguments. To improve, focus on citing more primary sources in the second paragraph to strengthen your claims about the Cold War proxy conflicts."
+                                </p>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="mt-5 flex items-center justify-between gap-3 border-t border-white/10 pt-4">
+<div class="flex gap-2">
+<button class="flex size-9 items-center justify-center rounded-lg bg-white/5 text-text-secondary hover:bg-white/10 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">thumb_up</span>
+</button>
+<button class="flex size-9 items-center justify-center rounded-lg bg-white/5 text-text-secondary hover:bg-white/10 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">edit</span>
+</button>
+<button class="flex size-9 items-center justify-center rounded-lg bg-white/5 text-text-secondary hover:bg-white/10 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">refresh</span>
+</button>
+</div>
+<button class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-transform active:scale-[0.98]">
+<span class="material-symbols-outlined text-lg">check_circle</span>
+                            Approve &amp; Send
+                        </button>
+</div>
+</div>
+</section>
+<!-- Quick Actions / Input -->
+<section class="mt-auto">
+<div class="relative">
+<div class="absolute -top-3 left-4 bg-background-dark px-2 text-xs font-medium text-primary">
+                        Ask AI Assistant
+                    </div>
+<div class="flex items-end gap-2 rounded-2xl border border-surface-dark-highlight bg-surface-dark p-2">
+<button class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-text-secondary hover:bg-white/5 hover:text-white transition-colors">
+<span class="material-symbols-outlined">add_circle</span>
+</button>
+<textarea class="mb-2 max-h-32 min-h-[2.5rem] w-full resize-none bg-transparent py-2 text-sm text-white placeholder-text-secondary focus:outline-none" placeholder="Generate activity for Grade 9 Math..." rows="1"></textarea>
+<button class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-md hover:bg-primary/90 transition-colors">
+<span class="material-symbols-outlined">arrow_upward</span>
+</button>
+</div>
+</div>
+<!-- Quick Chips -->
+<div class="mt-4 flex flex-wrap gap-2 px-1">
+<button class="rounded-lg border border-surface-dark-highlight bg-surface-dark-highlight/30 px-3 py-1.5 text-xs font-medium text-text-secondary hover:bg-surface-dark-highlight hover:text-white transition-colors">
+                        Draft Quiz Questions
+                    </button>
+<button class="rounded-lg border border-surface-dark-highlight bg-surface-dark-highlight/30 px-3 py-1.5 text-xs font-medium text-text-secondary hover:bg-surface-dark-highlight hover:text-white transition-colors">
+                        Summarize Performance
+                    </button>
+<button class="rounded-lg border border-surface-dark-highlight bg-surface-dark-highlight/30 px-3 py-1.5 text-xs font-medium text-text-secondary hover:bg-surface-dark-highlight hover:text-white transition-colors">
+                        Email Parents
+                    </button>
+</div>
+</section>
+</main>
+<!-- Bottom Safe Area Spacer -->
+<div class="h-4"></div>
+</div>
+</body></html>

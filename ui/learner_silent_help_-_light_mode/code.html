@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Learner Silent Help</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "card-light": "#ffffff",
+                        "card-dark": "#1a242d",
+                        "border-light": "#e2e8f0",
+                        "border-dark": "#2d3b45",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-gray-200 font-display antialiased">
+<!-- Main Container simulating a mobile viewport -->
+<div class="relative mx-auto flex h-screen max-h-[900px] w-full max-w-[480px] flex-col overflow-hidden bg-white shadow-2xl sm:rounded-[3rem] sm:my-10 sm:h-[850px]">
+<!-- Background: Simulating the app behind the overlay -->
+<div class="absolute inset-0 z-0 bg-background-light dark:bg-background-dark">
+<!-- Simulated App Header -->
+<div class="flex items-center justify-between p-6">
+<div class="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+<div class="h-4 w-24 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+<div class="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+</div>
+<!-- Simulated App Content (Dashboard) -->
+<div class="px-6 space-y-6">
+<div class="h-48 w-full rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-50 dark:from-gray-800 dark:to-gray-900" data-alt="Abstract app dashboard background pattern"></div>
+<div class="grid grid-cols-2 gap-4">
+<div class="h-32 rounded-xl bg-gray-100 dark:bg-gray-800"></div>
+<div class="h-32 rounded-xl bg-gray-100 dark:bg-gray-800"></div>
+</div>
+<div class="h-24 w-full rounded-xl bg-gray-100 dark:bg-gray-800"></div>
+</div>
+</div>
+<!-- Dimmed Overlay -->
+<div class="absolute inset-0 z-10 bg-black/40 backdrop-blur-[2px] transition-opacity duration-300"></div>
+<!-- Bottom Sheet Modal -->
+<div class="absolute bottom-0 left-0 z-20 w-full transform transition-transform duration-300 ease-out">
+<!-- Sheet Container -->
+<div class="flex flex-col rounded-t-3xl bg-background-light dark:bg-background-dark shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.3)] max-h-[90vh] overflow-y-auto">
+<!-- BottomSheet Handle & Header -->
+<div class="sticky top-0 z-30 flex flex-col items-center bg-background-light dark:bg-background-dark pt-3 pb-2 rounded-t-3xl">
+<!-- Handle -->
+<div class="h-1.5 w-12 rounded-full bg-gray-300 dark:bg-gray-600 mb-4"></div>
+<!-- Close Button (Absolute for quick exit) -->
+<button aria-label="Close" class="absolute right-5 top-5 flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-gray-500 hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 transition-colors">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Scrollable Content -->
+<div class="flex-1 px-6 pb-8">
+<!-- Headline -->
+<div class="mb-2 text-center">
+<h2 class="text-slate-900 dark:text-white text-2xl font-bold tracking-tight leading-tight">How can we help?</h2>
+</div>
+<!-- Body Text / Disclaimer -->
+<div class="mb-8 text-center px-2">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-relaxed">
+                            This request is <span class="font-medium text-slate-700 dark:text-slate-300">private</span> and goes directly to the counseling team.
+                        </p>
+</div>
+<!-- Selection Grid -->
+<div class="grid grid-cols-2 gap-3 mb-6">
+<!-- Card 1: Unsafe Situation -->
+<button class="group relative flex flex-col items-center justify-center gap-3 rounded-2xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-5 shadow-sm hover:border-primary/50 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 hover:shadow-md transition-all active:scale-[0.98]">
+<div class="flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 text-primary dark:bg-blue-900/20 group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined" style="font-size: 28px;">shield</span>
+</div>
+<h3 class="text-slate-800 dark:text-slate-100 text-sm font-semibold leading-tight text-center">Unsafe<br/>Situation</h3>
+</button>
+<!-- Card 2: Bullying -->
+<button class="group relative flex flex-col items-center justify-center gap-3 rounded-2xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-5 shadow-sm hover:border-primary/50 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 hover:shadow-md transition-all active:scale-[0.98]">
+<div class="flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 text-primary dark:bg-blue-900/20 group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined" style="font-size: 28px;">chat_bubble</span>
+</div>
+<h3 class="text-slate-800 dark:text-slate-100 text-sm font-semibold leading-tight text-center">Bullying /<br/>Harassment</h3>
+</button>
+<!-- Card 3: Health/Anxiety -->
+<button class="group relative flex flex-col items-center justify-center gap-3 rounded-2xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-5 shadow-sm hover:border-primary/50 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 hover:shadow-md transition-all active:scale-[0.98]">
+<div class="flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 text-primary dark:bg-blue-900/20 group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined" style="font-size: 28px;">monitor_heart</span>
+</div>
+<h3 class="text-slate-800 dark:text-slate-100 text-sm font-semibold leading-tight text-center">Anxiety /<br/>Health</h3>
+</button>
+<!-- Card 4: Counselor -->
+<button class="group relative flex flex-col items-center justify-center gap-3 rounded-2xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-5 shadow-sm hover:border-primary/50 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 hover:shadow-md transition-all active:scale-[0.98]">
+<div class="flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 text-primary dark:bg-blue-900/20 group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined" style="font-size: 28px;">support_agent</span>
+</div>
+<h3 class="text-slate-800 dark:text-slate-100 text-sm font-semibold leading-tight text-center">Counselor<br/>Chat</h3>
+</button>
+</div>
+<!-- Text Field -->
+<div class="mb-6">
+<label class="block w-full">
+<span class="sr-only">Additional Details</span>
+<textarea class="w-full resize-none rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-4 text-base text-slate-800 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-shadow" placeholder="Add details (optional)..." rows="3"></textarea>
+</label>
+</div>
+<!-- Primary Action Button -->
+<button class="w-full rounded-xl bg-primary py-4 px-6 text-center text-base font-bold text-white shadow-lg shadow-blue-500/30 hover:bg-blue-600 active:scale-[0.99] transition-all">
+                        Send Confidential Request
+                    </button>
+<!-- Microcopy -->
+<p class="mt-4 text-center text-xs text-slate-400 dark:text-slate-500 flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[14px]">location_on</span>
+                        Your location will be shared with the safety officer.
+                    </p>
+</div>
+<!-- Bottom Spacer for Home Indicator -->
+<div class="h-6 w-full bg-background-light dark:bg-background-dark"></div>
+</div>
+</div>
+</div>
+</body></html>

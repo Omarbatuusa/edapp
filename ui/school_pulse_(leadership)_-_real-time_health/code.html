@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>School Pulse - Leadership Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#389cfa",
+              "background-light": "#f5f7f8",
+              "background-dark": "#0f1923",
+              "surface-dark": "#1a2732",
+              "surface-darker": "#152029",
+              "success": "#0bda5b",
+              "warning": "#faae17",
+              "danger": "#fa6238",
+            },
+            fontFamily: {
+              "display": ["Lexend", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark">
+<div class="relative flex h-auto min-h-screen w-full flex-col max-w-[480px] mx-auto bg-background-light dark:bg-background-dark overflow-x-hidden shadow-2xl">
+<!-- Top App Bar -->
+<div class="sticky top-0 z-50 flex items-center bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md p-4 pb-2 justify-between border-b border-gray-200 dark:border-gray-800">
+<div class="flex items-center gap-3">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-primary/20" data-alt="Principal profile photo placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAp0Scbj9oBxYP0R1FAjtNA3TzYayL64j62YMPZAwoCoY5kCnoeMLS5P_6XfNqSZm3JWwAL4W5_GP_5eG_-1zKMZeLMf8FLWh02fhKSVd2hlVXEp8mRGw8Esu5tY4tuQ7mMhaFjwuqlRHjzYbUSnVKZ-L0lfxzysqocftC8ujuYvGS6Xf48cSjglvd6_ydl641pJyIppKlB3XtsqkZzauIHol25-hkd27vo8-p__QzN9VmppV5GhLojA1Bk1VIa0sdeIso8mhApBm4");'></div>
+<div class="flex flex-col">
+<h2 class="text-gray-900 dark:text-white text-base font-bold leading-tight tracking-[-0.015em]">School Pulse</h2>
+<div class="flex items-center gap-1">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-success"></span>
+</span>
+<span class="text-success text-xs font-medium">Live</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-end gap-2">
+<button class="flex items-center justify-center rounded-full size-10 bg-gray-100 dark:bg-surface-dark text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-surface-darker transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded-full size-10 bg-gray-100 dark:bg-surface-dark text-gray-900 dark:text-white hover:bg-primary hover:text-white transition-colors">
+<span class="material-symbols-outlined">tune</span>
+</button>
+</div>
+</div>
+<!-- Greeting & Meta -->
+<div class="px-4 pt-6 pb-2">
+<h2 class="text-gray-900 dark:text-white text-2xl font-bold leading-tight">Good Morning, Mr. Dube</h2>
+<p class="text-gray-500 dark:text-gray-400 text-sm font-normal leading-normal mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span> 
+                Last updated: Just now
+            </p>
+</div>
+<!-- Attendance Hero Section -->
+<div class="px-4 py-4">
+<div class="bg-surface-dark dark:bg-surface-dark rounded-xl p-6 relative overflow-hidden group">
+<!-- Background gradient effect -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
+<div class="flex justify-between items-start mb-4">
+<h3 class="text-white text-lg font-bold">Overall Attendance</h3>
+<button class="bg-surface-darker/50 hover:bg-surface-darker text-xs text-white px-3 py-1 rounded-full border border-gray-700 transition-colors">View Details</button>
+</div>
+<div class="flex items-center gap-6">
+<!-- Circular Progress Simulation -->
+<div class="relative size-32 shrink-0">
+<svg class="size-full -rotate-90" viewbox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+<!-- Background Circle -->
+<path class="text-gray-700" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="100, 100" stroke-width="3.5"></path>
+<!-- Progress Circle (94%) -->
+<path class="text-primary drop-shadow-[0_0_10px_rgba(56,156,250,0.5)]" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="94, 100" stroke-width="3.5"></path>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-3xl font-bold text-white tracking-tighter">94%</span>
+<span class="text-[10px] text-gray-400 uppercase font-medium">Present</span>
+</div>
+</div>
+<div class="flex flex-col gap-3 flex-1">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-primary"></span>
+<span class="text-sm text-gray-300">Students</span>
+</div>
+<span class="text-white font-semibold">892/945</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-success"></span>
+<span class="text-sm text-gray-300">Staff</span>
+</div>
+<span class="text-white font-semibold">42/45</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-danger"></span>
+<span class="text-sm text-gray-300">Absent</span>
+</div>
+<span class="text-danger font-semibold">53</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- At-Risk Flags Carousel -->
+<div class="py-2">
+<div class="flex items-center justify-between px-4 mb-3">
+<h3 class="text-gray-900 dark:text-white text-lg font-bold leading-tight">Attention Needed</h3>
+<span class="bg-danger/20 text-danger text-xs px-2 py-0.5 rounded font-bold">3 Alerts</span>
+</div>
+<div class="flex overflow-x-auto gap-4 px-4 pb-4 hide-scrollbar snap-x">
+<!-- Card 1: Behavior -->
+<div class="min-w-[260px] snap-center bg-surface-dark dark:bg-surface-dark rounded-xl p-4 border-l-4 border-danger relative">
+<div class="flex items-start justify-between mb-2">
+<div class="p-2 bg-danger/10 rounded-lg text-danger">
+<span class="material-symbols-outlined text-[20px]">report</span>
+</div>
+<span class="text-xs text-gray-400">10m ago</span>
+</div>
+<p class="text-white text-sm font-semibold mb-1">Grade 10 Incident</p>
+<p class="text-gray-400 text-xs leading-relaxed">Behavioral report flagged in Block B. HOD notified.</p>
+</div>
+<!-- Card 2: Transport -->
+<div class="min-w-[260px] snap-center bg-surface-dark dark:bg-surface-dark rounded-xl p-4 border-l-4 border-warning">
+<div class="flex items-start justify-between mb-2">
+<div class="p-2 bg-warning/10 rounded-lg text-warning">
+<span class="material-symbols-outlined text-[20px]">directions_bus</span>
+</div>
+<span class="text-xs text-gray-400">25m ago</span>
+</div>
+<p class="text-white text-sm font-semibold mb-1">Route 4 Delayed</p>
+<p class="text-gray-400 text-xs leading-relaxed">Bus stuck in traffic on Main Rd. ETA +15mins.</p>
+</div>
+<!-- Card 3: Finance -->
+<div class="min-w-[260px] snap-center bg-surface-dark dark:bg-surface-dark rounded-xl p-4 border-l-4 border-primary">
+<div class="flex items-start justify-between mb-2">
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+</div>
+<span class="text-xs text-gray-400">1h ago</span>
+</div>
+<p class="text-white text-sm font-semibold mb-1">Fee Collection Drop</p>
+<p class="text-gray-400 text-xs leading-relaxed">Grade 8 payments are 5% below expected target.</p>
+</div>
+</div>
+</div>
+<!-- Metric Grid -->
+<div class="px-4 pb-4">
+<h3 class="text-gray-900 dark:text-white text-lg font-bold leading-tight mb-3">Operations</h3>
+<div class="grid grid-cols-2 gap-3">
+<!-- Transport -->
+<div class="bg-gray-100 dark:bg-surface-dark p-4 rounded-xl flex flex-col gap-3 hover:bg-gray-200 dark:hover:bg-surface-darker transition-colors cursor-pointer">
+<div class="flex justify-between items-start">
+<div class="size-10 rounded-full bg-success/20 flex items-center justify-center text-success">
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<span class="material-symbols-outlined text-gray-400 text-[20px]">chevron_right</span>
+</div>
+<div>
+<p class="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wide">Transport</p>
+<p class="text-gray-900 dark:text-white text-lg font-bold mt-0.5">All Arrived</p>
+</div>
+</div>
+<!-- Incidents -->
+<div class="bg-gray-100 dark:bg-surface-dark p-4 rounded-xl flex flex-col gap-3 hover:bg-gray-200 dark:hover:bg-surface-darker transition-colors cursor-pointer">
+<div class="flex justify-between items-start">
+<div class="size-10 rounded-full bg-danger/20 flex items-center justify-center text-danger">
+<span class="material-symbols-outlined">gavel</span>
+</div>
+<span class="material-symbols-outlined text-gray-400 text-[20px]">chevron_right</span>
+</div>
+<div>
+<p class="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wide">Incidents</p>
+<p class="text-gray-900 dark:text-white text-lg font-bold mt-0.5">2 Active</p>
+</div>
+</div>
+<!-- Support Tickets -->
+<div class="bg-gray-100 dark:bg-surface-dark p-4 rounded-xl flex flex-col gap-3 hover:bg-gray-200 dark:hover:bg-surface-darker transition-colors cursor-pointer">
+<div class="flex justify-between items-start">
+<div class="size-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">support_agent</span>
+</div>
+<span class="material-symbols-outlined text-gray-400 text-[20px]">chevron_right</span>
+</div>
+<div>
+<p class="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wide">Support</p>
+<p class="text-gray-900 dark:text-white text-lg font-bold mt-0.5">12 Open</p>
+</div>
+</div>
+<!-- Boarding -->
+<div class="bg-gray-100 dark:bg-surface-dark p-4 rounded-xl flex flex-col gap-3 hover:bg-gray-200 dark:hover:bg-surface-darker transition-colors cursor-pointer">
+<div class="flex justify-between items-start">
+<div class="size-10 rounded-full bg-warning/20 flex items-center justify-center text-warning">
+<span class="material-symbols-outlined">bed</span>
+</div>
+<span class="material-symbols-outlined text-gray-400 text-[20px]">chevron_right</span>
+</div>
+<div>
+<p class="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wide">Boarding</p>
+<p class="text-gray-900 dark:text-white text-lg font-bold mt-0.5">98% In</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Grade Breakdown -->
+<div class="px-4 pb-20">
+<div class="flex items-center justify-between mb-3">
+<h3 class="text-gray-900 dark:text-white text-lg font-bold leading-tight">Grade Breakdown</h3>
+<button class="text-primary text-sm font-medium">View All</button>
+</div>
+<div class="bg-gray-100 dark:bg-surface-dark rounded-xl p-4 flex flex-col gap-4">
+<!-- Row 1 -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-end">
+<span class="text-gray-900 dark:text-white text-sm font-semibold">Grade 12</span>
+<div class="flex items-center gap-2">
+<span class="text-xs text-gray-500">92%</span>
+<span class="text-xs text-danger font-medium">-2%</span>
+</div>
+</div>
+<div class="w-full bg-gray-300 dark:bg-gray-700 rounded-full h-2">
+<div class="bg-gradient-to-r from-primary to-blue-400 h-2 rounded-full" style="width: 92%"></div>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-end">
+<span class="text-gray-900 dark:text-white text-sm font-semibold">Grade 11</span>
+<div class="flex items-center gap-2">
+<span class="text-xs text-gray-500">88%</span>
+<span class="text-xs text-danger font-medium">-5%</span>
+</div>
+</div>
+<div class="w-full bg-gray-300 dark:bg-gray-700 rounded-full h-2">
+<div class="bg-gradient-to-r from-warning to-orange-400 h-2 rounded-full" style="width: 88%"></div>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-end">
+<span class="text-gray-900 dark:text-white text-sm font-semibold">Grade 10</span>
+<div class="flex items-center gap-2">
+<span class="text-xs text-gray-500">96%</span>
+<span class="text-xs text-success font-medium">+1%</span>
+</div>
+</div>
+<div class="w-full bg-gray-300 dark:bg-gray-700 rounded-full h-2">
+<div class="bg-gradient-to-r from-success to-emerald-400 h-2 rounded-full" style="width: 96%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- FAB -->
+<div class="fixed bottom-6 right-6 z-40 max-w-[480px]">
+<button class="flex items-center justify-center rounded-2xl h-14 w-14 bg-primary text-white shadow-lg shadow-primary/40 hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[28px]">add</span>
+</button>
+</div>
+<!-- Bottom Spacing for safe area -->
+<div class="h-6 bg-background-light dark:bg-background-dark"></div>
+</div>
+</body></html>

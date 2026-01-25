@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Learner Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e293b",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen pb-24 relative overflow-x-hidden">
+<!-- Top App Bar -->
+<div class="sticky top-0 z-50 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center px-4 py-3 justify-between">
+<button class="text-slate-900 dark:text-slate-100 flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">My Portfolio</h2>
+<!-- Replaced text "Add New" with icon for cleaner mobile look, moved text action to FAB -->
+</div>
+</div>
+<!-- Profile Header -->
+<div class="px-4 pt-6 pb-2">
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-4">
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-20 w-20 border-2 border-white dark:border-slate-700 shadow-md" data-alt="Portrait of student Thabo Mbeki smiling in school uniform" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD9Za01A_gqt0B25g70qqYXCageyUVMF-sUK0i5DjOlUOHg6Syd5ihiCNEjB0_6KBmj6ehrEOiz8knqNPKYg7cioCn6mOOlSnkpyk0cwlvjBCbiNw-D9YcyeJ61GAeKPaBUjRNku6q0ZjJw_YgYrBH2I873kvUkJOZFko9Mu3qP0nFJFjiZEh6iZJ06cslcgwktsydCUP4LEdgY0TC0vetSiaW9B46dBOt1EOv9KkxxBGGkiBrkHriw13ax7TDKKe_NLtFQ7XxbDzU");'>
+</div>
+<div class="absolute bottom-0 right-0 bg-primary rounded-full p-1 border-2 border-white dark:border-slate-800">
+<span class="material-symbols-outlined text-white text-[14px] block">school</span>
+</div>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-slate-900 dark:text-white text-xl font-bold leading-tight">Thabo Mbeki</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal mt-1">Grade 10 • St. John's College</p>
+<div class="flex items-center gap-1 mt-2">
+<span class="bg-primary/10 text-primary text-xs font-semibold px-2 py-0.5 rounded-full">Top 10%</span>
+<span class="bg-orange-100 text-orange-600 text-xs font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">local_fire_department</span> 12 Day Streak
+                         </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Highlights / Story Carousel -->
+<div class="mt-4">
+<div class="flex items-center justify-between px-4 pb-3">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight">Highlights</h3>
+<span class="text-primary text-sm font-semibold cursor-pointer">View All</span>
+</div>
+<div class="flex w-full overflow-x-auto hide-scrollbar px-4 pb-2 snap-x">
+<div class="flex min-h-min flex-row items-start justify-start gap-3">
+<!-- Highlight 1 -->
+<div class="flex flex-col justify-center gap-2 w-24 text-center snap-start shrink-0">
+<div class="group relative w-full aspect-square rounded-2xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+<div class="w-full h-full bg-center bg-no-repeat bg-cover transform group-hover:scale-110 transition-transform duration-300" data-alt="Golden trophy cup on a wooden table" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAh0W8cJ056xbvFFfiYl7ouDi_9B-wEE1Ru2V9N4cuwTuOWo01HZQ7e0U1_5BWvmaxIhnbBQt5u4E7lIkg_JP3VuMut3UKhp9VWWrW1dBfiH4Uit845bku1PnzSsK23KvuGIzxF3n77cfCJUhdpwJgq66wtJOuAipIlcgsapFKbhpEJ2sZFYdKp1iZJGHlm77bqWIi0-hHQ_CJaTLPANRZUvU8czMDmP2FB4tDo6Mq17d_GvNzvvXpCEjFkzB1WN5zoyc5p2AIUFUo");'></div>
+<span class="material-symbols-outlined absolute bottom-2 left-1/2 -translate-x-1/2 z-20 text-yellow-400 font-bold">emoji_events</span>
+</div>
+<p class="text-slate-900 dark:text-slate-200 text-xs font-medium truncate w-full">Robotics Gold</p>
+</div>
+<!-- Highlight 2 -->
+<div class="flex flex-col justify-center gap-2 w-24 text-center snap-start shrink-0">
+<div class="group relative w-full aspect-square rounded-2xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+<div class="w-full h-full bg-center bg-no-repeat bg-cover transform group-hover:scale-110 transition-transform duration-300" data-alt="Colorful abstract painting on canvas" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB4aaCvM1xyVGuBPSMsI6eIXXH3NHkk6d8ZgcnEyf7WxEdGChZtIrZF2lVweVG31ntT8illbcvdXbXJYduajC9egTvZQND76K7RrmjzVR88jp6PPfm6mdZs6nZr-eEKDSfIipRniDRQ2odVaYsvLFwb9fesI6eBNjm_JX4_jWJQFVj2bJOqsibRbHF-8bkkIePaJCk7kdOKcuknUv3oxK268GCGMJniFAoFlOmCg_I9rcBCrqxhLOOdVmhXm2PHUtr9GXP0ja9a7vw");'></div>
+<span class="material-symbols-outlined absolute bottom-2 left-1/2 -translate-x-1/2 z-20 text-white font-bold">palette</span>
+</div>
+<p class="text-slate-900 dark:text-slate-200 text-xs font-medium truncate w-full">Art Final</p>
+</div>
+<!-- Highlight 3 -->
+<div class="flex flex-col justify-center gap-2 w-24 text-center snap-start shrink-0">
+<div class="group relative w-full aspect-square rounded-2xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+<div class="w-full h-full bg-center bg-no-repeat bg-cover transform group-hover:scale-110 transition-transform duration-300" data-alt="Science fair display board with charts" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAB2Elu6QKk8z1KBXy20JL_xlpSHr1zTazvTeuo6WuZZcC9phJZ0VOo7G0Ma9LKqWAfpyjNIwhoCDLzXlqZDcOy3V0cu6OcMdGVCKyoVAGlcdrkOHeLPaVgZ_ezIaDNsRuXJpMhb3jZolVuIZMDV8_qCF_CdE4uIIN_D0aniITZwS_ZWbfdDtXr4XmXHTqinsSnG3sHVQg8NPvGCPjs969T1DFBxWU967MWeA8d2YwRKr3E8hrrzLtbszxaNkftxhqwCdXMZc14-hs");'></div>
+<span class="material-symbols-outlined absolute bottom-2 left-1/2 -translate-x-1/2 z-20 text-white font-bold">science</span>
+</div>
+<p class="text-slate-900 dark:text-slate-200 text-xs font-medium truncate w-full">Science Fair</p>
+</div>
+<!-- Add Highlight Placeholder -->
+<div class="flex flex-col justify-center gap-2 w-24 text-center snap-start shrink-0">
+<div class="flex items-center justify-center w-full aspect-square rounded-2xl bg-slate-100 dark:bg-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-700">
+<span class="material-symbols-outlined text-slate-400">add_circle</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-medium">Pin New</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Filters Chips -->
+<div class="sticky top-[60px] z-40 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm py-2">
+<div class="flex gap-2 px-4 overflow-x-auto hide-scrollbar">
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-primary pl-4 pr-4 transition-transform active:scale-95 shadow-md shadow-primary/20">
+<p class="text-white text-sm font-medium leading-normal">All</p>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 pl-4 pr-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-700">
+<p class="text-slate-600 dark:text-slate-300 text-sm font-medium leading-normal">Robotics</p>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 pl-4 pr-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-700">
+<p class="text-slate-600 dark:text-slate-300 text-sm font-medium leading-normal">Art</p>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 pl-4 pr-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-700">
+<p class="text-slate-600 dark:text-slate-300 text-sm font-medium leading-normal">Math</p>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 pl-4 pr-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-700">
+<p class="text-slate-600 dark:text-slate-300 text-sm font-medium leading-normal">Science</p>
+</button>
+</div>
+</div>
+<!-- Portfolio Feed -->
+<div class="px-4 py-2 flex flex-col gap-5">
+<!-- Entry 1: Science -->
+<div class="group bg-surface-light dark:bg-surface-dark rounded-2xl p-3 shadow-sm border border-slate-100 dark:border-slate-800 transition-all hover:shadow-md">
+<!-- Header -->
+<div class="flex items-center justify-between mb-3 px-1">
+<div class="flex items-center gap-2">
+<span class="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold px-2 py-1 rounded-md">Science</span>
+<span class="text-slate-400 text-xs">Oct 12, 2023</span>
+</div>
+<button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+</button>
+</div>
+<!-- Content -->
+<div class="flex gap-4">
+<div class="w-28 h-28 shrink-0 rounded-lg overflow-hidden relative">
+<div class="w-full h-full bg-center bg-no-repeat bg-cover" data-alt="Renewable energy model with small wind turbine" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAeEH9t9P14vfUilyQ4fU2zf99soVMuwRbXSjZv7kFVPwrYZETLS89HW3jI0So5cp2arneeAsXe8eipUqU0Kyngq5ahA_5V0wVad_IFMK4xyuyFdFTf5xvIBpCqMtSJTeXIEZB2YHSqTlOPwEBNb3g3WxzGCkAMMY-oG13czQfK7cAvzMD3PeQj9yCDOLNiWa_LSa0ruOhVY1icCE65jOkJljzJiDFsyf2JDvd1U3f9gfXqQA_vFooYdfRovJKBY8PqnpypwHbriF0");'>
+</div>
+</div>
+<div class="flex flex-col justify-between py-1 flex-1">
+<div>
+<h4 class="text-slate-900 dark:text-white font-bold text-lg leading-tight mb-1">Renewable Energy Model</h4>
+<p class="text-slate-500 dark:text-slate-400 text-xs line-clamp-2">A working prototype of a wind turbine created using recycled materials for the district fair.</p>
+</div>
+<!-- Feedback Section -->
+<div class="mt-2 flex items-center gap-2 bg-primary/5 dark:bg-primary/20 p-2 rounded-lg self-start cursor-pointer hover:bg-primary/10 transition-colors">
+<div class="relative">
+<div class="w-5 h-5 rounded-full bg-slate-300 bg-cover bg-center" data-alt="Teacher avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAgJOrtRTfng67NzZSlNZnMIL31WzFf3_ugxq3Q06eQU5IzHsxYMEFRPHxGqpPXZCB-H1B9Y-37LgoIVj0cMxw9RWhdDNJ3wN518qHqdKLxRjRgeek4SN3I32k-BAxhu9-Ofq0unQ-pxFjX71j6PNyQfr3HQAcTA7y-3hZlA0NN-ofxLPCoj7CDotUdTQUFevHkqtpWXmhnA6xmAdPSrLhZKw4syP5dtXAkXQe1oY_2aNngGBxi6fNHj49ZGuPcsUHTLGAurg3qDh4");'></div>
+<div class="absolute -bottom-1 -right-1 bg-green-500 w-2.5 h-2.5 rounded-full border border-white"></div>
+</div>
+<span class="text-primary dark:text-blue-300 text-xs font-semibold">Ms. Khumalo commented</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Entry 2: Drama (Video) -->
+<div class="group bg-surface-light dark:bg-surface-dark rounded-2xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800 transition-all hover:shadow-md">
+<div class="relative h-48 w-full bg-slate-900 group">
+<div class="absolute inset-0 bg-center bg-no-repeat bg-cover opacity-80" data-alt="Student performing on stage with spotlight" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDGVdNcbSLgEij4hGPRzzFPpIkjrMbw0LM-hJ-hYV5HcQotOLlKnKOanWA2cHHprpQOC1nKxcK-Q2b09BZ10L-sRFkjn6LseXwQKPP7aqN1TPFiP7qg1K-uQNnIpT9nH0vHcTqXNDFlv-ea4b95wG6w6EPL1bH4ltf_jB145u6V1mmc2bjpAsuUCL8VxLN5D4wDzzuwk-wAkLPojoyodZnH_axcdkmodforO2bl5K00SX0l-4K89yalByvInKRr0tI7n9dP3mN27_0");'>
+</div>
+<div class="absolute inset-0 flex items-center justify-center">
+<button class="bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full w-14 h-14 flex items-center justify-center transition-all scale-100 hover:scale-110">
+<span class="material-symbols-outlined text-white text-[32px] ml-1">play_arrow</span>
+</button>
+</div>
+<div class="absolute top-3 right-3 bg-yellow-500/90 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1 backdrop-blur-sm">
+<span class="material-symbols-outlined text-[12px]">lock_clock</span> PENDING APPROVAL
+                </div>
+<div class="absolute bottom-3 left-3">
+<span class="bg-purple-600/90 text-white text-xs font-bold px-2 py-1 rounded shadow-sm backdrop-blur-sm">Drama</span>
+</div>
+</div>
+<div class="p-4">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="text-slate-900 dark:text-white font-bold text-lg leading-tight mb-1">Hamlet Soliloquy</h4>
+<p class="text-slate-500 dark:text-slate-400 text-sm">Sept 20, 2023</p>
+</div>
+<button class="flex items-center gap-1 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</button>
+</div>
+<p class="text-slate-600 dark:text-slate-300 text-sm mt-2">Recorded during the final rehearsal. Looking for feedback on projection and pacing.</p>
+</div>
+</div>
+<!-- Entry 3: Art (Gallery) -->
+<div class="group bg-surface-light dark:bg-surface-dark rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 transition-all hover:shadow-md">
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-2">
+<span class="bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 text-xs font-bold px-2 py-1 rounded-md">Visual Art</span>
+<span class="text-slate-400 text-xs">Aug 15, 2023</span>
+</div>
+<div class="flex items-center gap-1 text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+<span class="text-[10px] font-bold uppercase tracking-wide">Approved</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2 mb-3">
+<div class="aspect-[4/3] rounded-lg bg-cover bg-center" data-alt="Abstract colorful painting" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAElv3QTK5V6WF7N0kwodPoKc3N4AeJl7p-XYbw4uEaR8h_M-YIXSP7mufLY8lMedd5ARfMi9zejHofJxhT11dY9HT7zWrxIRZpR5ZrqjLLXvMVVUv8eN1dDQu6KOPE-_V6U7KH3OlM5ad8oKbe3jJjnGOc-CBOY3Ymuji--rbWYz8QXmjAVLbTaYkM36fAQR40RPx5nA_Ht9z4Wq3JSynbeBBJblExEwy75On2vgAbN3Q-r7hdtqsTTAHvG-upLLN2kUDtFI8FcGA");'></div>
+<div class="aspect-[4/3] rounded-lg bg-cover bg-center" data-alt="Sketchbook page with pencil drawing" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuATPLNR-DK6u3MtVwwUAYUn1y6HmvPlxmZpmtOTkOAN2TQV1go-c1hCy7v-c4kOWl3i-wOo1_jjWLf2fV4M6Z_Sq1iCNw5ZyrSocAh1olFCqm2_H3MUAWktyvr0itjrLuhSwnz7UbCNfbooef0LF5j3fPD6-c54-LAXTexbDqDdNTwO54HlzH4d3crw9h8ZKTvJJgYNnFLIUvzyX6N0EsSi_UWCVUWUYlBisLu9yB-xl_CLr8ir9BdlFzouk355gvdkRGh4spvL7x4");'></div>
+</div>
+<h4 class="text-slate-900 dark:text-white font-bold text-lg leading-tight mb-1">Expressionism Study</h4>
+<div class="flex items-center gap-4 mt-3 pt-3 border-t border-slate-100 dark:border-slate-700">
+<div class="flex items-center gap-1 text-slate-500 dark:text-slate-400 text-sm">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+<span>12</span>
+</div>
+<div class="flex items-center gap-1 text-slate-500 dark:text-slate-400 text-sm">
+<span class="material-symbols-outlined text-[18px]">comment</span>
+<span>3</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Empty State / Footer Encouragement -->
+<div class="flex flex-col items-center justify-center p-8 pb-20 text-center opacity-60">
+<span class="material-symbols-outlined text-4xl text-slate-300 dark:text-slate-600 mb-2">history_edu</span>
+<p class="text-slate-400 dark:text-slate-500 text-sm">End of portfolio.<br/>Keep adding your amazing work!</p>
+</div>
+<!-- Floating Action Button -->
+<div class="fixed bottom-24 right-4 z-40">
+<button class="bg-primary hover:bg-blue-600 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg shadow-primary/40 transition-transform active:scale-95 group">
+<span class="material-symbols-outlined text-[28px] group-hover:rotate-90 transition-transform duration-300">add</span>
+</button>
+</div>
+<!-- Bottom Navigation -->
+<div class="fixed bottom-0 left-0 w-full bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 pb-safe z-50">
+<div class="flex justify-around items-center h-16 px-2">
+<button class="flex flex-col items-center justify-center w-full h-full text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 gap-1">
+<span class="material-symbols-outlined text-[24px]">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center w-full h-full text-primary gap-1 relative">
+<span class="material-symbols-outlined text-[24px] font-semibold">folder_shared</span>
+<span class="text-[10px] font-medium">Portfolio</span>
+<span class="absolute top-2 right-8 w-2 h-2 bg-red-500 rounded-full"></span>
+</button>
+<button class="flex flex-col items-center justify-center w-full h-full text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 gap-1">
+<span class="material-symbols-outlined text-[24px]">chat_bubble</span>
+<span class="text-[10px] font-medium">Messages</span>
+</button>
+<button class="flex flex-col items-center justify-center w-full h-full text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 gap-1">
+<span class="material-symbols-outlined text-[24px]">person</span>
+<span class="text-[10px] font-medium">Profile</span>
+</button>
+</div>
+<!-- Safe area spacing for iOS home indicator -->
+<div class="h-4 w-full bg-white dark:bg-slate-900"></div>
+</div>
+</body></html>

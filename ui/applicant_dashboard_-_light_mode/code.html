@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EdApp Admissions Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white pb-24">
+<!-- Sticky Header -->
+<header class="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm border-b border-slate-200 dark:border-slate-800 transition-colors">
+<div class="flex items-center justify-between px-4 py-3">
+<div class="flex items-center gap-3">
+<!-- Tenant/School Logo -->
+<div class="bg-center bg-no-repeat bg-cover rounded-lg size-10 shadow-sm border border-slate-100 dark:border-slate-700 bg-white" data-alt="School logo shield icon" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCR74fwz2zGHhKZrvHAO3lQgV7vpT4nlEPzdKxdtutT-41PHSzhpAJOer4NJ-QJxj2hJ4gr9MW58A3gcOsssWMZqDlxQjtuoDEwA6nERYKuMKj4YIVMlT2784qxtQyG9hsKVuDVsOkNTrhHWzIShuw76VfUVOAiOfpdzAUeRTlrqVWX2JjiNp3uTKzXXzFwd0c5J-CxpLs41hk0ploM341gXnwH-I0yds-qsADaXwMs87W2BaRhnQJ6sSBo3Fjaf-QVqFAgIjV1ixk");'>
+</div>
+<h1 class="text-lg font-bold leading-tight tracking-tight text-slate-900 dark:text-white">
+                    Greenwood High
+                </h1>
+</div>
+<div class="flex items-center gap-3">
+<button aria-label="Help" class="flex items-center justify-center size-10 rounded-full text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="size-9 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden border-2 border-white dark:border-slate-800 shadow-sm">
+<div class="w-full h-full bg-cover bg-center" data-alt="User profile avatar face" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCQNutEwR5eQqlfPovXSg7fn2OitKs0pqH3P5xT0562nXjc0XmhqT6mRp3t5o4HAJRzne57szwDDRVPGm1vPJahvDvWGXPg8RkzUxrzdAs8rnxDfPsgqvcdTPimV-yMyD7oh4xokk2gJMclmPW5iGYycZwCilGV4aGp0plzMqSSahNiuA7O2vRQ8N7qXu3a91QjGAvqWJZmgBV39LKIpmTLywrz0CaUXCy07cOcxr2kzWQSn4TqDSlubDFQgqy_wQN_3yIesNBCps4");'>
+</div>
+</div>
+</div>
+</div>
+</header>
+<main class="flex flex-col w-full max-w-md mx-auto">
+<!-- Welcome Section -->
+<div class="px-5 pt-6 pb-2">
+<h2 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">Hello, Thabo</h2>
+<p class="text-slate-500 dark:text-slate-400 text-base font-normal mt-1">Here is the status of your applications.</p>
+</div>
+<!-- Verification Status Banner (ActionPanel) -->
+<div class="p-4">
+<div class="flex flex-col gap-4 rounded-xl border border-blue-200 bg-blue-50/50 dark:bg-blue-900/10 dark:border-blue-800 p-5 shadow-sm">
+<div class="flex items-start gap-4">
+<div class="rounded-full bg-blue-100 dark:bg-blue-800 p-2 text-primary shrink-0">
+<span class="material-symbols-outlined text-[24px]">info</span>
+</div>
+<div class="flex flex-col gap-1">
+<p class="text-slate-900 dark:text-white text-base font-bold leading-tight">Action Required</p>
+<p class="text-slate-600 dark:text-slate-300 text-sm font-normal leading-relaxed">
+                            Your parent profile is 80% complete. Please upload proof of residence to finalize verification.
+                        </p>
+</div>
+</div>
+<button class="w-full rounded-lg h-10 bg-primary text-white text-sm font-semibold hover:bg-blue-600 transition-colors shadow-sm active:scale-[0.98] transform duration-100">
+                    Complete Profile
+                </button>
+</div>
+</div>
+<!-- Tasks & Alerts Section -->
+<div class="px-5 pt-2">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                Tasks &amp; Alerts
+                <span class="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-bold px-2 py-0.5 rounded-full">2</span>
+</h3>
+<div class="flex flex-col gap-3">
+<!-- Task Item 1 -->
+<div class="group flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm active:border-primary transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center text-orange-600 dark:text-orange-400 shrink-0">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-900 dark:text-white">Application Fee Pending</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">R500.00 • Sarah M.</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+<!-- Task Item 2 -->
+<div class="group flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm active:border-primary transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center text-red-600 dark:text-red-400 shrink-0">
+<span class="material-symbols-outlined">upload_file</span>
+</div>
+<div>
+<p class="text-sm font-bold text-slate-900 dark:text-white">Missing Document</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Term 4 Report • Thabo M.</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+</div>
+</div>
+<div class="h-6"></div>
+<!-- My Applications Section -->
+<div class="px-5">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Learner Applications</h3>
+</div>
+<div class="flex flex-col gap-5">
+<!-- Card 1: Submitted / Under Review -->
+<div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+<div class="p-5 border-b border-slate-100 dark:border-slate-700">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h4 class="text-lg font-bold text-slate-900 dark:text-white">Thabo M.</h4>
+<p class="text-sm text-slate-500 dark:text-slate-400">Grade 8 • 2025 Intake</p>
+</div>
+<span class="inline-flex items-center rounded-full bg-yellow-100 dark:bg-yellow-900/30 px-2.5 py-1 text-xs font-bold text-yellow-700 dark:text-yellow-400">
+                                Under Review
+                            </span>
+</div>
+<!-- Stepper / Timeline -->
+<div class="relative flex items-center justify-between w-full mt-6 px-1">
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-0.5 bg-slate-100 dark:bg-slate-700 -z-10"></div>
+<!-- Step 1: Completed -->
+<div class="flex flex-col items-center gap-2 group">
+<div class="size-3 rounded-full bg-primary ring-4 ring-white dark:ring-slate-800"></div>
+<span class="text-[10px] font-medium text-primary">Submitted</span>
+</div>
+<!-- Line Active -->
+<div class="absolute left-[10%] top-1/2 -translate-y-1/2 w-[40%] h-0.5 bg-primary -z-0"></div>
+<!-- Step 2: Active -->
+<div class="flex flex-col items-center gap-2">
+<div class="size-3 rounded-full bg-primary ring-4 ring-white dark:ring-slate-800 animate-pulse"></div>
+<span class="text-[10px] font-bold text-slate-900 dark:text-white">Review</span>
+</div>
+<!-- Step 3: Pending -->
+<div class="flex flex-col items-center gap-2">
+<div class="size-3 rounded-full bg-slate-300 dark:bg-slate-600 ring-4 ring-white dark:ring-slate-800"></div>
+<span class="text-[10px] font-medium text-slate-400">Decision</span>
+</div>
+</div>
+</div>
+<div class="p-4 bg-slate-50/50 dark:bg-slate-800/50 flex justify-end">
+<button class="text-sm font-bold text-primary hover:text-blue-600 transition-colors flex items-center gap-1">
+                            View Details <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Card 2: Draft -->
+<div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden opacity-90">
+<div class="p-5">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h4 class="text-lg font-bold text-slate-900 dark:text-white">Sarah M.</h4>
+<p class="text-sm text-slate-500 dark:text-slate-400">Grade 1 • 2025 Intake</p>
+</div>
+<span class="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-700 px-2.5 py-1 text-xs font-bold text-slate-600 dark:text-slate-300">
+                                Draft
+                            </span>
+</div>
+<!-- Stepper / Timeline (Early Stage) -->
+<div class="relative flex items-center justify-between w-full mt-6 px-1">
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-0.5 bg-slate-100 dark:bg-slate-700 -z-10"></div>
+<!-- Step 1: Active -->
+<div class="flex flex-col items-center gap-2">
+<div class="size-3 rounded-full bg-slate-400 dark:bg-slate-500 ring-4 ring-white dark:ring-slate-800"></div>
+<span class="text-[10px] font-medium text-slate-500">Submitted</span>
+</div>
+<!-- Step 2: Pending -->
+<div class="flex flex-col items-center gap-2">
+<div class="size-3 rounded-full bg-slate-200 dark:bg-slate-700 ring-4 ring-white dark:ring-slate-800"></div>
+<span class="text-[10px] font-medium text-slate-300 dark:text-slate-600">Review</span>
+</div>
+<!-- Step 3: Pending -->
+<div class="flex flex-col items-center gap-2">
+<div class="size-3 rounded-full bg-slate-200 dark:bg-slate-700 ring-4 ring-white dark:ring-slate-800"></div>
+<span class="text-[10px] font-medium text-slate-300 dark:text-slate-600">Decision</span>
+</div>
+</div>
+</div>
+<div class="p-4 px-5 pt-0">
+<button class="w-full rounded-lg h-10 bg-white border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-white text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm active:scale-[0.98]">
+                            Resume Application
+                        </button>
+</div>
+</div>
+<!-- Add New Button -->
+<button class="group flex flex-col items-center justify-center gap-2 w-full h-24 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/30 hover:bg-slate-100 dark:hover:bg-slate-800 hover:border-primary/50 dark:hover:border-primary/50 transition-all cursor-pointer mb-6">
+<div class="size-8 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">add</span>
+</div>
+<span class="text-sm font-bold text-slate-600 dark:text-slate-300 group-hover:text-primary">New Application</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 pb-safe pt-2 px-6 z-50">
+<div class="flex justify-between items-center max-w-md mx-auto h-16">
+<button class="flex flex-col items-center justify-center gap-1 w-16 text-primary">
+<span class="material-symbols-outlined filled">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-1 w-16 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors relative">
+<div class="absolute top-0 right-3 size-2 rounded-full bg-red-500 border border-white dark:border-slate-900"></div>
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="text-[10px] font-medium">Messages</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-1 w-16 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+<span class="material-symbols-outlined">credit_card</span>
+<span class="text-[10px] font-medium">Payments</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-1 w-16 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-medium">Profile</span>
+</button>
+</div>
+</nav>
+<!-- Safe area padding helper for iPhones without home button -->
+<style>
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+        }
+        /* Custom fill class for icons that need to be filled */
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</body></html>

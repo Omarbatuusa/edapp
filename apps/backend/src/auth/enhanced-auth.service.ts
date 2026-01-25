@@ -187,7 +187,7 @@ export class EnhancedAuthService {
         // Successful login
         user.loginAttempts = 0;
         user.lastLoginAt = new Date();
-        user.lockedUntil = undefined;
+        user.lockedUntil = null;
         await this.userRepository.save(user);
 
         // Create custom token

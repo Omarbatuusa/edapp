@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Channel Info Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e293b", // Slightly lighter than background-dark
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display transition-colors duration-200">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto shadow-2xl bg-background-light dark:bg-background-dark">
+<!-- TopAppBar -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-50 backdrop-blur-md bg-opacity-90 dark:bg-opacity-90 border-b border-slate-200 dark:border-slate-800">
+<div class="text-primary flex size-12 shrink-0 items-center cursor-pointer hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined text-3xl">chevron_left</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Channel Info</h2>
+<div class="flex w-12 items-center justify-end cursor-pointer hover:opacity-80 transition-opacity">
+<p class="text-primary text-base font-bold leading-normal tracking-[0.015em] shrink-0">Edit</p>
+</div>
+</div>
+<div class="flex flex-col gap-5 p-4">
+<!-- ProfileHeader (Card) -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm p-6 flex flex-col items-center">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-24 w-24 mb-4 shadow-md ring-4 ring-primary/10" data-alt="Abstract geometric shapes representing math and geometry" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBzhalfoBfMkyfh1SAKquI1xwilQnV7NG88xjG1a34FStg8TPfA5Oli5haQd2MU9XVacWm5snwsoBZuEJdoO_LuvhHzXxhZ2ZuJwfuMy-2GZqgITfKQZcgeLt-cEA8hXnage2uNURPdFL_A3bf-7yoVcIBbVgRd2hycSh0Wxghf9t61Q7x6pKrrPsZ4ajHgOLvTFCf06UePNaOjdAgVtSxyhZFwXeHe5R835bFtCctU9JKolWWsVywWtgYzzB_QnAoe9rzvLHNA4VA");'></div>
+<div class="flex flex-col items-center justify-center text-center">
+<h1 class="text-slate-900 dark:text-white text-2xl font-bold leading-tight tracking-tight mb-1">Grade 10 Math Support</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-relaxed max-w-[280px]">Discussion for Algebra &amp; Geometry homework and upcoming exams.</p>
+</div>
+</div>
+<!-- ActionsBar (Card) -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm p-4">
+<div class="grid grid-cols-4 gap-2">
+<!-- Action 1 -->
+<div class="flex flex-col items-center gap-2 cursor-pointer group">
+<div class="rounded-full bg-blue-50 dark:bg-slate-700 p-3 group-hover:bg-blue-100 dark:group-hover:bg-slate-600 transition-colors">
+<span class="material-symbols-outlined text-primary text-2xl">search</span>
+</div>
+<p class="text-slate-700 dark:text-slate-300 text-xs font-medium">Search</p>
+</div>
+<!-- Action 2 -->
+<div class="flex flex-col items-center gap-2 cursor-pointer group">
+<div class="rounded-full bg-blue-50 dark:bg-slate-700 p-3 group-hover:bg-blue-100 dark:group-hover:bg-slate-600 transition-colors">
+<span class="material-symbols-outlined text-primary text-2xl">notifications_off</span>
+</div>
+<p class="text-slate-700 dark:text-slate-300 text-xs font-medium">Mute</p>
+</div>
+<!-- Action 3 -->
+<div class="flex flex-col items-center gap-2 cursor-pointer group">
+<div class="rounded-full bg-blue-50 dark:bg-slate-700 p-3 group-hover:bg-blue-100 dark:group-hover:bg-slate-600 transition-colors">
+<span class="material-symbols-outlined text-primary text-2xl">person_add</span>
+</div>
+<p class="text-slate-700 dark:text-slate-300 text-xs font-medium">Add</p>
+</div>
+<!-- Action 4 -->
+<div class="flex flex-col items-center gap-2 cursor-pointer group">
+<div class="rounded-full bg-blue-50 dark:bg-slate-700 p-3 group-hover:bg-blue-100 dark:group-hover:bg-slate-600 transition-colors">
+<span class="material-symbols-outlined text-primary text-2xl">ios_share</span>
+</div>
+<p class="text-slate-700 dark:text-slate-300 text-xs font-medium">Share</p>
+</div>
+</div>
+</div>
+<!-- Ticket Details (Card) -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm overflow-hidden">
+<div class="px-4 pt-4 pb-2 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+<h3 class="text-slate-900 dark:text-white text-base font-bold">Ticket Details</h3>
+<span class="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wide">Open</span>
+</div>
+<div class="p-4 grid grid-cols-2 gap-y-6 gap-x-4">
+<!-- Priority -->
+<div class="flex flex-col gap-1">
+<p class="text-slate-400 dark:text-slate-500 text-xs font-medium uppercase tracking-wider">Priority</p>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-red-500 text-lg">priority_high</span>
+<p class="text-slate-900 dark:text-white text-sm font-semibold">High</p>
+</div>
+</div>
+<!-- Assigned To -->
+<div class="flex flex-col gap-1">
+<p class="text-slate-400 dark:text-slate-500 text-xs font-medium uppercase tracking-wider">Assigned Staff</p>
+<div class="flex items-center gap-2">
+<div class="bg-center bg-no-repeat bg-cover rounded-full h-5 w-5" data-alt="Portrait of a female teacher smiling" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDUrz7YAVu0IX89hzmirmBTeDHLXiwKvuk_daqK7b9CZY_9wNx_9JzyegAZakJT1f0UuF8sjItPX7M6rjmX0rCSbRMH0-IN7SXsFLK0r68MWeTalNSxaRdKZxI7CqbJrI8u1cL6FZMTodyugjsYfIhbLO8fImiklYhZ1cOtQ4X3MHg9VkQ8l30aKHy5sn1F57uOV4oZocEwvIoKzJC2xOxsYtlCJEvQyfrIcGVrtMgkkrnzX6t2Mhh5GPPJWYcOZLehoqqTjIbHHSQ");'></div>
+<p class="text-slate-900 dark:text-white text-sm font-semibold truncate">Mrs. K. Johnson</p>
+</div>
+</div>
+<!-- Category -->
+<div class="flex flex-col gap-1 col-span-2">
+<p class="text-slate-400 dark:text-slate-500 text-xs font-medium uppercase tracking-wider">Category</p>
+<p class="text-slate-900 dark:text-white text-sm font-semibold">Homework Support</p>
+</div>
+<!-- SLA Timer -->
+<div class="col-span-2 mt-1">
+<div class="flex justify-between items-end mb-1">
+<p class="text-slate-400 dark:text-slate-500 text-xs font-medium uppercase tracking-wider">SLA Response Time</p>
+<p class="text-primary text-xs font-bold">2h 15m remaining</p>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2">
+<div class="bg-primary h-2 rounded-full" style="width: 65%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Media Section (Card) -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm p-4">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-slate-900 dark:text-white text-base font-bold">Media &amp; Files</h3>
+<div class="flex items-center text-slate-400 dark:text-slate-500 hover:text-primary transition-colors cursor-pointer">
+<span class="text-sm font-medium">View All</span>
+<span class="material-symbols-outlined text-lg">chevron_right</span>
+</div>
+</div>
+<div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+<!-- Item 1: Image -->
+<div class="flex-shrink-0 w-20 flex flex-col gap-1">
+<div class="h-20 w-20 rounded-lg bg-cover bg-center border border-slate-100 dark:border-slate-700" data-alt="Photo of handwritten math notes on a notebook" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAiAzYAq_BTGTMcVu7w5d1QthfpX7oJWY34D7QTm0UtqRNQ5idkWrIIezwpY_Nm1niGEbF6FZmlX6vHJ0OcktqjmS7hqoCz56iGRmMYBxm38oKt8846KM6ej3JBbQrKqGp6GwSTEaTEpXyVcIEqFK6qIbV3tc_4LxfSLsavqdHlm9xZj79Ablb9X4OBroHUZGgKlKimFmHI9AVZedZd8hXCQ5ttxWu2WmRUBj-r0TjPMSCUtAj7gO1eKPE8q5BDKi0yOEmbznhOx-c");'></div>
+<p class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Notes_Alg.jpg</p>
+</div>
+<!-- Item 2: PDF -->
+<div class="flex-shrink-0 w-20 flex flex-col gap-1">
+<div class="h-20 w-20 rounded-lg bg-red-50 dark:bg-red-900/20 flex items-center justify-center border border-slate-100 dark:border-slate-700">
+<span class="material-symbols-outlined text-red-500 text-3xl">picture_as_pdf</span>
+</div>
+<p class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Worksheet_1.pdf</p>
+</div>
+<!-- Item 3: Image -->
+<div class="flex-shrink-0 w-20 flex flex-col gap-1">
+<div class="h-20 w-20 rounded-lg bg-cover bg-center border border-slate-100 dark:border-slate-700" data-alt="Screenshot of a geometry problem from a textbook" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCGZ6GqIzfkLJ61w_U62xY2wz7-JIknzxCLzmo0TH_jqhSfPz-CbJcQGUCzDNdr-PeComtS6JD-PZEE-TO-9qcwWn_76R9wJ4lKT6qWiRZohgUTFHfgDu7GXGmcRWG-LeSYK_2CbVKDLNoOfEIZl1t5HsUAShlQO0kHToHqInbt4XEqa8F2DdSTNaeebD5dgC3MHXVplK6_QsN0Ik_luiLGFmt1oKz74hvRJXC5PeoqBTz-15D2yl04ySwz-d41fLzFj1K0itFj0LQ");'></div>
+<p class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Problem_3.png</p>
+</div>
+<!-- Item 4: Link -->
+<div class="flex-shrink-0 w-20 flex flex-col gap-1">
+<div class="h-20 w-20 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center border border-slate-100 dark:border-slate-700">
+<span class="material-symbols-outlined text-primary text-3xl">link</span>
+</div>
+<p class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Khan Academy</p>
+</div>
+</div>
+</div>
+<!-- Participants Section (Card) -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm overflow-hidden">
+<div class="p-4 pb-2">
+<h3 class="text-slate-900 dark:text-white text-base font-bold">Participants <span class="text-slate-400 text-sm font-normal ml-1">24</span></h3>
+</div>
+<div class="flex flex-col">
+<!-- Moderator -->
+<div class="flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer border-b border-slate-50 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<div class="bg-center bg-no-repeat bg-cover rounded-full h-10 w-10 relative" data-alt="Headshot of a male teacher with glasses" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDkfDzUZ9qcf-vq00Omoi2d__RxOSDEmrtR3qspBwILRarLa-2DvQNyx8GZlnZiVtk1Zmy_L64HYS3eRfNa1s1RU_kAAmkBf6EoxHPRmRMRIqw4mgzOt_ub-wEcOR2pO8rO8gbsKx78YfIu19QBLwFnkxylkyV_-js-1Pdwl3_cGthr2d3qClf_b6513C45pl-wC3IU7UjlfacNuIkDHG-t_COKX1AhzwYC2Y82eiUBzmyVD9Ln1eaOeMQlB7xXMCczzTiweC6GKZE");'>
+<div class="absolute -bottom-1 -right-1 bg-white dark:bg-slate-800 rounded-full p-0.5">
+<span class="material-symbols-outlined text-primary text-sm bg-blue-100 dark:bg-blue-900 rounded-full p-0.5">shield_person</span>
+</div>
+</div>
+<div class="flex flex-col">
+<p class="text-slate-900 dark:text-white text-sm font-semibold">Mr. Smith</p>
+<p class="text-primary text-xs font-medium">Teacher &amp; Moderator</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-300 dark:text-slate-600">chevron_right</span>
+</div>
+<!-- Student 1 -->
+<div class="flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer border-b border-slate-50 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<div class="bg-center bg-no-repeat bg-cover rounded-full h-10 w-10" data-alt="Headshot of a young female student" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAcM8JLXVGmPrdecg8cfPbs_rSMpOjyyQY7cc2KngcCLw7NhXBRtV2X73MDn0iWtx501PUnNIwz8VJ0CwJH-6YhBgatSbYXf9sFUZ2yYoDKRqIjp--uHI3roL_dda5tm4brQPquTZngPW6un46wvOAwhB7lI8yEiUTvgvIVrCg71cll4FEq1BI7Vgi75dm8xyzMOR2CjRE0VhrpPfwU-P33BLIFyvvxWnwQwD3BYB3MIjHZ3DX-mGrEkOOGAXZn3L8AAT_Uy87XFb4");'></div>
+<div class="flex flex-col">
+<p class="text-slate-900 dark:text-white text-sm font-medium">Sarah Jenkins</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Student</p>
+</div>
+</div>
+</div>
+<!-- Student 2 -->
+<div class="flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="bg-center bg-no-repeat bg-cover rounded-full h-10 w-10 bg-purple-100 dark:bg-purple-900 flex items-center justify-center text-purple-600 dark:text-purple-300 font-bold text-sm">
+                                JM
+                            </div>
+<div class="flex flex-col">
+<p class="text-slate-900 dark:text-white text-sm font-medium">John Miller</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Student</p>
+</div>
+</div>
+</div>
+<!-- View All Button -->
+<div class="p-3 text-center border-t border-slate-100 dark:border-slate-800">
+<button class="text-primary text-sm font-semibold hover:underline">See all 24 members</button>
+</div>
+</div>
+</div>
+<!-- Permissions (Card) -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm p-4 flex flex-col gap-4">
+<h3 class="text-slate-900 dark:text-white text-base font-bold">Group Permissions</h3>
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<p class="text-slate-900 dark:text-white text-sm font-medium">Send Messages</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs">All participants</p>
+</div>
+<div class="w-10 h-6 bg-primary rounded-full relative cursor-pointer">
+<div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm"></div>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<p class="text-slate-900 dark:text-white text-sm font-medium">Edit Channel Info</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Admins Only</p>
+</div>
+<div class="w-10 h-6 bg-slate-200 dark:bg-slate-600 rounded-full relative cursor-pointer">
+<div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm"></div>
+</div>
+</div>
+</div>
+<!-- Destructive Actions (Card) -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm overflow-hidden flex flex-col">
+<button class="flex items-center gap-3 p-4 w-full text-left hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors border-b border-slate-50 dark:border-slate-800">
+<span class="material-symbols-outlined text-red-500">flag</span>
+<span class="text-red-500 font-medium text-sm">Report Channel</span>
+</button>
+<button class="flex items-center gap-3 p-4 w-full text-left hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors">
+<span class="material-symbols-outlined text-red-500">logout</span>
+<span class="text-red-500 font-medium text-sm">Leave Channel</span>
+</button>
+</div>
+<div class="h-8"></div>
+</div>
+</div>
+</body></html>

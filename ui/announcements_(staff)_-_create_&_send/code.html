@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Announcements</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "surface-dark": "#1c2633",
+                        "border-dark": "#324d67",
+                        "text-secondary": "#92adc9"
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "2xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for horizontal scrolling */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased overflow-x-hidden">
+<div class="relative flex min-h-screen flex-col max-w-md mx-auto bg-background-light dark:bg-background-dark border-x dark:border-white/5 shadow-2xl">
+<!-- Header -->
+<header class="sticky top-0 z-50 flex items-center justify-between bg-background-light/80 dark:bg-background-dark/95 backdrop-blur-md p-4 border-b dark:border-white/5">
+<button class="flex items-center justify-center p-2 -ml-2 text-slate-600 dark:text-white rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-[24px]">close</span>
+</button>
+<h1 class="text-lg font-bold leading-tight tracking-tight">New Announcement</h1>
+<button class="text-primary font-semibold text-base px-2 py-1 rounded-lg hover:bg-primary/10 transition-colors">
+                Preview
+            </button>
+</header>
+<!-- Scrollable Content -->
+<main class="flex-1 flex flex-col pb-28">
+<!-- Section: Composition -->
+<div class="px-4 py-6 space-y-6">
+<!-- Title Input -->
+<div class="space-y-2">
+<label class="block text-sm font-medium text-slate-500 dark:text-text-secondary uppercase tracking-wider ml-1">Title</label>
+<input class="w-full bg-white dark:bg-surface-dark border-slate-200 dark:border-border-dark rounded-xl px-4 py-3.5 text-base text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-text-secondary focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none" placeholder="e.g., Sports Day Update" type="text"/>
+</div>
+<!-- Message Input & Toolbar -->
+<div class="space-y-2 group">
+<label class="flex justify-between items-center text-sm font-medium text-slate-500 dark:text-text-secondary uppercase tracking-wider ml-1">
+<span>Message</span>
+<span class="text-xs text-primary cursor-pointer hover:underline">Use Templates</span>
+</label>
+<div class="relative flex flex-col rounded-xl overflow-hidden border border-slate-200 dark:border-border-dark bg-white dark:bg-surface-dark focus-within:ring-2 focus-within:ring-primary/50 focus-within:border-primary transition-all">
+<!-- Toolbar -->
+<div class="flex items-center gap-1 p-2 border-b border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-[#151e29]">
+<button class="p-1.5 rounded-lg text-slate-500 dark:text-text-secondary hover:bg-slate-200 dark:hover:bg-white/10 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">format_bold</span>
+</button>
+<button class="p-1.5 rounded-lg text-slate-500 dark:text-text-secondary hover:bg-slate-200 dark:hover:bg-white/10 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">format_italic</span>
+</button>
+<button class="p-1.5 rounded-lg text-slate-500 dark:text-text-secondary hover:bg-slate-200 dark:hover:bg-white/10 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">format_list_bulleted</span>
+</button>
+<div class="w-px h-5 bg-slate-300 dark:bg-white/10 mx-1"></div>
+<button class="p-1.5 rounded-lg text-slate-500 dark:text-text-secondary hover:bg-slate-200 dark:hover:bg-white/10 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">link</span>
+</button>
+<button class="p-1.5 rounded-lg text-slate-500 dark:text-text-secondary hover:bg-slate-200 dark:hover:bg-white/10 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">image</span>
+</button>
+</div>
+<textarea class="w-full h-40 bg-transparent p-4 text-base text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-text-secondary resize-none outline-none border-none focus:ring-0" placeholder="Write your announcement here..."></textarea>
+</div>
+</div>
+<!-- Attachments Section -->
+<div class="space-y-3">
+<div class="flex items-center justify-between ml-1">
+<h3 class="text-sm font-medium text-slate-500 dark:text-text-secondary uppercase tracking-wider">Attachments</h3>
+</div>
+<div class="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+<!-- Add Button -->
+<button class="flex-shrink-0 w-24 h-24 flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-300 dark:border-border-dark bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 hover:border-primary/50 transition-all group">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500 group-hover:text-primary">add_circle</span>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Add File</span>
+</button>
+<!-- Attached Image -->
+<div class="flex-shrink-0 w-24 h-24 relative rounded-xl overflow-hidden group border border-slate-200 dark:border-white/10">
+<img alt="Thumbnail of attached document showing abstract school supplies" class="w-full h-full object-cover" data-alt="School supplies background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZyFIIudrBIF8hCo7ijVpnkPTOU22k73LqTOa-NtScaKt6-ZWHG_6uOwMS5ZfilQ8Yw5vgtcxw6Q4MhKOGWPE0qiLkREantZNEA18iloURbIktH32HN_CoTSocb1v1m7hLxXYfvWUTo_2H9lftkzYEJFOjqDGJCkVpy1dXVpy_tV98sNm_1iQsA0imNjnRvyeQiUmSdVu9puKfHR0wCmL55yAmHTqIL6vAKBoGpJmX5COwS8EfXeBTvV5bDoPcJUSfQDdQZxJ08Dc"/>
+<button class="absolute top-1 right-1 p-0.5 bg-black/60 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+<div class="absolute bottom-0 inset-x-0 bg-black/60 p-1">
+<p class="text-[10px] text-white truncate text-center font-medium">Poster.jpg</p>
+</div>
+</div>
+<!-- Attached PDF -->
+<div class="flex-shrink-0 w-24 h-24 relative rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-500/30 flex flex-col items-center justify-center gap-1 group">
+<span class="material-symbols-outlined text-red-500 text-3xl">picture_as_pdf</span>
+<div class="absolute bottom-2 px-2 w-full">
+<p class="text-[10px] text-red-900 dark:text-red-200 truncate text-center font-medium">Policy_v2.pdf</p>
+</div>
+<button class="absolute top-1 right-1 p-0.5 bg-black/10 dark:bg-black/40 rounded-full text-slate-600 dark:text-white/80 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="h-px bg-slate-200 dark:bg-white/5 mx-4 mb-6"></div>
+<!-- Section: Audience -->
+<div class="px-4 space-y-4 mb-6">
+<div class="flex items-center justify-between ml-1">
+<h3 class="text-sm font-medium text-slate-500 dark:text-text-secondary uppercase tracking-wider">Target Audience</h3>
+<span class="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">Required</span>
+</div>
+<button class="w-full flex items-center justify-between p-4 bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 transition-all group">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">groups</span>
+</div>
+<div class="text-left">
+<p class="text-base font-semibold text-slate-900 dark:text-white">Select Recipients</p>
+<p class="text-sm text-slate-500 dark:text-text-secondary">Whole School, Grade 12...</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-medium text-slate-400 dark:text-slate-500">0 selected</span>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+</button>
+</div>
+<!-- Section: Configuration Options -->
+<div class="px-4 space-y-4">
+<h3 class="text-sm font-medium text-slate-500 dark:text-text-secondary uppercase tracking-wider ml-1">Publishing Settings</h3>
+<div class="bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-xl divide-y divide-slate-100 dark:divide-white/5 overflow-hidden">
+<!-- Schedule -->
+<div class="flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500">calendar_clock</span>
+<span class="text-base text-slate-900 dark:text-white font-medium">Schedule for later</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-sm text-slate-500 dark:text-text-secondary">Send Immediately</span>
+<span class="material-symbols-outlined text-slate-400 text-[20px]">chevron_right</span>
+</div>
+</div>
+<!-- Reactions -->
+<div class="flex items-center justify-between p-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500">add_reaction</span>
+<div class="flex flex-col">
+<span class="text-base text-slate-900 dark:text-white font-medium">Allow Reactions</span>
+<span class="text-xs text-slate-500 dark:text-text-secondary">Recipients can react with 👍 ❤️ 🙌</span>
+</div>
+</div>
+<!-- Toggle Switch: ON -->
+<button class="relative w-12 h-7 bg-primary rounded-full transition-colors focus:outline-none">
+<div class="absolute right-1 top-1 w-5 h-5 bg-white rounded-full shadow-sm transition-transform"></div>
+</button>
+</div>
+<!-- Urgent Push -->
+<div class="flex items-center justify-between p-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-500">notifications_active</span>
+<div class="flex flex-col">
+<span class="text-base text-slate-900 dark:text-white font-medium">Urgent Alert</span>
+<span class="text-xs text-slate-500 dark:text-text-secondary">Send push notification</span>
+</div>
+</div>
+<!-- Toggle Switch: OFF -->
+<button class="relative w-12 h-7 bg-slate-200 dark:bg-white/10 rounded-full transition-colors focus:outline-none">
+<div class="absolute left-1 top-1 w-5 h-5 bg-white rounded-full shadow-sm transition-transform"></div>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Sticky Footer -->
+<div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-4 bg-background-light/90 dark:bg-background-dark/90 border-t border-slate-200 dark:border-white/5 backdrop-blur-lg z-40">
+<div class="flex gap-3 items-center">
+<div class="text-xs text-slate-500 dark:text-text-secondary flex-1 text-center">
+                    Review your announcement before sending.
+                </div>
+</div>
+<button class="mt-3 w-full bg-primary hover:bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-900/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+<span>Review &amp; Send</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</body></html>

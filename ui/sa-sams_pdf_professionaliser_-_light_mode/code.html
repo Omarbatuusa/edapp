@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SA-SAMS PDF Professionaliser</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden">
+<!-- Main Container -->
+<div class="relative flex h-full min-h-screen w-full flex-col max-w-md mx-auto bg-white dark:bg-slate-900 shadow-xl overflow-hidden">
+<!-- Header -->
+<header class="flex items-center bg-white dark:bg-slate-900 p-4 pb-2 justify-between sticky top-0 z-30 border-b border-slate-100 dark:border-slate-800">
+<button class="text-slate-900 dark:text-white flex size-10 shrink-0 items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+<span class="material-symbols-outlined text-2xl">arrow_back</span>
+</button>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-10">Report Professionaliser</h2>
+</header>
+<!-- Progress Stepper -->
+<div class="flex w-full flex-col items-center justify-center bg-white dark:bg-slate-900 pt-2 pb-4 px-6 border-b border-slate-100 dark:border-slate-800">
+<div class="flex w-full items-center justify-between relative">
+<!-- Line background -->
+<div class="absolute top-1/2 left-0 w-full h-0.5 bg-slate-200 dark:bg-slate-700 -z-10 -translate-y-1/2 rounded"></div>
+<!-- Steps -->
+<div class="flex flex-col items-center gap-1 bg-white dark:bg-slate-900 px-1">
+<div class="h-6 w-6 rounded-full bg-primary flex items-center justify-center text-white shadow-sm ring-4 ring-white dark:ring-slate-900">
+<span class="material-symbols-outlined text-[14px] font-bold">check</span>
+</div>
+</div>
+<div class="flex flex-col items-center gap-1 bg-white dark:bg-slate-900 px-1">
+<div class="h-6 w-6 rounded-full bg-primary flex items-center justify-center text-white shadow-sm ring-4 ring-white dark:ring-slate-900">
+<span class="text-[10px] font-bold">2</span>
+</div>
+</div>
+<div class="flex flex-col items-center gap-1 bg-white dark:bg-slate-900 px-1">
+<div class="h-6 w-6 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-500 shadow-sm ring-4 ring-white dark:ring-slate-900">
+<span class="text-[10px] font-bold">3</span>
+</div>
+</div>
+<div class="flex flex-col items-center gap-1 bg-white dark:bg-slate-900 px-1">
+<div class="h-6 w-6 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-500 shadow-sm ring-4 ring-white dark:ring-slate-900">
+<span class="text-[10px] font-bold">4</span>
+</div>
+</div>
+</div>
+<div class="flex w-full justify-between text-[10px] font-medium text-slate-400 mt-2 px-1">
+<span>Upload</span>
+<span class="text-primary font-semibold">Edit</span>
+<span>Review</span>
+<span>Send</span>
+</div>
+</div>
+<!-- Scrollable Content -->
+<main class="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark pb-32">
+<!-- Context Header -->
+<div class="px-5 pt-6 pb-2">
+<h1 class="text-slate-900 dark:text-white tracking-tight text-2xl font-bold leading-tight">Editor Canvas</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Overlay letterhead, add signatures, and review the final output.</p>
+</div>
+<!-- View Toggle -->
+<div class="px-5 py-3 sticky top-0 z-20 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm">
+<div class="flex h-11 w-full items-center justify-center rounded-xl bg-slate-200 dark:bg-slate-800 p-1">
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 has-[:checked]:bg-white dark:has-[:checked]:bg-slate-700 has-[:checked]:shadow-sm has-[:checked]:text-primary text-slate-500 dark:text-slate-400 text-sm font-semibold transition-all">
+<span class="truncate">Original Raw</span>
+<input class="invisible w-0 absolute" name="view-toggle" type="radio" value="Original Raw"/>
+</label>
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 has-[:checked]:bg-white dark:has-[:checked]:bg-slate-700 has-[:checked]:shadow-sm has-[:checked]:text-primary text-slate-500 dark:text-slate-400 text-sm font-semibold transition-all">
+<span class="truncate">Final Preview</span>
+<input checked="" class="invisible w-0 absolute" name="view-toggle" type="radio" value="Final Preview"/>
+</label>
+</div>
+</div>
+<!-- PDF Canvas Area -->
+<div class="px-5 pb-6">
+<div class="relative w-full aspect-[1/1.414] bg-white rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden group">
+<!-- Letterhead Background Layer -->
+<div class="absolute inset-0 z-0 opacity-100">
+<img alt="Abstract subtle geometric letterhead background" class="w-full h-full object-cover opacity-20 pointer-events-none" data-alt="Abstract subtle geometric letterhead background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBby0jj0Lf79ME4J4WQv0IQxhqDRrBhIaffN36THusIKGWho5LLtyyYaGQ3h4sGd0JYiY_0i4aDLdkmB-1MQeL_c2_IF79CCorsWgQDBIoTCnduV6t07jTY5Bt3BHRGT_FlYDcCHn835pjN1pM_tWydzMcdCIVNcJJOAr0nW8Orw6anKffphecd35SiIBxXwWLI8ycXCn1zxZsefYspOgEGZCBXbM7icPUa_7bseKn0lfPZ-7zpIFFpiElNvPUpXy4jWHPz8Waa96I"/>
+<!-- Top Header Area of Letterhead -->
+<div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-primary/10 to-transparent"></div>
+<div class="absolute top-6 left-6 flex gap-3 items-center">
+<div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">school</span>
+</div>
+<div>
+<div class="h-2 w-32 bg-slate-900/10 rounded mb-1"></div>
+<div class="h-2 w-20 bg-slate-900/10 rounded"></div>
+</div>
+</div>
+</div>
+<!-- PDF Content Mockup Layer -->
+<div class="absolute inset-0 z-10 p-8 flex flex-col gap-4 mix-blend-multiply pointer-events-none">
+<div class="w-full h-full border border-dashed border-slate-300 rounded p-4">
+<!-- Mock Data Rows -->
+<div class="flex justify-between items-center mb-6">
+<div class="h-4 w-1/3 bg-slate-800/10 rounded"></div>
+<div class="h-4 w-1/4 bg-slate-800/10 rounded"></div>
+</div>
+<div class="space-y-3">
+<div class="h-2 w-full bg-slate-800/5 rounded"></div>
+<div class="h-2 w-full bg-slate-800/5 rounded"></div>
+<div class="h-2 w-5/6 bg-slate-800/5 rounded"></div>
+<div class="h-2 w-4/6 bg-slate-800/5 rounded"></div>
+</div>
+<div class="mt-8 space-y-3">
+<div class="flex gap-2">
+<div class="h-8 w-8 bg-slate-800/5 rounded"></div>
+<div class="h-8 flex-1 bg-slate-800/5 rounded"></div>
+</div>
+<div class="h-24 w-full bg-slate-800/5 rounded border border-slate-200"></div>
+</div>
+</div>
+</div>
+<!-- Interactive Elements Layer -->
+<div class="absolute bottom-12 right-8 z-20 cursor-move hover:scale-105 transition-transform">
+<div class="relative group/signature">
+<div class="absolute -top-3 -right-3 hidden group-hover/signature:flex bg-red-500 text-white rounded-full p-1 shadow-sm cursor-pointer">
+<span class="material-symbols-outlined text-[10px]">close</span>
+</div>
+<img alt="Digital signature in blue ink" class="h-12 w-auto mix-blend-multiply" data-alt="Digital signature in blue ink" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvBNF3DxDE1IonuAxdq6AMpBm1PrnfwNsCNvPWvsz8gSU92P-7ANQN6GHIH45FEc8igrSQBuoejoRDd4w6g8fRlEQNE6bkYS68xDaIBxUu4TepX8Jqn6n-g3572LvTfZN8AGlPgxBPq1AI39y8_ESTgYXIzbNAuL6v8od-40w4HMfz-aLV0oocyzLJqAC1HEZ9hEwXMzPpcr3se7uiDwrCdSDwksqI4KHzSLu56FGUgDuh8ZCK2kOb0G8SY1b7DJmgSavStsPuuss"/>
+</div>
+</div>
+<!-- Interactive Stamp Layer -->
+<div class="absolute bottom-12 left-8 z-20 cursor-move hover:scale-105 transition-transform opacity-80 rotate-[-12deg]">
+<div class="w-20 h-20 border-4 border-primary rounded-full flex items-center justify-center">
+<span class="text-primary font-bold text-[10px] text-center leading-tight">OFFICIAL<br/>APPROVED<br/>2024</span>
+</div>
+</div>
+<!-- Add Button Overlay (Center) - Only visible if empty, hiding here for populated state -->
+<!-- <div class="absolute inset-0 flex items-center justify-center bg-slate-50/50 backdrop-blur-[1px] z-30">
+                         <button class="bg-white px-4 py-2 rounded-lg shadow-lg text-primary font-bold flex items-center gap-2">
+                            <span class="material-symbols-outlined">edit_document</span>
+                            Edit Canvas
+                         </button>
+                    </div> -->
+</div>
+<div class="flex justify-center mt-3">
+<span class="text-xs text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">Page 1 of 3</span>
+</div>
+</div>
+<!-- Tools Palette (Horizontal Scroll) -->
+<div class="pl-5 pb-6">
+<h3 class="text-slate-900 dark:text-white text-sm font-bold mb-3">Quick Tools</h3>
+<div class="flex gap-3 overflow-x-auto no-scrollbar pr-5">
+<!-- Tool Item -->
+<button class="flex flex-col items-center gap-2 min-w-[72px] group">
+<div class="w-14 h-14 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center shadow-sm group-active:scale-95 transition-transform text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined">image</span>
+</div>
+<span class="text-[11px] font-medium text-slate-600 dark:text-slate-400">Letterhead</span>
+</button>
+<!-- Tool Item Active -->
+<button class="flex flex-col items-center gap-2 min-w-[72px] group">
+<div class="w-14 h-14 rounded-xl bg-primary/10 border border-primary flex items-center justify-center shadow-sm group-active:scale-95 transition-transform text-primary">
+<span class="material-symbols-outlined">ink_pen</span>
+</div>
+<span class="text-[11px] font-medium text-primary">Signature</span>
+</button>
+<!-- Tool Item -->
+<button class="flex flex-col items-center gap-2 min-w-[72px] group">
+<div class="w-14 h-14 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center shadow-sm group-active:scale-95 transition-transform text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined">approval</span>
+</div>
+<span class="text-[11px] font-medium text-slate-600 dark:text-slate-400">Stamp</span>
+</button>
+<!-- Tool Item -->
+<button class="flex flex-col items-center gap-2 min-w-[72px] group">
+<div class="w-14 h-14 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center shadow-sm group-active:scale-95 transition-transform text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined">comment</span>
+</div>
+<span class="text-[11px] font-medium text-slate-600 dark:text-slate-400">Comment</span>
+</button>
+</div>
+</div>
+<!-- Audit / Info Card -->
+<div class="px-5 pb-6">
+<div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-100 dark:border-slate-700 shadow-sm">
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-slate-400 text-lg">history</span>
+<h4 class="text-sm font-bold text-slate-700 dark:text-slate-200">Audit Trail</h4>
+</div>
+<span class="text-[10px] font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-2 py-0.5 rounded-full">Active Draft</span>
+</div>
+<div class="flex items-start gap-3">
+<div class="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden shrink-0">
+<img alt="Administrator profile picture" class="h-full w-full object-cover" data-alt="Administrator profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcqgAchlXenT3pu60P6w2ijs2hSyK6HQQ1ZSXUejuDJS7qOTJLvBCXq8_Sak0-bCH0QN7tMCs6LMdfVgt9_Jeua6z1g-HK2YFR0rJBsQk8momvfnvrmPnHQoL68MPbvYah170W71OXSt2jJBM-O49VptlfR3YWU8UXoSarnC6gny4cwYsLofYcBHAQQ74Aw7J5PNxaMEKBKIvBcSRPL4j5aol9mSg5k-gJaEkEh-Ro51_hAqfHVItO99U6rjvxefBDp7qZ2fffZ9E"/>
+</div>
+<div>
+<p class="text-xs text-slate-500 dark:text-slate-400">Last edited by <span class="text-slate-900 dark:text-white font-medium">Mr. Thabo Mbeki</span></p>
+<p class="text-[10px] text-slate-400 mt-0.5">2 minutes ago • Added digital signature</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Footer -->
+<footer class="absolute bottom-0 w-full bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 p-4 pb-8 z-40 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+<div class="flex gap-3">
+<button class="flex-1 h-12 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                    Save Draft
+                </button>
+<button class="flex-[2] h-12 flex items-center justify-center gap-2 rounded-xl bg-primary text-white font-bold text-sm shadow-lg shadow-primary/30 hover:bg-blue-500 transition-colors">
+<span class="material-symbols-outlined text-[20px]">send</span>
+                    Approve &amp; Send
+                </button>
+</div>
+</footer>
+<!-- Toast Notification (Hidden by default, showing for demo) -->
+<div class="absolute top-20 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-slate-900/90 text-white px-4 py-2 rounded-full shadow-xl opacity-0 animate-[fadeIn_0.5s_ease-out_1s_forwards]">
+<span class="material-symbols-outlined text-green-400 text-sm">check_circle</span>
+<span class="text-xs font-medium">Signature applied successfully</span>
+</div>
+</div>
+<style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -10px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+    </style>
+</body></html>

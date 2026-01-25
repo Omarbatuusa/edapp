@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Learners List (Admin)</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e293b",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden">
+<div class="mx-auto max-w-md min-h-screen relative flex flex-col pb-20">
+<!-- Sticky Header -->
+<header class="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-4 pt-4 pb-2 border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center justify-between mb-4">
+<h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Learners</h1>
+<button class="flex items-center gap-1 text-primary hover:text-blue-600 dark:hover:text-blue-400 font-semibold transition-colors">
+<span class="material-symbols-outlined text-xl">add</span>
+<span>Add New</span>
+</button>
+</div>
+<!-- Search Bar -->
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-slate-400">search</span>
+</div>
+<input class="block w-full rounded-xl border-none bg-white dark:bg-surface-dark py-3 pl-10 pr-4 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-primary shadow-sm" placeholder="Search by name or ID..." type="text"/>
+</div>
+</header>
+<!-- Filters & Status -->
+<div class="px-4 py-2">
+<!-- Filter Chips -->
+<div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 items-center">
+<button class="flex items-center justify-center size-10 shrink-0 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 shadow-sm text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</button>
+<div class="h-6 w-px bg-slate-200 dark:bg-slate-700 shrink-0 mx-1"></div>
+<button class="flex h-9 shrink-0 items-center gap-x-2 rounded-xl bg-primary/10 border border-primary/20 pl-3 pr-2 shadow-sm">
+<span class="text-primary text-sm font-medium">Active</span>
+<span class="material-symbols-outlined text-primary text-[18px]">close</span>
+</button>
+<button class="flex h-9 shrink-0 items-center gap-x-2 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 pl-3 pr-2 shadow-sm whitespace-nowrap">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">Grade 10</span>
+<span class="material-symbols-outlined text-slate-400 text-[18px]">expand_more</span>
+</button>
+<button class="flex h-9 shrink-0 items-center gap-x-2 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 pl-3 pr-2 shadow-sm whitespace-nowrap">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">2024</span>
+<span class="material-symbols-outlined text-slate-400 text-[18px]">expand_more</span>
+</button>
+<button class="flex h-9 shrink-0 items-center gap-x-2 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 pl-3 pr-2 shadow-sm whitespace-nowrap">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">North Campus</span>
+<span class="material-symbols-outlined text-slate-400 text-[18px]">expand_more</span>
+</button>
+</div>
+<!-- Sync Status -->
+<div class="flex items-center gap-2 mt-2 mb-1">
+<div class="size-2 rounded-full bg-green-500 animate-pulse"></div>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-medium">Last synced: 10m ago (Cached)</p>
+</div>
+</div>
+<!-- Learner List -->
+<div class="flex flex-col gap-3 px-4">
+<!-- Item 1: Active -->
+<div class="group bg-surface-light dark:bg-surface-dark rounded-xl p-3 shadow-sm border border-slate-100 dark:border-slate-800 flex items-center justify-between active:scale-[0.99] transition-transform">
+<div class="flex items-center gap-3 overflow-hidden">
+<div class="shrink-0 relative">
+<div class="size-12 rounded-full bg-slate-200 dark:bg-slate-700 bg-cover bg-center" data-alt="Portrait of a young female student with braided hair" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCZtjxfwY94uBNnz8CvWmuAqOBRi_SmZpw7CbR1t1hKVuafKKIOqkaOyaN7CkntR85DIIycp4nlMUIoM9jZvGcB2qhQDZu-Cn_zjtR10EBpjSqZkom_xbudxCdiYfasD0sFyEb_JIVRuX3FEPA7uM0yuk-LrF4oyb_c8PBn5h_4l9vRty_po-vn7MXbnnSWx9hiknodaTkKtVCFuK6Y6_70vest6LtW46SWgvIILbri9Y-FcK5zSrrKxga_p9oCw1-covBKX3Bgx6E');"></div>
+<div class="absolute bottom-0 right-0 size-3 border-2 border-white dark:border-surface-dark rounded-full bg-green-500"></div>
+</div>
+<div class="flex flex-col min-w-0">
+<h3 class="text-slate-900 dark:text-white text-base font-bold truncate">Thabo Mbeki</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm truncate">#STU001 | Grade 12A</p>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0 pl-2">
+<span class="px-2.5 py-1 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-xs font-semibold">Active</span>
+<button class="size-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 dark:text-slate-500">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Item 2: Pending -->
+<div class="group bg-surface-light dark:bg-surface-dark rounded-xl p-3 shadow-sm border border-slate-100 dark:border-slate-800 flex items-center justify-between active:scale-[0.99] transition-transform">
+<div class="flex items-center gap-3 overflow-hidden">
+<div class="shrink-0 relative">
+<div class="size-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-300 font-bold text-lg">SJ</div>
+</div>
+<div class="flex flex-col min-w-0">
+<h3 class="text-slate-900 dark:text-white text-base font-bold truncate">Sarah Johnson</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm truncate">#STU024 | Grade 10B</p>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0 pl-2">
+<span class="px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 text-xs font-semibold">Pending</span>
+<button class="size-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 dark:text-slate-500">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Item 3: Suspended -->
+<div class="group bg-surface-light dark:bg-surface-dark rounded-xl p-3 shadow-sm border border-slate-100 dark:border-slate-800 flex items-center justify-between active:scale-[0.99] transition-transform">
+<div class="flex items-center gap-3 overflow-hidden">
+<div class="shrink-0 relative">
+<div class="size-12 rounded-full bg-slate-200 dark:bg-slate-700 bg-cover bg-center" data-alt="Portrait of a male student looking serious" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA1Z3G7s7KTJiPHswr2mtfySO9TnGNxfthG8L7ltnsNI7_MuiO6-dOhkEFcc3N9mjT__L6hKLMUT_oWvCogj2Mz2M0qCGnC383Jyimb9svHRwAsDvnFObOQAF2AI9MyKOPBAhIvf2-IXT9VAbkqK86VMOhGOWmmw3kJNot55n1m4kn4ef84mEvGPRfn62F80rXC3YYUh2p9qL8qCzUWnrNLVDbLu2AGERg-oRv9f92cOuo4ukmJl95vsDbZvq0WMZDKEi7I5YWd5WI');"></div>
+<div class="absolute bottom-0 right-0 size-3 border-2 border-white dark:border-surface-dark rounded-full bg-red-500"></div>
+</div>
+<div class="flex flex-col min-w-0">
+<h3 class="text-slate-900 dark:text-white text-base font-bold truncate">Lerato Nkosi</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm truncate">#STU089 | Grade 11C</p>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0 pl-2">
+<span class="px-2.5 py-1 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 text-xs font-semibold">Suspended</span>
+<button class="size-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 dark:text-slate-500">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Item 4: Active -->
+<div class="group bg-surface-light dark:bg-surface-dark rounded-xl p-3 shadow-sm border border-slate-100 dark:border-slate-800 flex items-center justify-between active:scale-[0.99] transition-transform">
+<div class="flex items-center gap-3 overflow-hidden">
+<div class="shrink-0 relative">
+<div class="size-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-300 font-bold text-lg">DM</div>
+<div class="absolute bottom-0 right-0 size-3 border-2 border-white dark:border-surface-dark rounded-full bg-green-500"></div>
+</div>
+<div class="flex flex-col min-w-0">
+<h3 class="text-slate-900 dark:text-white text-base font-bold truncate">David Mokoena</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm truncate">#STU112 | Grade 12A</p>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0 pl-2">
+<span class="px-2.5 py-1 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-xs font-semibold">Active</span>
+<button class="size-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 dark:text-slate-500">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Item 5: Active -->
+<div class="group bg-surface-light dark:bg-surface-dark rounded-xl p-3 shadow-sm border border-slate-100 dark:border-slate-800 flex items-center justify-between active:scale-[0.99] transition-transform">
+<div class="flex items-center gap-3 overflow-hidden">
+<div class="shrink-0 relative">
+<div class="size-12 rounded-full bg-slate-200 dark:bg-slate-700 bg-cover bg-center" data-alt="Portrait of a smiling female student" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC40irW8uydPYI4g6bmN6LZgXL8hVnIIYQrr6MOlVThgJbb93uuEDzsh17QcVScrgvNRqJsmI3wg386umzlSmU-jHA8mitLe2Q50f73r4hsn2Jn6gjkwJBbcxFsgqqR94-u7WmKm6hYBWyhIoDRsM4Yf0k3chXsLCWAVkkBY3QQ6MtyZLAorXgRoBzheAkJIkQyX9KUHJaCDvDKTRMVCGGzzVThNw-7gY8xoKCEYBxUGZVv6tMP96ppQg1z3LI5ygUcAq7RbCJHmj8');"></div>
+<div class="absolute bottom-0 right-0 size-3 border-2 border-white dark:border-surface-dark rounded-full bg-green-500"></div>
+</div>
+<div class="flex flex-col min-w-0">
+<h3 class="text-slate-900 dark:text-white text-base font-bold truncate">Amara Diop</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm truncate">#STU156 | Grade 11A</p>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0 pl-2">
+<span class="px-2.5 py-1 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-xs font-semibold">Active</span>
+<button class="size-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 dark:text-slate-500">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation -->
+<div class="fixed bottom-0 left-0 right-0 bg-white dark:bg-surface-dark border-t border-slate-200 dark:border-slate-800 pb-safe pt-2 px-6">
+<div class="flex items-center justify-between max-w-md mx-auto h-16">
+<button class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[24px]">dashboard</span>
+<span class="text-[10px] font-medium">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[24px] fill-current">groups</span>
+<span class="text-[10px] font-medium">Learners</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[24px]">school</span>
+<span class="text-[10px] font-medium">Classes</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[24px]">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</button>
+</div>
+</div>
+</div>
+</body></html>

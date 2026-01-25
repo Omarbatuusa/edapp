@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Start Chat (Parent) - Dark Mode</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "surface-dark": "#182735",
+                        "surface-dark-highlight": "#1e3246",
+                        "text-secondary": "#8eaecc",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        /* Custom Scrollbar for horizontal lists */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col text-slate-900 dark:text-white overflow-x-hidden antialiased selection:bg-primary selection:text-white">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-50 flex items-center bg-background-light dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 border-b border-slate-200 dark:border-slate-800/50">
+<div class="flex-1"></div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em] text-center">New Conversation</h2>
+<div class="flex flex-1 justify-end">
+<button class="text-primary text-base font-semibold leading-normal tracking-[0.015em] active:opacity-70 transition-opacity">
+                Cancel
+            </button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col pb-24">
+<!-- Step 1: Child Selector -->
+<section class="mt-4">
+<h3 class="text-slate-900 dark:text-white tracking-tight text-xl font-bold leading-tight px-5 pb-3">
+                Who is this for?
+            </h3>
+<div class="flex gap-3 px-5 overflow-x-auto hide-scrollbar pb-2">
+<!-- Selected Chip -->
+<button class="group flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary pl-2 pr-4 transition-all shadow-lg shadow-primary/20 ring-2 ring-primary ring-offset-2 ring-offset-[#0f1923]">
+<div class="h-6 w-6 rounded-full bg-white/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[18px]">face</span>
+</div>
+<p class="text-white text-sm font-semibold leading-normal">Leo (Year 4)</p>
+</button>
+<!-- Unselected Chip -->
+<button class="group flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-surface-dark border border-slate-700/50 pl-2 pr-4 hover:bg-surface-dark-highlight transition-all">
+<div class="h-6 w-6 rounded-full bg-white/5 flex items-center justify-center">
+<span class="material-symbols-outlined text-text-secondary text-[18px]">face_3</span>
+</div>
+<p class="text-text-secondary text-sm font-medium leading-normal group-hover:text-white">Mia (Year 2)</p>
+</button>
+</div>
+</section>
+<div class="h-px bg-slate-800/50 mx-5 my-4"></div>
+<!-- Step 2: Topic Selector -->
+<section>
+<h3 class="text-slate-900 dark:text-white tracking-tight text-xl font-bold leading-tight px-5 pb-3">
+                What is this regarding?
+            </h3>
+<div class="grid grid-cols-2 gap-3 px-5">
+<!-- Selected Topic -->
+<button class="flex flex-col gap-3 rounded-xl border-2 border-primary bg-surface-dark p-4 items-start text-left relative shadow-lg shadow-primary/10 transition-all">
+<div class="absolute top-3 right-3 h-5 w-5 bg-primary rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[14px] font-bold">check</span>
+</div>
+<div class="h-10 w-10 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px]">school</span>
+</div>
+<h2 class="text-white text-sm font-bold leading-tight">Academics</h2>
+</button>
+<!-- Unselected Topics -->
+<button class="flex flex-col gap-3 rounded-xl border border-slate-700/50 bg-surface-dark p-4 items-start text-left hover:border-slate-600 hover:bg-surface-dark-highlight transition-all">
+<div class="h-10 w-10 rounded-lg bg-slate-700/30 flex items-center justify-center text-text-secondary">
+<span class="material-symbols-outlined text-[24px]">payments</span>
+</div>
+<h2 class="text-slate-300 text-sm font-bold leading-tight">Fees &amp; Payments</h2>
+</button>
+<button class="flex flex-col gap-3 rounded-xl border border-slate-700/50 bg-surface-dark p-4 items-start text-left hover:border-slate-600 hover:bg-surface-dark-highlight transition-all">
+<div class="h-10 w-10 rounded-lg bg-slate-700/30 flex items-center justify-center text-text-secondary">
+<span class="material-symbols-outlined text-[24px]">directions_bus</span>
+</div>
+<h2 class="text-slate-300 text-sm font-bold leading-tight">Transport</h2>
+</button>
+<button class="flex flex-col gap-3 rounded-xl border border-slate-700/50 bg-surface-dark p-4 items-start text-left hover:border-slate-600 hover:bg-surface-dark-highlight transition-all">
+<div class="h-10 w-10 rounded-lg bg-slate-700/30 flex items-center justify-center text-text-secondary">
+<span class="material-symbols-outlined text-[24px]">monitor_heart</span>
+</div>
+<h2 class="text-slate-300 text-sm font-bold leading-tight">Health</h2>
+</button>
+<button class="flex flex-col gap-3 rounded-xl border border-slate-700/50 bg-surface-dark p-4 items-start text-left hover:border-slate-600 hover:bg-surface-dark-highlight transition-all">
+<div class="h-10 w-10 rounded-lg bg-slate-700/30 flex items-center justify-center text-text-secondary">
+<span class="material-symbols-outlined text-[24px]">devices</span>
+</div>
+<h2 class="text-slate-300 text-sm font-bold leading-tight">IT Support</h2>
+</button>
+<button class="flex flex-col gap-3 rounded-xl border border-slate-700/50 bg-surface-dark p-4 items-start text-left hover:border-slate-600 hover:bg-surface-dark-highlight transition-all">
+<div class="h-10 w-10 rounded-lg bg-slate-700/30 flex items-center justify-center text-text-secondary">
+<span class="material-symbols-outlined text-[24px]">help</span>
+</div>
+<h2 class="text-slate-300 text-sm font-bold leading-tight">General</h2>
+</button>
+</div>
+</section>
+<!-- Dynamic Step 3: Revealed after selection -->
+<section class="mt-6 animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-forwards">
+<div class="bg-surface-dark/50 border-t border-slate-800/50 pt-5 pb-8 rounded-t-3xl">
+<div class="px-5 flex items-center justify-between mb-4">
+<h3 class="text-slate-900 dark:text-white tracking-tight text-lg font-bold leading-tight">
+                        Recommended Action
+                    </h3>
+<span class="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded">For Academics</span>
+</div>
+<div class="px-5 space-y-3">
+<!-- Action Card 1: Primary Recommendation -->
+<label class="relative flex items-center gap-4 p-4 rounded-xl bg-gradient-to-br from-primary/20 to-surface-dark border border-primary/30 cursor-pointer hover:bg-primary/10 transition-colors">
+<input checked="" class="peer h-5 w-5 border-gray-300 text-primary focus:ring-primary bg-transparent" name="action_type" type="radio"/>
+<div class="h-10 w-10 shrink-0 rounded-full bg-primary flex items-center justify-center text-white shadow-md">
+<span class="material-symbols-outlined text-[20px]">person</span>
+</div>
+<div class="flex-1">
+<h4 class="text-white font-bold text-base">Message Class Teacher</h4>
+<p class="text-text-secondary text-xs mt-0.5">Best for homework &amp; class specific queries. Reply in ~24h.</p>
+</div>
+</label>
+<!-- Action Card 2 -->
+<label class="relative flex items-center gap-4 p-4 rounded-xl bg-surface-dark border border-slate-700/50 cursor-pointer hover:bg-surface-dark-highlight transition-colors">
+<input class="peer h-5 w-5 border-slate-600 text-primary focus:ring-primary bg-transparent" name="action_type" type="radio"/>
+<div class="h-10 w-10 shrink-0 rounded-full bg-slate-700/50 flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[20px]">school</span>
+</div>
+<div class="flex-1">
+<h4 class="text-slate-200 font-bold text-base">Department Head</h4>
+<p class="text-slate-400 text-xs mt-0.5">Escalate serious academic concerns.</p>
+</div>
+</label>
+</div>
+<!-- Quick Templates -->
+<div class="mt-6 px-5">
+<p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-3 ml-1">Quick Templates</p>
+<div class="flex flex-wrap gap-2">
+<button class="px-3 py-1.5 rounded-lg bg-surface-dark border border-slate-700/50 text-sm font-medium text-slate-300 hover:text-white hover:border-primary/50 transition-colors">
+                            Missing Homework
+                        </button>
+<button class="px-3 py-1.5 rounded-lg bg-surface-dark border border-slate-700/50 text-sm font-medium text-slate-300 hover:text-white hover:border-primary/50 transition-colors">
+                            Upcoming Test
+                        </button>
+<button class="px-3 py-1.5 rounded-lg bg-surface-dark border border-slate-700/50 text-sm font-medium text-slate-300 hover:text-white hover:border-primary/50 transition-colors">
+                            Meeting Request
+                        </button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Action Bar -->
+<div class="fixed bottom-0 left-0 w-full bg-background-light dark:bg-background-dark/95 backdrop-blur-md border-t border-slate-800/50 p-4 pb-6 z-50">
+<div class="flex items-center justify-center gap-2 mb-3">
+<span class="material-symbols-outlined text-slate-500 text-[14px]">lock</span>
+<p class="text-xs text-slate-500">Chats are moderated for school safety</p>
+</div>
+<button class="w-full h-12 rounded-xl bg-primary hover:bg-blue-500 text-white font-bold text-lg shadow-lg shadow-primary/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+            Start Chat
+            <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+</body></html>

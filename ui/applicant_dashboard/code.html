@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Applicant Dashboard - EdApp</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                        "surface-dark": "#192233",
+                        "surface-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-white antialiased overflow-x-hidden pb-24">
+<!-- Top AppBar with User Profile -->
+<header class="sticky top-0 z-50 bg-background-light dark:bg-background-dark/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800 transition-colors duration-200">
+<div class="px-4 py-3 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-primary" data-alt="Portrait of a user" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBwD3mIF4cdIrC9PrzGVhq57PXqUmdY-oMPX-mhWKJ1lOnzg51RboDnfcAImreGqkcbT5vTLuhJ4KUlKxTFSloYd92oU3SizXion0Oo0PEMzcMvORqNUvROSBzv1tRmpAFBx5lAebje7_b_epaG07rTAHQ66JFMxZ78JEJ-XfK_o2KbupQ9Fw-O1CFhw7-qoX6NOfjXWhcELqgPUMlOovP2a3F6GjIq3wjKvTSCRRSOBHJNezSzXx4KvU8WX2RcMxAEuTvBnQjJu1k");'></div>
+<div class="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-0.5 border-2 border-background-light dark:border-background-dark">
+<span class="material-symbols-outlined text-[10px] text-white font-bold block">check</span>
+</div>
+</div>
+<div>
+<h2 class="text-sm font-normal text-gray-500 dark:text-gray-400 leading-tight">Welcome back,</h2>
+<h1 class="text-lg font-bold leading-tight">Thabo M.</h1>
+</div>
+</div>
+<button class="relative p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition">
+<span class="material-symbols-outlined text-2xl text-gray-600 dark:text-gray-300">notifications</span>
+<span class="absolute top-2 right-2 size-2.5 bg-red-500 rounded-full border border-background-light dark:border-background-dark"></span>
+</button>
+</div>
+</header>
+<!-- Account Status Overview -->
+<section class="px-4 pt-6 pb-2">
+<div class="flex flex-wrap gap-3">
+<div class="flex flex-1 items-center justify-between rounded-xl border border-gray-200 dark:border-gray-800 bg-surface-light dark:bg-surface-dark p-4 shadow-sm">
+<div class="flex flex-col gap-1">
+<p class="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Account Status</p>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-green-500 filled" style="font-variation-settings: 'FILL' 1;">verified</span>
+<p class="text-xl font-bold text-gray-900 dark:text-white">Verified</p>
+</div>
+</div>
+<div class="h-10 w-10 flex items-center justify-center rounded-full bg-green-500/10 text-green-600 dark:text-green-400">
+<span class="material-symbols-outlined">shield</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Action Required Widget -->
+<section class="px-4 py-4">
+<div class="rounded-xl bg-orange-50 dark:bg-orange-900/10 border border-orange-200 dark:border-orange-900/30 overflow-hidden">
+<div class="px-4 py-3 border-b border-orange-200 dark:border-orange-900/30 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-orange-600 dark:text-orange-400">warning</span>
+<h3 class="text-sm font-bold text-orange-800 dark:text-orange-200">Action Required (2)</h3>
+</div>
+<span class="text-xs font-medium text-orange-600 dark:text-orange-300">Urgent</span>
+</div>
+<div class="p-0">
+<!-- Checklist Item 1 -->
+<label class="flex items-center gap-3 p-3 hover:bg-orange-100/50 dark:hover:bg-orange-900/20 transition-colors cursor-pointer border-b border-orange-100 dark:border-orange-900/20 last:border-0">
+<input class="size-5 rounded border-orange-300 text-orange-600 focus:ring-orange-500 bg-white dark:bg-black/20" type="checkbox"/>
+<div class="flex-1">
+<p class="text-sm font-medium text-gray-800 dark:text-gray-200">Upload ID for Lerato M.</p>
+<p class="text-xs text-orange-600 dark:text-orange-400 mt-0.5">Expires in 2 days</p>
+</div>
+<span class="material-symbols-outlined text-gray-400 text-lg">chevron_right</span>
+</label>
+<!-- Checklist Item 2 -->
+<label class="flex items-center gap-3 p-3 hover:bg-orange-100/50 dark:hover:bg-orange-900/20 transition-colors cursor-pointer">
+<input class="size-5 rounded border-orange-300 text-orange-600 focus:ring-orange-500 bg-white dark:bg-black/20" type="checkbox"/>
+<div class="flex-1">
+<p class="text-sm font-medium text-gray-800 dark:text-gray-200">Pay Application Fee</p>
+<p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">R 250.00 outstanding</p>
+</div>
+<span class="material-symbols-outlined text-gray-400 text-lg">chevron_right</span>
+</label>
+</div>
+</div>
+</section>
+<!-- Applications Section Header -->
+<section class="px-4 pt-2 pb-2 flex items-center justify-between">
+<h2 class="text-xl font-bold tracking-tight">My Applications</h2>
+<button class="text-primary text-sm font-medium hover:underline">History</button>
+</section>
+<!-- Application List -->
+<section class="flex flex-col gap-4 px-4 pb-4">
+<!-- Card 1: In Progress / Review -->
+<article class="group relative flex flex-col gap-4 rounded-xl bg-surface-light dark:bg-surface-dark p-4 shadow-sm border border-gray-200 dark:border-gray-800 transition-all hover:shadow-md hover:border-primary/30">
+<div class="flex justify-between items-start">
+<div class="flex gap-3">
+<div class="h-12 w-12 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0">
+<span class="text-lg font-bold text-gray-500 dark:text-gray-400">LM</span>
+</div>
+<div>
+<h3 class="text-base font-bold text-gray-900 dark:text-white">Lerato M.</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400">Grade 8 • 2024</p>
+</div>
+</div>
+<div class="px-2 py-1 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-wide">
+                    Review
+                </div>
+</div>
+<div class="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-2 overflow-hidden">
+<div class="bg-primary h-2 rounded-full" style="width: 75%"></div>
+</div>
+<div class="flex justify-between items-end">
+<div class="text-xs text-gray-500 dark:text-gray-400">
+<p class="mb-1">Next Step: Verification</p>
+<p class="text-primary font-medium">75% Complete</p>
+</div>
+<button class="flex items-center justify-center h-9 px-4 rounded-lg bg-primary text-white text-sm font-medium shadow-sm hover:bg-blue-600 transition active:scale-95">
+                    View Status
+                </button>
+</div>
+</article>
+<!-- Card 2: Draft -->
+<article class="group relative flex flex-col gap-4 rounded-xl bg-surface-light dark:bg-surface-dark p-4 shadow-sm border border-gray-200 dark:border-gray-800 transition-all hover:shadow-md hover:border-gray-400">
+<div class="flex justify-between items-start">
+<div class="flex gap-3">
+<div class="h-12 w-12 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0">
+<span class="text-lg font-bold text-gray-500 dark:text-gray-400">SM</span>
+</div>
+<div>
+<h3 class="text-base font-bold text-gray-900 dark:text-white">Sipho M.</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400">Grade 1 • 2024</p>
+</div>
+</div>
+<div class="px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs font-bold uppercase tracking-wide">
+                    Draft
+                </div>
+</div>
+<div class="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-2 overflow-hidden">
+<div class="bg-gray-400 h-2 rounded-full" style="width: 20%"></div>
+</div>
+<div class="flex justify-between items-end">
+<div class="text-xs text-gray-500 dark:text-gray-400">
+<p class="mb-1">Last edited 2 days ago</p>
+<p class="text-gray-600 dark:text-gray-300 font-medium">Application Incomplete</p>
+</div>
+<button class="flex items-center justify-center h-9 px-4 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition active:scale-95 border border-gray-200 dark:border-gray-700">
+                    Resume
+                </button>
+</div>
+</article>
+<!-- Card 3: Admitted -->
+<article class="group relative flex flex-col gap-4 rounded-xl bg-surface-light dark:bg-surface-dark p-4 shadow-sm border border-gray-200 dark:border-gray-800 transition-all opacity-80 hover:opacity-100">
+<div class="flex justify-between items-start">
+<div class="flex gap-3">
+<div class="h-12 w-12 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0 overflow-hidden">
+<div class="w-full h-full bg-cover bg-center" data-alt="School logo" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBHWulANizLBV6h9lghmURJjM6_161HnhmMjP18F87W02xV5ryaMfNhmFNFOFmSg40upRtGF01ZSTllJT8TVbwuNVQfXROfsLVKOUjM88JKn5dc0kMJEGwjElqV2SOO5LA6Er8FzhWCe2Ry-eWf_VF2RYwdv7Qk-vTcT6hjgjWdSWrT_6Nc5A444aARrS5sfEFWamwlJQ5lREA5vXTrDn3dEPLi5IeJa0XE4GUyKEjd9W_TrFMX1NG7xEKhsaoTAtziW6827PvL5Po');"></div>
+</div>
+<div>
+<h3 class="text-base font-bold text-gray-900 dark:text-white">Bongani Z.</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400">Greenwood High • Grade 10</p>
+</div>
+</div>
+<div class="px-2 py-1 rounded bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs font-bold uppercase tracking-wide flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">check_circle</span> Admitted
+                </div>
+</div>
+<div class="flex justify-between items-center pt-2 border-t border-gray-100 dark:border-gray-800">
+<p class="text-xs text-gray-500 dark:text-gray-400">Registration Complete</p>
+<button class="text-primary text-sm font-medium hover:underline">View Details</button>
+</div>
+</article>
+</section>
+<!-- Floating Action Button -->
+<div class="fixed bottom-24 right-4 z-40">
+<button class="flex items-center justify-center size-14 rounded-full bg-primary text-white shadow-lg shadow-blue-900/20 hover:bg-blue-600 transition-transform active:scale-90">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+</div>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 w-full bg-surface-light dark:bg-surface-dark border-t border-gray-200 dark:border-gray-800 pb-safe pt-2 z-50">
+<div class="flex justify-around items-center h-16 pb-2">
+<a class="flex flex-col items-center gap-1 text-primary w-16" href="#">
+<span class="material-symbols-outlined filled" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="text-[10px] font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 w-16 transition-colors" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-[10px] font-medium">Payments</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 w-16 transition-colors" href="#">
+<span class="material-symbols-outlined">chat</span>
+<span class="text-[10px] font-medium">Messages</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 w-16 transition-colors" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-medium">Profile</span>
+</a>
+</div>
+</nav>
+<style>
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+    </style>
+</body></html>

@@ -1,0 +1,1 @@
+docker exec -u postgres edapp-postgres-1 psql -U edapp -c "INSERT INTO tenants (name, type, domain, code, created_at, updated_at) VALUES ('Lakewood International', 'school', 'lakewood.edapp.co.za', 'LAKEWOOD', NOW(), NOW()) ON CONFLICT (domain) DO NOTHING;"

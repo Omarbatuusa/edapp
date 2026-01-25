@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Class Register - Attendance</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111722",
+                        "surface-dark": "#232f48",
+                        "surface-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for horizontal scroll areas */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white overflow-x-hidden antialiased">
+<div class="relative flex h-full min-h-screen w-full flex-col max-w-md mx-auto shadow-xl bg-background-light dark:bg-background-dark pb-24">
+<!-- Top App Bar -->
+<div class="flex flex-col gap-2 p-4 pb-2 sticky top-0 z-20 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
+<div class="flex items-center h-12 justify-between">
+<div class="cursor-pointer text-slate-900 dark:text-white flex size-12 shrink-0 items-center justify-start">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</div>
+<div class="flex items-center justify-end gap-2">
+<div class="flex items-center gap-1 px-2 py-1 rounded bg-green-500/10 border border-green-500/20">
+<span class="material-symbols-outlined text-green-500 text-[18px]">cloud_done</span>
+<span class="text-xs font-medium text-green-600 dark:text-green-400">Synced</span>
+</div>
+</div>
+</div>
+<div class="flex justify-between items-end">
+<h1 class="text-slate-900 dark:text-white tracking-tight text-[28px] font-bold leading-tight">Attendance</h1>
+<button class="text-primary text-sm font-bold px-3 py-1.5 rounded-lg hover:bg-primary/10 transition-colors">
+                    Mark All Present
+                </button>
+</div>
+</div>
+<!-- Class Selector (Chips) -->
+<div class="flex gap-3 px-4 py-2 overflow-x-auto no-scrollbar">
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary pl-4 pr-3 shadow-lg shadow-primary/20 transition-transform active:scale-95">
+<p class="text-white text-sm font-medium leading-normal">Grade 10 - Math</p>
+<span class="material-symbols-outlined text-white text-[20px]">expand_more</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 pl-4 pr-3 transition-transform active:scale-95">
+<p class="text-slate-700 dark:text-white text-sm font-medium leading-normal">Grade 11 - History</p>
+<span class="material-symbols-outlined text-slate-500 dark:text-white text-[20px]">expand_more</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 pl-4 pr-3 transition-transform active:scale-95">
+<p class="text-slate-700 dark:text-white text-sm font-medium leading-normal">Grade 9 - English</p>
+<span class="material-symbols-outlined text-slate-500 dark:text-white text-[20px]">expand_more</span>
+</button>
+</div>
+<!-- Date Navigator (Week View) -->
+<div class="flex flex-col gap-2 px-4 py-2">
+<div class="flex items-center justify-between">
+<button class="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-surface-dark">
+<span class="material-symbols-outlined text-slate-500 dark:text-white text-[24px]">chevron_left</span>
+</button>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">calendar_today</span>
+<p class="text-slate-900 dark:text-white text-base font-bold">Oct 24, 2023</p>
+</div>
+<button class="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-surface-dark">
+<span class="material-symbols-outlined text-slate-500 dark:text-white text-[24px]">chevron_right</span>
+</button>
+</div>
+<!-- Condensed Day Strip -->
+<div class="grid grid-cols-7 gap-1 mt-1">
+<div class="flex flex-col items-center gap-1 opacity-50">
+<span class="text-[10px] font-bold uppercase text-slate-500 dark:text-gray-400">Sun</span>
+<div class="flex size-8 items-center justify-center rounded-full text-sm font-medium text-slate-700 dark:text-white">22</div>
+</div>
+<div class="flex flex-col items-center gap-1 opacity-70">
+<span class="text-[10px] font-bold uppercase text-slate-500 dark:text-gray-400">Mon</span>
+<div class="flex size-8 items-center justify-center rounded-full text-sm font-medium text-slate-700 dark:text-white">23</div>
+</div>
+<div class="flex flex-col items-center gap-1">
+<span class="text-[10px] font-bold uppercase text-primary">Tue</span>
+<div class="flex size-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-white shadow-md shadow-primary/30">24</div>
+</div>
+<div class="flex flex-col items-center gap-1 opacity-50">
+<span class="text-[10px] font-bold uppercase text-slate-500 dark:text-gray-400">Wed</span>
+<div class="flex size-8 items-center justify-center rounded-full text-sm font-medium text-slate-700 dark:text-white">25</div>
+</div>
+<div class="flex flex-col items-center gap-1 opacity-50">
+<span class="text-[10px] font-bold uppercase text-slate-500 dark:text-gray-400">Thu</span>
+<div class="flex size-8 items-center justify-center rounded-full text-sm font-medium text-slate-700 dark:text-white">26</div>
+</div>
+<div class="flex flex-col items-center gap-1 opacity-50">
+<span class="text-[10px] font-bold uppercase text-slate-500 dark:text-gray-400">Fri</span>
+<div class="flex size-8 items-center justify-center rounded-full text-sm font-medium text-slate-700 dark:text-white">27</div>
+</div>
+<div class="flex flex-col items-center gap-1 opacity-50">
+<span class="text-[10px] font-bold uppercase text-slate-500 dark:text-gray-400">Sat</span>
+<div class="flex size-8 items-center justify-center rounded-full text-sm font-medium text-slate-700 dark:text-white">28</div>
+</div>
+</div>
+</div>
+<!-- Stats Summary -->
+<div class="grid grid-cols-3 gap-3 px-4 py-2">
+<div class="flex flex-col gap-1 rounded-xl p-3 bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 shadow-sm">
+<p class="text-slate-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Total</p>
+<p class="text-slate-900 dark:text-white text-xl font-bold">32</p>
+</div>
+<div class="flex flex-col gap-1 rounded-xl p-3 bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 shadow-sm relative overflow-hidden">
+<div class="absolute right-0 top-0 h-full w-1 bg-green-500"></div>
+<p class="text-slate-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Present</p>
+<p class="text-green-600 dark:text-green-400 text-xl font-bold">28</p>
+</div>
+<div class="flex flex-col gap-1 rounded-xl p-3 bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 shadow-sm relative overflow-hidden">
+<div class="absolute right-0 top-0 h-full w-1 bg-red-500"></div>
+<p class="text-slate-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Absent</p>
+<p class="text-red-600 dark:text-red-400 text-xl font-bold">4</p>
+</div>
+</div>
+<!-- Search Bar -->
+<div class="px-4 py-2">
+<label class="flex flex-col h-11 w-full">
+<div class="flex w-full flex-1 items-stretch rounded-xl h-full shadow-sm">
+<div class="text-slate-400 dark:text-[#92a4c9] flex border-none bg-white dark:bg-surface-dark items-center justify-center pl-4 rounded-l-xl">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-slate-900 dark:text-white focus:outline-0 focus:ring-0 border-none bg-white dark:bg-surface-dark focus:border-none h-full placeholder:text-slate-400 dark:placeholder:text-[#92a4c9] px-4 rounded-l-none pl-2 text-sm font-normal leading-normal" placeholder="Search learner name or ID" value=""/>
+</div>
+</label>
+</div>
+<!-- Learner List -->
+<div class="flex flex-col gap-3 px-4 py-2 mt-2">
+<!-- Student Card 1: Present -->
+<div class="flex flex-col gap-3 rounded-xl bg-white dark:bg-surface-dark p-4 shadow-sm border border-gray-100 dark:border-gray-800">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-slate-200 dark:bg-gray-700 bg-center bg-cover" data-alt="Portrait of female student with curly hair" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD5oeHOqvqdHM6RmZCH2IYmp3b0VbosFcg5OvtxKw047yNj5iq8vwa7jnKTCRVreokMkmWzjKvHOfpNC55qPYTNFQEXFLvJKQDCr7LRJidKIRvuxOX2PlFyFRVV73dnDix9luDHQdTOwdEClepIgwGmysSOeZEopTaqZvyaTKad1Iujanpq31KFhDu5mOI2MGlEQsoNOPRbnP30Opsz1qIPCLouRpoy0QZhisVaAjIjVUOVnQSxVS06KnZPEQX2dJOP7dgFt92EYOU");'></div>
+<div class="flex-1">
+<p class="text-slate-900 dark:text-white font-semibold text-base">Thandiwe Mbeki</p>
+<p class="text-slate-500 dark:text-gray-400 text-xs font-medium">ID: 2023001 • Grade 10</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<button class="flex items-center justify-center h-10 rounded-lg bg-primary text-white font-bold text-sm shadow-md shadow-primary/20 transition-all">
+<span class="mr-1">P</span>
+<span class="material-symbols-outlined text-[16px]">check</span>
+</button>
+<button class="flex items-center justify-center h-10 rounded-lg bg-slate-100 dark:bg-[#111722] text-slate-500 dark:text-gray-400 font-medium text-sm hover:bg-slate-200 dark:hover:bg-gray-800 transition-colors">
+                        A
+                    </button>
+<button class="flex items-center justify-center h-10 rounded-lg bg-slate-100 dark:bg-[#111722] text-slate-500 dark:text-gray-400 font-medium text-sm hover:bg-slate-200 dark:hover:bg-gray-800 transition-colors">
+                        L
+                    </button>
+</div>
+</div>
+<!-- Student Card 2: Absent -->
+<div class="flex flex-col gap-3 rounded-xl bg-white dark:bg-surface-dark p-4 shadow-sm border border-gray-100 dark:border-gray-800">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-slate-200 dark:bg-gray-700 bg-center bg-cover" data-alt="Portrait of male student looking forward" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuApELLBymYAk-QlAIVYUuoCHADzPInIrFmm5gkYR5sKK2lL9-WFSgzDR2XLnD-g6awe5e8t5h9pedfXcqZeIs8WelPUfxD3TOyvQGkwF7TGySMLN-TeeFtwKX8sF3pSpSmmxovMvXlGD9jpK7OlIQKyZpZhSCwQlEgaYJyi7vo4aHbRfOzMbRqC0GPQ0681_NoWOYP93WL5fYwYGqZpSArF49Tpp1Rh17y4p-rdhgJKOXjTpLtXxd20BqpXUvcagz_NuYj4VmVAldM");'></div>
+<div class="flex-1">
+<p class="text-slate-900 dark:text-white font-semibold text-base">Sipho Nkosi</p>
+<p class="text-slate-500 dark:text-gray-400 text-xs font-medium">ID: 2023045 • Grade 10</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<button class="flex items-center justify-center h-10 rounded-lg bg-slate-100 dark:bg-[#111722] text-slate-500 dark:text-gray-400 font-medium text-sm hover:bg-slate-200 dark:hover:bg-gray-800 transition-colors">
+                        P
+                    </button>
+<button class="flex items-center justify-center h-10 rounded-lg bg-red-500/10 border border-red-500/50 text-red-600 dark:text-red-500 font-bold text-sm shadow-sm transition-all">
+<span class="mr-1">A</span>
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+<button class="flex items-center justify-center h-10 rounded-lg bg-slate-100 dark:bg-[#111722] text-slate-500 dark:text-gray-400 font-medium text-sm hover:bg-slate-200 dark:hover:bg-gray-800 transition-colors">
+                        L
+                    </button>
+</div>
+</div>
+<!-- Student Card 3: Late -->
+<div class="flex flex-col gap-3 rounded-xl bg-white dark:bg-surface-dark p-4 shadow-sm border border-gray-100 dark:border-gray-800">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-slate-200 dark:bg-gray-700 bg-center bg-cover" data-alt="Portrait of female student smiling" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCRitddSNx7laXLeg4S5GRnKeQ0JBFNcU_L7iHLz1sI7ifTqu9jVrTqfRkk_7eph8eTjtZzdUJfh9_n9WVp7Z__EiQf8PRzqh4SfZ_pak9lHHyUsdfBfqjaLa-1lAedESQM2_pcYuGzRVKid929hf3fFQG8vEzpkwFluCMg2Y73CUj5fWKhUs50D-IjnZhc2CgHEtKKmMbQ7yAuZNiGbHtzI5CVMA3BvVlQ_DxOf7VAsMvoMZ0SHzyqVNDr56dOtL92lLhKILI7c-Y");'></div>
+<div class="flex-1">
+<p class="text-slate-900 dark:text-white font-semibold text-base">Liam Smith</p>
+<p class="text-slate-500 dark:text-gray-400 text-xs font-medium">ID: 2023112 • Grade 10</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<button class="flex items-center justify-center h-10 rounded-lg bg-slate-100 dark:bg-[#111722] text-slate-500 dark:text-gray-400 font-medium text-sm hover:bg-slate-200 dark:hover:bg-gray-800 transition-colors">
+                        P
+                    </button>
+<button class="flex items-center justify-center h-10 rounded-lg bg-slate-100 dark:bg-[#111722] text-slate-500 dark:text-gray-400 font-medium text-sm hover:bg-slate-200 dark:hover:bg-gray-800 transition-colors">
+                        A
+                    </button>
+<button class="flex items-center justify-center h-10 rounded-lg bg-amber-500/10 border border-amber-500/50 text-amber-600 dark:text-amber-500 font-bold text-sm shadow-sm transition-all">
+<span class="mr-1">L</span>
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+</button>
+</div>
+</div>
+<!-- Student Card 4: Present -->
+<div class="flex flex-col gap-3 rounded-xl bg-white dark:bg-surface-dark p-4 shadow-sm border border-gray-100 dark:border-gray-800">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-slate-200 dark:bg-gray-700 bg-center bg-cover" data-alt="Portrait of male student smiling brightly" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCyxqfEViZHlupp_iXZjIbc5jDww-WpM0S6RLYwGdrVmKpJYnJZu3FTnoGT-1i6B1Mt_v1j3ECDCQj4a2qF8dQINqrT-LM_wC2SLiPJ7jIQWWvLMmDPqrbHnhr7LrBmJcqrgCJlWuCAy9BCisXmfskjHR4pC3yF674MD3DvTpYQh4xA2z9R1Sj8_j1ZE9iyaOiZfRiC3NK_Qd031aEUp_MVm3gZpmwc7xrq7dqzuDAMOznubCht3yYHd5H-xzAC97CvQ21pEaBn5Yo");'></div>
+<div class="flex-1">
+<p class="text-slate-900 dark:text-white font-semibold text-base">Michael Johnson</p>
+<p class="text-slate-500 dark:text-gray-400 text-xs font-medium">ID: 2023089 • Grade 10</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<button class="flex items-center justify-center h-10 rounded-lg bg-primary text-white font-bold text-sm shadow-md shadow-primary/20 transition-all">
+<span class="mr-1">P</span>
+<span class="material-symbols-outlined text-[16px]">check</span>
+</button>
+<button class="flex items-center justify-center h-10 rounded-lg bg-slate-100 dark:bg-[#111722] text-slate-500 dark:text-gray-400 font-medium text-sm hover:bg-slate-200 dark:hover:bg-gray-800 transition-colors">
+                        A
+                    </button>
+<button class="flex items-center justify-center h-10 rounded-lg bg-slate-100 dark:bg-[#111722] text-slate-500 dark:text-gray-400 font-medium text-sm hover:bg-slate-200 dark:hover:bg-gray-800 transition-colors">
+                        L
+                    </button>
+</div>
+</div>
+<!-- Student Card 5: Present -->
+<div class="flex flex-col gap-3 rounded-xl bg-white dark:bg-surface-dark p-4 shadow-sm border border-gray-100 dark:border-gray-800">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-slate-200 dark:bg-gray-700 bg-center bg-cover" data-alt="Portrait of student with serious expression" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBAt2-o5qVNs0wU4JXZD1EinWlk4x--G0VthndLz5y9X2uP5hsLKUOb_HRRewF4EH4aP19FGLz4DHS4Ta5vpUN_X4ZiyPG3DAMOfO2hrcFEAvS8JhVwSuEepXYuqMnlmArxkMPY6jqA5-0YCegVq2cNEBUrPwbaphjD_JLY8RaHJ65TrWnEBc-NBg6dbeVZANVjyV4Bx79PH1UCRnRcccfK636o7PGSZAPEPKcvDuw85HWqohF9-zoDI1fW70RMPTMYGUWZwzRyfNs");'></div>
+<div class="flex-1">
+<p class="text-slate-900 dark:text-white font-semibold text-base">Sarah Williams</p>
+<p class="text-slate-500 dark:text-gray-400 text-xs font-medium">ID: 2023156 • Grade 10</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<button class="flex items-center justify-center h-10 rounded-lg bg-primary text-white font-bold text-sm shadow-md shadow-primary/20 transition-all">
+<span class="mr-1">P</span>
+<span class="material-symbols-outlined text-[16px]">check</span>
+</button>
+<button class="flex items-center justify-center h-10 rounded-lg bg-slate-100 dark:bg-[#111722] text-slate-500 dark:text-gray-400 font-medium text-sm hover:bg-slate-200 dark:hover:bg-gray-800 transition-colors">
+                        A
+                    </button>
+<button class="flex items-center justify-center h-10 rounded-lg bg-slate-100 dark:bg-[#111722] text-slate-500 dark:text-gray-400 font-medium text-sm hover:bg-slate-200 dark:hover:bg-gray-800 transition-colors">
+                        L
+                    </button>
+</div>
+</div>
+</div>
+<!-- Sticky Bottom Action Bar -->
+<div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-4 pt-2 bg-gradient-to-t from-background-light dark:from-background-dark via-background-light dark:via-background-dark to-transparent z-50">
+<button class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 bg-primary hover:bg-blue-600 text-white gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 p-0 shadow-xl shadow-primary/30 transition-all active:scale-[0.98]">
+<span>Submit Register</span>
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</body></html>

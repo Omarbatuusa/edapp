@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Volunteer Opportunities</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "surface-dark": "#1b2733",
+                        "surface-border": "#2f4d6a",
+                        "text-secondary": "#8eaecc"
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased overflow-x-hidden transition-colors duration-300">
+<div class="relative flex min-h-screen w-full flex-col max-w-md mx-auto bg-background-light dark:bg-background-dark shadow-2xl overflow-hidden">
+<!-- Header -->
+<header class="sticky top-0 z-30 flex items-center justify-between p-4 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-transparent dark:border-surface-border">
+<button class="flex size-10 items-center justify-center rounded-full text-slate-800 dark:text-white hover:bg-slate-200 dark:hover:bg-surface-border transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight">Volunteer Opportunities</h1>
+<button class="flex size-10 items-center justify-center rounded-full text-slate-800 dark:text-white hover:bg-slate-200 dark:hover:bg-surface-border transition-colors relative">
+<span class="material-symbols-outlined">filter_list</span>
+<span class="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-primary ring-2 ring-white dark:ring-background-dark"></span>
+</button>
+</header>
+<!-- Profile Stats -->
+<div class="px-4 py-4 w-full">
+<div class="grid grid-cols-2 gap-3">
+<div class="flex flex-col items-center justify-center gap-1 rounded-xl border border-slate-200 dark:border-surface-border bg-white dark:bg-surface-dark p-4 text-center shadow-sm">
+<p class="text-3xl font-bold text-primary leading-none">12</p>
+<p class="text-xs font-medium text-slate-500 dark:text-text-secondary uppercase tracking-wider">Hours Total</p>
+</div>
+<div class="flex flex-col items-center justify-center gap-1 rounded-xl border border-slate-200 dark:border-surface-border bg-white dark:bg-surface-dark p-4 text-center shadow-sm">
+<p class="text-3xl font-bold text-emerald-400 leading-none">3</p>
+<p class="text-xs font-medium text-slate-500 dark:text-text-secondary uppercase tracking-wider">Upcoming</p>
+</div>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<div class="flex w-full overflow-x-auto px-4 pb-2 no-scrollbar gap-3">
+<button class="flex h-10 shrink-0 items-center justify-center rounded-xl bg-primary px-5 text-sm font-semibold text-white shadow-lg shadow-primary/20 transition-transform active:scale-95">
+                All Opportunities
+            </button>
+<button class="flex h-10 shrink-0 items-center justify-center rounded-xl bg-slate-200 dark:bg-surface-dark border border-transparent dark:border-surface-border px-5 text-sm font-medium text-slate-600 dark:text-white hover:bg-slate-300 dark:hover:bg-surface-border/80 transition-colors">
+                My Signups
+            </button>
+<button class="flex h-10 shrink-0 items-center justify-center rounded-xl bg-slate-200 dark:bg-surface-dark border border-transparent dark:border-surface-border px-5 text-sm font-medium text-slate-600 dark:text-white hover:bg-slate-300 dark:hover:bg-surface-border/80 transition-colors">
+                Completed
+            </button>
+</div>
+<!-- Urgent Needs Section -->
+<section class="flex flex-col gap-3 py-4">
+<div class="flex items-center justify-between px-4">
+<h2 class="text-xl font-bold text-slate-900 dark:text-white">Urgent Needs</h2>
+<button class="flex items-center text-xs font-bold text-primary uppercase tracking-wide hover:opacity-80">
+                    See All <span class="material-symbols-outlined text-sm ml-1">chevron_right</span>
+</button>
+</div>
+<div class="flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4">
+<!-- Highlight Card 1 -->
+<div class="group relative flex w-36 shrink-0 snap-start flex-col gap-2 cursor-pointer">
+<div class="relative aspect-square w-full overflow-hidden rounded-xl bg-slate-800 shadow-md">
+<img class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-80" data-alt="Athletics track lanes with running markings" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4CJ8cbY37XVkq-jmpCMl_t7MKkRN3UGlvbdYnRvTnPbtsXSZqQ-piT_wkXeUuZUnASIJRNQKol8FYgNQudFmGuD9-bcKdEGen-VpnT76DV1FPw9k7Bs37BAvVmlEhtLoMG6w1hbhzwi2S5hWOeodcL7In3l04I-hKtWrCrkPDJQpyhpZuihCxZQLnqwITLrgd6vlFznI7HaaVJCvNzlP6qscaDqUCBLdrQvJEPffPIticgyscmwnUSKOuJnPlGfbJw-TiC0CmLjs"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+<div class="absolute bottom-3 left-3 right-3">
+<div class="mb-1 inline-flex items-center rounded bg-red-500/90 px-1.5 py-0.5 text-[10px] font-bold text-white backdrop-blur-sm">
+<span class="material-symbols-outlined mr-1 text-[12px]">bolt</span> 2 Spots
+                            </div>
+<p class="text-xs font-bold leading-tight text-white line-clamp-2">Sports Day Marshal</p>
+</div>
+</div>
+</div>
+<!-- Highlight Card 2 -->
+<div class="group relative flex w-36 shrink-0 snap-start flex-col gap-2 cursor-pointer">
+<div class="relative aspect-square w-full overflow-hidden rounded-xl bg-slate-800 shadow-md">
+<img class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-80" data-alt="Blurry library shelves filled with books" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2hCJNeu0qu6-vSPMNhqxF3BKl316ZTLyGd9SYgGW6t_JAGW_Wr39t6mMtofrwD3OjjQTlbAUzscqKWvQdtGFiiHlQjaaQ0NlXXbSfrg8Y2jKMcLivU9pYo4k0I7pX6hE6PonhOqH3QsyIzVYUynTw0mg0qTzfEEv3qgAfVLorKQGQ1o9nZLCeNG6VBzsxpCk13HtO5Gc7YpchxFoh1Vi-tfXXnGdEkCGKk_ANLyf_EFjGiNeiEHwqRiTM4AM03VEbPhvek8siCjc"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+<div class="absolute bottom-3 left-3 right-3">
+<div class="mb-1 inline-flex items-center rounded bg-orange-500/90 px-1.5 py-0.5 text-[10px] font-bold text-white backdrop-blur-sm">
+<span class="material-symbols-outlined mr-1 text-[12px]">schedule</span> Tomorrow
+                            </div>
+<p class="text-xs font-bold leading-tight text-white line-clamp-2">Library Reading</p>
+</div>
+</div>
+</div>
+<!-- Highlight Card 3 -->
+<div class="group relative flex w-36 shrink-0 snap-start flex-col gap-2 cursor-pointer">
+<div class="relative aspect-square w-full overflow-hidden rounded-xl bg-slate-800 shadow-md">
+<img class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-80" data-alt="People collaborating around a table" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDb56sN08BKyQCGmLq28mrmL1CeJ9Nlf5iBArl5YjbYyZOsoeFlbu_JevMsxDVFmDfY37FGsm3oAkl1SUq85mncPSRjpC1rxOYuMjgqdwx3feptXnDpIC-BTeXHjAnMUAWgsAlA0VdyNaEDLRLzy0dXYtHFjJlfhSGLdS_8W4odKsMAUSsBrKbqTcuNBuLzIk5qaYaZidbrXHdphyF5XeRVhxNz5mvmBDEYkFctmSMLAVfs7b6fBu_rdE1IN-nq5PHtzj7Sd95ZFQ4"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+<div class="absolute bottom-3 left-3 right-3">
+<div class="mb-1 inline-flex items-center rounded bg-primary/90 px-1.5 py-0.5 text-[10px] font-bold text-white backdrop-blur-sm">
+<span class="material-symbols-outlined mr-1 text-[12px]">group</span> Join Team
+                            </div>
+<p class="text-xs font-bold leading-tight text-white line-clamp-2">Committee Help</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Opportunities List -->
+<section class="flex flex-1 flex-col gap-4 px-4 pb-20">
+<h2 class="text-xl font-bold text-slate-900 dark:text-white">Upcoming Events</h2>
+<!-- Card 1 -->
+<div class="group relative overflow-hidden rounded-2xl border border-slate-200 dark:border-surface-border bg-white dark:bg-surface-dark p-4 shadow-sm transition-all hover:border-primary/50">
+<div class="mb-4 flex gap-4">
+<div class="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-blue-50 dark:bg-[#2a3c50] text-blue-600 dark:text-blue-400">
+<span class="text-[10px] font-bold uppercase tracking-wider">Oct</span>
+<span class="text-xl font-bold leading-none">24</span>
+</div>
+<div class="flex-1">
+<div class="flex items-start justify-between">
+<h3 class="text-lg font-bold leading-tight text-slate-900 dark:text-white">Grade 4 Bake Sale</h3>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">bookmark_border</span>
+</button>
+</div>
+<p class="mt-1 text-sm text-slate-500 dark:text-text-secondary line-clamp-1">Assist with setup and sales during break time.</p>
+</div>
+</div>
+<div class="mb-4 flex flex-wrap gap-y-2 gap-x-4 border-t border-slate-100 dark:border-white/5 pt-3">
+<div class="flex items-center text-xs font-medium text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined mr-1.5 text-base text-slate-400">schedule</span>
+                        09:00 AM - 11:00 AM
+                    </div>
+<div class="flex items-center text-xs font-medium text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined mr-1.5 text-base text-slate-400">location_on</span>
+                        Primary Quad
+                    </div>
+<div class="flex items-center text-xs font-bold text-emerald-500">
+<span class="material-symbols-outlined mr-1.5 text-base">check_circle</span>
+                        3 spots left
+                    </div>
+</div>
+<button class="flex w-full items-center justify-center rounded-lg bg-primary py-2.5 text-sm font-bold text-white shadow-md shadow-primary/20 transition-all hover:bg-blue-600 active:scale-[0.98]">
+                    Sign Up Now
+                </button>
+</div>
+<!-- Card 2 -->
+<div class="group relative overflow-hidden rounded-2xl border border-slate-200 dark:border-surface-border bg-white dark:bg-surface-dark p-4 shadow-sm transition-all hover:border-primary/50">
+<div class="mb-4 flex gap-4">
+<div class="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-purple-50 dark:bg-[#322a50] text-purple-600 dark:text-purple-400">
+<span class="text-[10px] font-bold uppercase tracking-wider">Oct</span>
+<span class="text-xl font-bold leading-none">28</span>
+</div>
+<div class="flex-1">
+<div class="flex items-start justify-between">
+<h3 class="text-lg font-bold leading-tight text-slate-900 dark:text-white">Campus Garden Cleanup</h3>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">bookmark_border</span>
+</button>
+</div>
+<p class="mt-1 text-sm text-slate-500 dark:text-text-secondary line-clamp-1">Help prepare the veggie patch for spring.</p>
+</div>
+</div>
+<div class="mb-4 flex flex-wrap gap-y-2 gap-x-4 border-t border-slate-100 dark:border-white/5 pt-3">
+<div class="flex items-center text-xs font-medium text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined mr-1.5 text-base text-slate-400">schedule</span>
+                        08:00 AM - 12:00 PM
+                    </div>
+<div class="flex items-center text-xs font-medium text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined mr-1.5 text-base text-slate-400">location_on</span>
+                        North Garden
+                    </div>
+<div class="flex items-center text-xs font-bold text-slate-400">
+<span class="material-symbols-outlined mr-1.5 text-base">hourglass_empty</span>
+                        Waitlist Only
+                    </div>
+</div>
+<button class="flex w-full items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-700 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-200 transition-all hover:bg-slate-200 dark:hover:bg-slate-600 active:scale-[0.98]">
+                    Join Waitlist
+                </button>
+</div>
+<!-- Card 3 -->
+<div class="group relative overflow-hidden rounded-2xl border border-slate-200 dark:border-surface-border bg-white dark:bg-surface-dark p-4 shadow-sm transition-all hover:border-primary/50">
+<div class="mb-4 flex gap-4">
+<div class="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-orange-50 dark:bg-[#4a352a] text-orange-600 dark:text-orange-400">
+<span class="text-[10px] font-bold uppercase tracking-wider">Nov</span>
+<span class="text-xl font-bold leading-none">02</span>
+</div>
+<div class="flex-1">
+<div class="flex items-start justify-between">
+<h3 class="text-lg font-bold leading-tight text-slate-900 dark:text-white">Art Exhibition Setup</h3>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">bookmark_border</span>
+</button>
+</div>
+<p class="mt-1 text-sm text-slate-500 dark:text-text-secondary line-clamp-1">Hanging frames and arranging tables.</p>
+</div>
+</div>
+<div class="mb-4 flex flex-wrap gap-y-2 gap-x-4 border-t border-slate-100 dark:border-white/5 pt-3">
+<div class="flex items-center text-xs font-medium text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined mr-1.5 text-base text-slate-400">schedule</span>
+                        14:00 PM - 16:30 PM
+                    </div>
+<div class="flex items-center text-xs font-medium text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined mr-1.5 text-base text-slate-400">location_on</span>
+                        Main Hall
+                    </div>
+<div class="flex items-center text-xs font-bold text-emerald-500">
+<span class="material-symbols-outlined mr-1.5 text-base">check_circle</span>
+                        5 spots left
+                    </div>
+</div>
+<button class="flex w-full items-center justify-center rounded-lg bg-primary py-2.5 text-sm font-bold text-white shadow-md shadow-primary/20 transition-all hover:bg-blue-600 active:scale-[0.98]">
+                    Sign Up Now
+                </button>
+</div>
+</section>
+<!-- Floating Action Button for quick access if needed, or just bottom spacing -->
+<div class="fixed bottom-6 right-6 z-40">
+<button class="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-xl shadow-primary/40 transition-transform hover:scale-105 active:scale-95">
+<span class="material-symbols-outlined text-2xl">add</span>
+</button>
+</div>
+</div>
+</body></html>

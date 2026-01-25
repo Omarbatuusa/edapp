@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Report Cards Generator</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111a22",
+                        "surface-dark": "#192633",
+                        "border-dark": "#324d67",
+                        "text-secondary": "#92adc9",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for horizontal scrolling */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased selection:bg-primary/30">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto shadow-2xl bg-background-light dark:bg-background-dark border-x border-slate-200 dark:border-slate-800">
+<!-- Header -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-20 border-b border-slate-200 dark:border-slate-800/50">
+<div class="text-slate-900 dark:text-white flex size-12 shrink-0 items-center justify-start cursor-pointer hover:opacity-70 transition-opacity">
+<span class="material-symbols-outlined" style="font-size: 24px;">arrow_back</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Report Generation</h2>
+<div class="flex w-12 items-center justify-end cursor-pointer hover:opacity-70 transition-opacity">
+<span class="material-symbols-outlined text-text-secondary" style="font-size: 24px;">help</span>
+</div>
+</div>
+<!-- Workflow Stepper -->
+<div class="flex w-full flex-col items-center justify-center gap-2 py-6 px-4 bg-background-light dark:bg-background-dark">
+<div class="flex w-full items-center justify-between relative">
+<!-- Line -->
+<div class="absolute left-0 top-1/2 w-full h-1 bg-slate-200 dark:bg-border-dark -z-10 rounded-full"></div>
+<div class="absolute left-0 top-1/2 w-3/4 h-1 bg-primary -z-0 rounded-full"></div>
+<!-- Step 1: Config -->
+<div class="flex flex-col items-center gap-1 group">
+<div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white shadow-lg ring-4 ring-background-light dark:ring-background-dark">
+<span class="material-symbols-outlined text-[16px]">settings</span>
+</div>
+<span class="text-[10px] font-bold text-primary absolute -bottom-5">Config</span>
+</div>
+<!-- Step 2: Generate -->
+<div class="flex flex-col items-center gap-1">
+<div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white shadow-lg ring-4 ring-background-light dark:ring-background-dark">
+<span class="material-symbols-outlined text-[16px]">bolt</span>
+</div>
+<span class="text-[10px] font-bold text-primary absolute -bottom-5">Gen</span>
+</div>
+<!-- Step 3: Review (Active) -->
+<div class="flex flex-col items-center gap-1">
+<div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white shadow-lg ring-4 ring-background-light dark:ring-background-dark scale-110">
+<span class="material-symbols-outlined text-[16px]">rate_review</span>
+</div>
+<span class="text-[10px] font-bold text-primary absolute -bottom-5">Review</span>
+</div>
+<!-- Step 4: Publish -->
+<div class="flex flex-col items-center gap-1">
+<div class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 dark:bg-border-dark text-slate-400 dark:text-slate-500 shadow-sm ring-4 ring-background-light dark:ring-background-dark">
+<span class="material-symbols-outlined text-[16px]">send</span>
+</div>
+<span class="text-[10px] font-medium text-text-secondary absolute -bottom-5">Distribute</span>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto pb-24">
+<!-- Context Banner -->
+<div class="px-4 py-2">
+<div class="bg-primary/10 border border-primary/20 rounded-xl p-3 flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-0.5">info</span>
+<div>
+<p class="text-sm font-semibold text-slate-900 dark:text-white">Term 3 Reports • 2023</p>
+<p class="text-xs text-slate-500 dark:text-text-secondary">Template: High School Senior Phase (Watermarked)</p>
+</div>
+<button class="ml-auto text-xs text-primary font-bold">Edit</button>
+</div>
+</div>
+<!-- Workflow Status / Moderation -->
+<div class="px-4 pt-6 pb-2">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight">Workflow Status</h3>
+<span class="text-xs font-medium px-2 py-1 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20">Action Required</span>
+</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-3 gap-3 mb-6">
+<div class="flex flex-col items-center justify-center bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark p-3 rounded-xl shadow-sm">
+<span class="text-2xl font-bold text-slate-900 dark:text-white">145</span>
+<span class="text-[10px] uppercase tracking-wider font-bold text-text-secondary">Total</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-emerald-500/10 dark:bg-emerald-500/5 border border-emerald-500/20 p-3 rounded-xl">
+<span class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">12</span>
+<span class="text-[10px] uppercase tracking-wider font-bold text-emerald-600 dark:text-emerald-400">Approved</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-rose-500/10 dark:bg-rose-500/5 border border-rose-500/20 p-3 rounded-xl">
+<span class="text-2xl font-bold text-rose-600 dark:text-rose-400">3</span>
+<span class="text-[10px] uppercase tracking-wider font-bold text-rose-600 dark:text-rose-400">Flagged</span>
+</div>
+</div>
+<!-- Approval Chain -->
+<div class="bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-xl p-4">
+<p class="text-xs font-bold text-text-secondary mb-3 uppercase tracking-wider">Approval Chain</p>
+<div class="flex items-center justify-between relative">
+<!-- Connecting Line -->
+<div class="absolute left-4 right-4 top-[14px] h-[2px] bg-slate-100 dark:bg-[#253646] -z-0"></div>
+<!-- Step 1 -->
+<div class="flex flex-col items-center gap-2 z-10">
+<div class="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<span class="text-[10px] font-medium text-slate-500 dark:text-text-secondary">Teachers</span>
+</div>
+<!-- Step 2 -->
+<div class="flex flex-col items-center gap-2 z-10">
+<div class="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center shadow-md ring-4 ring-white dark:ring-surface-dark">
+<span class="material-symbols-outlined text-[16px]">history_edu</span>
+</div>
+<span class="text-[10px] font-bold text-primary">Grade Head</span>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col items-center gap-2 z-10">
+<div class="w-7 h-7 rounded-full bg-slate-100 dark:bg-[#253646] text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-border-dark flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">lock_clock</span>
+</div>
+<span class="text-[10px] font-medium text-slate-400 dark:text-slate-600">Principal</span>
+</div>
+</div>
+</div>
+</div>
+<div class="h-2 w-full bg-slate-100 dark:bg-[#0d141c] my-4"></div>
+<!-- Review List Section -->
+<div class="px-4 pb-4">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight">Student Reports</h3>
+<div class="flex gap-2">
+<button class="p-2 rounded-lg bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark text-text-secondary">
+<span class="material-symbols-outlined block text-[20px]">filter_list</span>
+</button>
+<button class="p-2 rounded-lg bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark text-text-secondary">
+<span class="material-symbols-outlined block text-[20px]">search</span>
+</button>
+</div>
+</div>
+<!-- Student List -->
+<div class="flex flex-col gap-3">
+<!-- Card 1: Needs Action -->
+<div class="group relative overflow-hidden bg-white dark:bg-surface-dark rounded-xl border-l-4 border-l-rose-500 border-y border-r border-slate-200 dark:border-border-dark shadow-sm">
+<div class="p-4 flex items-start gap-4">
+<div class="h-10 w-10 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-300 flex items-center justify-center text-sm font-bold shrink-0">
+                                NM
+                            </div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start">
+<h4 class="text-slate-900 dark:text-white font-bold text-base truncate">Naledi Moeketsi</h4>
+<span class="inline-flex items-center gap-1 rounded-full bg-rose-500/10 px-2 py-0.5 text-[10px] font-bold text-rose-600 dark:text-rose-400">
+                                        Flagged
+                                    </span>
+</div>
+<p class="text-xs text-text-secondary mt-0.5">Grade 10 • Class B • ID: 29001</p>
+<p class="text-xs text-rose-500 mt-2 font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">error</span>
+                                    Missing English Comment
+                                </p>
+</div>
+</div>
+<div class="flex border-t border-slate-100 dark:border-border-dark">
+<button class="flex-1 py-3 text-sm font-medium text-text-secondary hover:text-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">edit_note</span>
+                                Add Comment
+                            </button>
+<div class="w-[1px] bg-slate-100 dark:bg-border-dark"></div>
+<button class="flex-1 py-3 text-sm font-medium text-text-secondary hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+                                Preview
+                            </button>
+</div>
+</div>
+<!-- Card 2: Ready -->
+<div class="group bg-white dark:bg-surface-dark rounded-xl border-l-4 border-l-emerald-500 border-y border-r border-slate-200 dark:border-border-dark shadow-sm">
+<div class="p-4 flex items-start gap-4">
+<div class="h-10 w-10 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-300 flex items-center justify-center text-sm font-bold shrink-0">
+                                JS
+                            </div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start">
+<h4 class="text-slate-900 dark:text-white font-bold text-base truncate">James Sithole</h4>
+<span class="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                                        Approved
+                                    </span>
+</div>
+<p class="text-xs text-text-secondary mt-0.5">Grade 10 • Class B • ID: 29045</p>
+<p class="text-xs text-text-secondary mt-2 line-clamp-1 italic">
+                                    "James has shown remarkable improvement in Physical Sciences this term..."
+                                </p>
+</div>
+</div>
+<div class="flex border-t border-slate-100 dark:border-border-dark">
+<button class="flex-1 py-3 text-sm font-medium text-text-secondary hover:text-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+                                Edit
+                            </button>
+<div class="w-[1px] bg-slate-100 dark:bg-border-dark"></div>
+<button class="flex-1 py-3 text-sm font-medium text-text-secondary hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+                                Preview
+                            </button>
+</div>
+</div>
+<!-- Card 3: Ready -->
+<div class="group bg-white dark:bg-surface-dark rounded-xl border-l-4 border-l-emerald-500 border-y border-r border-slate-200 dark:border-border-dark shadow-sm">
+<div class="p-4 flex items-start gap-4">
+<!-- User Image -->
+<img class="h-10 w-10 rounded-full object-cover border border-slate-200 dark:border-border-dark shrink-0" data-alt="Portrait of student Thandiwe" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdQBaQONQs9hnROafYok1coCGxQMO8XcgLHYvwluwb9HZ2JSDtiGHLo2ckTFfcWN_vx1n948vxgzWXVK-H1io-b3HuFi8B25V1hyKqx2vtWRqWmQiyDT05EX_8Zt_HG38wdaSfSRUH2xNU8DxFQBg_D29435vGypsiZRIrOiuM2ctnWLkuJy_unyI_ROLda82P4zhu7tUuB8i6_rfEOFGCo7q_DltAPzI384p-ip9xLQf6OLKV_if5e50_a_ybV8B-Gh9g1pNUmX4"/>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start">
+<h4 class="text-slate-900 dark:text-white font-bold text-base truncate">Thandiwe Zulu</h4>
+<span class="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                                        Approved
+                                    </span>
+</div>
+<p class="text-xs text-text-secondary mt-0.5">Grade 10 • Class A • ID: 29012</p>
+</div>
+</div>
+</div>
+</div>
+<button class="w-full mt-4 py-3 text-sm font-bold text-primary bg-primary/10 rounded-xl hover:bg-primary/20 transition-colors">
+                    View All 145 Students
+                </button>
+</div>
+<!-- Distribution Settings (Collapsible feel) -->
+<div class="px-4 py-4">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight mb-4">Distribution Options</h3>
+<div class="bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-border-dark p-4 space-y-4">
+<label class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-sm font-medium text-slate-900 dark:text-white">Release to Parent Portal</span>
+<span class="text-xs text-text-secondary">Parents will be notified via push</span>
+</div>
+<div class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</div>
+</label>
+<div class="h-[1px] bg-slate-100 dark:bg-border-dark w-full"></div>
+<label class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-sm font-medium text-slate-900 dark:text-white">Request Read Receipt</span>
+<span class="text-xs text-text-secondary">Track who viewed the PDF</span>
+</div>
+<div class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</div>
+</label>
+</div>
+<div class="grid grid-cols-2 gap-3 mt-4">
+<button class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-slate-200 dark:border-border-dark text-slate-900 dark:text-white font-medium bg-white dark:bg-surface-dark hover:bg-slate-50 dark:hover:bg-slate-800">
+<span class="material-symbols-outlined text-text-secondary">picture_as_pdf</span>
+<span class="text-sm">Export All</span>
+</button>
+<button class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-slate-200 dark:border-border-dark text-slate-900 dark:text-white font-medium bg-white dark:bg-surface-dark hover:bg-slate-50 dark:hover:bg-slate-800">
+<span class="material-symbols-outlined text-text-secondary">print</span>
+<span class="text-sm">Bulk Print</span>
+</button>
+</div>
+</div>
+<div class="h-8"></div>
+</div>
+<!-- Sticky Bottom Action -->
+<div class="absolute bottom-0 w-full p-4 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 z-30">
+<button class="w-full flex items-center justify-center gap-2 h-14 rounded-xl bg-primary text-white font-bold text-lg shadow-lg hover:bg-blue-600 transition-colors">
+<span>Distribute Reports</span>
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</body></html>

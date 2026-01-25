@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Medical Profile - EdApp</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e293b",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .filled-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden">
+<!-- Mobile Wrapper -->
+<div class="relative min-h-screen flex flex-col max-w-md mx-auto bg-background-light dark:bg-background-dark shadow-xl overflow-hidden">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm px-4 py-3 flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
+<button class="flex items-center justify-center p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-slate-900 dark:text-white">arrow_back</span>
+</button>
+<h1 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight">Medical Profile</h1>
+<div class="flex items-center gap-2">
+<button aria-label="Privacy Settings" class="flex items-center justify-center p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors text-primary">
+<span class="material-symbols-outlined filled-icon">lock</span>
+</button>
+</div>
+</header>
+<!-- Main Content Scroll Area -->
+<main class="flex-1 overflow-y-auto pb-24">
+<!-- Learner Profile Header -->
+<div class="px-5 py-6 bg-surface-light dark:bg-surface-dark rounded-b-2xl shadow-sm mb-4">
+<div class="flex gap-4 items-start">
+<div class="relative shrink-0">
+<div class="w-20 h-20 rounded-full bg-cover bg-center border-4 border-slate-50 dark:border-slate-700 shadow-sm" data-alt="Portrait of a young learner smiling" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAQMjk34FLvjYg-s7p8Az15AIqQztUhodjEgKe8EPAb7oVh8cJE72iZLmA3o8UyBkYkzZpXcSeJFtHa_7fQb0jpP0C5CePUqLpxlpLG7vkbKbPgwCMu8JCRifsdloAaNtc_hb5iTQdwpmioTfiPZYgdPxcp_6jBS2YRfpcPVbAbOKgrL0MD2TbdezawAEFiottLunCBwppvC5E2yCYLEeMLeaFDVdZFu8pMfiXwI5zuTy56HhB7nNGB8M3l2jgWnZVIAoYaQKwftvE');"></div>
+<div class="absolute -bottom-1 -right-1 bg-green-500 border-2 border-white dark:border-slate-800 w-5 h-5 rounded-full" title="Present on Campus"></div>
+</div>
+<div class="flex flex-col pt-1 flex-1">
+<h2 class="text-xl font-bold text-slate-900 dark:text-white leading-tight">Thabo Mbeki</h2>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Grade 5B • Student ID: #88291</p>
+<div class="mt-2 flex items-center gap-1.5 text-xs text-primary font-medium bg-primary/10 w-fit px-2 py-1 rounded-md">
+<span class="material-symbols-outlined text-[14px]">verified_user</span>
+                            POPIA Compliant Record
+                        </div>
+</div>
+</div>
+<!-- Emergency Contact Quick Access -->
+<div class="mt-5 grid grid-cols-2 gap-3">
+<button class="flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400 text-[20px]">call</span>
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Call Mom</span>
+</button>
+<button class="flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400 text-[20px]">id_card</span>
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-300">View Contact</span>
+</button>
+</div>
+</div>
+<!-- Critical Alerts Section -->
+<div class="px-4 mb-2">
+<h3 class="text-slate-900 dark:text-white text-base font-bold mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-red-500 filled-icon">warning</span>
+                    Critical Alerts
+                </h3>
+<div class="flex flex-wrap gap-2">
+<!-- High Priority Alert -->
+<div class="flex items-center gap-2 bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800/50 px-3 py-1.5 rounded-lg">
+<span class="material-symbols-outlined text-red-600 dark:text-red-400 text-[18px]">coronavirus</span>
+<span class="text-sm font-bold text-red-800 dark:text-red-300">Severe: Peanut Allergy</span>
+</div>
+<!-- Medium Priority Alert -->
+<div class="flex items-center gap-2 bg-orange-100 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800/50 px-3 py-1.5 rounded-lg">
+<span class="material-symbols-outlined text-orange-600 dark:text-orange-400 text-[18px]">medical_services</span>
+<span class="text-sm font-bold text-orange-800 dark:text-orange-300">Asthma</span>
+</div>
+<!-- Info Alert -->
+<div class="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 px-3 py-1.5 rounded-lg">
+<span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-[18px]">visibility</span>
+<span class="text-sm font-medium text-blue-800 dark:text-blue-300">Wear Glasses</span>
+</div>
+</div>
+</div>
+<!-- Action Tabs -->
+<div class="sticky top-[60px] z-40 bg-background-light dark:bg-background-dark pt-4 pb-2 px-4">
+<div class="flex p-1 bg-slate-200 dark:bg-slate-800 rounded-xl">
+<button class="flex-1 py-2 rounded-lg bg-surface-light dark:bg-surface-dark shadow-sm text-sm font-bold text-slate-900 dark:text-white transition-all">Overview</button>
+<button class="flex-1 py-2 rounded-lg text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">Meds Log</button>
+<button class="flex-1 py-2 rounded-lg text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">Clinic</button>
+</div>
+</div>
+<!-- Scheduled Meds -->
+<div class="px-4 py-4">
+<div class="flex justify-between items-center mb-3">
+<h3 class="text-slate-900 dark:text-white text-base font-bold">Daily Medication</h3>
+<button class="text-primary text-sm font-semibold">View Plan</button>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 mb-2">
+<div class="flex justify-between items-start mb-3">
+<div class="flex gap-3">
+<div class="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">pill</span>
+</div>
+<div>
+<h4 class="font-bold text-slate-900 dark:text-white">Ritalin LA</h4>
+<p class="text-sm text-slate-500 dark:text-slate-400">20mg Capsule • Oral</p>
+</div>
+</div>
+<span class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs font-bold px-2 py-1 rounded">Active</span>
+</div>
+<div class="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3 flex items-center justify-between">
+<div>
+<p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide font-semibold">Next Dose</p>
+<p class="text-slate-900 dark:text-white font-bold">Today, 10:00 AM</p>
+</div>
+<button class="bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm shadow-blue-200 dark:shadow-none transition-colors">
+                            Administer
+                        </button>
+</div>
+</div>
+</div>
+<!-- Recent Activity Timeline -->
+<div class="px-4 py-2">
+<div class="flex justify-between items-center mb-3">
+<h3 class="text-slate-900 dark:text-white text-base font-bold">Recent Activity</h3>
+<button class="text-slate-400 dark:text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+</div>
+<div class="relative pl-4 border-l-2 border-slate-200 dark:border-slate-700 space-y-6">
+<!-- Timeline Item 1 -->
+<div class="relative pl-4">
+<div class="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-600 border-2 border-background-light dark:border-background-dark"></div>
+<div class="bg-surface-light dark:bg-surface-dark p-3 rounded-lg shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="flex justify-between items-start mb-1">
+<span class="text-xs font-bold text-slate-400">Today, 08:15 AM</span>
+<span class="text-xs font-medium text-slate-400">Sr. J. Dlamini</span>
+</div>
+<p class="text-slate-800 dark:text-slate-200 font-medium text-sm">Parent reported: Forgot lunchbox, dropped off at reception.</p>
+<div class="mt-2 flex gap-2">
+<span class="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">Note</span>
+</div>
+</div>
+</div>
+<!-- Timeline Item 2 -->
+<div class="relative pl-4">
+<div class="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-green-500 border-2 border-background-light dark:border-background-dark"></div>
+<div class="bg-surface-light dark:bg-surface-dark p-3 rounded-lg shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="flex justify-between items-start mb-1">
+<span class="text-xs font-bold text-slate-400">Yesterday, 10:05 AM</span>
+<span class="text-xs font-medium text-slate-400">Sr. M. Van Wyk</span>
+</div>
+<p class="text-slate-800 dark:text-slate-200 font-medium text-sm">Medication Administered: Ritalin LA (20mg).</p>
+<div class="mt-2 flex gap-2">
+<span class="text-[10px] bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 px-2 py-0.5 rounded border border-green-100 dark:border-green-800">Meds Log</span>
+</div>
+</div>
+</div>
+<!-- Timeline Item 3 -->
+<div class="relative pl-4">
+<div class="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-orange-400 border-2 border-background-light dark:border-background-dark"></div>
+<div class="bg-surface-light dark:bg-surface-dark p-3 rounded-lg shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="flex justify-between items-start mb-1">
+<span class="text-xs font-bold text-slate-400">Yesterday, 09:30 AM</span>
+<span class="text-xs font-medium text-slate-400">Coach Petersen</span>
+</div>
+<p class="text-slate-800 dark:text-slate-200 font-medium text-sm">Minor scrape on left knee during PE. Cleaned and plastered.</p>
+<div class="mt-2 flex gap-2">
+<span class="text-[10px] bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 px-2 py-0.5 rounded border border-orange-100 dark:border-orange-800">First Aid</span>
+<button class="text-[10px] flex items-center gap-1 text-primary hover:underline">
+<span class="material-symbols-outlined text-[10px]">send</span> Notify Parent
+                                </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Spacing -->
+<div class="h-8"></div>
+</main>
+<!-- Floating Quick Actions (Bottom Bar) -->
+<div class="absolute bottom-0 left-0 w-full bg-surface-light dark:bg-surface-dark border-t border-slate-200 dark:border-slate-800 p-4 pb-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-50">
+<div class="grid grid-cols-2 gap-3">
+<button class="flex items-center justify-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 py-3 rounded-xl font-bold transition-colors">
+<span class="material-symbols-outlined text-primary">edit_note</span>
+                    Log Incident
+                </button>
+<button class="flex items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-blue-500/30 transition-colors">
+<span class="material-symbols-outlined">add</span>
+                    Quick Entry
+                </button>
+</div>
+</div>
+</div>
+</body></html>

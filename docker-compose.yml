@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  reverse-proxy:
+    image: nginx:alpine
+    container_name: edapp_proxy
+    restart: always
+    ports:
+      - "80:80"
+      # - "443:443" # Uncomment when SSL certs are ready
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web
+      - api
+    networks:
+      - edapp_network
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: edapp_web
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://localhost/v1
+    expose:
+      - "3000"
+    networks:
+      - edapp_network
+
+  api:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    container_name: edapp_api
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - PORT=3333
+      - DATABASE_URL=postgresql://postgres:postgres@database:5432/edapp
+      - REDIS_URL=redis://redis:6379
+    expose:
+      - "3333"
+    depends_on:
+      - database
+      - redis
+    networks:
+      - edapp_network
+
+  database:
+    image: postgres:15-alpine
+    container_name: edapp_db
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=edapp
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - edapp_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: edapp_redis
+    restart: always
+    volumes:
+      - redis_data:/data
+    networks:
+      - edapp_network
+
+networks:
+  edapp_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:

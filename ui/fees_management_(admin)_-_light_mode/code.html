@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fees Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#0d151c] dark:text-white font-display overflow-x-hidden">
+<div class="relative flex h-full min-h-screen w-full flex-col pb-24 max-w-md mx-auto bg-background-light dark:bg-background-dark shadow-2xl">
+<!-- Header -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-20">
+<button class="text-[#0d151c] dark:text-white flex size-12 shrink-0 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h2 class="text-[#0d151c] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-2">Fees Management</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex size-12 cursor-pointer items-center justify-center overflow-hidden rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-[#0d151c] dark:text-white transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-3 right-3 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+</button>
+</div>
+</div>
+<!-- Dashboard Stats Card -->
+<div class="px-4 py-2">
+<div class="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-slate-700">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Total Outstanding</p>
+<h3 class="text-2xl font-bold text-[#0d151c] dark:text-white">R 1,250,000</h3>
+</div>
+<div class="text-right">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Collected YTD</p>
+<h3 class="text-lg font-bold text-green-600 dark:text-green-400">R 3,500,000</h3>
+</div>
+</div>
+<!-- Progress Bar Integrated -->
+<div class="flex flex-col gap-2 pt-2 border-t border-slate-100 dark:border-slate-700">
+<div class="flex gap-6 justify-between items-center">
+<p class="text-[#0d151c] dark:text-white text-sm font-medium leading-normal">Collection Rate</p>
+<p class="text-primary text-sm font-bold leading-normal">78%</p>
+</div>
+<div class="rounded-full bg-slate-100 dark:bg-slate-700 h-2.5 overflow-hidden">
+<div class="h-full rounded-full bg-primary" style="width: 78%;"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Actions Horizontal Scroll -->
+<div class="flex flex-col gap-3 py-4">
+<div class="flex items-center justify-between px-4">
+<h3 class="text-[#0d151c] dark:text-white text-lg font-bold leading-tight">Quick Actions</h3>
+</div>
+<div class="flex overflow-x-auto gap-3 px-4 pb-2 no-scrollbar snap-x">
+<!-- Action 1 -->
+<button class="snap-start flex flex-col items-center justify-center gap-2 min-w-[84px] p-2">
+<div class="size-14 rounded-full bg-blue-50 dark:bg-blue-900/30 text-primary flex items-center justify-center mb-1">
+<span class="material-symbols-outlined text-[28px]">notifications_active</span>
+</div>
+<span class="text-xs font-medium text-center text-slate-700 dark:text-slate-300">Reminders</span>
+</button>
+<!-- Action 2 -->
+<button class="snap-start flex flex-col items-center justify-center gap-2 min-w-[84px] p-2">
+<div class="size-14 rounded-full bg-blue-50 dark:bg-blue-900/30 text-primary flex items-center justify-center mb-1">
+<span class="material-symbols-outlined text-[28px]">description</span>
+</div>
+<span class="text-xs font-medium text-center text-slate-700 dark:text-slate-300">Statements</span>
+</button>
+<!-- Action 3 -->
+<button class="snap-start flex flex-col items-center justify-center gap-2 min-w-[84px] p-2">
+<div class="size-14 rounded-full bg-blue-50 dark:bg-blue-900/30 text-primary flex items-center justify-center mb-1">
+<span class="material-symbols-outlined text-[28px]">credit_card</span>
+</div>
+<span class="text-xs font-medium text-center text-slate-700 dark:text-slate-300">Pay Plan</span>
+</button>
+<!-- Action 4 -->
+<button class="snap-start flex flex-col items-center justify-center gap-2 min-w-[84px] p-2">
+<div class="size-14 rounded-full bg-blue-50 dark:bg-blue-900/30 text-primary flex items-center justify-center mb-1">
+<span class="material-symbols-outlined text-[28px]">payments</span>
+</div>
+<span class="text-xs font-medium text-center text-slate-700 dark:text-slate-300">Record Pay</span>
+</button>
+</div>
+</div>
+<!-- Filters -->
+<div class="sticky top-[72px] z-10 bg-background-light dark:bg-background-dark py-2">
+<div class="flex overflow-x-auto gap-2 px-4 no-scrollbar">
+<button class="whitespace-nowrap rounded-full bg-[#0d151c] dark:bg-white text-white dark:text-[#0d151c] px-4 py-2 text-sm font-medium transition-colors">
+                    All
+                </button>
+<button class="whitespace-nowrap rounded-full bg-white dark:bg-slate-800 text-[#0d151c] dark:text-white border border-slate-200 dark:border-slate-700 px-4 py-2 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    Grade 8
+                </button>
+<button class="whitespace-nowrap rounded-full bg-white dark:bg-slate-800 text-[#0d151c] dark:text-white border border-slate-200 dark:border-slate-700 px-4 py-2 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    Grade 9
+                </button>
+<button class="whitespace-nowrap rounded-full bg-white dark:bg-slate-800 text-[#0d151c] dark:text-white border border-slate-200 dark:border-slate-700 px-4 py-2 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    Grade 10
+                </button>
+<button class="whitespace-nowrap rounded-full bg-white dark:bg-slate-800 text-[#0d151c] dark:text-white border border-slate-200 dark:border-slate-700 px-4 py-2 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    Grade 11
+                </button>
+<button class="whitespace-nowrap rounded-full bg-white dark:bg-slate-800 text-[#0d151c] dark:text-white border border-slate-200 dark:border-slate-700 px-4 py-2 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    Grade 12
+                </button>
+</div>
+</div>
+<!-- Student/Family List -->
+<div class="flex flex-col gap-4 p-4">
+<div class="flex justify-between items-center">
+<h3 class="text-[#0d151c] dark:text-white text-lg font-bold leading-tight">Accounts</h3>
+<button class="text-primary text-sm font-bold">See All</button>
+</div>
+<!-- List Item 1: Overdue -->
+<div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<div class="flex gap-3">
+<div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-600 flex items-center justify-center overflow-hidden shrink-0">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-300">group</span>
+</div>
+<div>
+<h4 class="font-bold text-[#0d151c] dark:text-white">Smith Family</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400">John Smith • Grade 10</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold text-red-600 dark:text-red-400">R 4,500</p>
+<p class="text-[10px] font-bold uppercase tracking-wider text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-full inline-block mt-1">Overdue</p>
+</div>
+</div>
+<div class="flex items-center justify-between pt-3 border-t border-slate-50 dark:border-slate-700">
+<p class="text-xs text-slate-400">Last payment: R 1,500 (12 Oct)</p>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- List Item 2: Up to Date -->
+<div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<div class="flex gap-3">
+<div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-600 flex items-center justify-center overflow-hidden shrink-0">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-300">group</span>
+</div>
+<div>
+<h4 class="font-bold text-[#0d151c] dark:text-white">Nkosi Family</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400">Thabo Nkosi • Grade 8</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold text-slate-900 dark:text-white">R 0.00</p>
+<p class="text-[10px] font-bold uppercase tracking-wider text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded-full inline-block mt-1">Paid</p>
+</div>
+</div>
+<div class="flex items-center justify-between pt-3 border-t border-slate-50 dark:border-slate-700">
+<p class="text-xs text-slate-400">Full settlement received</p>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- List Item 3: Payment Plan -->
+<div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<div class="flex gap-3">
+<div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-600 flex items-center justify-center overflow-hidden shrink-0">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-300">group</span>
+</div>
+<div>
+<h4 class="font-bold text-[#0d151c] dark:text-white">Van Der Merwe</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400">Pieter • Grade 12</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold text-primary">R 12,000</p>
+<p class="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full inline-block mt-1">On Plan</p>
+</div>
+</div>
+<div class="flex items-center justify-between pt-3 border-t border-slate-50 dark:border-slate-700">
+<p class="text-xs text-slate-400">Next debit: R 2,000 (1 Nov)</p>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- List Item 4: Overdue -->
+<div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<div class="flex gap-3">
+<div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-600 flex items-center justify-center overflow-hidden shrink-0">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-300">group</span>
+</div>
+<div>
+<h4 class="font-bold text-[#0d151c] dark:text-white">Govender Family</h4>
+<p class="text-xs text-slate-500 dark:text-slate-400">Priya • Grade 9</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold text-red-600 dark:text-red-400">R 8,250</p>
+<p class="text-[10px] font-bold uppercase tracking-wider text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-full inline-block mt-1">Overdue</p>
+</div>
+</div>
+<div class="flex items-center justify-between pt-3 border-t border-slate-50 dark:border-slate-700">
+<p class="text-xs text-slate-400">No payment for 60 days</p>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Floating Action Button (Optional Context) -->
+<button class="fixed bottom-24 right-4 h-14 w-14 rounded-full bg-primary text-white shadow-lg shadow-blue-500/30 flex items-center justify-center z-30 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[28px]">add</span>
+</button>
+<!-- Bottom Navigation -->
+<div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto h-20 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex items-center justify-around px-2 z-40 pb-2">
+<button class="flex flex-col items-center justify-center w-full h-full gap-1 text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined text-[26px]">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center w-full h-full gap-1 text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined text-[26px]">person_add</span>
+<span class="text-[10px] font-medium">Admissions</span>
+</button>
+<button class="flex flex-col items-center justify-center w-full h-full gap-1 text-primary relative">
+<div class="absolute -top-3 w-12 h-1 bg-primary rounded-b-full shadow-[0_0_10px_rgba(56,156,250,0.5)]"></div>
+<span class="material-symbols-outlined text-[26px] fill-current">account_balance_wallet</span>
+<span class="text-[10px] font-bold">Fees</span>
+</button>
+<button class="flex flex-col items-center justify-center w-full h-full gap-1 text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined text-[26px]">chat</span>
+<span class="text-[10px] font-medium">Chat</span>
+</button>
+<button class="flex flex-col items-center justify-center w-full h-full gap-1 text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined text-[26px]">person</span>
+<span class="text-[10px] font-medium">Profile</span>
+</button>
+</div>
+</div>
+</body></html>

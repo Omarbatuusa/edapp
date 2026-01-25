@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Wallet POS (Staff)</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#389cfa",
+              "background-light": "#f5f7f8",
+              "background-dark": "#0f1923",
+            },
+            fontFamily: {
+              "display": ["Lexend", "sans-serif"],
+              "body": ["Noto Sans", "sans-serif"],
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden pb-32">
+<!-- Top App Bar -->
+<header class="flex items-center justify-between px-4 pt-4 pb-2 bg-background-light dark:bg-background-dark sticky top-0 z-20">
+<h2 class="text-[#0d151c] dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]">Wallet POS</h2>
+<div class="flex items-center gap-3">
+<!-- Connection Status -->
+<div class="flex items-center gap-1.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-2.5 py-1 rounded-lg text-xs font-bold ring-1 ring-inset ring-green-600/20">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+</span>
+<span>Online</span>
+</div>
+<!-- History Button -->
+<button class="flex items-center justify-center rounded-xl h-10 w-10 bg-white dark:bg-slate-800 text-[#0d151c] dark:text-white border border-[#cedce9] dark:border-slate-700 shadow-sm active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]">history</span>
+</button>
+</div>
+</header>
+<!-- Stats Section -->
+<div class="px-4 py-2">
+<div class="flex gap-3 overflow-x-auto hide-scrollbar pb-1">
+<div class="flex flex-col gap-1 rounded-xl p-4 bg-white dark:bg-slate-800 border border-[#cedce9] dark:border-slate-700 min-w-[140px] flex-1 shadow-sm">
+<p class="text-[#47749e] dark:text-slate-400 text-sm font-medium">Session Total</p>
+<p class="text-[#0d151c] dark:text-white text-xl font-bold tracking-tight">R 4,250.00</p>
+</div>
+<div class="flex flex-col gap-1 rounded-xl p-4 bg-white dark:bg-slate-800 border border-[#cedce9] dark:border-slate-700 min-w-[140px] flex-1 shadow-sm">
+<div class="flex justify-between items-start">
+<p class="text-[#47749e] dark:text-slate-400 text-sm font-medium">Offline Queue</p>
+<span class="material-symbols-outlined text-primary text-sm">cloud_sync</span>
+</div>
+<p class="text-[#0d151c] dark:text-white text-xl font-bold tracking-tight">0 <span class="text-sm font-normal text-slate-400">Txns</span></p>
+</div>
+</div>
+</div>
+<!-- Search & Learner Context -->
+<div class="px-4 py-2 space-y-3">
+<!-- Search Bar -->
+<div class="flex w-full items-center rounded-xl bg-white dark:bg-slate-800 border border-[#cedce9] dark:border-slate-700 h-12 px-3 shadow-sm focus-within:ring-2 focus-within:ring-primary/50 transition-shadow">
+<span class="material-symbols-outlined text-[#47749e]">search</span>
+<input class="w-full bg-transparent border-none focus:ring-0 text-[#0d151c] dark:text-white placeholder:text-[#47749e] ml-2 text-base" placeholder="Search learner or scan card..."/>
+<button class="p-2 text-primary hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg transition-colors">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+</button>
+</div>
+<!-- Active Learner Card (Simulating a selected state) -->
+<div class="flex items-center gap-4 bg-white dark:bg-slate-800 p-3 rounded-xl border border-primary relative overflow-hidden shadow-md ring-4 ring-primary/5">
+<!-- Background Decoration -->
+<div class="absolute right-[-10px] top-[-10px] opacity-[0.03] rotate-12 pointer-events-none">
+<span class="material-symbols-outlined text-[100px] text-primary">school</span>
+</div>
+<div class="relative z-10 shrink-0">
+<div class="bg-center bg-no-repeat bg-cover rounded-full h-14 w-14 border-2 border-white dark:border-slate-700 shadow-sm" data-alt="Portrait of student Thabo Mbeki" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAWdh9sq1IERJU-3Y_Yfgned9Ck23jRQTRXsixrggXiZBw1Yso88DlaAV2pQ4XRHXiTDkT_lR9h_b4p7a9f0Pfl2kkzOYKS1GZs0NVcgSvQG2-W-OfuonyMAQM2QxvEn-4QinCovdORUkNJPtn505EEjX__VB9amum5yqiJfJBTHsz48WtlI28ZgECT3LtVSTu3kqggZmv_6u_zXJVk1t_zg-mdj0k2KaxxcfSk-IZOivPFD-MWX9k_k2KCGlOehhlplLXHCZtJ77M");'></div>
+</div>
+<div class="flex flex-col justify-center flex-1 relative z-10 min-w-0">
+<div class="flex justify-between items-start gap-2">
+<div class="min-w-0">
+<p class="text-[#0d151c] dark:text-white text-lg font-bold truncate">Thabo Mbeki</p>
+<p class="text-[#47749e] dark:text-slate-400 text-sm font-medium">Grade 5A • #STU-2938</p>
+</div>
+<div class="text-right shrink-0">
+<p class="text-[#47749e] dark:text-slate-400 text-xs font-medium uppercase tracking-wide">Wallet</p>
+<p class="text-[#0d151c] dark:text-white text-lg font-bold text-primary">R 150.00</p>
+</div>
+</div>
+<!-- Warning / Restriction Tag -->
+<div class="mt-2 flex items-center gap-1.5 text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 w-fit px-2.5 py-1 rounded-lg text-xs font-bold">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+                         Peanut Allergy
+                    </div>
+</div>
+</div>
+</div>
+<!-- Categories Tabs -->
+<div class="sticky top-[72px] bg-background-light dark:bg-background-dark z-10 pt-2 shadow-[0_4px_6px_-4px_rgba(0,0,0,0.05)]">
+<div class="flex px-4 justify-between border-b border-[#cedce9] dark:border-slate-800">
+<button class="flex flex-col items-center justify-center border-b-[3px] border-b-primary text-[#0d151c] dark:text-white pb-3 pt-2 flex-1">
+<p class="text-sm font-bold leading-normal tracking-[0.015em]">Tuckshop</p>
+</button>
+<button class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#47749e] hover:text-[#0d151c] dark:hover:text-white pb-3 pt-2 flex-1 transition-colors">
+<p class="text-sm font-bold leading-normal tracking-[0.015em]">Uniform</p>
+</button>
+<button class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#47749e] hover:text-[#0d151c] dark:hover:text-white pb-3 pt-2 flex-1 transition-colors">
+<p class="text-sm font-bold leading-normal tracking-[0.015em]">Events</p>
+</button>
+<button class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#47749e] hover:text-[#0d151c] dark:hover:text-white pb-3 pt-2 flex-1 transition-colors">
+<p class="text-sm font-bold leading-normal tracking-[0.015em]">Aftercare</p>
+</button>
+</div>
+</div>
+<!-- Filter Chips (Sub-categories) -->
+<div class="px-4 py-4 flex gap-2 overflow-x-auto hide-scrollbar">
+<button class="px-5 py-2 rounded-full bg-[#0d151c] dark:bg-white text-white dark:text-[#0d151c] text-sm font-bold whitespace-nowrap shadow-md">All</button>
+<button class="px-5 py-2 rounded-full bg-white dark:bg-slate-800 border border-[#cedce9] dark:border-slate-700 text-[#47749e] dark:text-slate-300 text-sm font-bold whitespace-nowrap">Food</button>
+<button class="px-5 py-2 rounded-full bg-white dark:bg-slate-800 border border-[#cedce9] dark:border-slate-700 text-[#47749e] dark:text-slate-300 text-sm font-bold whitespace-nowrap">Drinks</button>
+<button class="px-5 py-2 rounded-full bg-white dark:bg-slate-800 border border-[#cedce9] dark:border-slate-700 text-[#47749e] dark:text-slate-300 text-sm font-bold whitespace-nowrap">Snacks</button>
+</div>
+<!-- Product Grid -->
+<div class="px-4 grid grid-cols-2 gap-4 pb-4">
+<!-- Item 1: Standard Item -->
+<div class="group flex flex-col gap-3 rounded-xl p-3 bg-white dark:bg-slate-800 border border-[#cedce9] dark:border-slate-700 shadow-sm active:scale-[0.98] transition-all duration-100 relative">
+<div class="absolute top-2 right-2 bg-primary text-white text-xs font-bold w-7 h-7 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</div>
+<div class="aspect-[4/3] w-full rounded-lg bg-cover bg-center bg-slate-100" data-alt="Toasted cheese and tomato sandwich on a plate" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCOVYnAJBQZcrPvbvovDcu5rXLE6Yx-f78xLyZ3P7y6zzGWA_5aAm_Qgl6jaUbKTK2eGcpYaTfixN4KAsxbGWSzy8Kuuh9Nvp0c7OvM54bDl0Xvi5ZTXfXhPhHwW7LJsYmcG1EEXFil8dKRRBuXz5Lf5j5eRLTNEiaDfwboPuJMhTyhO8C3tTd4NQLigRbR7qUFEbMRIE4iXmN8UN5D5aGWLsDcnLg66zYonKrQgoJVgy95vVwXnErTOtcULZ0X2NgeQmn1fhQXTN8");'></div>
+<div class="flex-1">
+<p class="text-[#0d151c] dark:text-white font-bold text-sm leading-tight mb-1">Cheese &amp; Tomato</p>
+<p class="text-[#47749e] dark:text-slate-400 text-xs">Sandwich</p>
+</div>
+<div class="mt-auto flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-2">
+<p class="text-[#0d151c] dark:text-white font-bold text-base">R 25.00</p>
+</div>
+</div>
+<!-- Item 2: Selected State -->
+<div class="flex flex-col gap-3 rounded-xl p-3 bg-white dark:bg-slate-800 ring-2 ring-primary shadow-md relative">
+<!-- Quantity Badge -->
+<div class="absolute -top-2 -right-2 bg-primary text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full shadow-lg z-10 border-2 border-white dark:border-slate-900">
+                    2
+                </div>
+<div class="aspect-[4/3] w-full rounded-lg bg-cover bg-center bg-slate-100" data-alt="Carton of apple juice with a straw" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCAHixeB2ZivOaffgIZbvJMI5eIbLRmT04E1p2BsWGkIHcCYt0jK1UsNS32GQ69sbYORe5AjO-awuWNM-Br04kn_dH7krGr_eB4xzapSywQiUuhI1rxojSc-J96fTXdRpjV7OdNe1chz9fDSX74dLMOzviQ3V9-aTFeu71LnwUvhz80e32pWUSC5qn0Y8ZRTs3DzaqQ61Tj-hM6bGFkwT_hQqMCrPYVcixh_3Gtn_OFMNnq9xbE37jNzpsMb7JU3AbUeJfV_wGLNUM");'></div>
+<div class="flex-1">
+<p class="text-[#0d151c] dark:text-white font-bold text-sm leading-tight mb-1">Apple Juice</p>
+<p class="text-[#47749e] dark:text-slate-400 text-xs">Beverage</p>
+</div>
+<div class="mt-auto flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-2">
+<p class="text-[#0d151c] dark:text-white font-bold text-base">R 12.00</p>
+<!-- Mini Stepper -->
+<div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-700 rounded-lg px-2 py-1 h-8">
+<button class="text-slate-400 hover:text-primary flex items-center justify-center"><span class="material-symbols-outlined text-[16px]">remove</span></button>
+<span class="text-xs font-bold w-3 text-center">2</span>
+<button class="text-primary flex items-center justify-center"><span class="material-symbols-outlined text-[16px]">add</span></button>
+</div>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="group flex flex-col gap-3 rounded-xl p-3 bg-white dark:bg-slate-800 border border-[#cedce9] dark:border-slate-700 shadow-sm active:scale-[0.98] transition-all duration-100">
+<div class="aspect-[4/3] w-full rounded-lg bg-cover bg-center bg-slate-100" data-alt="Fresh blueberry muffin" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCQTjkIwjyiLzJXN9ktMj6JmKhg8QxGjru4D90hHOFVB5dJZrqNpvS0COHLQZ9RALioxCEUxB5Yei8XonIYpIonXbfQ3lHGwpw9G2bh83aqrUbnxgCySHQW4dezODz8GyxILUMkY1VD5HFxlpASEXbVxOMOxpEqH_UPvqdnRew724FwZJKnOU3a4POU4KDifcwzvwFdTaIFIdDxc3xZVgM-B32eYiU5q5Nc12p0jeuEh7f9oXu7ZoiLtZfOusFGSb8-m9uQV102m6c");'></div>
+<div class="flex-1">
+<p class="text-[#0d151c] dark:text-white font-bold text-sm leading-tight mb-1">Blueberry Muffin</p>
+<p class="text-[#47749e] dark:text-slate-400 text-xs">Bakery</p>
+</div>
+<div class="mt-auto flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-2">
+<p class="text-[#0d151c] dark:text-white font-bold text-base">R 15.00</p>
+</div>
+</div>
+<!-- Item 4: Restricted / Blocked -->
+<div class="group flex flex-col gap-3 rounded-xl p-3 bg-slate-50 dark:bg-slate-800/40 border border-[#cedce9] dark:border-slate-700 relative opacity-60 grayscale">
+<div class="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+<div class="bg-red-100 text-red-600 border border-red-200 px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">block</span>
+                         Restricted
+                     </div>
+</div>
+<div class="aspect-[4/3] w-full rounded-lg bg-cover bg-center bg-slate-100" data-alt="Small packet of salted peanuts" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBNLRHa42QB1cbey0KQKD8pQlduoBqqf2vJcoE615oOF4naqN65-2kgRsq82B1iOpFogDNdiBqh-hcSxcvADJkO0-C9rHd7pu4q3Q2zxNZjG2F7GnGRFjbh9i8zhe-5Hnn4rqnU5qSPsfUVBvywT_jcAjTDNpMgWdkSBO58xnF03jTkZT8bErsqZ7NFSRhwQnM1AaJkGQxxGhGoQOujgPhEJVPmAXbDwu-jCCLTPizuwfvkBK1h3yI0VIFGhIRTqvtv5NtuAno3wXc");'></div>
+<div class="flex-1">
+<p class="text-[#0d151c] dark:text-white font-bold text-sm leading-tight mb-1">Peanuts 50g</p>
+<p class="text-[#47749e] dark:text-slate-400 text-xs">Snacks</p>
+</div>
+<div class="mt-auto flex items-center justify-between border-t border-slate-200 dark:border-slate-700 pt-2">
+<p class="text-[#0d151c] dark:text-white font-bold text-base">R 8.00</p>
+</div>
+</div>
+<!-- Item 5 -->
+<div class="group flex flex-col gap-3 rounded-xl p-3 bg-white dark:bg-slate-800 border border-[#cedce9] dark:border-slate-700 shadow-sm active:scale-[0.98] transition-all duration-100">
+<div class="aspect-[4/3] w-full rounded-lg bg-cover bg-center bg-slate-100" data-alt="Plastic bottle of still water" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAsWIRnbAH-R_o5QNi7eRALcTj47GB4-Pp_Jvoy1R-eQTrTq6JYDdfUUS8L5W33ipEjoWG093LEOhH-pSsX8Bnuo2AtXO6zyI1ehTUpOnKQ4RbEntghw3aUbb7deWScFMXpwp4p9paDHuOaULo37WiAz_95Y2eyz5S2_csz8MEGtkp8bJtbdU04MjLd4laS-F1eR4Dsd4bRmeIkXgMdk6an-D5RMbODahmK_nvTAOsMiLm2pqmzuzZTaTu30fuo9-mwidZkGZNAgiY");'></div>
+<div class="flex-1">
+<p class="text-[#0d151c] dark:text-white font-bold text-sm leading-tight mb-1">Still Water 500ml</p>
+<p class="text-[#47749e] dark:text-slate-400 text-xs">Beverage</p>
+</div>
+<div class="mt-auto flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-2">
+<p class="text-[#0d151c] dark:text-white font-bold text-base">R 10.00</p>
+</div>
+</div>
+<!-- Item 6 -->
+<div class="group flex flex-col gap-3 rounded-xl p-3 bg-white dark:bg-slate-800 border border-[#cedce9] dark:border-slate-700 shadow-sm active:scale-[0.98] transition-all duration-100">
+<div class="aspect-[4/3] w-full rounded-lg bg-cover bg-center bg-slate-100" data-alt="Fresh chicken wrap with salad" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAf641ftgArCY4b1igFUBmK4aayD0yR7VypVqCT02hBMD_36UcRk9qnj19TYubwGjDkRJrW8uqAfILiYZisTlwGcOODOe4s0moIeUOOukKrkSSyqvLqszjlqiucjFq2Gi7lTwe7eu4WdLjxcfKJVfUOpUZ1WVRyid7mD0N3WDqOvTye7NqUYvH0TZDClmnFjobACTNVAsjX3iZ6tsz9VL_uiZHilCuyAO7mBVqvOkqk9RC8mlbW3Qvdohp6JqCXESzSkH_U-G_1Ywo");'></div>
+<div class="flex-1">
+<p class="text-[#0d151c] dark:text-white font-bold text-sm leading-tight mb-1">Chicken Wrap</p>
+<p class="text-[#47749e] dark:text-slate-400 text-xs">Food</p>
+</div>
+<div class="mt-auto flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-2">
+<p class="text-[#0d151c] dark:text-white font-bold text-base">R 30.00</p>
+</div>
+</div>
+</div>
+<!-- Sticky Bottom Cart & Charge Action -->
+<div class="fixed bottom-0 left-0 w-full bg-white dark:bg-slate-900 border-t border-[#cedce9] dark:border-slate-800 p-4 pb-8 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] z-30 rounded-t-2xl">
+<!-- Drag Handle -->
+<div class="absolute -top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600 shadow-sm"></div>
+<div class="flex flex-col gap-4">
+<!-- Cart Summary -->
+<div class="flex justify-between items-end px-1">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="bg-[#0d151c] dark:bg-white text-white dark:text-[#0d151c] w-10 h-10 rounded-xl flex items-center justify-center font-bold text-base shadow-sm">3</div>
+</div>
+<div class="flex flex-col">
+<span class="text-[#47749e] dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Cart Total</span>
+<span class="text-slate-900 dark:text-white text-sm font-medium">2x Juice, 1x Sandwich</span>
+</div>
+</div>
+<div class="text-right">
+<span class="text-3xl font-bold text-[#0d151c] dark:text-white tracking-tight">R 49.00</span>
+</div>
+</div>
+<!-- Main Action Button -->
+<button class="group w-full bg-primary hover:bg-[#2b8aed] text-white rounded-xl h-14 flex items-center justify-between px-6 font-bold text-lg shadow-lg shadow-blue-500/30 active:scale-[0.98] transition-all">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined">payments</span>
+                        Charge Wallet
+                    </span>
+<span class="bg-white/20 rounded-lg p-1 group-hover:bg-white/30 transition-colors">
+<span class="material-symbols-outlined">arrow_forward</span>
+</span>
+</button>
+</div>
+</div>
+</div>
+</body></html>

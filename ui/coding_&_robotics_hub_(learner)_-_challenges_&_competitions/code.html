@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Coding &amp; Robotics Hub</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "surface-dark": "#182735",
+                        "surface-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-white antialiased transition-colors duration-200">
+<div class="relative flex min-h-screen w-full flex-col max-w-md mx-auto shadow-2xl overflow-x-hidden pb-20 bg-background-light dark:bg-background-dark">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-50 flex items-center bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-4 py-3 justify-between border-b border-gray-200 dark:border-gray-800">
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-2xl">arrow_back</span>
+</button>
+<h2 class="text-lg font-bold leading-tight tracking-tight flex-1 text-center">Coding &amp; Robotics</h2>
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition-colors text-primary">
+<span class="material-symbols-outlined text-2xl">school</span>
+</button>
+</header>
+<!-- Profile Stats -->
+<section class="px-4 py-4">
+<div class="flex flex-wrap gap-3">
+<div class="flex flex-1 flex-col gap-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-surface-light dark:bg-surface-dark p-3 items-center text-center shadow-sm">
+<div class="relative flex items-center justify-center size-10 mb-1">
+<svg class="size-full -rotate-90" viewbox="0 0 36 36">
+<path class="text-gray-200 dark:text-gray-700" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+<path class="text-primary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="75, 100" stroke-width="3"></path>
+</svg>
+<span class="absolute text-xs font-bold">Lvl 5</span>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wide">Level</p>
+</div>
+<div class="flex flex-1 flex-col gap-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-surface-light dark:bg-surface-dark p-3 items-center text-center shadow-sm">
+<p class="text-2xl font-bold leading-tight mt-2">1250</p>
+<p class="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wide">Total XP</p>
+</div>
+<div class="flex flex-1 flex-col gap-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-surface-light dark:bg-surface-dark p-3 items-center text-center shadow-sm">
+<p class="text-2xl font-bold leading-tight mt-2 text-primary">8</p>
+<p class="text-gray-500 dark:text-gray-400 text-xs font-medium uppercase tracking-wide">Badges</p>
+</div>
+</div>
+</section>
+<!-- Current Mission Hero -->
+<section class="px-4 pb-2">
+<h3 class="text-xl font-bold leading-tight mb-3">Current Mission</h3>
+<div class="relative overflow-hidden rounded-xl bg-surface-light dark:bg-surface-dark shadow-md border border-gray-100 dark:border-gray-800">
+<div class="absolute top-0 left-0 w-1 bg-primary h-full z-10"></div>
+<!-- Background Image with Overlay -->
+<div class="relative h-32 w-full overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-dark via-transparent to-transparent z-10"></div>
+<div class="w-full h-full bg-cover bg-center" data-alt="Abstract blue digital code rain matrix pattern" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuApvFhvVO0szkoaENBy1HGf4-gd_2RsWktTVuecVWTHcRz3jtuoKoS4tigH82E3pn4jcowPBlJkz0QazhRSYrcK2gdTT8vdocqFtDNroAT2ISHtLAIcgqK4VZvgZ3z1g-jykmVz7YrsOrz0pGq0S6v3j8pKZAlgnD7NUCZPeN8z4owr3R67XVQrTUzg44-RWnEea2TPQWwIijVxdpWQUjGPnfnIhY-bG7r34c5jXvIitUBPAhB4c65AQYsPIr85BKl-5N2q4hqtsxg');"></div>
+<div class="absolute top-3 right-3 z-20 bg-black/60 backdrop-blur-sm text-white text-xs font-bold px-2 py-1 rounded-lg border border-white/10">
+                        20 mins left
+                     </div>
+</div>
+<div class="p-4 relative z-20 -mt-8">
+<div class="flex items-center gap-2 mb-1">
+<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Python</span>
+<span class="text-gray-400 text-xs">Daily Challenge</span>
+</div>
+<h4 class="text-lg font-bold mb-2">Loop Logic: For &amp; While</h4>
+<p class="text-gray-500 dark:text-gray-400 text-sm mb-4 line-clamp-2">Complete this challenge to maintain your 7-day coding streak! Learn how to iterate through lists.</p>
+<button class="w-full flex items-center justify-center gap-2 rounded-xl h-10 bg-primary hover:bg-blue-500 active:scale-[0.98] transition-all text-white text-sm font-bold shadow-lg shadow-blue-500/20">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span>
+<span>Resume Mission</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Navigation Toggles -->
+<section class="px-4 py-4 sticky top-[60px] z-40 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-xl -mx-1">
+<div class="flex h-12 w-full items-center rounded-xl bg-gray-200 dark:bg-surface-dark p-1 border border-gray-300 dark:border-gray-700">
+<button class="flex h-full flex-1 items-center justify-center rounded-lg bg-white dark:bg-[#2c3b4a] shadow-sm text-gray-900 dark:text-white text-sm font-bold transition-all">
+                    Practice
+                </button>
+<button class="flex h-full flex-1 items-center justify-center rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm font-medium transition-all">
+                    Competitions
+                </button>
+</div>
+</section>
+<!-- Practice Challenges List -->
+<section class="flex flex-col gap-4 px-4 pb-6">
+<div class="flex items-center justify-between">
+<h3 class="text-lg font-bold">Recommended for You</h3>
+<a class="text-primary text-sm font-bold" href="#">View All</a>
+</div>
+<!-- Card 1 -->
+<div class="group flex items-center gap-4 rounded-xl bg-white dark:bg-surface-dark p-3 shadow-sm border border-gray-100 dark:border-gray-800 hover:border-primary/50 transition-colors cursor-pointer">
+<div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500">
+<span class="material-symbols-outlined text-3xl">code_blocks</span>
+</div>
+<div class="flex flex-1 flex-col">
+<div class="flex items-center justify-between mb-0.5">
+<h4 class="text-base font-bold group-hover:text-primary transition-colors">Scratch: Animation 101</h4>
+<span class="text-[10px] font-bold bg-green-500/10 text-green-500 px-1.5 py-0.5 rounded">Beginner</span>
+</div>
+<div class="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 15m</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">bolt</span> 50 XP</span>
+</div>
+</div>
+<div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-gray-400 group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">chevron_right</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group flex items-center gap-4 rounded-xl bg-white dark:bg-surface-dark p-3 shadow-sm border border-gray-100 dark:border-gray-800 hover:border-primary/50 transition-colors cursor-pointer">
+<div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 text-blue-500">
+<span class="material-symbols-outlined text-3xl">smart_toy</span>
+</div>
+<div class="flex flex-1 flex-col">
+<div class="flex items-center justify-between mb-0.5">
+<h4 class="text-base font-bold group-hover:text-primary transition-colors">Build a Line-Following Bot</h4>
+<span class="text-[10px] font-bold bg-yellow-500/10 text-yellow-500 px-1.5 py-0.5 rounded">Interm.</span>
+</div>
+<div class="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 45m</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">bolt</span> 120 XP</span>
+</div>
+</div>
+<div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-gray-400 group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">chevron_right</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group flex items-center gap-4 rounded-xl bg-white dark:bg-surface-dark p-3 shadow-sm border border-gray-100 dark:border-gray-800 hover:border-primary/50 transition-colors cursor-pointer opacity-75">
+<div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-purple-500/10 text-purple-500">
+<span class="material-symbols-outlined text-3xl">memory</span>
+</div>
+<div class="flex flex-1 flex-col">
+<div class="flex items-center justify-between mb-0.5">
+<h4 class="text-base font-bold group-hover:text-primary transition-colors">Arduino Basics: Circuits</h4>
+<span class="text-[10px] font-bold bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded">Advanced</span>
+</div>
+<div class="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 60m</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">lock</span> Locked</span>
+</div>
+</div>
+<div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-gray-400">
+<span class="material-symbols-outlined text-lg">lock</span>
+</div>
+</div>
+</section>
+<!-- Live Competitions Section -->
+<section class="flex flex-col gap-4 pl-4 pb-6 border-t border-gray-200 dark:border-gray-800 pt-6">
+<div class="flex items-center justify-between pr-4">
+<h3 class="text-lg font-bold flex items-center gap-2">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+</span>
+                    Live Competitions
+                </h3>
+<a class="text-primary text-sm font-bold" href="#">See All</a>
+</div>
+<!-- Horizontal Scroll Container -->
+<div class="flex overflow-x-auto gap-4 pb-4 no-scrollbar pr-4">
+<!-- Comp Card 1 -->
+<div class="min-w-[280px] rounded-xl overflow-hidden bg-surface-light dark:bg-surface-dark shadow-md border border-gray-100 dark:border-gray-800 relative group cursor-pointer">
+<div class="h-28 w-full bg-cover bg-center relative" data-alt="Futuristic smart city digital rendering in blue tones" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDQ25jXBuzZK8iZsx3eNyTwH-2uP6-ayp3mvp5xsEuH4HdEqkC3YTw8rQV_y1L_7CY5WfNYbn4CXDFXs_ENlUZBRpfCje404fQQC1ip7OzMqutkP9fvF-UOP9v-pwwKB8xPeFq8gsKMHO-E8imke0krJR-7TGSqO-sV4O3jvklXUzziwYbPLHuZzI7rS9mMuYwLi7_jrBP3t3gQOLuhEkOybTrv4lnGPIA2ksxou4Zqln2zthi3Pv73XjockzASLOMXxxfMcOWIH4A');">
+<div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all"></div>
+<div class="absolute bottom-2 left-2 bg-primary/90 text-white text-[10px] font-bold px-2 py-0.5 rounded backdrop-blur-sm">
+                            Grade 9 Only
+                        </div>
+</div>
+<div class="p-3">
+<h4 class="text-base font-bold mb-1">Hackathon: Smart Cities</h4>
+<div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-3">
+<span>2 Days Left</span>
+<span class="text-primary font-bold">14 Teams Joined</span>
+</div>
+<div class="flex -space-x-2 overflow-hidden mb-3">
+<img alt="User 1" class="inline-block h-6 w-6 rounded-full ring-2 ring-white dark:ring-surface-dark" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqzk1VYr8WafMQR8OKAQG0wAS1u906wYDxUfIhQ_rofEhNqRuBXuaSwh5UB7HU5buIggZ29TneDDEl51XNF38kmDcaBZmj3T4395zJc2QMaB18EnVASFebG2pAGtc92_yPbnE69-BBDicyCeUDaDLvUU0Ax_jT6jMmXfg0lgla-ki_kPNvze4rIXSP3rkfw3Hmoc1Pxi429kmfeU-B4FXWNKiB2-lJB4yyJz0cBa4WtUnSYZFbCIoa9OkPSQZ-kgVt88vC1qYfABk"/>
+<img alt="User 2" class="inline-block h-6 w-6 rounded-full ring-2 ring-white dark:ring-surface-dark" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMjWqf0TFuYehvNdIALIIqja1ovRiOpWApltCSe_22cjF0CEWTLkfrf1NX1TaMp4tAAoIgnPH7v2cj4tFHbL5NVNzNMwQLx0zgOLmkGNkB7Zgllhz2alj1srodk4sj7s24Wf3bdy1c2l5Xl7K8cDTrAtFzqDgSXatUo40lXjHe8Qmok4I7QCfN5ypiTCxMrt-Y_c9AdUkNwh6cl0sF2CYaxCFA0LmLYTQp-4UQFzTm2eS41KkJ1pKnPoma-JilXDwK4JFxv4JD9Ok"/>
+<img alt="User 3" class="inline-block h-6 w-6 rounded-full ring-2 ring-white dark:ring-surface-dark" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRbT7csLsGMY8r0ccETAe-uhNFIDnNIl6FJy1gtf-nihOHTSvimdKDvAOOFyUkBaM7oFpm23MfIHPU9EHb9gBe-W0xX8Pj_O5dZyc72rmTo7m3V8pHj0wJhEl_UCdCEGK5Q872lOh1ARGlswnfoenMiJ98ogfPAcabAnZzxtO87erybgCxKzLeegLMdGMPzUNBKSegjPmDlF7O3TuCz7PDgEdY8OU-4O9zXb8VZO-y0ULbtUDGI6YtQKUfU5-nKaowabLMUOUkmb0"/>
+<div class="h-6 w-6 rounded-full ring-2 ring-white dark:ring-surface-dark bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-[10px] font-bold">+11</div>
+</div>
+<button class="w-full py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-sm font-bold hover:bg-primary hover:text-white transition-colors">Join Team</button>
+</div>
+</div>
+<!-- Comp Card 2 -->
+<div class="min-w-[280px] rounded-xl overflow-hidden bg-surface-light dark:bg-surface-dark shadow-md border border-gray-100 dark:border-gray-800 relative group cursor-pointer">
+<div class="h-28 w-full bg-cover bg-center relative" data-alt="Close up of a small robot on a table" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDNkbpcT_1MJ2qRj0BYS-6vRyCI8anNe3b1dgL302U3vl1P6nwJccFMjz99WWNFcQmbapPuJSy-mUuifQX7wxEbUCX2OcnIyFAnjQg2r7S-5vMJIo3keiqdUo-j5Ve6kR6bjhkFtBEUjt_HEIDO9zwhOxZjmUITRTgR1eoKRB6gee82GzBrFzEfIiDeJnkOCD9GZxJdvA7a5GS7soRyKN0joynnuDdgmlj6HnMJLBHYkDtxwo9H93T6uJi7S2hQLrqrFbJI5xd2NLM');">
+<div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all"></div>
+<div class="absolute bottom-2 left-2 bg-purple-500/90 text-white text-[10px] font-bold px-2 py-0.5 rounded backdrop-blur-sm">
+                            Open to All
+                        </div>
+</div>
+<div class="p-3">
+<h4 class="text-base font-bold mb-1">RoboCup Junior</h4>
+<div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-3">
+<span>Starts in 5h</span>
+<span class="text-primary font-bold">Virtual Event</span>
+</div>
+<div class="flex items-center gap-2 mb-3">
+<div class="flex items-center gap-1 text-xs font-medium text-yellow-500 bg-yellow-500/10 px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[14px]">emoji_events</span>
+<span>Prize: Drone Kit</span>
+</div>
+</div>
+<button class="w-full py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-sm font-bold hover:bg-primary hover:text-white transition-colors">Register</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Mini Leaderboard Widget -->
+<section class="px-4 pb-20">
+<div class="rounded-xl bg-gradient-to-br from-surface-light to-gray-50 dark:from-surface-dark dark:to-[#121c26] p-4 border border-gray-200 dark:border-gray-700">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-sm font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400">Class Leaderboard</h3>
+<span class="material-symbols-outlined text-gray-400 text-lg">leaderboard</span>
+</div>
+<div class="space-y-3">
+<!-- Rank 1 -->
+<div class="flex items-center gap-3">
+<div class="flex size-6 shrink-0 items-center justify-center rounded-full bg-yellow-500 text-black text-xs font-bold">1</div>
+<img alt="Alice Avatar" class="size-8 rounded-full bg-gray-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWlc-yUBcQ0DciBgEIIvbTkkUmPGd-7xVRZxlQRZUWxLBDzXpYmbwBDSF50cM4teHyXdQFedd41T0A8xZBPhLXCvp-_MXu6IfLI9Q1JoTZH1O6Z4kqSRR4h9kFn52x01scOR7LwmmI3YrGZ4FPv6i3dIlryUJDhkViea6tPCTdshvbxDeH-7mW0zfUU99aMlHFuPuYc5soO7IxVc8TXe3q1YI50gVEjFbhooj0Sk4HzVCjCK5BL4nLUNViNqADCSR3r-202JwrH5w"/>
+<div class="flex-1">
+<p class="text-sm font-bold">Alice M.</p>
+<p class="text-[10px] text-gray-500 dark:text-gray-400">Python Pro</p>
+</div>
+<p class="text-sm font-bold text-primary">1540 XP</p>
+</div>
+<!-- Rank 2 -->
+<div class="flex items-center gap-3">
+<div class="flex size-6 shrink-0 items-center justify-center rounded-full bg-gray-300 text-black text-xs font-bold">2</div>
+<img alt="Thabo Avatar" class="size-8 rounded-full bg-gray-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAF-9Iit9WAW536Eq18AEY-PlOpRV0g_SaocB7iH4Ev_t6VkyVG-P9UhPWHUl7KUIfMyY_K65jcVPcRvZsbVSPnQi5j1Q6Zhvbs9x8pTyxE3hBx66tTUG4_o7AiiFWxjYTWUXx22Y8wq-07X9cf9QOabs318uUiGmvJ9W7H0Mh46y0bboE4EybfR4-YgK7x1cq75LJJf-URIJ9X5yRKlThU2SPZQq_h7I7r5QjDVT8B3D0WZTu-X7m_plmKaKz99k_UprsKI3wjbgM"/>
+<div class="flex-1">
+<p class="text-sm font-bold">Thabo K.</p>
+<p class="text-[10px] text-gray-500 dark:text-gray-400">Bot Builder</p>
+</div>
+<p class="text-sm font-bold text-primary">1320 XP</p>
+</div>
+<!-- Rank 3 (You) -->
+<div class="flex items-center gap-3 rounded-lg bg-primary/10 p-1 -mx-1 border border-primary/20">
+<div class="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-white text-xs font-bold">3</div>
+<div class="size-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs border-2 border-surface-dark">You</div>
+<div class="flex-1">
+<p class="text-sm font-bold text-primary">Student Name</p>
+</div>
+<p class="text-sm font-bold text-white">1250 XP</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Floating Action Button (Quick Links) -->
+<div class="fixed bottom-6 right-6 z-50">
+<button class="flex size-14 items-center justify-center rounded-full bg-primary text-white shadow-xl shadow-blue-500/30 hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+</div>
+</div>
+</body></html>

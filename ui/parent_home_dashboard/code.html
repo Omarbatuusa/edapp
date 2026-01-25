@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EdApp Parent Dashboard</title>
+<!-- Google Fonts: Lexend -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with Config -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                        "surface-dark": "#192233",
+                        "surface-light": "#ffffff",
+                        "border-dark": "#2a374f",
+                        "border-light": "#e5e7eb",
+                        "text-secondary-dark": "#92a4c9",
+                        "text-secondary-light": "#64748b",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for clean UI */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white transition-colors duration-200">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden pb-24">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-20 flex items-center justify-between bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md p-4 pb-2 border-b border-transparent dark:border-border-dark">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-primary" data-alt="Parent profile avatar of a smiling man" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDbSWYFcETC0O_5OgHCiN1DHzARoUO9MnysMJiefE0q1aazYLcchg0fr_uc6p2Iarn32WECQuZDcwzxWlRPZzVmMl_Pq2W6ltU8JgJ5DNQjXaprJGXcr9mywFs0AFxg19nXWCZsV5VqayvHlpjk6ytdNanD1VDiujrDS2dkP5XJcp1MIZ2JMKn_lvuZS36h6fpX7qz9eIJqs-lz6dcKeu__X46_lXut-3IP_gH4SWNGQ4k_bpsLn1iAkVopG_UbPcOg1735Q_KOLl8");'>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-background-dark rounded-full p-0.5">
+<div class="bg-primary rounded-full size-3 border-2 border-background-dark"></div>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-normal text-text-secondary-light dark:text-text-secondary-dark">Welcome back</span>
+<h2 class="text-lg font-bold leading-tight tracking-tight">Thabo M.</h2>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<!-- Tenant Logo Placeholder -->
+<div class="flex items-center justify-center size-8 rounded-full bg-primary/10 mr-1">
+<span class="material-symbols-outlined text-primary text-[20px]">school</span>
+</div>
+<button class="relative flex items-center justify-center rounded-full size-10 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark text-slate-900 dark:text-white transition hover:bg-slate-100 dark:hover:bg-[#232f48]">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 flex size-2.5">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full size-2.5 bg-red-500"></span>
+</span>
+</button>
+</div>
+</header>
+<!-- Main Content Scroll Area -->
+<main class="flex flex-col gap-6 pt-4">
+<!-- Child Status Carousel -->
+<section class="flex flex-col gap-3">
+<div class="px-4 flex justify-between items-end">
+<h3 class="text-sm font-semibold text-text-secondary-light dark:text-text-secondary-dark uppercase tracking-wider">My Children</h3>
+</div>
+<div class="flex overflow-x-auto hide-scrollbar px-4 gap-4 snap-x snap-mandatory">
+<!-- Child 1: Present -->
+<div class="snap-center flex flex-col gap-0 rounded-xl bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark min-w-[280px] overflow-hidden shadow-sm">
+<div class="relative h-28 w-full bg-cover bg-center" data-alt="Portrait of a young student boy in school uniform" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBUvWGhdnFTHnNWhmy7HMx3D1aVyZ9IjyL49OYMImFj-sanAvzCBAKi4Uf3voBKTl9wmAo-YIDBk7uymO5-eIuX5xOiaiYwysK_QSUocZQ1oicjCGrwcG-JqhKPLRLk861Zy-wu1YLscP6BwIBHZqiA5tToD4dDXPB-OkQ5sTwkVSkMfy-ZSrfwLdN67fIe64YQ9mDRHNvZpMRNy-raPT9Ky4KP4M05HfH3eOwxCT6NQ8SA6OhCa23w6nPIhfMLuWBQQ95oQiwuagI");'>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute bottom-3 left-3 text-white">
+<p class="text-lg font-bold">Zola M.</p>
+<p class="text-xs opacity-90">Grade 5 • St. Marks</p>
+</div>
+<div class="absolute top-3 right-3 bg-green-500/90 text-white text-xs font-bold px-2 py-1 rounded backdrop-blur-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> Present
+                            </div>
+</div>
+<div class="p-3 flex justify-between items-center">
+<div class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Last seen: 07:45 AM at Gate 2</div>
+<button class="text-primary text-xs font-bold">View Profile</button>
+</div>
+</div>
+<!-- Child 2: Absent -->
+<div class="snap-center flex flex-col gap-0 rounded-xl bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark min-w-[280px] overflow-hidden shadow-sm">
+<div class="relative h-28 w-full bg-cover bg-center" data-alt="Portrait of a teenage girl student with backpack" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDV6SWXMcMvwG7daVg4ryYHTGmj2dFLeqTgl14DPqrBLq3jW2l0Wt0NinWQapThji4xOGzVA4rxIeejlNYWtX3HLnK_XjKG8OYyqra15OjPvjZzKAvGwg7Z7it0BbyI61EN4eIBZMZkaRs7wcyTQI1ZNGRgK9cyA3IYLoIjnIG56WLEG5cD-6gjTFHwYIYcEttw7I0ie0sIAybTMYtWKtPvJQAdj6-JmIsR-YuO3xWylkndeWkORYP9uhjC0fzWkfl25K4eZoPWn8g");'>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute bottom-3 left-3 text-white">
+<p class="text-lg font-bold">Lefu K.</p>
+<p class="text-xs opacity-90">Grade 8 • St. Marks</p>
+</div>
+<div class="absolute top-3 right-3 bg-red-500/90 text-white text-xs font-bold px-2 py-1 rounded backdrop-blur-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">cancel</span> Absent
+                            </div>
+</div>
+<div class="p-3 flex justify-between items-center bg-red-500/5 dark:bg-red-500/10">
+<div class="text-xs text-red-600 dark:text-red-400 font-medium">Please verify absence</div>
+<button class="text-primary text-xs font-bold">Report</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Quick Action Grid -->
+<section class="px-4">
+<div class="grid grid-cols-2 gap-3">
+<button class="flex flex-col items-center justify-center gap-2 rounded-xl bg-primary text-white p-4 shadow-lg shadow-primary/20 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[32px]">payments</span>
+<span class="text-sm font-bold">Pay Fees</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-2 rounded-xl bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark p-4 active:scale-95 transition-transform hover:border-primary/50 group">
+<span class="material-symbols-outlined text-primary text-[32px] group-hover:scale-110 transition-transform">chat_bubble</span>
+<span class="text-sm font-medium">Message</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-2 rounded-xl bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark p-4 active:scale-95 transition-transform hover:border-primary/50 group">
+<span class="material-symbols-outlined text-primary text-[32px] group-hover:scale-110 transition-transform">person_remove</span>
+<span class="text-sm font-medium">Report Absence</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-2 rounded-xl bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark p-4 active:scale-95 transition-transform hover:border-primary/50 group">
+<span class="material-symbols-outlined text-primary text-[32px] group-hover:scale-110 transition-transform">calendar_month</span>
+<span class="text-sm font-medium">Calendar</span>
+</button>
+</div>
+</section>
+<!-- Priority Cards: Homework -->
+<section class="flex flex-col px-4 gap-2">
+<div class="flex items-center justify-between">
+<h3 class="text-lg font-bold">Homework Due</h3>
+<a class="text-xs font-medium text-primary" href="#">View All</a>
+</div>
+<div class="flex flex-col gap-3">
+<!-- Homework Item 1 -->
+<div class="flex items-center gap-4 rounded-xl bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark p-3 shadow-sm">
+<div class="flex items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 shrink-0 size-12">
+<span class="material-symbols-outlined">calculate</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<p class="text-base font-bold truncate">Maths Worksheet</p>
+<p class="text-text-secondary-light dark:text-text-secondary-dark text-xs">Zola M. • Ch 4. Algebra</p>
+</div>
+<div class="shrink-0 flex flex-col items-end gap-1">
+<span class="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Tomorrow</span>
+</div>
+</div>
+<!-- Homework Item 2 -->
+<div class="flex items-center gap-4 rounded-xl bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark p-3 shadow-sm">
+<div class="flex items-center justify-center rounded-lg bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 shrink-0 size-12">
+<span class="material-symbols-outlined">history_edu</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<p class="text-base font-bold truncate">History Essay</p>
+<p class="text-text-secondary-light dark:text-text-secondary-dark text-xs">Lefu K. • The Cold War</p>
+</div>
+<div class="shrink-0 flex flex-col items-end gap-1">
+<span class="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-500 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Friday</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Announcements Section -->
+<section class="flex flex-col px-4 gap-2">
+<h3 class="text-lg font-bold">Announcements</h3>
+<div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-indigo-600 to-purple-700 p-4 text-white shadow-md">
+<div class="absolute -right-6 -top-6 size-24 rounded-full bg-white/10 blur-xl"></div>
+<div class="relative z-10 flex gap-3">
+<span class="material-symbols-outlined shrink-0 bg-white/20 p-2 rounded-lg h-fit">campaign</span>
+<div class="flex flex-col gap-1">
+<h4 class="font-bold text-base">Early Closure on Friday</h4>
+<p class="text-sm text-white/90 leading-relaxed">School closes at 12:00 PM for Staff Development. Please arrange transport.</p>
+<p class="text-xs text-white/60 mt-1">Posted 2 hours ago</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Community Feed -->
+<section class="flex flex-col px-4 gap-3 mb-4">
+<div class="flex items-center justify-between">
+<h3 class="text-lg font-bold">School Life</h3>
+</div>
+<!-- Feed Card -->
+<div class="flex flex-col rounded-xl bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark overflow-hidden shadow-sm">
+<!-- Feed Header -->
+<div class="flex items-center p-3 gap-3">
+<div class="bg-primary/10 rounded-full size-10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">school</span>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-bold">St. Marks High</span>
+<span class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Sports Dept • 4h ago</span>
+</div>
+<button class="ml-auto text-text-secondary-light dark:text-text-secondary-dark">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+<!-- Feed Image -->
+<div class="w-full bg-slate-200 dark:bg-slate-800 aspect-video bg-cover bg-center" data-alt="Rugby team celebrating a victory on the field with a trophy" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDZ6wmQYBh427F170BJNOQWWDNDW6tu96MgNKaoJ29X79oALVWJ6HzcGlnk8n_O8fmVlByhSzNKBphA7wHp8ZA67D8zIwexgchGOSad100tZ1Jl1iAP6NAtZHLIyJALCYo4RW78E-F1BX9vnlT3kdKfNzwWodaoSQEMLNzx1om74NSppGbaZjcjAkQp63Yi4612bXfmcYycsUiWhxbhUzWZvms9M8q9m37Ek0D7m0E3Oa45-tow4w6QF3fPy_JgxOniINUIeVZDip8");'>
+</div>
+<!-- Feed Content -->
+<div class="p-3 pb-4">
+<div class="flex items-center gap-4 mb-3">
+<button class="flex items-center gap-1 text-slate-900 dark:text-white group">
+<span class="material-symbols-outlined text-[24px] group-hover:text-red-500 transition-colors">favorite</span>
+<span class="text-sm font-medium">124</span>
+</button>
+<button class="flex items-center gap-1 text-slate-900 dark:text-white">
+<span class="material-symbols-outlined text-[24px]">mode_comment</span>
+<span class="text-sm font-medium">8</span>
+</button>
+<button class="ml-auto text-slate-900 dark:text-white">
+<span class="material-symbols-outlined text-[24px]">share</span>
+</button>
+</div>
+<p class="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+<span class="font-bold text-slate-900 dark:text-white">First Team Rugby</span> wins the regional derby! 🏉 What a match against our rivals. Proud of the boys for bringing the trophy home! #StMarksPride #Rugby
+                        </p>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 w-full bg-surface-light dark:bg-surface-dark border-t border-border-light dark:border-border-dark pb-safe pt-2 px-2 z-30">
+<div class="flex justify-around items-center h-16 pb-2">
+<button class="flex flex-col items-center gap-1 p-2 text-primary w-16">
+<span class="material-symbols-outlined filled">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 p-2 text-text-secondary-light dark:text-text-secondary-dark hover:text-slate-900 dark:hover:text-white transition w-16">
+<span class="material-symbols-outlined">school</span>
+<span class="text-[10px] font-medium">Academics</span>
+</button>
+<button class="flex flex-col items-center gap-1 p-2 text-text-secondary-light dark:text-text-secondary-dark hover:text-slate-900 dark:hover:text-white transition w-16">
+<div class="relative">
+<span class="material-symbols-outlined">credit_card</span>
+<div class="absolute -top-1 -right-1 size-2 rounded-full bg-red-500"></div>
+</div>
+<span class="text-[10px] font-medium">Pay</span>
+</button>
+<button class="flex flex-col items-center gap-1 p-2 text-text-secondary-light dark:text-text-secondary-dark hover:text-slate-900 dark:hover:text-white transition w-16">
+<span class="material-symbols-outlined">chat</span>
+<span class="text-[10px] font-medium">Chat</span>
+</button>
+<button class="flex flex-col items-center gap-1 p-2 text-text-secondary-light dark:text-text-secondary-dark hover:text-slate-900 dark:hover:text-white transition w-16">
+<span class="material-symbols-outlined">menu</span>
+<span class="text-[10px] font-medium">Menu</span>
+</button>
+</div>
+</nav>
+<!-- Safe Area Spacer for bottom nav on older phones without safe-area inset support -->
+<div class="h-8"></div>
+</div>
+</body></html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Emergency Alert - School-Wide</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#f20d0d",
+              "background-light": "#f8f5f5",
+              "background-dark": "#221010",
+            },
+            fontFamily: {
+              "display": ["Lexend", "sans-serif"],
+              "body": ["Noto Sans", "sans-serif"],
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        @keyframes pulse-red {
+            0%, 100% { background-color: rgba(242, 13, 13, 0.1); }
+            50% { background-color: rgba(242, 13, 13, 0.25); }
+        }
+        .animate-pulse-bg {
+            animation: pulse-red 2s infinite;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#1c0d0d] dark:text-white font-display antialiased overflow-x-hidden">
+<div class="relative flex h-full min-h-screen w-full flex-col max-w-md mx-auto bg-background-light dark:bg-background-dark shadow-2xl">
+<!-- Urgent Header -->
+<header class="bg-primary px-5 py-4 flex items-center justify-between text-white shadow-md z-20">
+<div class="flex items-center gap-3">
+<div class="bg-white/20 p-2 rounded-full animate-pulse">
+<span class="material-symbols-outlined text-[28px]">notifications_active</span>
+</div>
+<div>
+<h1 class="text-lg font-bold tracking-wide leading-none">EMERGENCY ALERT</h1>
+<p class="text-xs font-medium text-white/90 mt-0.5">Updated 2m ago</p>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-lg font-bold">10:42</span>
+<span class="text-xs opacity-80 uppercase">AM</span>
+</div>
+</header>
+<!-- Main Content Scrollable Area -->
+<main class="flex-1 overflow-y-auto pb-32">
+<!-- Alert Status Card -->
+<div class="p-4 pt-6">
+<div class="relative flex flex-col items-start justify-start rounded-xl shadow-lg bg-white dark:bg-[#2a1515] overflow-hidden border-t-4 border-primary">
+<!-- Urgency Indicator -->
+<div class="absolute top-0 right-0 p-3">
+<span class="flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+</span>
+</div>
+<div class="p-5 w-full flex flex-col gap-2">
+<span class="inline-flex items-center gap-1.5 text-primary text-xs font-bold tracking-wider uppercase bg-primary/10 w-fit px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+                            Critical Incident
+                        </span>
+<h2 class="text-3xl font-bold leading-tight text-gray-900 dark:text-white mt-1">SCHOOL LOCKDOWN</h2>
+<div class="flex flex-col gap-1 mt-1 text-gray-600 dark:text-gray-300">
+<p class="text-base font-medium flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-primary">location_on</span>
+                                Green Valley Campus • Main Wing
+                            </p>
+<p class="text-sm mt-2 leading-relaxed">
+                                A security incident has been reported on campus grounds. Local law enforcement has been notified and is en route.
+                            </p>
+</div>
+</div>
+<!-- Integrated Map Preview -->
+<div class="w-full h-32 bg-gray-200 relative">
+<div class="absolute inset-0 bg-cover bg-center opacity-80" data-alt="Map showing school location in Johannesburg" data-location="Johannesburg School Campus" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBhnmevjkvK0jTiYZTfXcprJ2ENZsMKGRwvBpZ6VjdPrAoRU84j5IeUiu2b1irc4iRCT-skkRN8wQa6iZ9AGzZtKO_4709nxsryc-oedByN8FoinolsseD2INj1Fg8yfoUSMydQlKvvgr7D6GE4hgknwXEDP7n1ECDBtTBw07ORRpxDhGZap_K4btU9wyIXoSJCFpGP1bMv5ZlLwSfoA7xCIRXnDpit6-o30aR-n4d8--jI4OQAJNqugw7dQXYGycDrADbTaYihIMc");'></div>
+<div class="absolute inset-0 bg-primary/10 flex items-center justify-center">
+<div class="bg-white dark:bg-gray-800 p-2 rounded-full shadow-lg transform translate-y-[-50%]">
+<span class="material-symbols-outlined text-primary text-[24px]">share_location</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Staff Section: Roll Call Summary -->
+<div class="px-4 pb-2">
+<div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl p-4">
+<div class="flex justify-between items-center mb-3">
+<h3 class="text-sm font-bold text-blue-900 dark:text-blue-100 uppercase tracking-wide flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">school</span>
+                            Staff View: Class 4B
+                        </h3>
+<span class="text-[10px] font-bold bg-white dark:bg-blue-900 text-blue-700 dark:text-blue-200 px-2 py-1 rounded shadow-sm">LIVE</span>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-white dark:bg-[#2a1515] p-3 rounded-lg shadow-sm border border-gray-100 dark:border-gray-800 text-center">
+<p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Marked Safe</p>
+<p class="text-2xl font-bold text-green-600">18</p>
+</div>
+<div class="bg-white dark:bg-[#2a1515] p-3 rounded-lg shadow-sm border border-gray-100 dark:border-gray-800 text-center relative overflow-hidden">
+<div class="absolute inset-0 bg-primary/5"></div>
+<p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Unaccounted</p>
+<p class="text-2xl font-bold text-primary">4</p>
+</div>
+</div>
+<button class="w-full mt-3 text-xs font-bold text-blue-700 dark:text-blue-300 flex items-center justify-center gap-1 hover:underline">
+                        View Detailed Roll List
+                        <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Instructions Section -->
+<div class="px-4 py-4">
+<h3 class="text-gray-900 dark:text-white text-lg font-bold mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-gray-400">info</span>
+                    Immediate Instructions
+                </h3>
+<div class="flex flex-col gap-4">
+<!-- Step 1 -->
+<div class="flex gap-4 items-start bg-white dark:bg-[#2a1515] p-4 rounded-xl shadow-sm border-l-4 border-l-[#e8cece]">
+<div class="flex-shrink-0 size-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">1</div>
+<div>
+<p class="text-primary text-sm font-bold mb-1">Stay Inside</p>
+<p class="text-gray-800 dark:text-gray-200 text-sm leading-relaxed">Remain in your current classroom or office. Do not enter hallways or open areas.</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex gap-4 items-start bg-white dark:bg-[#2a1515] p-4 rounded-xl shadow-sm border-l-4 border-l-[#e8cece]">
+<div class="flex-shrink-0 size-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">2</div>
+<div>
+<p class="text-primary text-sm font-bold mb-1">Secure Area</p>
+<p class="text-gray-800 dark:text-gray-200 text-sm leading-relaxed">Lock all doors and windows immediately. Turn off lights and silence mobile devices.</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="flex gap-4 items-start bg-white dark:bg-[#2a1515] p-4 rounded-xl shadow-sm border-l-4 border-l-[#e8cece]">
+<div class="flex-shrink-0 size-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">3</div>
+<div>
+<p class="text-primary text-sm font-bold mb-1">Wait for Signal</p>
+<p class="text-gray-800 dark:text-gray-200 text-sm leading-relaxed">Do not leave until the 'All Clear' notification is received via this app or PA system.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="h-6"></div>
+</main>
+<!-- Fixed Action Footer -->
+<div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 dark:bg-[#221010]/95 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 p-5 pb-8 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] z-30">
+<div class="flex flex-col gap-3">
+<button class="group w-full bg-primary hover:bg-red-700 active:scale-[0.98] transition-all duration-200 text-white font-bold text-lg py-4 rounded-xl shadow-lg shadow-red-500/30 flex items-center justify-center gap-3 relative overflow-hidden">
+<div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+<span class="material-symbols-outlined text-[28px]">check_circle</span>
+<span>I AM SAFE</span>
+</button>
+<button class="w-full py-3 text-sm font-medium text-gray-500 dark:text-gray-400 flex items-center justify-center gap-2 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">local_police</span>
+                    Request Emergency Assistance
+                </button>
+</div>
+</div>
+</div>
+</body></html>

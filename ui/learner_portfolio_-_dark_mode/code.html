@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Learner Portfolio - Dark Mode</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "surface-dark": "#182735",
+                        "surface-darker": "#14202b",
+                        "text-secondary": "#8eaecc",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for horizontal scroll areas */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased min-h-screen flex flex-col">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-gray-200 dark:border-white/5 px-4 py-3 flex items-center justify-between">
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-gray-900 dark:text-white">
+<span class="material-symbols-outlined">arrow_back_ios_new</span>
+</button>
+<h1 class="text-lg font-bold text-gray-900 dark:text-white">Digital Portfolio</h1>
+<button class="flex items-center justify-center w-10 h-10 rounded-full bg-primary/20 text-primary hover:bg-primary/30 transition-colors">
+<span class="material-symbols-outlined">add</span>
+</button>
+</header>
+<!-- Main Content -->
+<main class="flex-1 overflow-x-hidden pb-24">
+<!-- Profile Header -->
+<section class="px-4 py-6">
+<div class="flex items-center gap-4">
+<div class="relative group cursor-pointer">
+<div class="w-20 h-20 rounded-full bg-cover bg-center border-2 border-primary p-0.5" data-alt="Portrait of a smiling student in school uniform" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC7Z31EKT44bUPw3MmLZFSYaUl7VbFJHRkj_p4hZfROnXf25INXs8vB2jqvc7mYC4fY61lgzEIuoItm8SckMHIl5u6bl2EFUzveYa8CmZVU4CdYTA0zJiE-k0iL5TUYZYODQWatcPW_O6PgtnoOaq9nLcNOgpz549_b5BUKfLYFQpsvQRg7zK8FFcGxaMtycgB23EVaBYcsdcObrmsCK38cirJdXPaptdnVW_HJ_f5DRtvUYG9NZyPq4pMfaBX4DGZZDN5cYCSaGQE');"></div>
+<div class="absolute bottom-0 right-0 bg-surface-dark border border-white/10 rounded-full p-1 w-6 h-6 flex items-center justify-center">
+<span class="material-symbols-outlined text-xs text-primary">edit</span>
+</div>
+</div>
+<div class="flex flex-col">
+<h2 class="text-xl font-bold text-gray-900 dark:text-white leading-tight">Thabo Mbeki</h2>
+<p class="text-text-secondary text-sm font-medium mt-0.5">Grade 11 • St. John's College</p>
+<div class="flex items-center gap-2 mt-2">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
+                            Top Achiever
+                        </span>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                            Debate Lead
+                        </span>
+</div>
+</div>
+</div>
+</section>
+<!-- Category Filters -->
+<section class="sticky top-[64px] z-40 bg-background-light dark:bg-background-dark py-2">
+<div class="flex gap-3 px-4 overflow-x-auto no-scrollbar pb-2">
+<button class="shrink-0 px-5 py-2 rounded-xl bg-primary text-white font-medium text-sm shadow-lg shadow-primary/25 transition-transform active:scale-95">All</button>
+<button class="shrink-0 px-5 py-2 rounded-xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/5 text-gray-600 dark:text-text-secondary font-medium text-sm hover:bg-gray-50 dark:hover:bg-white/5 transition-transform active:scale-95">STEM</button>
+<button class="shrink-0 px-5 py-2 rounded-xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/5 text-gray-600 dark:text-text-secondary font-medium text-sm hover:bg-gray-50 dark:hover:bg-white/5 transition-transform active:scale-95">Arts &amp; Culture</button>
+<button class="shrink-0 px-5 py-2 rounded-xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/5 text-gray-600 dark:text-text-secondary font-medium text-sm hover:bg-gray-50 dark:hover:bg-white/5 transition-transform active:scale-95">Sports</button>
+<button class="shrink-0 px-5 py-2 rounded-xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/5 text-gray-600 dark:text-text-secondary font-medium text-sm hover:bg-gray-50 dark:hover:bg-white/5 transition-transform active:scale-95">Leadership</button>
+</div>
+</section>
+<!-- Timeline / Achievements Section -->
+<section class="px-4 py-4">
+<div class="flex items-center justify-between mb-3">
+<h3 class="text-base font-bold text-gray-900 dark:text-white">Recent Achievements</h3>
+<button class="text-primary text-sm font-medium hover:underline">View All</button>
+</div>
+<div class="bg-white dark:bg-surface-dark rounded-xl p-4 border border-gray-200 dark:border-white/5">
+<div class="relative pl-4 border-l-2 border-primary/20 space-y-6">
+<!-- Timeline Item 1 -->
+<div class="relative">
+<div class="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-primary ring-4 ring-surface-dark"></div>
+<div class="flex flex-col">
+<span class="text-xs text-text-secondary mb-1">Oct 12, 2023</span>
+<h4 class="text-sm font-bold text-gray-900 dark:text-white">Regional Debate Winner</h4>
+<p class="text-xs text-text-secondary mt-1">Awarded best speaker at the Gauteng Provincials.</p>
+</div>
+</div>
+<!-- Timeline Item 2 -->
+<div class="relative">
+<div class="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-primary/40 ring-4 ring-surface-dark"></div>
+<div class="flex flex-col">
+<span class="text-xs text-text-secondary mb-1">Sep 28, 2023</span>
+<h4 class="text-sm font-bold text-gray-900 dark:text-white">Science Expo Finalist</h4>
+<p class="text-xs text-text-secondary mt-1">Project "Solar Efficiency" selected for finals.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Projects Grid -->
+<section class="px-4 py-2">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-bold text-gray-900 dark:text-white">Project Showcase</h3>
+<span class="material-symbols-outlined text-text-secondary cursor-pointer hover:text-white">filter_list</span>
+</div>
+<div class="grid grid-cols-1 gap-5">
+<!-- Project Card 1: Robotics (Video) -->
+<article class="bg-white dark:bg-surface-dark rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-white/5 group">
+<div class="relative aspect-video bg-surface-darker">
+<div class="absolute inset-0 bg-cover bg-center opacity-80 group-hover:opacity-100 transition-opacity" data-alt="Close up of a small robot with wires and sensors on a desk" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAQkvvZOXohPMrlv1ngqHXSF735HHjXWAXNFp6P-iokyM2mGAXq-SgOlKYb-_fAgR0AouSCousV6_Vr2iXtbgZHVqldNmDIboDh9OJ-xHCBKKSTXrUY2GfuOHX2ynJZrqwOetbCfufek5r7bEaZmaXBmD4pIL-wjzCtqOtBTiIo3UcuC7GLqU8ZHc3xifkQiK_Bta7ILz1FJl7GbUOghQpdvFosvQTuwk4wGuulhRzQKD8g-V75SFNgi6RSRclXsARMVtb12xuxJP0');"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+<div class="absolute top-3 right-3 bg-black/50 backdrop-blur-sm px-2 py-1 rounded text-xs text-white font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">videocam</span> Video
+                        </div>
+<div class="absolute top-3 left-3 bg-primary/90 px-2 py-1 rounded text-xs text-white font-bold uppercase tracking-wide">
+                            Robotics
+                        </div>
+<button class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-primary hover:text-white transition-colors">
+<span class="material-symbols-outlined text-3xl">play_arrow</span>
+</div>
+</button>
+</div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h4 class="text-base font-bold text-gray-900 dark:text-white mb-1">Line-Following Bot v2</h4>
+<p class="text-xs text-text-secondary">Oct 15 • Engineering Class</p>
+</div>
+<span class="material-symbols-outlined text-text-secondary text-sm">public</span>
+</div>
+<div class="mt-3 bg-primary/10 rounded-lg p-3 flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-blue-900/50 flex items-center justify-center shrink-0 text-primary">
+<span class="material-symbols-outlined text-sm">chat_bubble</span>
+</div>
+<div>
+<p class="text-xs font-semibold text-primary mb-0.5">Teacher Feedback</p>
+<p class="text-xs text-text-secondary leading-relaxed">"Great progress on the sensors! The PID controller implementation looks much smoother now."</p>
+</div>
+</div>
+</div>
+</article>
+<!-- Project Card 2: Art (Image) -->
+<article class="bg-white dark:bg-surface-dark rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-white/5">
+<div class="flex flex-col sm:flex-row h-full">
+<div class="relative w-full sm:w-1/3 aspect-[4/3] sm:aspect-auto">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Abstract charcoal sketch with dark shading and expressive lines" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCkyi-c7_MTTRqm7IYb8LyHgBHXFyhQ3312JGHISnaVs3dDcM8rwXP30jsUI_XpnHoT1IEJdl9q0JR9bhH65_1wBkGcAtMH5F4QbH8IU7VOZCvgk5nGR2manAHKyOOL-nWBgCb3iSejLH5FdNyVwW4uK68nwGzqorQyajq_ScQfKHPjbVL4LFIet2Yvgu6QrYJyrMOlPgB_tevfY38r58Q3kijtvfI5smrZW1TvSvRWUij0GLZdCpXG2o7ePRFJfFWW0B_4P99XxUI');"></div>
+<div class="absolute top-3 right-3 sm:hidden bg-black/50 backdrop-blur-sm px-2 py-1 rounded text-xs text-white font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">image</span> Gallery
+                            </div>
+</div>
+<div class="p-4 flex flex-col justify-between flex-1">
+<div>
+<div class="flex justify-between items-start">
+<span class="text-xs font-bold text-purple-400 mb-1 block uppercase tracking-wide">Visual Arts</span>
+<span class="material-symbols-outlined text-text-secondary text-sm">lock</span>
+</div>
+<h4 class="text-base font-bold text-gray-900 dark:text-white mb-2">Abstract Charcoal Series</h4>
+<p class="text-sm text-text-secondary line-clamp-2">Exploration of shadow and light using charcoal on textured paper. Focused on emotive expression.</p>
+</div>
+<div class="mt-4 flex items-center gap-3">
+<button class="text-xs font-medium text-primary hover:text-white transition-colors flex items-center gap-1">
+                                    View 4 Images <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</article>
+<!-- Project Card 3: History (Document) -->
+<article class="bg-white dark:bg-surface-dark rounded-xl p-4 shadow-sm border border-gray-200 dark:border-white/5 flex gap-4 items-center">
+<div class="w-16 h-16 rounded-lg bg-red-500/10 flex flex-col items-center justify-center shrink-0 border border-red-500/20">
+<span class="material-symbols-outlined text-red-400 text-2xl">picture_as_pdf</span>
+<span class="text-[10px] font-bold text-red-400 mt-1">PDF</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-0.5">
+<span class="text-xs font-bold text-orange-400 uppercase tracking-wide">History</span>
+<span class="text-xs text-text-secondary">Sep 10</span>
+</div>
+<h4 class="text-base font-bold text-gray-900 dark:text-white truncate">Apartheid Museum Essay</h4>
+<p class="text-xs text-text-secondary truncate">Reflections on the rise and fall of the regime.</p>
+</div>
+<button class="w-8 h-8 rounded-full hover:bg-white/5 flex items-center justify-center text-text-secondary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</article>
+<!-- Project Card 4: Code (Git) -->
+<article class="bg-white dark:bg-surface-dark rounded-xl p-4 shadow-sm border border-gray-200 dark:border-white/5">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-sm">code</span>
+</div>
+<div>
+<h4 class="text-sm font-bold text-gray-900 dark:text-white">Python Data Analysis</h4>
+<p class="text-xs text-text-secondary">Computer Science • Aug 22</p>
+</div>
+</div>
+<div class="bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-0.5 rounded text-[10px] font-bold uppercase">
+                             A+ Grade
+                         </div>
+</div>
+<div class="bg-surface-darker rounded-lg p-3 font-mono text-xs text-gray-400 overflow-x-auto border border-white/5 mb-3">
+<p><span class="text-primary">def</span> <span class="text-yellow-400">analyze_weather</span>(data):</p>
+<p class="pl-4">avg_temp = <span class="text-primary">sum</span>(data) / <span class="text-primary">len</span>(data)</p>
+<p class="pl-4"><span class="text-primary">return</span> avg_temp</p>
+</div>
+<div class="flex justify-between items-center border-t border-white/5 pt-3">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full bg-surface-dark border border-surface-darker flex items-center justify-center text-[10px] text-text-secondary bg-cover" data-alt="Student avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA1fWUI7bbiVTp6hi_nw4IrHHFMecJgZi44XArLMR6QbFephp22NhynYRdAxPhJehufbO68dVEUDwM54Hf6e4VPsuDUKVs19e3cdubP7cciGwwM3mNBzAA18TecsiODGVKOd83JMTZC3tx__mqLf0i8g_2Dl8tRrPOUN9IaASoD25GH2cmDBJPjYYlJU2VTx25bfvP-oYkZ3MY-_LilJbDYzTV73bicjpDgCiK377Oz3XcDyqB2pNTCveAvyMuwwk1WhR9kJyBLUOw')"></div>
+<div class="w-6 h-6 rounded-full bg-blue-900 border border-surface-darker flex items-center justify-center text-[10px] text-white" title="Teacher">T</div>
+</div>
+<div class="flex gap-4">
+<div class="flex items-center gap-1 text-text-secondary text-xs">
+<span class="material-symbols-outlined text-sm">thumb_up</span> 12
+                             </div>
+<div class="flex items-center gap-1 text-text-secondary text-xs">
+<span class="material-symbols-outlined text-sm">comment</span> 3
+                             </div>
+</div>
+</div>
+</article>
+</div>
+<!-- Empty State hint (hidden by default, shown for example layout) -->
+<!-- 
+            <div class="flex flex-col items-center justify-center py-12 text-center">
+                <div class="w-24 h-24 bg-surface-dark rounded-full flex items-center justify-center mb-4">
+                    <span class="material-symbols-outlined text-4xl text-text-secondary opacity-50">folder_open</span>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-2">No Music Projects Yet</h3>
+                <p class="text-text-secondary text-sm max-w-xs mx-auto mb-6">Start building your portfolio by uploading your first music composition or performance.</p>
+                <button class="bg-primary text-white px-6 py-2 rounded-xl font-medium text-sm">Upload Project</button>
+            </div> 
+            -->
+<div class="h-10"></div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 right-0 bg-background-light dark:bg-background-dark border-t border-gray-200 dark:border-white/5 pb-safe pt-2 px-6 z-50">
+<div class="flex justify-between items-center h-14">
+<a class="flex flex-col items-center gap-1 text-text-secondary hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl font-variation-settings-fill">school</span>
+<span class="text-[10px] font-medium">Portfolio</span>
+</a>
+<!-- Floating Action Button (Alternative placement) -->
+<div class="relative -top-6">
+<button class="w-14 h-14 rounded-full bg-primary shadow-[0_4px_20px_rgba(56,156,250,0.4)] flex items-center justify-center text-white transform transition-transform hover:scale-105 active:scale-95">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+</div>
+<a class="flex flex-col items-center gap-1 text-text-secondary hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">assignment</span>
+<span class="text-[10px] font-medium">Tasks</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-text-secondary hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">person</span>
+<span class="text-[10px] font-medium">Profile</span>
+</a>
+</div>
+<div class="h-[env(safe-area-inset-bottom)]"></div>
+</nav>
+<style>
+        .font-variation-settings-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+    </style>
+</body></html>

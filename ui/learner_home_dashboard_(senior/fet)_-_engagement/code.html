@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Learner Home Dashboard</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#135bec",
+              "background-light": "#f6f6f8",
+              "background-dark": "#101622",
+              "card-dark": "#1e293b",
+              "card-light": "#ffffff",
+              "text-secondary-dark": "#94a3b8",
+            },
+            fontFamily: {
+              "display": ["Plus Jakarta Sans", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom scrollbar hiding for horizontal scrolling */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white antialiased selection:bg-primary selection:text-white pb-24">
+<!-- Sticky Header -->
+<div class="sticky top-0 z-50 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
+<div class="flex items-center justify-between px-4 py-3">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 ring-2 ring-primary/20" data-alt="Student profile avatar showing a smiling young person" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBUv7nU9gixTyyylbDqsaBLYqVelQG2tWCXP74xkfXAV_pP2B-3U_vdQVRrsTmDbTErFRIfL87Cjh8uOXgyi12C7tjWEHUDHOUk2cAvnhDcZ48rwwiDANhFrNfuzH074ksud9UM6DtC7Pdqis0sejLf6E8X8VESCn2gJQuY72fSp6D7GrPk8qldFxaOPTQyz1JMp7zW2KQFANbnt07zMevTU1AararTENUx7UoumjwBmDzK3rtOiQDfStX6K2szyaSQrGtuaPKAp5c");'>
+</div>
+<div class="absolute bottom-0 right-0 size-3 bg-green-500 rounded-full border-2 border-white dark:border-background-dark"></div>
+</div>
+<div class="flex flex-col">
+<h1 class="text-sm font-bold leading-none tracking-tight text-slate-900 dark:text-white">EdApp</h1>
+<span class="text-[10px] font-medium text-primary uppercase tracking-wider">Senior Phase</span>
+</div>
+</div>
+<button class="flex items-center justify-center size-10 rounded-full bg-transparent hover:bg-black/5 dark:hover:bg-white/10 text-slate-600 dark:text-gray-300 transition-all">
+<span class="material-symbols-outlined">light_mode</span>
+</button>
+</div>
+</div>
+<!-- Greeting Section -->
+<div class="px-4 pt-6 pb-2">
+<h2 class="text-2xl font-bold leading-tight">Good afternoon, Alex</h2>
+<p class="text-slate-500 dark:text-text-secondary-dark text-sm mt-1">Ready to crush your goals today?</p>
+</div>
+<!-- Focus Stats Carousel -->
+<div class="relative w-full overflow-hidden mt-4">
+<div class="flex overflow-x-auto no-scrollbar gap-4 px-4 pb-4 snap-x snap-mandatory">
+<!-- Streak Card -->
+<div class="snap-center shrink-0 w-[280px] bg-white dark:bg-card-dark rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 flex items-center gap-4 relative overflow-hidden group">
+<!-- Decorative background glow -->
+<div class="absolute -right-6 -top-6 size-24 bg-orange-500/10 rounded-full blur-2xl group-hover:bg-orange-500/20 transition-all"></div>
+<div class="flex items-center justify-center size-14 rounded-xl bg-orange-500/10 text-orange-500">
+<span class="material-symbols-outlined text-3xl filled icon-filled">local_fire_department</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-semibold text-slate-500 dark:text-text-secondary-dark uppercase tracking-wider">Daily Streak</span>
+<span class="text-2xl font-bold text-slate-900 dark:text-white">4 Days!</span>
+<span class="text-xs text-orange-500 font-medium">You're on fire 🔥</span>
+</div>
+</div>
+<!-- Academic Progress Card -->
+<div class="snap-center shrink-0 w-[280px] bg-white dark:bg-card-dark rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 flex items-center gap-4 relative overflow-hidden group">
+<div class="absolute -right-6 -top-6 size-24 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-all"></div>
+<div class="relative size-14 flex items-center justify-center">
+<!-- Simple CSS-based circular progress visualization -->
+<svg class="size-full -rotate-90" viewbox="0 0 36 36">
+<path class="text-slate-100 dark:text-slate-700" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+<path class="text-primary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="85, 100" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+<span class="absolute text-xs font-bold text-primary">85%</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-semibold text-slate-500 dark:text-text-secondary-dark uppercase tracking-wider">Weekly Goals</span>
+<span class="text-2xl font-bold text-slate-900 dark:text-white">Almost there</span>
+<span class="text-xs text-slate-400">2 tasks remaining</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Timeline Section: What's Due -->
+<div class="mt-2">
+<div class="flex items-center justify-between px-4 py-2">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">What's Due</h3>
+<a class="text-xs font-bold text-primary hover:text-blue-400" href="#">See All</a>
+</div>
+<div class="px-4 mt-2">
+<!-- Timeline Item 1 -->
+<div class="flex gap-4">
+<div class="flex flex-col items-center">
+<div class="flex items-center justify-center size-10 rounded-full bg-red-500/10 text-red-500 shrink-0 z-10">
+<span class="material-symbols-outlined text-xl">functions</span>
+</div>
+<div class="w-0.5 bg-gray-200 dark:bg-gray-800 grow my-1"></div>
+</div>
+<div class="pb-6 w-full">
+<div class="bg-white dark:bg-card-dark rounded-xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm">
+<div class="flex justify-between items-start mb-1">
+<span class="bg-red-500/20 text-red-600 dark:text-red-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">Maths</span>
+<span class="text-xs font-medium text-red-500 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">warning</span>
+                                Tomorrow, 8:00 AM
+                            </span>
+</div>
+<h4 class="text-base font-bold text-slate-900 dark:text-white">Algebra Worksheet</h4>
+<div class="mt-3 flex items-center justify-between">
+<span class="text-xs text-slate-500 dark:text-text-secondary-dark">Ch. 4 - Linear Equations</span>
+<button class="size-6 rounded border border-gray-300 dark:border-gray-600 flex items-center justify-center hover:bg-primary hover:border-primary group/check transition-all">
+<span class="material-symbols-outlined text-white text-sm opacity-0 group-hover/check:opacity-100">check</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Timeline Item 2 -->
+<div class="flex gap-4">
+<div class="flex flex-col items-center">
+<div class="flex items-center justify-center size-10 rounded-full bg-purple-500/10 text-purple-500 shrink-0 z-10">
+<span class="material-symbols-outlined text-xl">history_edu</span>
+</div>
+<div class="w-0.5 bg-gray-200 dark:bg-gray-800 grow my-1"></div>
+</div>
+<div class="pb-6 w-full">
+<div class="bg-white dark:bg-card-dark rounded-xl p-4 border border-gray-100 dark:border-gray-800 shadow-sm opacity-80">
+<div class="flex justify-between items-start mb-1">
+<span class="bg-purple-500/20 text-purple-600 dark:text-purple-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">History</span>
+<span class="text-xs font-medium text-slate-500 dark:text-text-secondary-dark">
+                                Friday, 2:00 PM
+                            </span>
+</div>
+<h4 class="text-base font-bold text-slate-900 dark:text-white">Essay Draft: WW2</h4>
+<div class="mt-3 flex items-center justify-between">
+<span class="text-xs text-slate-500 dark:text-text-secondary-dark">Submit via Portal</span>
+<button class="size-6 rounded border border-gray-300 dark:border-gray-600 flex items-center justify-center hover:bg-primary hover:border-primary group/check transition-all">
+<span class="material-symbols-outlined text-white text-sm opacity-0 group-hover/check:opacity-100">check</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Timeline end marker -->
+<div class="flex gap-4">
+<div class="flex flex-col items-center">
+<div class="size-2 rounded-full bg-gray-300 dark:bg-gray-700 shrink-0 mt-1"></div>
+</div>
+<div class="pb-2">
+<p class="text-xs text-slate-400">View upcoming next week</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Coding/Robotics Zone -->
+<div class="px-4 mt-8">
+<div class="relative w-full rounded-2xl overflow-hidden bg-gray-900 border border-gray-800 shadow-lg group cursor-pointer">
+<!-- Background Image with overlay -->
+<div class="absolute inset-0 bg-cover bg-center opacity-40 group-hover:opacity-50 transition-opacity duration-500 group-hover:scale-105" data-alt="Abstract digital code rain or matrix style background pattern in dark blue and cyan" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDKtZ1qK_upA8aAGzWyawX7JluPc4yBY9_QjouA07jtBUxrocdY2UgahxhI6Bm01f5wyqd-pH44gF8PYG9B5a72nyJbAUuqf9GyRAo7B4OVii5sCWMpfXSJb5Gaa_VrqHZUdW0Mmzys40hERQVc8n3LfG_AkJGCFsVaFQWB4ehhsKiYgRPtXqcrb72HvoXaHTzjvoXsOVU6dbeVEXiBlAa1YIkXzNytA0BMJ7O137cSQR4z8s0ZMLkkrnlxGQSr9njVJC5E8hgqHxk");'>
+</div>
+<!-- Gradient Overlay -->
+<div class="absolute inset-0 bg-gradient-to-r from-background-dark via-background-dark/80 to-transparent"></div>
+<div class="relative p-5 flex flex-col items-start gap-3">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-cyan-400 animate-pulse">terminal</span>
+<span class="text-xs font-bold text-cyan-400 tracking-wider uppercase">Coding Zone</span>
+</div>
+<h3 class="text-xl font-bold text-white max-w-[80%]">Daily Python Challenge: Loop Logic</h3>
+<p class="text-sm text-gray-300 max-w-[90%]">Master 'for' loops in 5 minutes and earn the "Code Ninja" badge.</p>
+<button class="mt-2 bg-cyan-500 hover:bg-cyan-400 text-black text-sm font-bold px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+                    Start Coding
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Quick-Play Arcade -->
+<div class="px-4 mt-8">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Quick-Play Arcade</h3>
+<div class="grid grid-cols-2 gap-3">
+<!-- Game 1 -->
+<button class="bg-white dark:bg-card-dark p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col items-center gap-2 hover:border-primary/50 hover:bg-primary/5 transition-all group">
+<div class="size-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">quiz</span>
+</div>
+<span class="font-bold text-sm text-slate-700 dark:text-slate-200">Pop Quiz</span>
+</button>
+<!-- Game 2 -->
+<button class="bg-white dark:bg-card-dark p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col items-center gap-2 hover:border-green-500/50 hover:bg-green-500/5 transition-all group">
+<div class="size-12 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">style</span>
+</div>
+<span class="font-bold text-sm text-slate-700 dark:text-slate-200">Flashcards</span>
+</button>
+<!-- Game 3 -->
+<button class="bg-white dark:bg-card-dark p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col items-center gap-2 hover:border-yellow-500/50 hover:bg-yellow-500/5 transition-all group">
+<div class="size-12 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">bolt</span>
+</div>
+<span class="font-bold text-sm text-slate-700 dark:text-slate-200">Speed Drills</span>
+</button>
+<!-- Game 4 -->
+<button class="bg-white dark:bg-card-dark p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col items-center gap-2 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all group">
+<div class="size-12 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-500 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">spellcheck</span>
+</div>
+<span class="font-bold text-sm text-slate-700 dark:text-slate-200">Spelling</span>
+</button>
+</div>
+</div>
+<!-- Community Feed Widget -->
+<div class="px-4 mt-8 mb-4">
+<div class="flex items-center gap-2 mb-4">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Campus Feed</h3>
+<span class="bg-primary/20 text-primary text-[10px] font-bold px-2 py-0.5 rounded-full">LIVE</span>
+</div>
+<div class="bg-white dark:bg-card-dark rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
+<!-- Feed Item 1 -->
+<div class="p-4 border-b border-gray-100 dark:border-gray-800 flex gap-3">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 shrink-0 bg-gray-200" data-alt="School logo placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDAiQxCVbObAovxcvmppmtg4tUqc6vxgi4-QrzvgtXPb8hp2kjXLOC4PMyr7QUMgU12RMrObYAkZss_1D4M4ThRxd-PNwE-50MC_4daD0ic6WrJSHQrxMvSZaLuPBzced5AHuzf0YLIq3ZfkfonxPjEt1qHASUynD-kFb12w6NW-yqEY9ZSKMm30QYVxc8InGKblBWsS2JhRB0k6F0OR58L_JfmPQprLSduq1pEiFEKMC87HIidku-n5uqiWeMU35EkW-OJJQppDv4");'></div>
+<div>
+<div class="flex items-center gap-2">
+<span class="text-sm font-bold text-slate-900 dark:text-white">Admin Office</span>
+<span class="text-xs text-slate-400">• 2h ago</span>
+</div>
+<p class="text-sm text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
+                        📢 Reminder: Rugby team tryouts are happening this Friday at 15:00 on the main field. Bring your gear!
+                    </p>
+<div class="flex gap-4 mt-3">
+<button class="flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">thumb_up</span> Like
+                        </button>
+<button class="flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">comment</span> 4 Comments
+                        </button>
+</div>
+</div>
+</div>
+<!-- Feed Item 2 -->
+<div class="p-4 flex gap-3">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 shrink-0 bg-gray-200" data-alt="Generic profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCquG9JY8cDgQf-58YzmurBK1BFIroKrMDQuRefgm7ln3W62F0gV6F2x_VMktfdWcxkiopezoDdFKQvrdG-G7ZecVNdsec30_DhNL4I-BYU4t7LbHAo_IHh93E2BwJKXNsfLWCGBJePd70sAboCwOAnlmIrvePbPObuoEX3ptTgUXlTturO4X4aum7mmdt6fXd1Bf21zUld3IoPGTnS3REyWdw6eBqqzgpm1Xr27fjYaTwRHeJ5WJvJTVbscTtCXJmsLpUqr1pwNcU");'></div>
+<div>
+<div class="flex items-center gap-2">
+<span class="text-sm font-bold text-slate-900 dark:text-white">Mr. Johnson (Science)</span>
+<span class="text-xs text-slate-400">• 5h ago</span>
+</div>
+<p class="text-sm text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
+                        Great job to the Grade 10s on the Robotics Expo today! Photos will be up on the portal tomorrow. 🤖
+                    </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation -->
+<div class="fixed bottom-0 left-0 w-full bg-white dark:bg-[#101622] border-t border-gray-200 dark:border-gray-800 pb-6 pt-3 px-6 z-50">
+<div class="flex justify-between items-end">
+<button class="flex flex-col items-center gap-1 text-primary w-16">
+<span class="material-symbols-outlined filled">home</span>
+<span class="text-[10px] font-bold">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors w-16">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="text-[10px] font-medium">Planner</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors w-16">
+<span class="material-symbols-outlined">school</span>
+<span class="text-[10px] font-medium">Courses</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-primary transition-colors w-16">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-medium">Profile</span>
+</button>
+</div>
+</div>
+</body></html>

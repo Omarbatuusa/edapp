@@ -1,0 +1,1 @@
+ALTER USER edapp WITH PASSWORD 'password123';
