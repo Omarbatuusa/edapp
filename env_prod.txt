@@ -1,0 +1,4 @@
+DATABASE_URL=postgresql://edapp:password123@postgres:5432/edapp
+JWT_SECRET=supersecretkey123
+PORT=3000
+NODE_ENV=production

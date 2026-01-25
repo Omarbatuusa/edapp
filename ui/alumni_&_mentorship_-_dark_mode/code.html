@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Alumni &amp; Mentorship - Dark Mode</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#101a23", // Matching snippet background
+                        "surface-dark": "#21364a", // Matching snippet surface
+                        "text-secondary": "#8eaecc", // Matching snippet secondary text
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for horizontal scroll areas */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-white selection:bg-primary selection:text-white">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden pb-24">
+<!-- Top App Bar -->
+<div class="sticky top-0 z-50 flex items-center bg-background-dark/95 backdrop-blur-sm p-4 pb-2 justify-between border-b border-surface-dark/30">
+<div class="text-white flex size-12 shrink-0 items-center justify-start cursor-pointer hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined text-2xl">arrow_back</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">Alumni Network</h2>
+<div class="absolute right-4 top-4 flex w-12 items-center justify-end">
+<button class="flex size-10 items-center justify-center rounded-xl bg-transparent text-white hover:bg-surface-dark transition-colors">
+<span class="material-symbols-outlined text-2xl">settings</span>
+</button>
+</div>
+</div>
+<!-- Search Bar -->
+<div class="px-4 py-3 bg-background-dark">
+<label class="flex flex-col h-12 w-full">
+<div class="flex w-full flex-1 items-stretch rounded-xl h-full bg-surface-dark ring-1 ring-white/5 focus-within:ring-primary/50 transition-all">
+<div class="text-text-secondary flex items-center justify-center pl-4 pr-2">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="flex w-full min-w-0 flex-1 bg-transparent text-white placeholder:text-text-secondary border-none focus:outline-none focus:ring-0 h-full text-base font-normal px-2" placeholder="Search name, company, year..."/>
+</div>
+</label>
+</div>
+<!-- Filter Chips -->
+<div class="flex gap-3 px-4 py-2 overflow-x-auto no-scrollbar bg-background-dark">
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-surface-dark hover:bg-surface-dark/80 px-4 ring-1 ring-white/5 transition-colors">
+<span class="text-white text-sm font-medium">Industry</span>
+<span class="material-symbols-outlined text-base">keyboard_arrow_down</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-surface-dark hover:bg-surface-dark/80 px-4 ring-1 ring-white/5 transition-colors">
+<span class="text-white text-sm font-medium">Location</span>
+<span class="material-symbols-outlined text-base">keyboard_arrow_down</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-surface-dark hover:bg-surface-dark/80 px-4 ring-1 ring-white/5 transition-colors">
+<span class="text-white text-sm font-medium">Skills</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-primary/20 hover:bg-primary/30 px-4 ring-1 ring-primary/50 transition-colors">
+<span class="text-primary text-sm font-medium">Mentors Only</span>
+<span class="material-symbols-outlined text-primary text-base">check</span>
+</button>
+</div>
+<!-- Privacy Toggle Item -->
+<div class="mx-4 mt-4 mb-2 rounded-xl bg-surface-dark/50 ring-1 ring-white/5 overflow-hidden">
+<div class="flex items-center gap-4 px-4 h-14 justify-between">
+<div class="flex items-center gap-3">
+<div class="text-primary flex items-center justify-center rounded-lg bg-primary/10 shrink-0 size-8">
+<span class="material-symbols-outlined text-lg">visibility</span>
+</div>
+<p class="text-white text-sm font-medium flex-1 truncate">Visible in directory</p>
+</div>
+<div class="shrink-0">
+<label class="relative flex h-[24px] w-[44px] cursor-pointer items-center rounded-full border-none bg-[#21364a] ring-1 ring-white/10 p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary transition-colors">
+<div class="h-full aspect-square rounded-full bg-white shadow-sm"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+</div>
+<!-- Featured Mentors Section -->
+<div class="pt-6 pb-2">
+<div class="flex items-center justify-between px-4 pb-4">
+<h1 class="text-white text-xl font-bold leading-tight tracking-tight">Featured Mentors</h1>
+<a class="text-primary text-sm font-medium" href="#">View all</a>
+</div>
+<div class="flex gap-4 overflow-x-auto no-scrollbar px-4 pb-4">
+<!-- Mentor Card 1 -->
+<div class="flex flex-col w-48 shrink-0 rounded-2xl bg-surface-dark p-4 ring-1 ring-white/5 relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-purple-500"></div>
+<div class="mb-3 relative">
+<img alt="Professional portrait of a female software engineer mentor" class="size-16 rounded-full object-cover border-2 border-primary/20" data-alt="Professional portrait of a female software engineer mentor" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmLuoYdXC_osr7lvcrmV8RyqQjRrXl548ab6Z3liXGOhCNpwhNt5I5t0xCqdyYtP4q01qOHsSQjMnS6AiwIgh_j-OJUgqT8y-CfsOr4RR7iZrBwGq6QHcHvf-jOcJm9klxokix8JGfFX8PrYd83eTkScwmi9n_4LcsOHl3kNCkd9Avi-T9Jl7NZxzYgaaKj_RVvc6Bj977B_Pv-xGr6BgDRfgfvytt308nPH156v2cEG85EHFEBr5cjqWZ9ixV7YDOe5-gdVUaZ_Q"/>
+<div class="absolute -bottom-1 -right-1 bg-background-dark rounded-full p-1">
+<div class="bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]">star</span> Mentor
+                            </div>
+</div>
+</div>
+<h3 class="text-white font-bold text-base truncate">Thabo M.</h3>
+<p class="text-text-secondary text-xs truncate mb-3">Software Engineer @ TechGiant</p>
+<div class="flex gap-1 flex-wrap mb-4">
+<span class="bg-white/5 text-white/70 text-[10px] px-2 py-1 rounded-md">Coding</span>
+<span class="bg-white/5 text-white/70 text-[10px] px-2 py-1 rounded-md">Career</span>
+</div>
+<button class="w-full h-8 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors">
+                        Request
+                    </button>
+</div>
+<!-- Mentor Card 2 -->
+<div class="flex flex-col w-48 shrink-0 rounded-2xl bg-surface-dark p-4 ring-1 ring-white/5 relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 to-primary"></div>
+<div class="mb-3 relative">
+<img alt="Professional portrait of a male business consultant" class="size-16 rounded-full object-cover border-2 border-primary/20" data-alt="Professional portrait of a male business consultant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCR6lfij-01eAfj27vqFazFapjqNTWd6O1-9Tt8Sy_TwoZ_HI6AEDJDl_bVrB64AQvj-pPD5d7vvxAYEoHQji_SxMYKB0tt0e9y904ObzSdwojsnvlazD2OJDtkXGm7c88BRMR511gWfcDSoJd77LXXTYhHmnxJiy3FJVw25uouK69lYvnZPvvBY9rok_MnKHL-3YKjvpLY4O4e6pRHu1CPzc3kcXXSCg7BDVNm-41dpOnJgQbgDbr9d1hIkmc1t2pSP0a5J3uytc"/>
+<div class="absolute -bottom-1 -right-1 bg-background-dark rounded-full p-1">
+<div class="bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]">star</span> Mentor
+                            </div>
+</div>
+</div>
+<h3 class="text-white font-bold text-base truncate">David K.</h3>
+<p class="text-text-secondary text-xs truncate mb-3">Principal Architect</p>
+<div class="flex gap-1 flex-wrap mb-4">
+<span class="bg-white/5 text-white/70 text-[10px] px-2 py-1 rounded-md">Design</span>
+<span class="bg-white/5 text-white/70 text-[10px] px-2 py-1 rounded-md">Leadership</span>
+</div>
+<button class="w-full h-8 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors">
+                        Request
+                    </button>
+</div>
+<!-- Mentor Card 3 -->
+<div class="flex flex-col w-48 shrink-0 rounded-2xl bg-surface-dark p-4 ring-1 ring-white/5 relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-400 to-red-500"></div>
+<div class="mb-3 relative">
+<img alt="Professional portrait of a female creative director" class="size-16 rounded-full object-cover border-2 border-primary/20" data-alt="Professional portrait of a female creative director" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBQ229yKC2OIQaoxLjQ5tIq1UqpDQPwRBYgRVlDjzQO5zMY86Z0UreYryjSh6n6-6F0DBjyTztmFi7RCNlmFodMpzTPKKm8AV6Ql5q7pFXwYSGTB7MVn48QIGS35G7Bz7KzFNRFo3l3Y1RDToKgbRugEc-S-xUHTOZPfGHmhkq1NoLeBzDlRoymqo0hQT-pmQMFvoIX4v21wrI5MyWFZjvbByuJVxE7EXtc7RShAbVBnYA-mQIZWL1b7r03tK8kJLm7cS0xukvdNU"/>
+<div class="absolute -bottom-1 -right-1 bg-background-dark rounded-full p-1">
+<div class="bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]">star</span> Mentor
+                            </div>
+</div>
+</div>
+<h3 class="text-white font-bold text-base truncate">Sarah L.</h3>
+<p class="text-text-secondary text-xs truncate mb-3">Creative Director @ Agency</p>
+<div class="flex gap-1 flex-wrap mb-4">
+<span class="bg-white/5 text-white/70 text-[10px] px-2 py-1 rounded-md">Marketing</span>
+<span class="bg-white/5 text-white/70 text-[10px] px-2 py-1 rounded-md">Arts</span>
+</div>
+<button class="w-full h-8 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors">
+                        Request
+                    </button>
+</div>
+</div>
+</div>
+<!-- Directory Section -->
+<div class="px-4 pt-4">
+<h1 class="text-white text-xl font-bold leading-tight tracking-tight mb-4">Alumni Directory</h1>
+<div class="flex flex-col gap-3">
+<!-- List Item 1 -->
+<div class="flex items-center gap-4 bg-surface-dark p-3 rounded-xl ring-1 ring-white/5 hover:bg-surface-dark/80 transition-colors cursor-pointer">
+<div class="relative shrink-0">
+<img alt="Portrait of alumni Lerato" class="size-14 rounded-xl object-cover" data-alt="Portrait of alumni Lerato" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAp0PyafL_KeQvPE4-mgVclB9vk5K6dqIIEONtoibtu2aEpLQuVb7reeAX1NwVkK9Orn8YnAgjwQ_tht8KvUcwe4LSpAW70yPEnAeVtraevfDgikElA0gvIQr4p_M7x3lQHwOwCeHZMXHTfN6Wmy4ofVj859r_hxqfIvDe3bRzCcAhiE_m8ClW1BNEg-NSnzYYdPfkIk8Nh7sgzUJjkSPNBS2BCkZsVmaDKaKbsjwkAnFDDDKmG-87ReAMgFxUX1JMc860KisyRS-o"/>
+<div class="absolute -bottom-1 -right-1 bg-background-dark p-0.5 rounded-full">
+<div class="size-3 bg-green-500 rounded-full border border-background-dark"></div>
+</div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2">
+<h4 class="text-white font-semibold text-base truncate">Lerato Khumalo</h4>
+<span class="material-symbols-outlined text-primary text-[14px]" title="Verified Alumni">verified</span>
+</div>
+<p class="text-text-secondary text-xs truncate">Class of 2018 • Product Manager</p>
+<p class="text-white/40 text-[10px] mt-0.5 truncate">Cape Town, South Africa</p>
+</div>
+<button class="size-10 flex items-center justify-center rounded-lg bg-white/5 hover:bg-primary hover:text-white text-primary transition-colors">
+<span class="material-symbols-outlined">person_add</span>
+</button>
+</div>
+<!-- List Item 2 -->
+<div class="flex items-center gap-4 bg-surface-dark p-3 rounded-xl ring-1 ring-white/5 hover:bg-surface-dark/80 transition-colors cursor-pointer">
+<div class="relative shrink-0">
+<div class="size-14 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xl">
+                            MJ
+                        </div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2">
+<h4 class="text-white font-semibold text-base truncate">Michael Johnson</h4>
+</div>
+<p class="text-text-secondary text-xs truncate">Class of 2020 • Civil Engineer</p>
+<p class="text-white/40 text-[10px] mt-0.5 truncate">Johannesburg, South Africa</p>
+</div>
+<button class="size-10 flex items-center justify-center rounded-lg bg-white/5 hover:bg-primary hover:text-white text-primary transition-colors">
+<span class="material-symbols-outlined">person_add</span>
+</button>
+</div>
+<!-- List Item 3 -->
+<div class="flex items-center gap-4 bg-surface-dark p-3 rounded-xl ring-1 ring-white/5 hover:bg-surface-dark/80 transition-colors cursor-pointer">
+<div class="relative shrink-0">
+<img alt="Portrait of alumni Sipho" class="size-14 rounded-xl object-cover" data-alt="Portrait of alumni Sipho" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlPibzlSpb2UrqRCZgSjoVL6GfjlLMTgYNsmcM29JWazD9syTqwhhh1tStmbUbzb7_j3DOxjL5HzSReTNGGzwFmP67Kv8EceO3-WQo8AaZaGlykqQqt0KCK5AgbVCvxVVIRvVwmVjNHvqquLwXqq2qGPYmVTrWXwDuEh4P2thzQpbNHiV2LuZLcoskxEP4coBr7cMfeo7g0A2qhgr7G6vJSwq5JFArlojm5-MYaU66bBKCiOh04CuSSB9OguHSahj3e3reQDWGZwY"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2">
+<h4 class="text-white font-semibold text-base truncate">Sipho Ndlovu</h4>
+<span class="material-symbols-outlined text-primary text-[14px]" title="Verified Alumni">verified</span>
+</div>
+<p class="text-text-secondary text-xs truncate">Class of 2015 • Founder @ StartupX</p>
+<p class="text-white/40 text-[10px] mt-0.5 truncate">Nairobi, Kenya</p>
+</div>
+<button class="size-10 flex items-center justify-center rounded-lg bg-white/5 hover:bg-primary hover:text-white text-primary transition-colors">
+<span class="material-symbols-outlined">person_add</span>
+</button>
+</div>
+</div>
+<button class="w-full mt-4 py-3 text-sm text-text-secondary hover:text-white font-medium flex items-center justify-center gap-1 transition-colors">
+                Show more results <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+</div>
+<!-- News Section -->
+<div class="px-4 py-6">
+<h1 class="text-white text-xl font-bold leading-tight tracking-tight mb-4">Community News</h1>
+<div class="bg-surface-dark rounded-2xl overflow-hidden ring-1 ring-white/5">
+<div class="h-32 w-full bg-cover bg-center relative" data-alt="University campus gathering of alumni" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAvkVe45q3CGFvUok6Qc3juB4UB7nEjS2wFmaqDNq-lHYacJ-jtpuZpkkWaVTXiVq3BdGWnOmLnqF_YlNsvGtYnDWTWF6DNGUMipVGibNJhnHYqmGnhu_ZINOy-IRAG9dp-4zcbnBc31gKz5jh6jrGXhpYgoWTPgpworr_jXS7SYN2a6Pa2IrJORG8oQx9jOUjUkAnajtl91LjjBsubpjjSXcZ-l3eKGdQXaRgjPqtVkIZGuNb9_brkpEux6F1WUFIROxPyPnSu9Sc');">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-dark to-transparent"></div>
+<div class="absolute bottom-3 left-3 bg-primary text-white text-xs font-bold px-2 py-1 rounded-md">
+                        Event
+                    </div>
+</div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-white font-bold text-lg leading-tight flex-1 mr-2">Class of 2019 Reunion: Save the Date</h3>
+<div class="text-center bg-white/5 rounded-lg p-1.5 min-w-[50px]">
+<span class="block text-[10px] text-text-secondary uppercase font-bold">Dec</span>
+<span class="block text-lg font-bold text-white leading-none">15</span>
+</div>
+</div>
+<p class="text-text-secondary text-sm mb-3 line-clamp-2">Join us for an evening of networking and reminiscence at the main campus hall. RSVP required.</p>
+<div class="flex items-center justify-between">
+<div class="flex -space-x-2">
+<img alt="Attendee" class="w-6 h-6 rounded-full border border-surface-dark" data-alt="Attendee avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDw4blx0S4BW1aSK9ll_Z73dECltLqJ4shZOUmCkV6ZuYGAwVx6uyaDZWmwhHyhb6cQCt9N7U2543zk0xMNRP4Nnxbf56SLWt7aHoFz9vkoYwwh9l45JzZTCJq5nkKUc5MenJ0EpFB2A3bsqij5yArHXSQhjhxaKknM2CacjS1nKA3Co_7s9hhOlF52eNo7L_OBUSQ60SWQjNNiwzwa9mxwRNrlGwUukUU4lJoyS6-DrpCoV6NoOUTZ8fvXlK9jCzyZ__crPhdQhbM"/>
+<img alt="Attendee" class="w-6 h-6 rounded-full border border-surface-dark" data-alt="Attendee avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmkXNWQSbD5yxcAvJA-lDXHsOqeycXVnx6oWQiE8Tak4wQ88SeC752WxNZ-hpHcfS9lwzP-dTyl0PDyDBpM5iUyId-Fk37ZdIb4qAOBSPGM8BCLa8DDLa-ESoYXKcAEvGEmvfoPW9Azb9dw_VGZGlk46QO-oAWWMcRWsFJz8CnZ9crJgXeuh9dRVIIx_7yfgVbGwrdMwOQDwVjxNUQnoltNv_2ktA3wHarbFhJ5g5CPzPELyYht7q3rHZZgAaNpMk7LYaMJCPlnHs"/>
+<div class="w-6 h-6 rounded-full border border-surface-dark bg-white/10 text-[8px] flex items-center justify-center text-white font-medium">+42</div>
+</div>
+<button class="text-primary text-sm font-medium hover:underline">Register</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation -->
+<div class="fixed bottom-0 left-0 w-full bg-background-dark/95 backdrop-blur-md border-t border-white/5 pb-5 pt-2 px-6 z-50">
+<div class="flex justify-between items-center">
+<button class="flex flex-col items-center gap-1 w-16 text-text-secondary hover:text-white transition-colors">
+<span class="material-symbols-outlined text-2xl">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 w-16 text-text-secondary hover:text-white transition-colors">
+<span class="material-symbols-outlined text-2xl">school</span>
+<span class="text-[10px] font-medium">Learn</span>
+</button>
+<button class="flex flex-col items-center gap-1 w-16 text-primary">
+<div class="bg-primary/10 px-4 py-1 rounded-2xl flex flex-col items-center">
+<span class="material-symbols-outlined text-2xl">diversity_3</span>
+</div>
+<span class="text-[10px] font-medium mt-0.5">Network</span>
+</button>
+<button class="flex flex-col items-center gap-1 w-16 text-text-secondary hover:text-white transition-colors">
+<span class="material-symbols-outlined text-2xl">person</span>
+<span class="text-[10px] font-medium">Profile</span>
+</button>
+</div>
+</div>
+</body></html>

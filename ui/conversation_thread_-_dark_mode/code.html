@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EdApp Conversation Thread</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#389cfa",
+              "background-light": "#f5f7f8",
+              "background-dark": "#0f1923",
+              "surface-dark": "#1e2b36",
+              "surface-light": "#ffffff",
+              "bubble-incoming": "#21364a",
+              "bubble-outgoing": "#389cfa",
+            },
+            fontFamily: {
+              "display": ["Lexend", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom Scrollbar for Chat */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark h-screen w-full flex flex-col font-display overflow-hidden text-gray-900 dark:text-white">
+<!-- Header / TopAppBar -->
+<header class="shrink-0 flex items-center justify-between p-4 bg-background-light dark:bg-background-dark border-b border-gray-200 dark:border-gray-800 z-10 shadow-sm">
+<div class="flex items-center gap-3">
+<button class="flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">arrow_back_ios_new</span>
+</button>
+<div class="relative group cursor-pointer">
+<div class="size-10 rounded-full bg-gray-300 bg-cover bg-center ring-2 ring-transparent group-hover:ring-primary/50 transition-all" data-alt="Profile picture of Sarah Jenkins" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBShWBVdrZlA9EGLCoGIyhGHt6Nf3FacrnNzzir67pW3oq9XPI-TXLvR3T3hHetCqp07X249i3zi6T1tq34lduCgXUfvRTNBcqg1h_nYnVZRKKWTb4Aq-R02TJAMIvbPIxT-tbdNSyvdiGs-Z9RnMf3leOwsVpcQia1uESpsqgTigNhlR9lMN174MePUrbJnd9iIhyWz0Khp6kWPhnZnO7Qq7h5LNhTC3xfMFJ_UF5rNO33JjE0KR-1TfRfpTczlwWfbFxR5fRx_rs');"></div>
+<div class="absolute bottom-0 right-0 size-3 bg-green-500 rounded-full border-2 border-background-light dark:border-background-dark"></div>
+</div>
+<div class="flex flex-col">
+<h2 class="text-base font-bold leading-tight tracking-tight">Mrs. Sarah Jenkins</h2>
+<span class="text-xs text-primary font-medium tracking-wide">Math Dept • Teacher</span>
+</div>
+</div>
+<div class="flex items-center gap-4 text-gray-500 dark:text-gray-400">
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined">search</span></button>
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined">info</span></button>
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+</header>
+<!-- Chat Stream -->
+<main class="flex-1 overflow-y-auto p-4 space-y-6 bg-background-light dark:bg-background-dark scrollbar-hide">
+<!-- Date Separator -->
+<div class="flex justify-center py-2">
+<span class="bg-gray-200 dark:bg-surface-dark text-gray-600 dark:text-gray-400 text-xs font-medium px-4 py-1.5 rounded-full shadow-sm">
+                Today
+            </span>
+</div>
+<!-- Incoming Message (Standard) -->
+<div class="flex items-end gap-3 group">
+<div class="size-8 shrink-0 rounded-full bg-cover bg-center mb-1" data-alt="Profile picture of Sarah Jenkins" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBvSuM51BuIj9l4lIFgQ06_o_tuAQ9AIpZLiogzSGCrNkX1QaYObRgX2-BLUdLa4E9_VOyDLo-SUApdkqwD4l6_6LugCTrxJBMXieJsrDjFU2Ta-jslJN7WBvJ1EPngy9f6QDF8jRrGWLo1TqX3fn1c68k_2RD2KxJHWrs9-HwGV0a9w6iI4L5kksefx-dB-ToNILD_Xnk6xH5oljW3YygAUUwaThDluVzzxqCeiELUDDbs6MMz-gfjrLt2EQxupcWT-mZ0UgErXK0');"></div>
+<div class="flex flex-col items-start gap-1 max-w-[80%]">
+<div class="flex items-baseline gap-2 pl-1">
+<span class="text-xs font-semibold text-gray-500 dark:text-gray-400">Mrs. Sarah Jenkins</span>
+</div>
+<div class="bg-white dark:bg-bubble-incoming p-3 rounded-2xl rounded-tl-none shadow-sm text-[15px] leading-relaxed text-gray-800 dark:text-gray-100 relative">
+<p>Hi everyone, just a reminder about the staff meeting at 3 PM.</p>
+</div>
+<span class="text-[10px] text-gray-400 pl-1">10:00 AM</span>
+</div>
+</div>
+<!-- Incoming Message (Needs Action / Card) -->
+<div class="flex items-end gap-3 group">
+<div class="size-8 shrink-0 rounded-full bg-cover bg-center mb-1 opacity-0"><!-- Spacer for alignment --></div>
+<div class="flex flex-col items-start gap-1 max-w-[85%] sm:max-w-[320px]">
+<!-- Action Panel Styled Bubble -->
+<div class="bg-white dark:bg-surface-dark border-l-4 border-primary rounded-xl shadow-md overflow-hidden w-full">
+<div class="p-4 flex flex-col gap-3">
+<div class="flex items-start gap-3">
+<div class="bg-primary/20 p-2 rounded-lg text-primary shrink-0">
+<span class="material-symbols-outlined text-[20px]">assignment</span>
+</div>
+<div class="flex flex-col">
+<h3 class="text-sm font-bold text-gray-900 dark:text-white leading-tight">Permission Slip: Zoo Trip</h3>
+<p class="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-normal">Please review and approve the permission slip for the upcoming zoo trip.</p>
+</div>
+</div>
+<button class="w-full mt-1 bg-primary hover:bg-blue-500 text-white text-sm font-semibold py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
+<span>Approve</span>
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+</button>
+</div>
+</div>
+<span class="text-[10px] text-gray-400 pl-1">10:02 AM</span>
+</div>
+</div>
+<!-- Incoming Message (Attachment) -->
+<div class="flex items-end gap-3 group">
+<div class="size-8 shrink-0 rounded-full bg-cover bg-center mb-1 opacity-0"><!-- Spacer --></div>
+<div class="flex flex-col items-start gap-1 max-w-[80%]">
+<div class="bg-white dark:bg-bubble-incoming p-2 rounded-2xl rounded-l-none shadow-sm flex items-center gap-3 pr-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-[#2a4259] transition-colors border border-gray-100 dark:border-transparent">
+<div class="size-10 bg-red-500/10 dark:bg-red-500/20 rounded-lg flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-red-500 text-xl">picture_as_pdf</span>
+</div>
+<div class="flex flex-col overflow-hidden">
+<span class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">Meeting_Agenda.pdf</span>
+<span class="text-xs text-gray-500 dark:text-gray-400">1.2 MB • PDF</span>
+</div>
+</div>
+<span class="text-[10px] text-gray-400 pl-1">10:03 AM</span>
+</div>
+</div>
+<!-- Outgoing Message -->
+<div class="flex items-end gap-3 justify-end group">
+<div class="flex flex-col items-end gap-1 max-w-[80%]">
+<div class="bg-primary text-white p-3 rounded-2xl rounded-tr-none shadow-md text-[15px] leading-relaxed relative">
+<p>Thanks Sarah, I'll be there.</p>
+</div>
+<div class="flex items-center gap-1 pr-1">
+<span class="text-[10px] text-gray-400">10:05 AM</span>
+<span class="material-symbols-outlined text-[14px] text-primary">done_all</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer / Input Area -->
+<footer class="shrink-0 p-3 bg-background-light dark:bg-background-dark border-t border-gray-200 dark:border-gray-800 z-10 pb-6 sm:pb-3">
+<div class="flex items-end gap-2 max-w-4xl mx-auto w-full">
+<button class="p-2.5 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-surface-dark transition-colors shrink-0">
+<span class="material-symbols-outlined text-[24px]">add</span>
+</button>
+<div class="flex-1 bg-white dark:bg-surface-dark rounded-3xl min-h-[44px] flex items-center px-4 py-2 border border-gray-200 dark:border-gray-700 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all shadow-sm">
+<input class="bg-transparent border-none outline-none w-full text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-500 p-0 focus:ring-0" placeholder="Type a message..." type="text"/>
+<button class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 ml-2 shrink-0">
+<span class="material-symbols-outlined text-[20px]">sentiment_satisfied</span>
+</button>
+</div>
+<button class="p-2.5 rounded-full bg-primary text-white hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20 shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px] translate-x-0.5">send</span>
+</button>
+</div>
+</footer>
+</body></html>

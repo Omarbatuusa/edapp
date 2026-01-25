@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Learner Silent Help - Discreet Support</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#135bec",
+              "background-light": "#f6f6f8",
+              "background-dark": "#101622",
+              "surface-dark": "#192233",
+              "surface-border": "#232f48",
+            },
+            fontFamily: {
+              "display": ["Lexend", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        /* Custom scrollbar hide for cleaner UI */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark text-white font-display overflow-hidden">
+<!-- Main App Container (Simulating the underlying screen) -->
+<div class="relative flex h-screen w-full flex-col overflow-hidden bg-background-dark max-w-md mx-auto shadow-2xl border-x border-surface-border">
+<!-- Header (blurred in background) -->
+<div class="flex items-center justify-between p-4 opacity-30">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full bg-surface-dark flex items-center justify-center text-gray-400">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div>
+<div class="h-4 w-24 bg-surface-dark rounded mb-1"></div>
+<div class="h-3 w-16 bg-surface-dark rounded"></div>
+</div>
+</div>
+<span class="material-symbols-outlined text-gray-400">notifications</span>
+</div>
+<!-- Dashboard Content (blurred in background) -->
+<div class="flex-1 px-4 space-y-4 opacity-30">
+<div class="h-32 w-full bg-surface-dark rounded-xl"></div>
+<div class="h-20 w-full bg-surface-dark rounded-xl"></div>
+<div class="h-20 w-full bg-surface-dark rounded-xl"></div>
+</div>
+<!-- Bottom Navigation (blurred) -->
+<div class="border-t border-surface-border bg-surface-dark px-4 pb-6 pt-2 opacity-30">
+<div class="flex justify-between items-center">
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-primary">home</span>
+</div>
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-gray-500">book</span>
+</div>
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-gray-500">calendar_month</span>
+</div>
+<div class="flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-gray-500">person</span>
+</div>
+</div>
+</div>
+<!-- OVERLAY & BOTTOM SHEET START -->
+<!-- This is the main interactive part of the design -->
+<div class="absolute inset-0 z-50 flex flex-col justify-end bg-black/60 backdrop-blur-sm">
+<!-- Quick Exit Area (Tap here to close) -->
+<div class="flex-1 w-full flex flex-col items-center justify-center text-white/50 gap-2 pb-4">
+<span class="material-symbols-outlined text-3xl">close</span>
+<span class="text-sm font-light">Tap to cancel</span>
+</div>
+<!-- Bottom Sheet Container -->
+<div class="bg-background-dark w-full rounded-t-3xl border-t border-surface-border shadow-[0_-10px_40px_rgba(0,0,0,0.5)] flex flex-col max-h-[85vh] overflow-y-auto no-scrollbar pb-8">
+<!-- Handle -->
+<div class="flex flex-col items-center pt-3 pb-2 sticky top-0 bg-background-dark z-10">
+<div class="h-1.5 w-12 rounded-full bg-surface-border"></div>
+</div>
+<!-- Header Content -->
+<div class="px-6 pt-2 pb-4">
+<div class="flex items-start justify-between">
+<div>
+<h2 class="text-white tracking-tight text-2xl font-bold leading-tight">Support Request</h2>
+<p class="text-gray-400 text-sm font-normal leading-normal pt-2">
+                                This is private. A counsellor will be notified immediately.
+                            </p>
+</div>
+<div class="h-10 w-10 rounded-full bg-surface-dark flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">security</span>
+</div>
+</div>
+</div>
+<!-- Selection Grid (Replacing simple Chips with interactive Cards) -->
+<div class="px-6 grid grid-cols-2 gap-3 mb-6">
+<!-- Option 1 -->
+<button class="group flex flex-col items-start gap-3 p-4 rounded-xl bg-surface-dark border border-surface-border hover:border-primary/50 hover:bg-surface-border transition-all text-left">
+<div class="h-8 w-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-lg">sentiment_worried</span>
+</div>
+<span class="text-white text-sm font-medium leading-tight">Bullying or<br/>Harassment</span>
+</button>
+<!-- Option 2 -->
+<button class="group flex flex-col items-start gap-3 p-4 rounded-xl bg-surface-dark border border-surface-border hover:border-primary/50 hover:bg-surface-border transition-all text-left ring-2 ring-primary bg-surface-border relative overflow-hidden">
+<!-- Active state indicator -->
+<div class="absolute top-2 right-2 h-2 w-2 rounded-full bg-primary"></div>
+<div class="h-8 w-8 rounded-lg bg-red-500/20 text-red-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-lg">warning</span>
+</div>
+<span class="text-white text-sm font-medium leading-tight">Unsafe<br/>Situation</span>
+</button>
+<!-- Option 3 -->
+<button class="group flex flex-col items-start gap-3 p-4 rounded-xl bg-surface-dark border border-surface-border hover:border-primary/50 hover:bg-surface-border transition-all text-left">
+<div class="h-8 w-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-lg">medical_services</span>
+</div>
+<span class="text-white text-sm font-medium leading-tight">Feeling Sick<br/>or Anxious</span>
+</button>
+<!-- Option 4 -->
+<button class="group flex flex-col items-start gap-3 p-4 rounded-xl bg-surface-dark border border-surface-border hover:border-primary/50 hover:bg-surface-border transition-all text-left">
+<div class="h-8 w-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-lg">support_agent</span>
+</div>
+<span class="text-white text-sm font-medium leading-tight">Speak to<br/>Counsellor</span>
+</button>
+</div>
+<!-- Text Input Area -->
+<div class="px-6 mb-6">
+<label class="block text-gray-400 text-xs font-medium uppercase tracking-wider mb-2 pl-1">Anything else? (Optional)</label>
+<textarea class="w-full bg-surface-dark text-white text-sm rounded-xl border border-surface-border focus:border-primary focus:ring-1 focus:ring-primary p-4 placeholder-gray-600 resize-none outline-none transition-colors" placeholder="Type here if you want to add details..." rows="3"></textarea>
+</div>
+<!-- Action Button -->
+<div class="px-6 mb-4">
+<button class="w-full bg-primary hover:bg-blue-600 text-white font-semibold h-14 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
+<span>Send Private Request</span>
+<span class="material-symbols-outlined text-xl">send</span>
+</button>
+<p class="text-center text-xs text-gray-500 mt-4">
+                        Your location and details are encrypted.
+                    </p>
+</div>
+</div>
+</div>
+<!-- OVERLAY END -->
+</div>
+</body></html>

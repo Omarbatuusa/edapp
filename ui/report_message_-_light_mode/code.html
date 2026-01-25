@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Report Message - EdApp</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#0d151c] dark:text-white font-display overflow-x-hidden antialiased">
+<div class="relative flex h-full min-h-screen w-full flex-col max-w-md mx-auto bg-background-light dark:bg-background-dark shadow-xl">
+<!-- Navigation Bar -->
+<div class="sticky top-0 z-50 flex items-center bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm p-4 border-b border-slate-200 dark:border-slate-800 justify-between">
+<div class="flex w-16 items-center justify-start cursor-pointer">
+<p class="text-primary text-base font-medium leading-normal tracking-[0.015em] shrink-0 hover:opacity-80 transition-opacity">Cancel</p>
+</div>
+<h2 class="text-[#0d151c] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] text-center flex-1">Report Message</h2>
+<div class="flex w-16 items-center justify-end">
+<!-- Spacer for balance -->
+</div>
+</div>
+<!-- Scrollable Content -->
+<div class="flex-1 flex flex-col p-4 gap-6">
+<!-- Message Preview Context -->
+<div class="flex flex-col gap-2">
+<p class="text-[#0d151c] dark:text-slate-300 text-sm font-medium leading-normal px-1">You are reporting this message:</p>
+<div class="bg-white dark:bg-[#1a2c38] p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+<div class="flex gap-3">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 shrink-0 border border-slate-100 dark:border-slate-600" data-alt="Profile picture of a student named Alex" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAO9xGF6npCVkTKy3yyO4oWZLR20nlpZnA6AJ4h3OqxfSlka9kmK74qCONqcL0AhDM5tIJz1hRxZs65QIvp1weeq7n6MOHA95C5KvC7dPqX_Zqcm3GtOtDCYFjeYUpAEoaG8YiqObpZJ7IUB__Ij1uXeaa5T2S-3e2Itpy_YEYaSgX2f391lAgsXw1ZPLK1RVMDZmcUVnhRYc11pYmjH6FzZbi7W0nGyweaQ_Vaz_tGfohqWB7lBt3sakU4VfZigN_NHPFkHZ359M4");'>
+</div>
+<div class="flex flex-1 flex-col items-stretch gap-1">
+<div class="flex flex-wrap items-center gap-2">
+<p class="text-[#0d151c] dark:text-white text-sm font-bold leading-tight">Alex T.</p>
+<p class="text-slate-400 dark:text-slate-500 text-xs font-normal leading-normal">10:42 AM</p>
+</div>
+<div class="relative">
+<span class="absolute -left-2 top-0 bottom-0 w-1 bg-slate-200 dark:bg-slate-600 rounded-full"></span>
+<p class="text-[#0d151c] dark:text-slate-200 text-sm font-normal leading-relaxed pl-3 italic">
+                                    "Hey, meet me behind the gym after school. Don't tell anyone."
+                                </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Reason Selector -->
+<div class="flex flex-col gap-3">
+<h3 class="text-[#0d151c] dark:text-white tracking-tight text-lg font-bold leading-tight px-1">Why are you reporting this?</h3>
+<div class="flex flex-col gap-3" style="--radio-dot-svg: url('data:image/svg+xml,%3csvg viewBox=%270 0 16 16%27 fill=%27rgb(56,156,250)%27 xmlns=%27http://www.w3.org/2000/svg%27%3e%3ccircle cx=%278%27 cy=%278%27 r=%273%27/%3e%3c/svg%3e');">
+<label class="group flex items-center gap-4 rounded-xl border border-solid border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2c38] p-4 flex-row-reverse cursor-pointer hover:border-primary/50 transition-colors shadow-sm">
+<input class="peer h-5 w-5 border-2 border-slate-300 dark:border-slate-600 bg-transparent text-transparent checked:border-primary checked:bg-[image:--radio-dot-svg] focus:outline-none focus:ring-0 focus:ring-offset-0 checked:focus:border-primary cursor-pointer appearance-none rounded-full" name="report_reason" type="radio"/>
+<div class="flex grow flex-col">
+<p class="text-[#0d151c] dark:text-white text-sm font-medium leading-normal">Bullying or Harassment</p>
+</div>
+</label>
+<label class="group flex items-center gap-4 rounded-xl border border-solid border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2c38] p-4 flex-row-reverse cursor-pointer hover:border-primary/50 transition-colors shadow-sm">
+<input class="peer h-5 w-5 border-2 border-slate-300 dark:border-slate-600 bg-transparent text-transparent checked:border-primary checked:bg-[image:--radio-dot-svg] focus:outline-none focus:ring-0 focus:ring-offset-0 checked:focus:border-primary cursor-pointer appearance-none rounded-full" name="report_reason" type="radio"/>
+<div class="flex grow flex-col">
+<p class="text-[#0d151c] dark:text-white text-sm font-medium leading-normal">Inappropriate Content</p>
+</div>
+</label>
+<label class="group flex items-center gap-4 rounded-xl border border-solid border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2c38] p-4 flex-row-reverse cursor-pointer hover:border-primary/50 transition-colors shadow-sm">
+<input class="peer h-5 w-5 border-2 border-slate-300 dark:border-slate-600 bg-transparent text-transparent checked:border-primary checked:bg-[image:--radio-dot-svg] focus:outline-none focus:ring-0 focus:ring-offset-0 checked:focus:border-primary cursor-pointer appearance-none rounded-full" name="report_reason" type="radio"/>
+<div class="flex grow flex-col">
+<p class="text-[#0d151c] dark:text-white text-sm font-medium leading-normal">Spam or Scam</p>
+</div>
+</label>
+<label class="group flex items-center gap-4 rounded-xl border border-solid border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2c38] p-4 flex-row-reverse cursor-pointer hover:border-primary/50 transition-colors shadow-sm">
+<input class="peer h-5 w-5 border-2 border-slate-300 dark:border-slate-600 bg-transparent text-transparent checked:border-primary checked:bg-[image:--radio-dot-svg] focus:outline-none focus:ring-0 focus:ring-offset-0 checked:focus:border-primary cursor-pointer appearance-none rounded-full" name="report_reason" type="radio"/>
+<div class="flex grow flex-col">
+<p class="text-[#0d151c] dark:text-white text-sm font-medium leading-normal">Other</p>
+</div>
+</label>
+</div>
+</div>
+<!-- Additional Details -->
+<div class="flex flex-col gap-2">
+<label class="text-[#0d151c] dark:text-white text-sm font-medium leading-normal px-1" for="details">Add a note (optional)</label>
+<div class="bg-white dark:bg-[#1a2c38] rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
+<textarea class="w-full bg-transparent p-4 text-[#0d151c] dark:text-white placeholder:text-slate-400 text-sm focus:outline-none border-none resize-none" id="details" placeholder="Is there anything else moderators should know?" rows="4"></textarea>
+</div>
+</div>
+</div>
+<!-- Footer Action -->
+<div class="sticky bottom-0 bg-background-light dark:bg-background-dark p-4 border-t border-slate-200 dark:border-slate-800 pb-8 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+<button class="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3.5 transition-transform active:scale-[0.98] hover:bg-blue-600 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-white text-[20px]">flag</span>
+<span class="text-white text-base font-bold leading-normal">Submit Report</span>
+</button>
+<div class="mt-3 flex items-center justify-center gap-1.5 opacity-60">
+<span class="material-symbols-outlined text-xs text-slate-500 dark:text-slate-400">lock</span>
+<p class="text-center text-xs font-normal text-slate-500 dark:text-slate-400">This report will be sent anonymously to administrators.</p>
+</div>
+</div>
+</div>
+</body></html>

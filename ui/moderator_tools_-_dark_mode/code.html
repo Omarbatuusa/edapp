@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Moderator Tools - EdApp</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "surface-dark": "#1a2632",
+                        "surface-light": "#ffffff",
+                        "danger": "#ef4444",
+                        "warning": "#f59e0b",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hide for cleaner mobile look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark font-display text-white overflow-hidden h-screen flex flex-col items-center justify-center">
+<!-- Mobile Device Simulation Wrapper -->
+<div class="relative w-full max-w-md h-full bg-background-dark flex flex-col overflow-hidden shadow-2xl sm:rounded-2xl sm:h-[850px] sm:border-8 sm:border-gray-800">
+<!-- Bottom Sheet Handle/Indicator -->
+<div class="flex-none pt-4 pb-2 bg-background-dark flex justify-center items-center">
+<div class="h-1.5 w-12 rounded-full bg-slate-600/50"></div>
+</div>
+<!-- Top App Bar -->
+<div class="flex-none flex items-center justify-between px-4 py-3 bg-background-dark border-b border-slate-800/50">
+<button class="p-2 -ml-2 rounded-full hover:bg-slate-800 transition-colors text-slate-400">
+<span class="material-symbols-outlined text-[24px]">close</span>
+</button>
+<h1 class="text-lg font-bold tracking-tight text-white">Moderator Tools</h1>
+<button class="text-primary font-bold text-base px-2 py-1 rounded-lg hover:bg-primary/10 transition-colors">
+                Done
+            </button>
+</div>
+<!-- Scrollable Content Area -->
+<div class="flex-1 overflow-y-auto no-scrollbar pb-8">
+<!-- Section: The Incident (Flagged Message) -->
+<div class="p-4 space-y-4">
+<div class="flex items-center justify-between">
+<h2 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Flagged Content</h2>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-warning/20 text-warning text-xs font-bold border border-warning/20">
+<span class="material-symbols-outlined text-[14px]">flag</span>
+                        Profanity / Bullying
+                    </span>
+</div>
+<!-- Message Card -->
+<div class="bg-surface-dark rounded-xl p-4 shadow-lg border border-slate-700/50 relative overflow-hidden group">
+<!-- "Pending Approval" Watermark effect -->
+<div class="absolute -right-4 -top-4 opacity-5 pointer-events-none">
+<span class="material-symbols-outlined text-[120px]">verified_user</span>
+</div>
+<div class="flex items-start gap-3 relative z-10">
+<div class="h-12 w-12 rounded-full bg-cover bg-center shrink-0 ring-2 ring-surface-dark" data-alt="Portrait of a young student" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAadTQ4b2y71xqFDlw51ubAY_wn6ksbiXvVTB9JNduaP9JCWL4Pzz1Ftvmmvrg_7Omnv-UyuKzsL3bmUN3wlLKzn4CjfkEK8NOLQjnAW9ORUZ0feyIiCLIzDZQCGdCGCR_wyFtRi6_TaF6ZI8t7Zf7sSHlBWgQrCSwr7MgkX4syiaheztmR3uMePyp9_lH3W1OGcn2ZghakbIg0g1KtlMECuiBir4dAlqlrVxGm3WXYqaZXTb9RuDeSza2U9QlL2eDJsfwLsErUZaE');">
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-baseline justify-between mb-1">
+<h3 class="font-bold text-white text-base truncate">Alex Johnson</h3>
+<span class="text-xs text-slate-500 font-medium">10:42 AM</span>
+</div>
+<div class="bg-slate-800/50 rounded-lg p-3 border-l-4 border-danger">
+<p class="text-white text-[15px] leading-relaxed">
+                                    You are so stupid, I hate this class. Why do you even try?
+                                </p>
+</div>
+<div class="mt-2 flex items-center gap-1 text-xs text-slate-400">
+<span class="material-symbols-outlined text-[14px]">history</span>
+<span>Prior infractions: 2 (Last: 3 days ago)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Primary Moderation Actions -->
+<div class="grid grid-cols-2 gap-3 pt-2">
+<button class="flex flex-col items-center justify-center gap-1 h-20 rounded-xl bg-surface-dark border border-slate-700 hover:bg-slate-800 hover:border-slate-600 transition-all active:scale-95 group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">check_circle</span>
+<span class="text-sm font-semibold text-slate-200">Approve</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-1 h-20 rounded-xl bg-danger/10 border border-danger/20 hover:bg-danger/20 hover:border-danger/30 transition-all active:scale-95 group">
+<span class="material-symbols-outlined text-danger group-hover:scale-110 transition-transform">delete</span>
+<span class="text-sm font-semibold text-danger">Reject &amp; Delete</span>
+</button>
+</div>
+</div>
+<div class="h-px bg-slate-800 mx-4 my-2"></div>
+<!-- Section: User Management -->
+<div class="p-4 space-y-4">
+<h2 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">User Actions</h2>
+<div class="bg-surface-dark rounded-xl overflow-hidden shadow-sm border border-slate-800">
+<!-- Mute User Option -->
+<div class="p-4 flex items-center justify-between border-b border-slate-800">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-300">
+<span class="material-symbols-outlined">volume_off</span>
+</div>
+<div>
+<h3 class="text-base font-medium text-white">Mute User</h3>
+<p class="text-xs text-slate-400">Prevent sending messages</p>
+</div>
+</div>
+<div class="flex items-center">
+<select class="bg-slate-900 text-sm text-white border border-slate-700 rounded-lg py-1.5 pl-3 pr-8 focus:ring-1 focus:ring-primary focus:border-primary outline-none appearance-none cursor-pointer hover:bg-slate-800 transition-colors">
+<option>1 Hour</option>
+<option>24 Hours</option>
+<option>7 Days</option>
+<option>Permanent</option>
+</select>
+</div>
+</div>
+<!-- Escalate Option -->
+<div class="p-4 flex items-center justify-between hover:bg-slate-800/50 cursor-pointer transition-colors group">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full bg-warning/10 flex items-center justify-center text-warning group-hover:bg-warning/20 transition-colors">
+<span class="material-symbols-outlined">shield_person</span>
+</div>
+<div>
+<h3 class="text-base font-medium text-white group-hover:text-warning transition-colors">Escalate Incident</h3>
+<p class="text-xs text-slate-400">Send report to Principal/Counsellor</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-500 group-hover:text-warning transition-colors">chevron_right</span>
+</div>
+</div>
+</div>
+<div class="h-px bg-slate-800 mx-4 my-2"></div>
+<!-- Section: Thread Management -->
+<div class="p-4 space-y-4">
+<h2 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Thread Control</h2>
+<div class="bg-surface-dark rounded-xl p-4 border border-slate-800 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-300">
+<span class="material-symbols-outlined">lock</span>
+</div>
+<div>
+<h3 class="text-base font-medium text-white">Lock Thread</h3>
+<p class="text-xs text-slate-400">Only moderators can post</p>
+</div>
+</div>
+<!-- Toggle Switch -->
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-slate-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Export Log Button (Subtle) -->
+<button class="w-full mt-2 py-3 flex items-center justify-center gap-2 text-slate-500 hover:text-slate-300 transition-colors text-sm font-medium">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                    Export Chat Log for Review
+                </button>
+</div>
+</div>
+<!-- Bottom safe area padding for phones -->
+<div class="h-6 bg-background-dark w-full shrink-0"></div>
+</div>
+</body></html>

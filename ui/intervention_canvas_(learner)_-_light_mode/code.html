@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Intervention Canvas (Learner)</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden">
+<div class="relative flex h-full min-h-screen w-full flex-col max-w-md mx-auto bg-background-light dark:bg-background-dark shadow-2xl overflow-hidden pb-20">
+<!-- TopAppBar -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-50/100 backdrop-blur-md bg-opacity-90 dark:bg-opacity-90">
+<div class="text-slate-900 dark:text-white flex size-12 shrink-0 items-center cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full justify-center transition-colors">
+<span class="material-symbols-outlined text-2xl">arrow_back</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center truncate">Intervention Canvas</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex size-12 cursor-pointer items-center justify-center overflow-hidden rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-900 dark:text-white">
+<span class="material-symbols-outlined text-2xl">settings</span>
+</button>
+</div>
+</div>
+<!-- Profile Header -->
+<div class="px-4 pt-2 pb-6">
+<div class="flex flex-col items-center gap-4">
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-28 w-28 border-4 border-white dark:border-slate-800 shadow-lg" data-alt="Portrait of student Thabo Mbeki" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCVTG62zcl5_5Z7379VA2QdWSLtNkhCDp9vFFza7fpm6Xh_vp4BTikYnH-u262QuVcgmvcrnUf3mS0Ar7uGhvPOhGtDrm5rMtb41lLr_gLpE-bQctLYRACudenVoP6KDYSeJf6n3WX8aZS-Gr9wiC5XQ5JRBpgyKhoy_SDbJASN6p7SyZTErQxCfBnOLbUHnYzvi164J0TT_tD79woxAiiNpddM4fyn01psuGgaebxLICQKj-5rrNhwYV0zhMttn3E9CWXS6EL_W2M");'></div>
+<div class="absolute bottom-0 right-0 bg-red-500 rounded-full border-4 border-white dark:border-slate-800 h-8 w-8 flex items-center justify-center shadow-sm" title="High Risk">
+<span class="material-symbols-outlined text-white text-sm font-bold">priority_high</span>
+</div>
+</div>
+<div class="flex flex-col items-center text-center">
+<h3 class="text-slate-900 dark:text-white text-2xl font-bold leading-tight tracking-[-0.015em]">Thabo Mbeki</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium mt-1">Grade 11 | ID: 99283</p>
+<div class="mt-3 flex items-center gap-2">
+<span class="inline-flex items-center gap-1 rounded-full bg-red-100 dark:bg-red-900/30 px-3 py-1 text-xs font-semibold text-red-700 dark:text-red-300">
+                            Risk: High
+                        </span>
+<span class="inline-flex items-center gap-1 rounded-full bg-blue-100 dark:bg-blue-900/30 px-3 py-1 text-xs font-semibold text-blue-700 dark:text-blue-300">
+                            Active Monitoring
+                        </span>
+</div>
+</div>
+</div>
+</div>
+<!-- Context Chips -->
+<div class="w-full overflow-x-auto no-scrollbar px-4 pb-6">
+<div class="flex gap-3">
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary text-white pl-4 pr-4 transition-transform active:scale-95 shadow-md shadow-blue-500/20">
+<span class="text-sm font-medium leading-normal">Overview</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 pl-4 pr-4 transition-transform active:scale-95">
+<span class="text-slate-600 dark:text-slate-300 text-sm font-medium leading-normal">Attendance</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 pl-4 pr-4 transition-transform active:scale-95">
+<span class="text-slate-600 dark:text-slate-300 text-sm font-medium leading-normal">Academics</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 pl-4 pr-4 transition-transform active:scale-95">
+<span class="text-slate-600 dark:text-slate-300 text-sm font-medium leading-normal">Discipline</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 pl-4 pr-4 transition-transform active:scale-95">
+<span class="text-slate-600 dark:text-slate-300 text-sm font-medium leading-normal">Wellbeing</span>
+</button>
+</div>
+</div>
+<!-- Metric Chart -->
+<div class="px-4 mb-6">
+<div class="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm border border-slate-100 dark:border-slate-700">
+<div class="flex justify-between items-start mb-2">
+<div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Academic Performance</p>
+<div class="flex items-baseline gap-2 mt-1">
+<h4 class="text-3xl font-bold text-slate-900 dark:text-white">58%</h4>
+<span class="text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 px-1.5 py-0.5 rounded text-xs font-semibold">+12% vs Term 2</span>
+</div>
+</div>
+<div class="bg-slate-100 dark:bg-slate-700 rounded-lg p-1.5 cursor-pointer">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-300 text-xl">more_horiz</span>
+</div>
+</div>
+<div class="text-xs text-slate-400 dark:text-slate-500 mb-4">Target: 60% by Term 4</div>
+<!-- Chart SVG -->
+<div class="h-32 w-full relative">
+<svg fill="none" height="100%" preserveaspectratio="none" viewbox="0 0 400 120" width="100%" xmlns="http://www.w3.org/2000/svg">
+<!-- Grid lines -->
+<line class="dark:stroke-slate-700" stroke="#e2e8f0" stroke-dasharray="4 4" x1="0" x2="400" y1="20" y2="20"></line>
+<line class="dark:stroke-slate-700" stroke="#e2e8f0" stroke-dasharray="4 4" x1="0" x2="400" y1="60" y2="60"></line>
+<line class="dark:stroke-slate-700" stroke="#e2e8f0" stroke-dasharray="4 4" x1="0" x2="400" y1="100" y2="100"></line>
+<!-- Gradient Fill -->
+<path d="M0 80 C 40 80, 60 90, 100 70 C 140 50, 160 60, 200 50 C 240 40, 260 55, 300 45 C 340 35, 360 20, 400 30 V 120 H 0 Z" fill="url(#paint0_linear)" opacity="0.3"></path>
+<!-- Line -->
+<path d="M0 80 C 40 80, 60 90, 100 70 C 140 50, 160 60, 200 50 C 240 40, 260 55, 300 45 C 340 35, 360 20, 400 30" fill="none" stroke="#389cfa" stroke-linecap="round" stroke-width="3"></path>
+<!-- Points -->
+<circle class="fill-white dark:fill-slate-800 stroke-primary" cx="100" cy="70" r="4" stroke-width="2"></circle>
+<circle class="fill-white dark:fill-slate-800 stroke-primary" cx="200" cy="50" r="4" stroke-width="2"></circle>
+<circle class="fill-white dark:fill-slate-800 stroke-primary" cx="300" cy="45" r="4" stroke-width="2"></circle>
+<circle class="fill-white dark:fill-slate-800 stroke-primary" cx="400" cy="30" r="4" stroke-width="2"></circle>
+<defs>
+<lineargradient gradientunits="userSpaceOnUse" id="paint0_linear" x1="200" x2="200" y1="0" y2="120">
+<stop stop-color="#389cfa" stop-opacity="0.5"></stop>
+<stop offset="1" stop-color="#389cfa" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+</svg>
+</div>
+<div class="flex justify-between text-xs text-slate-400 dark:text-slate-500 mt-2">
+<span>Term 1</span>
+<span>Term 2</span>
+<span>Term 3</span>
+<span>Current</span>
+</div>
+</div>
+</div>
+<!-- Active Intervention Plan -->
+<div class="px-4 mb-6">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">assignment</span>
+                Current Plan
+            </h3>
+<div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+<!-- Target Header -->
+<div class="p-5 border-b border-slate-100 dark:border-slate-700">
+<p class="text-xs uppercase tracking-wider font-semibold text-slate-400 dark:text-slate-500 mb-1">Primary Target</p>
+<p class="text-lg font-bold text-slate-900 dark:text-white leading-snug">Improve Mathematics average to 60%</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm mt-2">Strategy: Peer tutoring and after-school support program.</p>
+</div>
+<!-- Action Items -->
+<div class="p-2">
+<div class="flex flex-col">
+<!-- Completed Item -->
+<label class="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors group">
+<div class="relative flex items-center">
+<input checked="" class="peer h-5 w-5 cursor-pointer appearance-none rounded-md border border-slate-300 bg-slate-100 checked:border-primary checked:bg-primary transition-all dark:border-slate-600 dark:bg-slate-700" type="checkbox"/>
+<span class="material-symbols-outlined absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[16px] text-white opacity-0 peer-checked:opacity-100 pointer-events-none">check</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-medium text-slate-500 line-through decoration-slate-400 dark:text-slate-400">Initial counseling session</p>
+<p class="text-xs text-slate-400 mt-0.5">Completed on Oct 10</p>
+</div>
+</label>
+<!-- Pending Item -->
+<label class="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors group">
+<div class="relative flex items-center">
+<input class="peer h-5 w-5 cursor-pointer appearance-none rounded-md border-2 border-slate-300 bg-white checked:border-primary checked:bg-primary transition-all dark:border-slate-500 dark:bg-slate-800" type="checkbox"/>
+<span class="material-symbols-outlined absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[16px] text-white opacity-0 peer-checked:opacity-100 pointer-events-none">check</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-medium text-slate-900 dark:text-white group-hover:text-primary transition-colors">Attend Math Support Class (Tue/Thu)</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="inline-flex items-center rounded bg-amber-100 dark:bg-amber-900/30 px-1.5 py-0.5 text-[10px] font-medium text-amber-800 dark:text-amber-300">
+                                        Priority
+                                    </span>
+<p class="text-xs text-slate-400">Due: Weekly</p>
+</div>
+</div>
+</label>
+<!-- Pending Item -->
+<label class="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors group">
+<div class="relative flex items-center">
+<input class="peer h-5 w-5 cursor-pointer appearance-none rounded-md border-2 border-slate-300 bg-white checked:border-primary checked:bg-primary transition-all dark:border-slate-500 dark:bg-slate-800" type="checkbox"/>
+<span class="material-symbols-outlined absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[16px] text-white opacity-0 peer-checked:opacity-100 pointer-events-none">check</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-medium text-slate-900 dark:text-white group-hover:text-primary transition-colors">Submit Math Homework for review</p>
+<p class="text-xs text-slate-400 mt-0.5">Due: Oct 15</p>
+</div>
+</label>
+</div>
+</div>
+<!-- Footer -->
+<div class="bg-slate-50 dark:bg-slate-700/30 px-5 py-3 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center">
+<div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-base">calendar_month</span>
+<span>Next Review: <strong>Nov 01</strong></span>
+</div>
+<button class="text-sm font-bold text-primary hover:text-blue-600 transition-colors">View Details</button>
+</div>
+</div>
+</div>
+<!-- Case Notes Timeline -->
+<div class="px-4 mb-20">
+<div class="flex justify-between items-end mb-4">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Case Notes</h3>
+<button class="text-sm font-medium text-primary hover:underline">View All</button>
+</div>
+<div class="relative pl-4 border-l-2 border-slate-200 dark:border-slate-700 space-y-8">
+<!-- Note 1 -->
+<div class="relative">
+<div class="absolute -left-[21px] top-0 h-3 w-3 rounded-full border-2 border-white dark:border-slate-900 bg-primary ring-4 ring-slate-50 dark:ring-slate-800"></div>
+<div class="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-700">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<div class="h-8 w-8 rounded-full bg-cover bg-center" data-alt="Teacher avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD-B_80hXMmDUhwvdwECbiSazF6Tn9eqspyzrbBnmnNaMT1opBCc3zfrKQi7-OuZARSADI-BIt8pcW-skWqO13nvv984-RCqn4axrBRmUgFpqaY5JSnC8SMNPc1pCPtq7B2hjFUO43NGNpN5hzDr8tc1RYSHcpSMJJCyASnWGsUQgwvieoiGGF1j55-tiX2CMNgwnqkYdeVBeaxE6OWGil7KsUsnmK1Qaxff85o6SXUPAQsiN9Ykjkdh7KpPd01sG8P0VDz1bi94cs");'></div>
+<div>
+<p class="text-sm font-bold text-slate-900 dark:text-white">Mrs. Zulu</p>
+<p class="text-[10px] text-slate-400 font-medium">Grade Head • 12 Oct, 10:30 AM</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-300 dark:text-slate-600 text-lg" title="Visible to Parents">lock_open</span>
+</div>
+<p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Met with parents regarding recent assessment results. They agreed to monitor homework completion more closely. Thabo seemed receptive to the extra support.
+                        </p>
+</div>
+</div>
+<!-- Note 2 -->
+<div class="relative">
+<div class="absolute -left-[21px] top-0 h-3 w-3 rounded-full border-2 border-white dark:border-slate-900 bg-slate-300 dark:bg-slate-600 ring-4 ring-slate-50 dark:ring-slate-800"></div>
+<div class="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-700 opacity-90">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<div class="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
+                                    SK
+                                </div>
+<div>
+<p class="text-sm font-bold text-slate-900 dark:text-white">S. Khumalo</p>
+<p class="text-[10px] text-slate-400 font-medium">Counsellor • 08 Oct, 14:15 PM</p>
+</div>
+</div>
+<div class="flex items-center gap-1 text-amber-500" title="Staff Only">
+<span class="material-symbols-outlined text-lg">lock</span>
+<span class="text-[10px] uppercase font-bold tracking-wide">Internal</span>
+</div>
+</div>
+<p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Routine check-in regarding anxiety levels. Student reports feeling overwhelmed by upcoming exams. Recommended stress management techniques.
+                        </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Action Button -->
+<div class="fixed bottom-6 right-6 z-40">
+<button class="bg-primary hover:bg-blue-600 text-white rounded-full p-4 shadow-lg shadow-blue-500/40 transition-all active:scale-95 flex items-center justify-center group">
+<span class="material-symbols-outlined text-3xl group-hover:rotate-90 transition-transform duration-300">add</span>
+</button>
+</div>
+<!-- Bottom Navigation Spacer -->
+<div class="h-6"></div>
+</div>
+</body></html>

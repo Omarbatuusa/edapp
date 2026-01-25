@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Family Wallet/Fees - EdApp</title>
+<!-- Google Fonts: Lexend -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+            extend: {
+                colors: {
+                "primary": "#389cfa",
+                "background-light": "#f5f7f8",
+                "background-dark": "#0f1923",
+                },
+                fontFamily: {
+                "display": ["Lexend", "sans-serif"]
+                },
+                borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+            },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24;
+            font-size: 24px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#0d151c] dark:text-white">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto bg-background-light dark:bg-background-dark shadow-xl">
+<!-- Top App Bar -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-50">
+<div class="text-[#0d151c] dark:text-white flex size-12 shrink-0 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+<span class="material-symbols-outlined">arrow_back</span>
+</div>
+<h2 class="text-[#0d151c] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Family Wallet</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex size-12 cursor-pointer items-center justify-center overflow-hidden rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-[#0d151c] dark:text-white min-w-0 p-0 relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-3 right-3 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-background-dark"></span>
+</button>
+</div>
+</div>
+<!-- Wallet Card -->
+<div class="p-4">
+<div class="flex flex-col items-stretch justify-between rounded-xl shadow-lg shadow-blue-200/50 dark:shadow-none overflow-hidden relative min-h-[180px] bg-gradient-to-br from-[#389cfa] to-[#1d4ed8]">
+<!-- Decorative background pattern -->
+<div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+<div class="absolute bottom-0 left-0 w-48 h-48 bg-black/5 rounded-full blur-2xl -ml-12 -mb-12 pointer-events-none"></div>
+<div class="flex flex-col p-6 z-10 h-full justify-between">
+<div class="flex justify-between items-start">
+<div class="flex flex-col gap-1">
+<p class="text-blue-50 text-sm font-medium tracking-wide opacity-90">Total Balance</p>
+<p class="text-white text-3xl font-bold leading-tight tracking-tight">R 2,450.00</p>
+<p class="text-blue-100 text-xs font-normal mt-1">Updated: Just now</p>
+</div>
+<div class="bg-white/20 backdrop-blur-sm p-2 rounded-lg">
+<span class="material-symbols-outlined text-white" style="font-size: 28px;">account_balance_wallet</span>
+</div>
+</div>
+<div class="flex gap-3 mt-6">
+<button class="flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-white text-primary text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-50 transition-colors shadow-sm">
+<span class="truncate">Top Up</span>
+</button>
+<button class="flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary/30 border border-white/20 text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/40 transition-colors">
+<span class="truncate">Statements</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Actions -->
+<div class="@container px-4 py-2">
+<div class="grid grid-cols-4 gap-2">
+<div class="flex flex-col items-center gap-2 py-2 text-center group cursor-pointer">
+<div class="rounded-2xl bg-white dark:bg-slate-800 p-3 shadow-sm group-hover:scale-105 transition-transform border border-slate-100 dark:border-slate-700">
+<span class="material-symbols-outlined text-primary">payments</span>
+</div>
+<p class="text-[#0d151c] dark:text-slate-300 text-xs font-medium leading-normal">Pay Fees</p>
+</div>
+<div class="flex flex-col items-center gap-2 py-2 text-center group cursor-pointer">
+<div class="rounded-2xl bg-white dark:bg-slate-800 p-3 shadow-sm group-hover:scale-105 transition-transform border border-slate-100 dark:border-slate-700">
+<span class="material-symbols-outlined text-primary">account_balance</span>
+</div>
+<p class="text-[#0d151c] dark:text-slate-300 text-xs font-medium leading-normal">EFT Details</p>
+</div>
+<div class="flex flex-col items-center gap-2 py-2 text-center group cursor-pointer">
+<div class="rounded-2xl bg-white dark:bg-slate-800 p-3 shadow-sm group-hover:scale-105 transition-transform border border-slate-100 dark:border-slate-700">
+<span class="material-symbols-outlined text-primary">calendar_month</span>
+</div>
+<p class="text-[#0d151c] dark:text-slate-300 text-xs font-medium leading-normal">Plan</p>
+</div>
+<div class="flex flex-col items-center gap-2 py-2 text-center group cursor-pointer">
+<div class="rounded-2xl bg-white dark:bg-slate-800 p-3 shadow-sm group-hover:scale-105 transition-transform border border-slate-100 dark:border-slate-700">
+<span class="material-symbols-outlined text-orange-500">lock</span>
+</div>
+<p class="text-[#0d151c] dark:text-slate-300 text-xs font-medium leading-normal">Freeze</p>
+</div>
+</div>
+</div>
+<!-- Learner Limits Header -->
+<div class="flex items-center justify-between px-4 pt-4 pb-2">
+<h3 class="text-[#0d151c] dark:text-white tracking-tight text-lg font-bold leading-tight">Learner Limits</h3>
+<span class="text-primary text-sm font-medium cursor-pointer">See all</span>
+</div>
+<!-- Learner Limits Carousel -->
+<div class="flex overflow-x-auto pb-4 pt-1 px-4 gap-3 [-ms-scrollbar-style:none] [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden">
+<!-- Card 1 -->
+<div class="flex flex-col gap-3 rounded-2xl bg-white dark:bg-slate-800 shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none min-w-[200px] border border-slate-100 dark:border-slate-700 p-3">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 bg-center bg-cover rounded-full border-2 border-white dark:border-slate-600 shadow-sm" data-alt="Portrait of a young student smiling" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDF3Ys14l2ODXLSyVkMYiOTUfDeyQoeEgQORWjHzpyw8d8aDXLxkqtOlPZVstxGMbh6-Rh2PFJIqE5pQNSrGS1e68IklOQeTsiTbevmO8W8ij2_U1edbmy67_g_B-jaksChuKNWqMal9jPOFRUJZcdFSm6jStysk4fMu5A4NwSQXS3axnNmTxwLk0iT3pfOA01NxeaetxMJ58lVqGcsrqlIWOLFhqLW82dqb2txt0u--1VQVstjXK2zrtycV1mxLLbnJrZ4RnihAsI");'></div>
+<div>
+<p class="text-[#0d151c] dark:text-white text-sm font-bold leading-tight">Lerato</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-medium">Grade 4</p>
+</div>
+</div>
+<div class="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-2 flex justify-between items-center">
+<span class="text-xs text-slate-500 dark:text-slate-400">Daily Limit</span>
+<span class="text-sm font-bold text-[#0d151c] dark:text-white">R 50.00</span>
+</div>
+<button class="w-full h-8 rounded-lg bg-slate-100 dark:bg-slate-700 text-[#0d151c] dark:text-white text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+                    Manage
+                </button>
+</div>
+<!-- Card 2 -->
+<div class="flex flex-col gap-3 rounded-2xl bg-white dark:bg-slate-800 shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none min-w-[200px] border border-slate-100 dark:border-slate-700 p-3">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 bg-center bg-cover rounded-full border-2 border-white dark:border-slate-600 shadow-sm" data-alt="Portrait of a teenager student" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCadaxQn4u6ta-AmberM0bsjsgAfEW7mflLMeCmMcSNUTT0V7sAxpR0ER3uTI71FlpVeCwaNkXEeOizRZdgvPj9xTJPZH0Wb0jZjqhgjFsMekyBCzh15Xyz3qru0y1z9BziQ-Zr1h-sgQMPn8WdzaNuU-StPmSdyIinBi-sJHKzs7E7y49aB0ePcSd7dFwajZKNo9Zq0CKMcRlM9dC9b1l5FN2cZ4UN6NwwIjZLIeRZBPAHZXBtua7tQbTq1P6xa4BuMZq3QB8ue_8");'></div>
+<div>
+<p class="text-[#0d151c] dark:text-white text-sm font-bold leading-tight">Thabo</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-medium">Grade 9</p>
+</div>
+</div>
+<div class="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-2 flex justify-between items-center">
+<span class="text-xs text-slate-500 dark:text-slate-400">Daily Limit</span>
+<span class="text-sm font-bold text-[#0d151c] dark:text-white">R 150.00</span>
+</div>
+<button class="w-full h-8 rounded-lg bg-slate-100 dark:bg-slate-700 text-[#0d151c] dark:text-white text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+                    Manage
+                </button>
+</div>
+<!-- Card 3 (Add New) -->
+<div class="flex flex-col justify-center items-center gap-3 rounded-2xl bg-transparent min-w-[100px] p-3 border-2 border-dashed border-slate-200 dark:border-slate-700 text-slate-400 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<span class="material-symbols-outlined">add</span>
+<span class="text-xs font-medium">Add Limit</span>
+</div>
+</div>
+<!-- Recent Transactions -->
+<div class="flex flex-col gap-4 px-4 pt-4 pb-8">
+<div class="flex items-center justify-between">
+<h3 class="text-[#0d151c] dark:text-white tracking-tight text-lg font-bold leading-tight">Recent Transactions</h3>
+<a class="text-primary text-sm font-medium" href="#">View All</a>
+</div>
+<div class="flex flex-col gap-3">
+<!-- Transaction Item 1 -->
+<div class="flex items-center justify-between bg-white dark:bg-slate-800 p-3 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+<div class="flex items-center gap-3">
+<div class="bg-red-50 dark:bg-red-900/20 p-2.5 rounded-full text-red-600 dark:text-red-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">school</span>
+</div>
+<div class="flex flex-col">
+<p class="text-[#0d151c] dark:text-white text-sm font-bold">Tuition Fees - Term 3</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Today, 09:41 AM</p>
+</div>
+</div>
+<p class="text-red-600 dark:text-red-400 text-sm font-bold">- R 12,000.00</p>
+</div>
+<!-- Transaction Item 2 -->
+<div class="flex items-center justify-between bg-white dark:bg-slate-800 p-3 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+<div class="flex items-center gap-3">
+<div class="bg-orange-50 dark:bg-orange-900/20 p-2.5 rounded-full text-orange-600 dark:text-orange-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">lunch_dining</span>
+</div>
+<div class="flex flex-col">
+<p class="text-[#0d151c] dark:text-white text-sm font-bold">Tuckshop Purchase</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Yesterday, 14:20 PM</p>
+</div>
+</div>
+<p class="text-[#0d151c] dark:text-white text-sm font-bold">- R 45.00</p>
+</div>
+<!-- Transaction Item 3 -->
+<div class="flex items-center justify-between bg-white dark:bg-slate-800 p-3 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+<div class="flex items-center gap-3">
+<div class="bg-green-50 dark:bg-green-900/20 p-2.5 rounded-full text-green-600 dark:text-green-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">add_card</span>
+</div>
+<div class="flex flex-col">
+<p class="text-[#0d151c] dark:text-white text-sm font-bold">Wallet Top-up</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs">24 Oct, 08:30 AM</p>
+</div>
+</div>
+<p class="text-green-600 dark:text-green-400 text-sm font-bold">+ R 500.00</p>
+</div>
+</div>
+</div>
+<div class="h-10 bg-transparent"></div>
+</div>
+</body></html>

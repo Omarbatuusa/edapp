@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gate Attendance - Check-in/out</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "primary": "#3d9cf5",
+                "background-light": "#f5f7f8",
+                "background-dark": "#101922",
+                "surface-dark": "#111518",
+                "surface-dark-highlight": "#1b2127",
+              },
+              fontFamily: {
+                "display": ["Lexend", "sans-serif"],
+                "body": ["Noto Sans", "sans-serif"],
+              },
+              borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+              animation: {
+                'scan': 'scan 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              },
+              keyframes: {
+                scan: {
+                  '0%, 100%': { transform: 'translateY(-40%)', opacity: '0' },
+                  '10%': { opacity: '1' },
+                  '50%': { transform: 'translateY(40%)', opacity: '1' },
+                  '90%': { opacity: '0' },
+                }
+              }
+            },
+          },
+        }
+      </script>
+<style>
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3b4854;
+            border-radius: 3px;
+        }
+        .scan-line {
+            background: linear-gradient(to right, transparent, #3d9cf5, transparent);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white overflow-hidden antialiased selection:bg-primary/30">
+<div class="relative flex flex-col h-screen w-full max-w-md mx-auto bg-background-light dark:bg-background-dark shadow-2xl overflow-hidden group/design-root">
+<!-- Header Section -->
+<header class="flex-none bg-white dark:bg-surface-dark p-4 pb-2 border-b border-slate-200 dark:border-[#283139]">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-slate-100 dark:border-slate-700" data-alt="School logo showing a shield emblem" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBgNWQMYavG04JP7wJPvVIHEmc8kfl4D3Hcxufw0tlAcknt2zECfSNdkzEYZXdb29_6wzXkXiXgBVsrqS1YLT_3P0r2EScNwYurI84_gO5Fgjsn1hQUcLtYZSV0fg_W4ba0XSpd8FspPIwXPTG7tzA3_xjxP2jWDJjvzuwYZARhwWJEvKxltqmVefYOHdeZzfVWS93BpCfCBsSA5IOZ4xPYJWYpJO2Be6Y9TrlmVcoNAq1gvH-2ifBwWMpYz3MZ46b9h2F37KOM044");'></div>
+<div class="absolute -bottom-1 -right-1 bg-surface-dark rounded-full p-0.5">
+<span class="material-symbols-outlined text-green-500 text-[14px] bg-green-500/10 rounded-full">check_circle</span>
+</div>
+</div>
+<div>
+<h2 class="text-slate-900 dark:text-white text-base font-bold leading-tight">Northview Academy</h2>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="material-symbols-outlined text-[14px] text-slate-500 dark:text-[#9cabba]">location_on</span>
+<span class="text-xs font-medium text-slate-500 dark:text-[#9cabba]">Gate A - Main Entrance</span>
+</div>
+</div>
+</div>
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-slate-100 dark:hover:bg-[#283139] text-slate-500 dark:text-white transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</header>
+<!-- Scrollable Content -->
+<main class="flex-1 overflow-y-auto pb-24 scroll-smooth">
+<!-- Mode Toggle -->
+<div class="sticky top-0 z-20 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm px-4 py-3 border-b border-transparent dark:border-[#283139]/50">
+<div class="flex h-12 w-full items-center justify-center rounded-xl bg-slate-200 dark:bg-[#283139] p-1">
+<label class="flex cursor-pointer h-full flex-1 items-center justify-center overflow-hidden rounded-lg has-[:checked]:bg-white dark:has-[:checked]:bg-surface-dark has-[:checked]:shadow-sm has-[:checked]:text-primary dark:has-[:checked]:text-white text-slate-500 dark:text-[#9cabba] text-sm font-bold leading-normal transition-all duration-200">
+<span class="truncate flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">login</span> Check-In
+                        </span>
+<input checked="" class="hidden" name="gate-mode" type="radio" value="Check-In"/>
+</label>
+<label class="flex cursor-pointer h-full flex-1 items-center justify-center overflow-hidden rounded-lg has-[:checked]:bg-white dark:has-[:checked]:bg-surface-dark has-[:checked]:shadow-sm has-[:checked]:text-primary dark:has-[:checked]:text-white text-slate-500 dark:text-[#9cabba] text-sm font-bold leading-normal transition-all duration-200">
+<span class="truncate flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">logout</span> Check-Out
+                        </span>
+<input class="hidden" name="gate-mode" type="radio" value="Check-Out"/>
+</label>
+</div>
+</div>
+<!-- Scanner Viewport (Hero) -->
+<div class="px-4 py-2">
+<div class="relative w-full aspect-[3/4] bg-black rounded-2xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-800">
+<!-- Simulated Camera Feed -->
+<div class="absolute inset-0 bg-cover bg-center opacity-60 mix-blend-overlay" data-alt="Blurred background representing camera view of school entrance" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAhbXxgVAy5llgWV8jMJjn-LvjlW-zj4EmiVW6qqqt_Ng-KtRz_BpXpTRQI-x3zkFoJD1dvULA2P_rwv_JVhda3UcBMLckq-b_yIJhIl-8de5e6nbJCtCtIw7CJscDDY2ND7lAtx-IcdD4UX_zPNYWON_-Ite79MQNtpcuGtF3Nu9Zh2TmsRNU8_BvKkObIgc9AKaqDlACaX8UJ2W7M7okzSZ-EYPaz3V8gMA15oPPThL-GgZHRKQZ8JLgr3I2AunOPhSxZzrGM-uE");'></div>
+<div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80"></div>
+<!-- Scan UI Overlay -->
+<div class="absolute inset-0 flex flex-col items-center justify-between p-6">
+<!-- Status Badge -->
+<div class="bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10 flex items-center gap-2">
+<div class="size-2 rounded-full bg-green-500 animate-pulse"></div>
+<span class="text-white text-xs font-bold tracking-wide uppercase">Active • Geo-fenced</span>
+</div>
+<!-- Scan Frame -->
+<div class="relative size-64 flex items-center justify-center">
+<!-- Corners -->
+<div class="absolute top-0 left-0 size-8 border-t-4 border-l-4 border-primary rounded-tl-xl"></div>
+<div class="absolute top-0 right-0 size-8 border-t-4 border-r-4 border-primary rounded-tr-xl"></div>
+<div class="absolute bottom-0 left-0 size-8 border-b-4 border-l-4 border-primary rounded-bl-xl"></div>
+<div class="absolute bottom-0 right-0 size-8 border-b-4 border-r-4 border-primary rounded-br-xl"></div>
+<!-- Moving Scan Line -->
+<div class="w-full h-1 scan-line shadow-[0_0_15px_rgba(61,156,245,0.6)] animate-scan"></div>
+<!-- NFC Hint -->
+<div class="absolute -bottom-12 flex items-center gap-2 text-white/80 animate-bounce">
+<span class="material-symbols-outlined text-[20px]">nfc</span>
+<span class="text-xs font-medium">Tap NFC or Scan QR</span>
+</div>
+</div>
+<!-- Camera Controls -->
+<div class="flex items-center gap-8 z-10">
+<button class="flex shrink-0 items-center justify-center rounded-full size-12 bg-surface-dark-highlight/50 backdrop-blur-md border border-white/10 text-white hover:bg-white/20 transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]">flashlight_on</span>
+</button>
+<button class="flex shrink-0 items-center justify-center rounded-full size-16 bg-primary text-white shadow-[0_0_20px_rgba(61,156,245,0.4)] hover:bg-primary/90 transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[32px] fill-current">photo_camera</span>
+</button>
+<button class="flex shrink-0 items-center justify-center rounded-full size-12 bg-surface-dark-highlight/50 backdrop-blur-md border border-white/10 text-white hover:bg-white/20 transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]">cameraswitch</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Manual Entry Section -->
+<div class="px-4 mt-4">
+<div class="flex flex-col items-center justify-between gap-4 rounded-xl border border-slate-200 dark:border-[#3b4854] bg-white dark:bg-surface-dark p-4 shadow-sm">
+<div class="w-full flex items-start gap-4">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined">keyboard</span>
+</div>
+<div class="flex-1">
+<p class="text-slate-900 dark:text-white text-base font-bold leading-tight">Manual Entry</p>
+<p class="text-slate-500 dark:text-[#9cabba] text-sm font-normal leading-normal mt-1">Search by student name or enter ID number manually.</p>
+</div>
+</div>
+<button class="w-full h-10 flex items-center justify-center gap-2 rounded-lg bg-slate-100 dark:bg-[#283139] text-primary dark:text-primary hover:bg-slate-200 dark:hover:bg-[#323b44] text-sm font-bold transition-colors">
+<span class="material-symbols-outlined text-[18px]">search</span>
+                        Open Manual Search
+                    </button>
+</div>
+</div>
+<!-- Recent Activity Feed -->
+<div class="px-4 mt-8 mb-4">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold">Recent Activity</h3>
+<button class="text-primary text-sm font-medium hover:text-primary/80">View History</button>
+</div>
+<div class="space-y-3">
+<!-- Item 1 -->
+<div class="flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-[#283139] shadow-sm">
+<div class="relative">
+<div class="size-12 rounded-full bg-cover bg-center" data-alt="Student portrait of Thandiwe" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCuq2Pf261LGosddx5Y0bBxUjjH21wU81msUU8RyUstLHSR4AV482FjL09ni11eMSB2PM4yzGSiT4JE9R9dQHOhVdWksOEdS5DN0GsM8zDnxZ1f_hO075nFbpj8_gePmPdEGx_GZt_f0hYVB80rYxyuy_L6s0AhJ-gCEYOQd9t5zKdDW8NrGhAHQZ2-dlZyuuA_vAhzjmHD2W0A7sOwtZELdoosAOj9MYlBIcd2HZus40Xud75N49W0STy-ZJ0EhvdN1u-TU6_FOVg");'></div>
+<div class="absolute -bottom-1 -right-1 bg-white dark:bg-surface-dark rounded-full p-0.5">
+<span class="material-symbols-outlined text-[16px] text-green-500 bg-green-500/10 rounded-full">check_circle</span>
+</div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start">
+<h4 class="text-slate-900 dark:text-white text-sm font-bold truncate">Thandiwe Zulu</h4>
+<span class="text-xs font-bold text-green-600 dark:text-green-400">07:58 AM</span>
+</div>
+<div class="flex justify-between items-center mt-1">
+<p class="text-slate-500 dark:text-[#9cabba] text-xs">Grade 11 • ID: 849201</p>
+<span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border border-slate-200 dark:border-slate-700 px-1.5 py-0.5 rounded">Checked In</span>
+</div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-[#283139] shadow-sm">
+<div class="relative">
+<div class="size-12 rounded-full bg-cover bg-center" data-alt="Student portrait of Michael" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCrAG5lKNSaiup4Nc1rTNSNPtAx10WuzKW_y0rcYn3b9OaFrHnY19wys85QCmMLraE4U7tpfT80HA1Eo7N1l1nhPYFhYQBYTj_9Ee5HlFRZI658ocKroQE3IkH606YSJZRp2SDewUQD2-cKSdxdJXJuslCksUw-KYOA--f-dGKT0NUP_GxnpsuuHMzytP-ERfoWaHvyqasTkX2rPRXDTUsmvA06fMiKbzrhLgpPRiv9CnubQFOcr5S4i1XSOlnndmUZ-dGG1Jc1opw");'></div>
+<div class="absolute -bottom-1 -right-1 bg-white dark:bg-surface-dark rounded-full p-0.5">
+<span class="material-symbols-outlined text-[16px] text-green-500 bg-green-500/10 rounded-full">check_circle</span>
+</div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start">
+<h4 class="text-slate-900 dark:text-white text-sm font-bold truncate">Michael Nkosi</h4>
+<span class="text-xs font-bold text-green-600 dark:text-green-400">07:55 AM</span>
+</div>
+<div class="flex justify-between items-center mt-1">
+<p class="text-slate-500 dark:text-[#9cabba] text-xs">Grade 9 • ID: 992812</p>
+<span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border border-slate-200 dark:border-slate-700 px-1.5 py-0.5 rounded">Checked In</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Spacer for bottom float -->
+<div class="h-12"></div>
+</main>
+<!-- Floating Sync Status -->
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
+<div class="flex items-center gap-2 px-4 py-2 bg-surface-dark-highlight/90 backdrop-blur-md border border-white/10 rounded-full shadow-xl">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+</span>
+<span class="text-white text-xs font-medium">Syncing Data...</span>
+<span class="material-symbols-outlined text-white/50 text-[14px] ml-1">cloud_upload</span>
+</div>
+</div>
+</div>
+</body></html>

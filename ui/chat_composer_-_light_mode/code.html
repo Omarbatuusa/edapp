@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EdApp Chat Composer</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "sans": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for cleaner look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-gray-100 font-display flex items-center justify-center min-h-screen p-0 sm:p-4">
+<!-- Mobile Screen Container -->
+<div class="relative flex h-[844px] w-full max-w-[390px] flex-col bg-background-light dark:bg-background-dark sm:rounded-[40px] shadow-2xl overflow-hidden group/design-root border-4 border-gray-900 sm:border-gray-200">
+<!-- Top App Bar -->
+<div class="flex items-center bg-white/90 dark:bg-[#1a2632]/90 backdrop-blur-md p-4 pb-3 justify-between border-b border-gray-100 dark:border-gray-800 z-20">
+<div class="text-slate-900 dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+<span class="material-symbols-outlined">arrow_back_ios_new</span>
+</div>
+<div class="flex flex-col items-center flex-1">
+<h2 class="text-slate-900 dark:text-white text-base font-bold leading-tight tracking-[-0.015em] text-center">Mr. Smith (Science)</h2>
+<span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Online</span>
+</div>
+<div class="flex w-10 items-center justify-end">
+<button class="flex size-10 cursor-pointer items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-900 dark:text-white">
+<span class="material-symbols-outlined">info</span>
+</button>
+</div>
+</div>
+<!-- Chat History Area -->
+<div class="flex-1 overflow-y-auto p-4 space-y-6 bg-background-light dark:bg-background-dark no-scrollbar relative">
+<!-- Date Separator -->
+<div class="flex justify-center">
+<span class="px-3 py-1 bg-slate-200/50 dark:bg-slate-700/50 rounded-full text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Today</span>
+</div>
+<!-- Message: Teacher -->
+<div class="flex flex-col gap-1 items-start max-w-[85%]">
+<div class="px-4 py-3 rounded-2xl rounded-tl-none bg-white dark:bg-[#1e2b36] shadow-sm text-slate-800 dark:text-slate-200 text-sm leading-relaxed border border-slate-100 dark:border-transparent">
+                    Hi Joshua, please remember to submit the signed permission slip for the science fair by tomorrow.
+                </div>
+<span class="text-[10px] text-slate-400 pl-1">10:42 AM</span>
+</div>
+<!-- Message: Me -->
+<div class="flex flex-col gap-1 items-end max-w-[85%] self-end">
+<div class="px-4 py-3 rounded-2xl rounded-tr-none bg-primary text-white shadow-sm text-sm leading-relaxed">
+                    Thanks Mr. Smith! I'll ask my mom to sign it tonight.
+                </div>
+<div class="flex items-center gap-1 pr-1">
+<span class="text-[10px] text-slate-400">10:45 AM</span>
+<span class="material-symbols-outlined text-[14px] text-primary">done_all</span>
+</div>
+</div>
+<!-- Message: Teacher -->
+<div class="flex flex-col gap-1 items-start max-w-[85%]">
+<div class="px-4 py-3 rounded-2xl rounded-tl-none bg-white dark:bg-[#1e2b36] shadow-sm text-slate-800 dark:text-slate-200 text-sm leading-relaxed border border-slate-100 dark:border-transparent">
+                    Perfect. I've also attached the updated lab guidelines below.
+                </div>
+<!-- Attachment Card -->
+<div class="flex items-center gap-3 p-3 mt-1 rounded-xl bg-white dark:bg-[#1e2b36] border border-slate-100 dark:border-transparent shadow-sm w-full cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+<div class="size-10 rounded-lg bg-red-50 dark:bg-red-900/20 flex items-center justify-center text-red-500 shrink-0">
+<span class="material-symbols-outlined">description</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-xs font-bold text-slate-900 dark:text-white truncate">Lab_Guidelines_v2.pdf</p>
+<p class="text-[10px] text-slate-500">2.4 MB • PDF</p>
+</div>
+</div>
+<span class="text-[10px] text-slate-400 pl-1">10:46 AM</span>
+</div>
+<!-- Spacer for bottom area visibility -->
+<div class="h-32"></div>
+</div>
+<!-- Guardrail Banner (Floating) -->
+<div class="absolute bottom-[88px] left-0 w-full px-4 z-10 transition-all duration-300">
+<div class="mx-auto max-w-sm">
+<div class="flex items-center gap-3 bg-indigo-50/90 dark:bg-indigo-900/90 backdrop-blur-md px-3 py-2 rounded-lg border border-indigo-100 dark:border-indigo-800 shadow-sm animate-fade-in-up">
+<div class="flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 shrink-0 size-6 dark:bg-indigo-800 dark:text-indigo-200">
+<span class="material-symbols-outlined text-[16px]">bedtime</span>
+</div>
+<p class="text-indigo-900 dark:text-indigo-100 text-xs font-medium flex-1 truncate">
+                        Quiet hours: Notifications muted until 8:00 AM
+                    </p>
+</div>
+</div>
+</div>
+<!-- Composer Area -->
+<div class="relative z-20 bg-white dark:bg-[#1a2632] border-t border-slate-100 dark:border-slate-800 pb-safe pt-2">
+<div class="flex items-end px-3 pb-3 pt-1 gap-2">
+<!-- Attachment Button (Active State Indication) -->
+<button class="flex items-center justify-center size-10 mb-1 rounded-full text-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shrink-0">
+<span class="material-symbols-outlined text-[28px] transform rotate-45 transition-transform">add_circle</span>
+</button>
+<!-- Input Field -->
+<div class="flex-1 bg-slate-100 dark:bg-[#0f1923] rounded-[20px] min-h-[44px] flex items-center px-4 py-2 border border-transparent focus-within:border-primary/30 focus-within:ring-2 focus-within:ring-primary/10 transition-all">
+<textarea class="w-full bg-transparent border-none p-0 text-slate-900 dark:text-white placeholder:text-slate-400 text-[15px] resize-none focus:ring-0 max-h-32 leading-5" placeholder="Message Mr. Smith..." rows="1"></textarea>
+</div>
+<!-- Right Actions -->
+<div class="flex items-center gap-1 mb-1 shrink-0">
+<!-- Mic (Hidden when typing, but shown here as per typical state) -->
+<!-- Send Button -->
+<button class="flex items-center justify-center size-10 rounded-full bg-primary text-white shadow-md hover:bg-primary/90 transition-colors active:scale-95">
+<span class="material-symbols-outlined text-[20px] ml-0.5">send</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Bottom Sheet Overlay (Simulating Open State) -->
+<div class="absolute inset-0 z-30 flex flex-col justify-end bg-black/40 backdrop-blur-[1px] animate-fade-in">
+<!-- Dismiss Area -->
+<div class="flex-1 w-full" onclick="this.parentElement.style.display='none'"></div>
+<!-- Sheet Content -->
+<div class="w-full bg-white dark:bg-[#1a2632] rounded-t-[24px] shadow-2xl p-4 pb-8 transform transition-transform duration-300 ease-out">
+<!-- Handle -->
+<div class="w-full flex justify-center mb-4">
+<div class="w-12 h-1.5 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+</div>
+<!-- Header -->
+<div class="flex justify-between items-center mb-6 px-2">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Attachments</h3>
+<button class="p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Action: Outstanding Request -->
+<div class="mb-6">
+<button class="w-full flex items-center gap-4 p-4 rounded-xl bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-800/30 group active:scale-[0.98] transition-all">
+<div class="size-10 rounded-full bg-orange-100 dark:bg-orange-800 text-orange-600 dark:text-orange-200 flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[20px]">assignment_late</span>
+</div>
+<div class="flex-1 text-left">
+<p class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Upload Required Doc</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Permission Slip for Science Fair</p>
+</div>
+<span class="material-symbols-outlined text-orange-400">chevron_right</span>
+</button>
+</div>
+<!-- Grid Options -->
+<div class="grid grid-cols-4 gap-4 px-1">
+<!-- Option 1: Camera -->
+<button class="flex flex-col items-center gap-2 group">
+<div class="size-14 rounded-2xl bg-blue-50 dark:bg-slate-800 text-primary flex items-center justify-center group-hover:bg-blue-100 dark:group-hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined text-[28px]">photo_camera</span>
+</div>
+<span class="text-xs font-medium text-slate-600 dark:text-slate-300">Camera</span>
+</button>
+<!-- Option 2: Gallery -->
+<button class="flex flex-col items-center gap-2 group">
+<div class="size-14 rounded-2xl bg-purple-50 dark:bg-slate-800 text-purple-500 flex items-center justify-center group-hover:bg-purple-100 dark:group-hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined text-[28px]">image</span>
+</div>
+<span class="text-xs font-medium text-slate-600 dark:text-slate-300">Gallery</span>
+</button>
+<!-- Option 3: Document -->
+<button class="flex flex-col items-center gap-2 group">
+<div class="size-14 rounded-2xl bg-indigo-50 dark:bg-slate-800 text-indigo-500 flex items-center justify-center group-hover:bg-indigo-100 dark:group-hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined text-[28px]">folder</span>
+</div>
+<span class="text-xs font-medium text-slate-600 dark:text-slate-300">Document</span>
+</button>
+<!-- Option 4: Voice Note -->
+<button class="flex flex-col items-center gap-2 group">
+<div class="size-14 rounded-2xl bg-green-50 dark:bg-slate-800 text-green-500 flex items-center justify-center group-hover:bg-green-100 dark:group-hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined text-[28px]">mic</span>
+</div>
+<span class="text-xs font-medium text-slate-600 dark:text-slate-300">Voice Note</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Animation Keyframes -->
+<style>
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slide-up {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fade-in 0.2s ease-out forwards;
+        }
+        .animate-slide-up {
+            animation: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</body></html>

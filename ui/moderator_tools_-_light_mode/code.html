@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EdApp Moderator Tools</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1f90f9",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "danger": "#ef4444",
+                        "success": "#22c55e",
+                        "warning": "#f59e0b",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-gray-800 flex justify-center items-center min-h-screen font-display">
+<!-- Mobile Device Simulator Wrapper -->
+<div class="relative w-full max-w-md h-auto max-h-[95vh] overflow-hidden bg-background-light dark:bg-background-dark rounded-xl shadow-2xl flex flex-col">
+<!-- Status Bar Area (Mock) -->
+<div class="h-10 bg-background-light dark:bg-background-dark flex items-center justify-between px-6 shrink-0 z-10">
+<span class="text-xs font-bold text-gray-900 dark:text-white">9:41</span>
+<div class="flex gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-gray-900 dark:text-white">signal_cellular_alt</span>
+<span class="material-symbols-outlined text-[18px] text-gray-900 dark:text-white">wifi</span>
+<span class="material-symbols-outlined text-[18px] text-gray-900 dark:text-white">battery_full</span>
+</div>
+</div>
+<!-- Content Area -->
+<div class="flex-1 overflow-y-auto no-scrollbar relative bg-white dark:bg-background-dark">
+<!-- Bottom Sheet Handle -->
+<div class="flex flex-col items-center pt-3 pb-2 sticky top-0 bg-white dark:bg-background-dark z-20">
+<div class="h-1.5 w-12 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+</div>
+<!-- Header -->
+<div class="px-5 pb-4 border-b border-slate-100 dark:border-slate-800">
+<div class="flex items-center justify-between mb-1">
+<h1 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Moderation Task</h1>
+<button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-[18px]">grid_view</span>
+<span>#Grade10-Science</span>
+<span class="w-1 h-1 rounded-full bg-slate-300"></span>
+<span>Today, 9:38 AM</span>
+</div>
+</div>
+<!-- Main Content Scroll -->
+<div class="p-5 space-y-6">
+<!-- Section: Flagged Content -->
+<section>
+<div class="flex items-center justify-between mb-3">
+<h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Flagged Content</h2>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning/10 text-warning">
+<span class="w-1.5 h-1.5 rounded-full bg-warning"></span>
+                            Needs Review
+                        </span>
+</div>
+<!-- Card -->
+<div class="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-xl overflow-hidden shadow-sm">
+<!-- Message Context -->
+<div class="p-4 bg-white dark:bg-slate-800 border-b border-slate-100 dark:border-slate-700">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-sm">AJ</div>
+<div>
+<p class="text-sm font-bold text-slate-900 dark:text-white">Alex Johnson</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Student • Grade 10</p>
+</div>
+<div class="ml-auto">
+<span class="material-symbols-outlined text-warning text-[20px]">flag</span>
+</div>
+</div>
+<!-- The Message -->
+<div class="relative p-3 bg-red-50 dark:bg-red-900/10 rounded-lg border border-red-100 dark:border-red-900/20">
+<p class="text-slate-800 dark:text-slate-200 text-base leading-snug">
+                                    "You are so stupid, nobody likes you. Stop trying so hard."
+                                </p>
+<div class="mt-2 flex items-center gap-1 text-xs text-red-600 dark:text-red-400 font-medium">
+<span class="material-symbols-outlined text-[14px]">error</span>
+<span>Detected: Bullying / Harassment</span>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex">
+<button class="flex-1 py-3 flex items-center justify-center gap-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors border-r border-slate-100 dark:border-slate-700">
+<span class="material-symbols-outlined text-[20px] text-slate-400">delete</span>
+                                Reject
+                            </button>
+<button class="flex-1 py-3 flex items-center justify-center gap-2 text-sm font-bold text-success hover:bg-success/5 transition-colors">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+                                Approve
+                            </button>
+</div>
+</div>
+</section>
+<!-- Section: User Discipline -->
+<section>
+<h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-3">Mute User</h2>
+<div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl p-4 shadow-sm">
+<div class="flex items-center gap-3 mb-4">
+<div class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-300">mic_off</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-semibold text-slate-900 dark:text-white">Temporary Mute</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">User will be read-only</p>
+</div>
+</div>
+<!-- Duration Selector -->
+<div class="grid grid-cols-4 gap-2">
+<button class="group flex flex-col items-center justify-center p-2 rounded-lg border border-primary bg-primary/5 dark:bg-primary/20">
+<span class="text-sm font-bold text-primary dark:text-blue-400">1h</span>
+</button>
+<button class="group flex flex-col items-center justify-center p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-transparent hover:bg-slate-50 dark:hover:bg-slate-700/50">
+<span class="text-sm font-bold text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200">24h</span>
+</button>
+<button class="group flex flex-col items-center justify-center p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-transparent hover:bg-slate-50 dark:hover:bg-slate-700/50">
+<span class="text-sm font-bold text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200">7d</span>
+</button>
+<button class="group flex flex-col items-center justify-center p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-transparent hover:bg-slate-50 dark:hover:bg-slate-700/50">
+<span class="material-symbols-outlined text-[20px] text-slate-400">all_inclusive</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Section: Channel Management -->
+<section>
+<h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-3">Channel Controls</h2>
+<div class="space-y-3">
+<!-- Lock Thread -->
+<div class="flex items-center justify-between p-4 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl shadow-sm">
+<div class="flex items-center gap-3">
+<div class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-300">lock</span>
+</div>
+<div>
+<p class="text-sm font-semibold text-slate-900 dark:text-white">Lock Thread</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Pause all messages</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Escalate -->
+<button class="w-full flex items-center justify-between p-4 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-xl shadow-sm group hover:bg-red-100 dark:hover:bg-red-900/20 transition-all">
+<div class="flex items-center gap-3">
+<div class="p-2 rounded-lg bg-red-100 dark:bg-red-900/30 group-hover:bg-white dark:group-hover:bg-red-900/50 transition-colors">
+<span class="material-symbols-outlined text-red-600 dark:text-red-400">report_problem</span>
+</div>
+<div class="text-left">
+<p class="text-sm font-bold text-red-700 dark:text-red-400">Escalate to Leadership</p>
+<p class="text-xs text-red-500/80 dark:text-red-400/70">Notify principal &amp; counselor</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-red-400 dark:text-red-500">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- History Log (Brief) -->
+<div class="pt-4 border-t border-slate-100 dark:border-slate-800">
+<p class="text-xs text-center text-slate-400 dark:text-slate-500 flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[14px]">history</span>
+                        Action Log ID: #MOD-8921 • Auto-saved
+                     </p>
+</div>
+<!-- Spacer for bottom nav/safe area -->
+<div class="h-8"></div>
+</div>
+</div>
+<!-- Bottom Action Bar (Fixed at bottom of simulator) -->
+<div class="p-4 bg-white dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700 z-20">
+<button class="w-full h-12 flex items-center justify-center rounded-xl bg-primary text-white font-bold text-sm tracking-wide shadow-lg hover:bg-blue-600 transition-colors">
+                Apply Actions
+            </button>
+</div>
+<!-- Home Indicator (Mock) -->
+<div class="h-1 bg-white dark:bg-slate-800"></div>
+<div class="flex justify-center pb-2 bg-white dark:bg-slate-800 rounded-b-xl">
+<div class="h-1 w-32 rounded-full bg-slate-300 dark:bg-slate-600"></div>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Activities Catalogue</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "2xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        /* Hide scrollbar for clean horizontal scrolling */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white antialiased transition-colors duration-200">
+<div class="relative flex min-h-screen w-full flex-col max-w-md mx-auto bg-background-light dark:bg-background-dark shadow-xl overflow-hidden">
+<!-- Header -->
+<header class="sticky top-0 z-20 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-4 pt-4 pb-2">
+<div class="flex items-center justify-between mb-2">
+<button class="flex items-center justify-center w-10 h-10 rounded-full bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight">Activities</h1>
+<button class="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white shadow-md shadow-primary/30 hover:bg-blue-500 transition-colors relative">
+<span class="material-symbols-outlined text-[20px]">calendar_month</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-slate-800"></span>
+</button>
+</div>
+<!-- Child Selector -->
+<div class="mt-2 relative">
+<div class="relative w-full">
+<select class="w-full appearance-none bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-medium rounded-xl py-3 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-sm">
+<option>Sarah Johnson (Grade 5)</option>
+<option>Michael Johnson (Grade 8)</option>
+</select>
+<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Search & Filters -->
+<div class="px-4 py-2 bg-background-light dark:bg-background-dark">
+<!-- Search Bar -->
+<div class="relative mb-4">
+<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+<span class="material-symbols-outlined text-slate-400">search</span>
+</div>
+<input class="w-full bg-white dark:bg-slate-800 border-none text-slate-900 dark:text-white text-base rounded-xl py-3 pl-10 pr-4 placeholder-slate-400 shadow-sm focus:ring-2 focus:ring-primary/50" placeholder="Search activities (e.g. Robotics)" type="text"/>
+</div>
+<!-- Filter Chips -->
+<div class="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+<button class="flex shrink-0 items-center justify-center px-4 h-9 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-medium transition-transform active:scale-95">
+                    All
+                </button>
+<button class="flex shrink-0 items-center justify-center gap-1.5 px-4 h-9 rounded-full bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-sm font-medium transition-colors hover:border-primary hover:text-primary active:bg-primary/5">
+<span class="material-symbols-outlined text-[18px]">sports_soccer</span>
+                    Sports
+                </button>
+<button class="flex shrink-0 items-center justify-center gap-1.5 px-4 h-9 rounded-full bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-sm font-medium transition-colors hover:border-primary hover:text-primary active:bg-primary/5">
+<span class="material-symbols-outlined text-[18px]">palette</span>
+                    Cultural
+                </button>
+<button class="flex shrink-0 items-center justify-center gap-1.5 px-4 h-9 rounded-full bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-sm font-medium transition-colors hover:border-primary hover:text-primary active:bg-primary/5">
+<span class="material-symbols-outlined text-[18px]">piano</span>
+                    Music
+                </button>
+<button class="flex shrink-0 items-center justify-center gap-1.5 px-4 h-9 rounded-full bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-sm font-medium transition-colors hover:border-primary hover:text-primary active:bg-primary/5">
+<span class="material-symbols-outlined text-[18px]">school</span>
+                    Academic
+                </button>
+</div>
+</div>
+<!-- Scrollable List Content -->
+<div class="flex-1 overflow-y-auto px-4 pb-24 space-y-4 pt-2">
+<!-- Card 1: Open / Paid -->
+<div class="group bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm border border-slate-100 dark:border-slate-700/50 flex flex-col gap-3 transition-all hover:shadow-md">
+<div class="flex gap-4">
+<!-- Image -->
+<div class="w-24 h-24 shrink-0 rounded-lg bg-cover bg-center" data-alt="Young student building a small robot with wires and electronics" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCd5ZZDGuqWfJ1RcdzWdgVOV5Cr3V0yq7MtD0AGOMY5b8oej3nWTNCUO2KuyiIVlxDB5sqEoxpsq06fyRMNk7HNG-As-7DM8sQhq7vK6OCUQjAH4pFZC26vts5verFOD78dFnXcV79SQuPHj4qyg4LjBq-9M4sin2K_iXy530bZNSLJNCsxpLDijOAYlUs10hLfRlWzN_uAeiJWfcvxgINWxqI6LnvSjDuSqjKRFnzP1x1DeMj5r2WliFd7Ce3KEI6nRdMsZYASD7s");'>
+</div>
+<!-- Content -->
+<div class="flex flex-col flex-1 justify-between py-0.5">
+<div>
+<div class="flex justify-between items-start gap-2">
+<h3 class="text-slate-900 dark:text-white text-base font-bold leading-tight line-clamp-2">Junior Robotics Club</h3>
+<span class="text-primary font-bold text-sm whitespace-nowrap">R 500</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-1">Introduction to coding and mechanics.</p>
+</div>
+<!-- Metadata -->
+<div class="flex flex-wrap gap-y-1 gap-x-3 mt-2">
+<div class="flex items-center gap-1 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-[14px]">school</span>
+<span class="text-xs font-medium">Gr 3-5</span>
+</div>
+<div class="flex items-center gap-1 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span class="text-xs font-medium">Wed 14:00</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer / Action -->
+<div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-3 mt-1">
+<div class="flex items-center gap-1.5 px-2 py-1 rounded-md bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+<span class="text-xs font-semibold">Open (20/30)</span>
+</div>
+<button class="bg-primary hover:bg-blue-600 text-white text-sm font-semibold py-1.5 px-5 rounded-lg transition-colors shadow-sm shadow-blue-200 dark:shadow-none">
+                        Sign Up
+                    </button>
+</div>
+</div>
+<!-- Card 2: Waitlist / Free -->
+<div class="group bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm border border-slate-100 dark:border-slate-700/50 flex flex-col gap-3 transition-all hover:shadow-md">
+<div class="flex gap-4">
+<!-- Image -->
+<div class="w-24 h-24 shrink-0 rounded-lg bg-cover bg-center" data-alt="Soccer ball on a green grass field during a sunny day" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAHlkOxX-4powOmz3vVo2QeFQldGtBlcZWqsUwNys-pQgegNL19GwIQqz73mrZnMS31MzC-7R7rwzzJbEh8RBgtsRAq6tsKnlRyca_Q2pyrMio4N95EoJI4x0KyrSkaPwJASlT2r5gXz_6FNiIck02oy3UTYMfWXoZSdVK2nIZBPSvHXoehA2i59bPlUW4L3SdAk0_yQWkCp9WG5nMoy8BbwzhplM-GLa7waEBxDazg9JOrRkUuKeu6BtRy1pnlGkJwsW3hpbG34Ks");'>
+</div>
+<!-- Content -->
+<div class="flex flex-col flex-1 justify-between py-0.5">
+<div>
+<div class="flex justify-between items-start gap-2">
+<h3 class="text-slate-900 dark:text-white text-base font-bold leading-tight">Varsity Soccer</h3>
+<span class="text-slate-900 dark:text-white font-bold text-sm whitespace-nowrap">Free</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-1">Competitive league training.</p>
+</div>
+<!-- Metadata -->
+<div class="flex flex-wrap gap-y-1 gap-x-3 mt-2">
+<div class="flex items-center gap-1 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-[14px]">school</span>
+<span class="text-xs font-medium">Gr 8-12</span>
+</div>
+<div class="flex items-center gap-1 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span class="text-xs font-medium">Tue/Thu 15:30</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer / Action -->
+<div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-3 mt-1">
+<div class="flex items-center gap-1.5 px-2 py-1 rounded-md bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400">
+<span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
+<span class="text-xs font-semibold">Waitlist</span>
+</div>
+<button class="bg-transparent border border-primary text-primary hover:bg-primary/5 text-sm font-semibold py-1.5 px-4 rounded-lg transition-colors">
+                        Join Waitlist
+                    </button>
+</div>
+</div>
+<!-- Card 3: Full -->
+<div class="group bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm border border-slate-100 dark:border-slate-700/50 flex flex-col gap-3 opacity-90">
+<div class="flex gap-4">
+<!-- Image -->
+<div class="w-24 h-24 shrink-0 rounded-lg bg-cover bg-center grayscale" data-alt="Close up of hands playing piano keys" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBjkefmmZnFo0biu8cAFoTKj5TRka9U4YxR6i8TMJzsmKtdZefbBHhjIBQAXxT6HQIZ-z6KVY4zd3I6JNHyygNZAebGYelFWVmHQ7Uo4b_BMiYf0ZSMaQFokrf0-6DhBVGZg799ayCzszAb9q-icnC69Edgc9n7zTpZwcMxPkD0pgm3_uJ4pQJ5_ZGZlW5gcWUOwD7mGsJla9iYop0Gz2oo8hO6-4TECBZKaRjx-2uCtwTcqG7KYYxofxBMklpHZopo3GHHu6pGfpg");'>
+</div>
+<!-- Content -->
+<div class="flex flex-col flex-1 justify-between py-0.5">
+<div>
+<div class="flex justify-between items-start gap-2">
+<h3 class="text-slate-700 dark:text-slate-300 text-base font-bold leading-tight">Advanced Piano</h3>
+<span class="text-slate-600 dark:text-slate-400 font-bold text-sm whitespace-nowrap">R 1200</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-1">One-on-one private lessons.</p>
+</div>
+<!-- Metadata -->
+<div class="flex flex-wrap gap-y-1 gap-x-3 mt-2">
+<div class="flex items-center gap-1 text-slate-400 dark:text-slate-500">
+<span class="material-symbols-outlined text-[14px]">school</span>
+<span class="text-xs font-medium">All Grades</span>
+</div>
+<div class="flex items-center gap-1 text-slate-400 dark:text-slate-500">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span class="text-xs font-medium">Mon 13:00</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer / Action -->
+<div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-3 mt-1">
+<div class="flex items-center gap-1.5 px-2 py-1 rounded-md bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400">
+<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+<span class="text-xs font-semibold">Full</span>
+</div>
+<button class="bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500 text-sm font-semibold py-1.5 px-5 rounded-lg cursor-not-allowed">
+                        Full
+                    </button>
+</div>
+</div>
+<!-- Card 4: Open / Art -->
+<div class="group bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm border border-slate-100 dark:border-slate-700/50 flex flex-col gap-3 transition-all hover:shadow-md">
+<div class="flex gap-4">
+<!-- Image -->
+<div class="w-24 h-24 shrink-0 rounded-lg bg-cover bg-center" data-alt="Colorful painting supplies including brushes and palette" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBmbfcQ4kqrUAGBQ1cArdX2nbEr3r9rrew6D8k0KyLDwgM9kpPHtX5FZ7u0IzOiPOZ-NPDE80B-M_MABcOLdU7YpdVSn-lPYhYZvxS0eBkUBLtHWD4tuYgqJ8zQiP5TEmRk2xc0gbcKKJsk2Beqsn2H96dRfO3o6KL80WuChDdJy8_THJvmlLZLiAElGbYCZWeXq77TKtLh1YKiP7J3dCLvbgnJ0CROGMsb_0e13DqgFXya89jgiuJQMeQGDXP8o3OAxgNGT90qHNU");'>
+</div>
+<!-- Content -->
+<div class="flex flex-col flex-1 justify-between py-0.5">
+<div>
+<div class="flex justify-between items-start gap-2">
+<h3 class="text-slate-900 dark:text-white text-base font-bold leading-tight">Creative Arts</h3>
+<span class="text-primary font-bold text-sm whitespace-nowrap">R 350</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-1">Explore painting and sculpture.</p>
+</div>
+<!-- Metadata -->
+<div class="flex flex-wrap gap-y-1 gap-x-3 mt-2">
+<div class="flex items-center gap-1 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-[14px]">school</span>
+<span class="text-xs font-medium">Gr 1-3</span>
+</div>
+<div class="flex items-center gap-1 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span class="text-xs font-medium">Thu 14:30</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer / Action -->
+<div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-3 mt-1">
+<div class="flex items-center gap-1.5 px-2 py-1 rounded-md bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+<span class="text-xs font-semibold">Open (15/25)</span>
+</div>
+<button class="bg-primary hover:bg-blue-600 text-white text-sm font-semibold py-1.5 px-5 rounded-lg transition-colors shadow-sm shadow-blue-200 dark:shadow-none">
+                        Sign Up
+                    </button>
+</div>
+</div>
+</div>
+<!-- Fade for scroll indication -->
+<div class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-background-light dark:from-background-dark to-transparent pointer-events-none"></div>
+</div>
+</body></html>

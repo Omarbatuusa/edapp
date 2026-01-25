@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Print Queue &amp; Release</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Config -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "surface-dark": "#1C2936",
+                        "surface-light": "#FFFFFF",
+                        "border-dark": "#324d67",
+                        "border-light": "#e2e8f0",
+                        "subtext-dark": "#92adc9",
+                        "subtext-light": "#64748b",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for cleaner mobile look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Glassmorphism utility */
+        .glass-panel {
+            background: rgba(16, 25, 34, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display overflow-x-hidden antialiased min-h-screen relative pb-32">
+<!-- Top App Bar -->
+<div class="sticky top-0 z-40 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm border-b border-transparent dark:border-border-dark/30 transition-colors duration-300">
+<div class="flex items-center p-4 justify-between max-w-md mx-auto">
+<div class="flex items-center gap-3">
+<div class="relative group cursor-pointer">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-primary" data-alt="Profile picture of a female student smiling" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB154rUkydt0DkcpFbMrZMKkiCSF3aDgsPAJg-CzE_SCJR3fWN2rso-mbwgHdhceWhTDV3XHF4R1LlXbHi1OW0sXVcjXzA85L6FQEOZKAx5HyYE0ha3bou75w6robs6X3ODmjpVlSlbwYHcPInvYFL-iauTczP_N_ckmcRNTX1NFoUi70CB9U_uUl886IE5_5w77ltrjCGmCsU9tw8t2-oQsP0fJtJPNk3hK5GddeCPEg0wwdRNpb5Pyqtsk_owdnGzsocakT6UE6M");'>
+</div>
+<div class="absolute bottom-0 right-0 size-3 bg-green-500 border-2 border-background-dark rounded-full"></div>
+</div>
+<div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-none tracking-tight">Print Queue</h2>
+<span class="text-xs text-subtext-light dark:text-subtext-dark font-medium">EdApp Secure Print</span>
+</div>
+</div>
+<button class="flex items-center justify-center rounded-full size-10 bg-slate-200 dark:bg-surface-dark text-slate-700 dark:text-white hover:bg-slate-300 dark:hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">settings</span>
+</button>
+</div>
+</div>
+<!-- Main Content Container -->
+<main class="flex flex-col max-w-md mx-auto px-4 w-full">
+<!-- Welcome Headline -->
+<div class="pt-6 pb-4">
+<h1 class="text-slate-900 dark:text-white text-3xl font-bold leading-tight">Hello, Sarah</h1>
+<p class="text-subtext-light dark:text-subtext-dark text-sm mt-1">Manage your jobs and release securely.</p>
+</div>
+<!-- Dashboard Stats -->
+<div class="grid grid-cols-2 gap-3 mb-8">
+<!-- Balance Card -->
+<div class="col-span-2 sm:col-span-1 bg-white dark:bg-surface-dark rounded-2xl p-4 border border-border-light dark:border-border-dark shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<div class="bg-blue-100 dark:bg-primary/20 text-primary p-2 rounded-lg">
+<span class="material-symbols-outlined filled-icon">account_balance_wallet</span>
+</div>
+<span class="bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">Active</span>
+</div>
+<div>
+<p class="text-subtext-light dark:text-subtext-dark text-xs font-medium uppercase tracking-wide">Current Balance</p>
+<p class="text-slate-900 dark:text-white text-2xl font-bold mt-1">R 50.00</p>
+</div>
+</div>
+<!-- Stats Mini Grid -->
+<div class="grid grid-rows-2 gap-3 col-span-2 sm:col-span-1">
+<!-- Trees Saved -->
+<div class="bg-white dark:bg-surface-dark rounded-xl p-3 flex items-center gap-3 border border-border-light dark:border-border-dark shadow-sm">
+<div class="bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400 p-1.5 rounded-lg shrink-0">
+<span class="material-symbols-outlined" style="font-size: 20px;">forest</span>
+</div>
+<div class="flex flex-col">
+<span class="text-slate-900 dark:text-white font-bold text-lg leading-none">0.4</span>
+<span class="text-subtext-light dark:text-subtext-dark text-[10px]">Trees Saved</span>
+</div>
+</div>
+<!-- Jobs Pending -->
+<div class="bg-white dark:bg-surface-dark rounded-xl p-3 flex items-center gap-3 border border-border-light dark:border-border-dark shadow-sm">
+<div class="bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400 p-1.5 rounded-lg shrink-0">
+<span class="material-symbols-outlined" style="font-size: 20px;">pending_actions</span>
+</div>
+<div class="flex flex-col">
+<span class="text-slate-900 dark:text-white font-bold text-lg leading-none">3</span>
+<span class="text-subtext-light dark:text-subtext-dark text-[10px]">Jobs in Queue</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Section Header -->
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold">Your Jobs</h3>
+<button class="text-primary text-sm font-medium hover:text-primary/80 transition-colors">Select All</button>
+</div>
+<!-- Job List -->
+<div class="flex flex-col gap-3">
+<!-- Job Item 1 -->
+<div class="group relative bg-white dark:bg-surface-dark p-4 rounded-xl border border-border-light dark:border-border-dark shadow-sm transition-all active:scale-[0.99]">
+<div class="flex gap-4 items-start">
+<!-- Icon -->
+<div class="flex items-center justify-center rounded-lg bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400 shrink-0 size-12">
+<span class="material-symbols-outlined">picture_as_pdf</span>
+</div>
+<!-- Content -->
+<div class="flex flex-1 flex-col min-w-0">
+<div class="flex justify-between items-start">
+<h4 class="text-slate-900 dark:text-white text-base font-semibold leading-tight truncate pr-2">Biology_Exam_Paper_2.pdf</h4>
+<span class="text-slate-900 dark:text-white font-bold text-sm whitespace-nowrap">R 2.00</span>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<span class="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] px-1.5 py-0.5 rounded font-medium">4 Pages</span>
+<span class="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] px-1.5 py-0.5 rounded font-medium flex items-center gap-1">
+<span class="material-symbols-outlined !text-[10px]">ink_eraser</span> BW
+                            </span>
+<span class="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] px-1.5 py-0.5 rounded font-medium flex items-center gap-1">
+<span class="material-symbols-outlined !text-[10px]">vertical_split</span> Duplex
+                            </span>
+</div>
+<div class="flex items-center justify-between mt-3">
+<p class="text-orange-500 text-xs font-medium flex items-center gap-1">
+<span class="size-1.5 rounded-full bg-orange-500 animate-pulse"></span> Pending Release
+                            </p>
+<!-- Inline Actions -->
+<div class="flex gap-1">
+<button class="size-8 flex items-center justify-center rounded-full text-subtext-light dark:text-subtext-dark hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined text-[20px]">pause</span>
+</button>
+<button class="size-8 flex items-center justify-center rounded-full text-subtext-light dark:text-subtext-dark hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="size-8 flex items-center justify-center rounded-full text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Job Item 2 -->
+<div class="group relative bg-white dark:bg-surface-dark p-4 rounded-xl border border-border-light dark:border-border-dark shadow-sm transition-all active:scale-[0.99]">
+<div class="flex gap-4 items-start">
+<!-- Icon -->
+<div class="flex items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 shrink-0 size-12">
+<span class="material-symbols-outlined">description</span>
+</div>
+<!-- Content -->
+<div class="flex flex-1 flex-col min-w-0">
+<div class="flex justify-between items-start">
+<h4 class="text-slate-900 dark:text-white text-base font-semibold leading-tight truncate pr-2">Annual_Report_Draft_v3.docx</h4>
+<span class="text-slate-900 dark:text-white font-bold text-sm whitespace-nowrap">R 15.00</span>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<span class="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] px-1.5 py-0.5 rounded font-medium">12 Pages</span>
+<span class="bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-300 text-[10px] px-1.5 py-0.5 rounded font-medium flex items-center gap-1">
+<span class="material-symbols-outlined !text-[10px] filled-icon">palette</span> Color
+                            </span>
+<span class="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] px-1.5 py-0.5 rounded font-medium">
+                                Simplex
+                            </span>
+</div>
+<div class="flex items-center justify-between mt-3">
+<p class="text-subtext-light dark:text-subtext-dark text-xs font-medium flex items-center gap-1">
+<span class="material-symbols-outlined !text-[14px]">pause_circle</span> Paused
+                            </p>
+<div class="flex gap-1">
+<button class="size-8 flex items-center justify-center rounded-full text-primary hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-[20px] filled-icon">play_arrow</span>
+</button>
+<button class="size-8 flex items-center justify-center rounded-full text-subtext-light dark:text-subtext-dark hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="size-8 flex items-center justify-center rounded-full text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Job Item 3 -->
+<div class="group relative bg-white dark:bg-surface-dark p-4 rounded-xl border border-border-light dark:border-border-dark shadow-sm transition-all active:scale-[0.99]">
+<div class="flex gap-4 items-start">
+<!-- Icon -->
+<div class="flex items-center justify-center rounded-lg bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400 shrink-0 size-12">
+<span class="material-symbols-outlined">image</span>
+</div>
+<!-- Content -->
+<div class="flex flex-1 flex-col min-w-0">
+<div class="flex justify-between items-start">
+<h4 class="text-slate-900 dark:text-white text-base font-semibold leading-tight truncate pr-2">Art_Project_Final_HighRes.jpg</h4>
+<span class="text-slate-900 dark:text-white font-bold text-sm whitespace-nowrap">R 5.00</span>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<span class="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] px-1.5 py-0.5 rounded font-medium">1 Page</span>
+<span class="bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-300 text-[10px] px-1.5 py-0.5 rounded font-medium flex items-center gap-1">
+<span class="material-symbols-outlined !text-[10px] filled-icon">palette</span> Color
+                            </span>
+</div>
+<div class="flex items-center justify-between mt-3">
+<p class="text-orange-500 text-xs font-medium flex items-center gap-1">
+<span class="size-1.5 rounded-full bg-orange-500 animate-pulse"></span> Pending Release
+                            </p>
+<div class="flex gap-1">
+<button class="size-8 flex items-center justify-center rounded-full text-subtext-light dark:text-subtext-dark hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined text-[20px]">pause</span>
+</button>
+<button class="size-8 flex items-center justify-center rounded-full text-subtext-light dark:text-subtext-dark hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="size-8 flex items-center justify-center rounded-full text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Spacer for fixed bottom -->
+<div class="h-24"></div>
+</div>
+</main>
+<!-- Fixed Bottom Release Actions -->
+<div class="fixed bottom-0 left-0 w-full z-50">
+<div class="max-w-md mx-auto relative">
+<!-- Glassmorphism Container -->
+<div class="glass-panel border-t border-border-light dark:border-border-dark px-4 pt-4 pb-8 rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.3)]">
+<div class="flex flex-col gap-3">
+<!-- Primary CTA -->
+<button class="w-full bg-primary hover:bg-blue-600 active:bg-blue-700 text-white rounded-xl h-14 flex items-center justify-center gap-3 shadow-lg shadow-blue-500/30 transition-all transform active:scale-95 group">
+<span class="bg-white/20 rounded p-1">
+<span class="material-symbols-outlined text-white" style="font-size: 24px;">qr_code_scanner</span>
+</span>
+<span class="text-lg font-bold tracking-wide">Scan QR to Release</span>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+<!-- Secondary Actions Grid -->
+<div class="grid grid-cols-2 gap-3">
+<button class="flex items-center justify-center gap-2 bg-slate-200 dark:bg-surface-dark/50 hover:bg-slate-300 dark:hover:bg-surface-dark border border-transparent dark:border-border-dark text-slate-700 dark:text-white rounded-lg h-11 transition-colors text-sm font-medium">
+<span class="material-symbols-outlined" style="font-size: 20px;">contactless</span>
+                            Tap NFC
+                        </button>
+<button class="flex items-center justify-center gap-2 bg-slate-200 dark:bg-surface-dark/50 hover:bg-slate-300 dark:hover:bg-surface-dark border border-transparent dark:border-border-dark text-slate-700 dark:text-white rounded-lg h-11 transition-colors text-sm font-medium">
+<span class="material-symbols-outlined" style="font-size: 20px;">pin</span>
+                            Enter PIN
+                        </button>
+</div>
+</div>
+<!-- Safe Area Indicator for iOS -->
+<div class="h-1 w-1/3 bg-slate-300/20 dark:bg-white/20 mx-auto mt-6 rounded-full"></div>
+</div>
+</div>
+</div>
+</body></html>

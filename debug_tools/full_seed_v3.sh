@@ -1,0 +1,1 @@
+docker exec -u postgres -e PGPASSWORD=password123 edapp-postgres-1 psql -U edapp -c "INSERT INTO tenants (name, domain, code) VALUES ('Lakewood International', 'lakewood.edapp.co.za', 'LAKEWOOD') ON CONFLICT (domain) DO NOTHING;"

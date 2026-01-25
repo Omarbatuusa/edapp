@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>User Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white antialiased transition-colors duration-200">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden pb-10">
+<!-- Sticky Header -->
+<div class="sticky top-0 z-50 flex items-center bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md p-4 justify-between border-b border-slate-200/50 dark:border-slate-800/50">
+<div class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors cursor-pointer text-slate-900 dark:text-white">
+<span class="material-symbols-outlined">arrow_back</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Profile</h2>
+<div class="flex w-10 items-center justify-end">
+<p class="text-primary text-base font-bold leading-normal tracking-[0.015em] shrink-0 cursor-pointer">Edit</p>
+</div>
+</div>
+<!-- Profile Header Identity -->
+<div class="flex flex-col items-center pt-6 pb-2 px-4">
+<div class="relative group cursor-pointer">
+<div class="bg-center bg-no-repeat bg-cover rounded-full h-32 w-32 shadow-lg border-4 border-white dark:border-slate-800" data-alt="Portrait of Thabo Mbeki, a staff member" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBkQAXgU7qGEE1YBYhACLkc25vJAjzCtqYlUx0H_LBpYL3aKRVar7S1Rb-0i0DzcxtdMAPfqbP8nEsxUjAdYu15Da8okVEE-GtPbkrLSmCL0R-1M7iDQFSOXE1J9UJPoEiWJYAdMH4kDjpqqStWQbesZnYG-0Pjds7R8qH0MeJvLAuNAnuj0Hf5wNxnpbc21DR6G5fBhBApoR58Txdx3Q_M-I2YfBZ2Bx1-_Lpht3g4MvSAYcUqCv0Ad2OB7DJyEq6w3cnUhK0l2uk");'>
+</div>
+<div class="absolute bottom-1 right-1 bg-primary text-white rounded-full p-1.5 border-2 border-white dark:border-slate-800 flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[16px]">photo_camera</span>
+</div>
+</div>
+<div class="mt-4 flex flex-col items-center">
+<div class="flex items-center gap-1.5">
+<h1 class="text-2xl font-bold leading-tight tracking-[-0.015em] text-center">Thabo Mbeki</h1>
+<span class="material-symbols-outlined text-primary text-[20px] fill-1" title="Verified">verified</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium mt-1">Staff • Science Dept</p>
+</div>
+</div>
+<!-- Quick Stats (Staff Context) -->
+<div class="flex flex-wrap gap-3 px-4 py-6">
+<div class="flex min-w-[100px] flex-1 flex-col gap-1 rounded-2xl p-4 bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700/50">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-[20px]">science</span>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Dept</p>
+</div>
+<p class="text-lg font-bold leading-tight truncate">Science</p>
+</div>
+<div class="flex min-w-[100px] flex-1 flex-col gap-1 rounded-2xl p-4 bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700/50">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-[20px]">school</span>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Class</p>
+</div>
+<p class="text-lg font-bold leading-tight truncate">Gr 10B</p>
+</div>
+<div class="flex min-w-[100px] flex-1 flex-col gap-1 rounded-2xl p-4 bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700/50">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-[20px]">calendar_month</span>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Leave</p>
+</div>
+<p class="text-lg font-bold leading-tight truncate">12 Days</p>
+</div>
+</div>
+<!-- Contact Information Section -->
+<div class="px-4 mb-2">
+<h3 class="text-slate-900 dark:text-white text-base font-bold leading-tight px-1 pb-3">Contact Information</h3>
+</div>
+<div class="mx-4 flex flex-col overflow-hidden rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700/50 mb-6">
+<!-- Email Item -->
+<div class="flex items-center gap-4 px-4 py-4 justify-between border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
+<div class="flex items-center gap-3 overflow-hidden">
+<div class="flex items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0 size-10">
+<span class="material-symbols-outlined">mail</span>
+</div>
+<div class="flex flex-col truncate">
+<p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Email Address</p>
+<p class="text-base font-medium text-slate-900 dark:text-white truncate">t.mbeki@edapp.com</p>
+</div>
+</div>
+</div>
+<!-- Phone Item -->
+<div class="flex items-center gap-4 px-4 py-4 justify-between hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
+<div class="flex items-center gap-3 overflow-hidden">
+<div class="flex items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0 size-10">
+<span class="material-symbols-outlined">call</span>
+</div>
+<div class="flex flex-col truncate">
+<p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Mobile</p>
+<p class="text-base font-medium text-slate-900 dark:text-white truncate">+27 82 555 0199</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Staff Settings Section -->
+<div class="px-4 mb-2">
+<h3 class="text-slate-900 dark:text-white text-base font-bold leading-tight px-1 pb-3">Staff Management</h3>
+</div>
+<div class="mx-4 flex flex-col overflow-hidden rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700/50 mb-6">
+<div class="flex items-center gap-4 px-4 py-4 justify-between border-b border-slate-100 dark:border-slate-700/50 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors group">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center rounded-lg bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 shrink-0 size-10">
+<span class="material-symbols-outlined">badge</span>
+</div>
+<p class="text-base font-medium text-slate-900 dark:text-white">Permissions &amp; Roles</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+<div class="flex items-center gap-4 px-4 py-4 justify-between cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors group">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center rounded-lg bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 shrink-0 size-10">
+<span class="material-symbols-outlined">event_available</span>
+</div>
+<p class="text-base font-medium text-slate-900 dark:text-white">Attendance Log</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+</div>
+<!-- Account & Security Section -->
+<div class="px-4 mb-2">
+<h3 class="text-slate-900 dark:text-white text-base font-bold leading-tight px-1 pb-3">Account &amp; Security</h3>
+</div>
+<div class="mx-4 flex flex-col overflow-hidden rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700/50 mb-6">
+<!-- Password -->
+<div class="flex items-center gap-4 px-4 py-4 justify-between border-b border-slate-100 dark:border-slate-700/50 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors group">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 shrink-0 size-10">
+<span class="material-symbols-outlined">lock</span>
+</div>
+<p class="text-base font-medium text-slate-900 dark:text-white">Change Password</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+<!-- 2FA -->
+<div class="flex items-center gap-4 px-4 py-3 justify-between hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 shrink-0 size-10">
+<span class="material-symbols-outlined">security</span>
+</div>
+<div class="flex flex-col">
+<p class="text-base font-medium text-slate-900 dark:text-white">Two-Factor Auth</p>
+<p class="text-xs text-slate-500">Secure your account</p>
+</div>
+</div>
+<!-- Toggle Switch -->
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/20 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+<!-- App Settings -->
+<div class="px-4 mb-2">
+<h3 class="text-slate-900 dark:text-white text-base font-bold leading-tight px-1 pb-3">App Settings</h3>
+</div>
+<div class="mx-4 flex flex-col overflow-hidden rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700/50 mb-8">
+<div class="flex items-center gap-4 px-4 py-4 justify-between border-b border-slate-100 dark:border-slate-700/50 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors group">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 shrink-0 size-10">
+<span class="material-symbols-outlined">notifications</span>
+</div>
+<p class="text-base font-medium text-slate-900 dark:text-white">Notifications</p>
+</div>
+<div class="flex items-center gap-2">
+<p class="text-sm text-slate-400">On</p>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+</div>
+<div class="flex items-center gap-4 px-4 py-4 justify-between cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors group">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 shrink-0 size-10">
+<span class="material-symbols-outlined">language</span>
+</div>
+<p class="text-base font-medium text-slate-900 dark:text-white">Language</p>
+</div>
+<div class="flex items-center gap-2">
+<p class="text-sm text-slate-400">English (SA)</p>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Footer Actions -->
+<div class="px-4 flex flex-col items-center gap-6 mt-2">
+<button class="w-full rounded-xl bg-red-50 dark:bg-red-900/10 py-3.5 px-4 text-red-600 dark:text-red-400 font-bold text-base hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">logout</span>
+                Log Out
+            </button>
+<div class="flex flex-col items-center gap-2 pb-6">
+<a class="text-primary text-sm font-medium hover:underline" href="#">Privacy Policy</a>
+<p class="text-slate-400 text-xs">EdApp Version 2.4.1</p>
+</div>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Class Register (Teacher)</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Lexend -->
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "primary-dark": "#1a7cd6",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "status-absent": "#ef4444",
+                        "status-late": "#f59e0b",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for cleaner mobile look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased overflow-x-hidden">
+<div class="relative flex h-full min-h-screen w-full flex-col pb-24 max-w-md mx-auto bg-white dark:bg-slate-900 shadow-2xl">
+<!-- Header Section -->
+<header class="sticky top-0 z-20 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-slate-100 dark:border-slate-800">
+<!-- Top App Bar -->
+<div class="flex items-center justify-between p-4 pb-2">
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-900 dark:text-white">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<div class="flex flex-col items-center">
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Grade 10 - Mathematics</h2>
+<span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Room 304 • 08:00 - 09:00</span>
+</div>
+<button class="flex size-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-primary">
+<span class="material-symbols-outlined text-[24px]">calendar_today</span>
+</button>
+</div>
+<!-- Segmented Buttons -->
+<div class="px-4 py-2">
+<div class="flex h-10 w-full items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 p-1">
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg bg-white dark:bg-slate-700 shadow-sm transition-all">
+<span class="truncate text-primary dark:text-primary font-bold text-sm">Daily Attendance</span>
+<input checked="" class="invisible w-0 h-0 absolute" name="attendance-type" type="radio" value="daily"/>
+</label>
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-all">
+<span class="truncate text-slate-500 dark:text-slate-400 font-medium text-sm">Period Register</span>
+<input class="invisible w-0 h-0 absolute" name="attendance-type" type="radio" value="period"/>
+</label>
+</div>
+</div>
+<!-- Search Bar -->
+<div class="px-4 pb-3 pt-1">
+<div class="flex w-full items-center rounded-xl bg-slate-100 dark:bg-slate-800 h-11 px-3">
+<span class="material-symbols-outlined text-slate-400 text-[20px]">search</span>
+<input class="flex w-full min-w-0 flex-1 resize-none bg-transparent text-slate-900 dark:text-white placeholder:text-slate-400 px-2 text-base font-normal leading-normal focus:outline-none border-none focus:ring-0" placeholder="Search learner by name or ID"/>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col p-4 gap-4">
+<!-- Quick Action Panel -->
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-xl border border-blue-100 dark:border-blue-900 bg-blue-50/50 dark:bg-blue-900/20 p-4">
+<div class="flex flex-col">
+<p class="text-slate-900 dark:text-white text-sm font-bold leading-tight">Quick Actions</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-normal leading-normal mt-0.5">32 students total • 0 marked</p>
+</div>
+<button class="flex cursor-pointer items-center justify-center rounded-lg h-9 px-4 bg-primary hover:bg-primary-dark transition-colors text-white text-sm font-semibold shadow-sm w-full sm:w-auto">
+<span class="truncate">Mark All Present</span>
+</button>
+</div>
+<!-- Sync Status -->
+<div class="flex items-center justify-center gap-1.5 text-center">
+<span class="material-symbols-outlined text-green-500 text-[16px]">cloud_done</span>
+<p class="text-slate-400 text-xs font-medium">Synced just now • Offline ready</p>
+</div>
+<!-- Student List -->
+<div class="flex flex-col gap-3">
+<!-- Student Card 1: Present -->
+<div class="group flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Portrait of student Thandiwe" class="w-12 h-12 rounded-full object-cover border border-slate-100 dark:border-slate-600" data-alt="Close up portrait of a smiling female student" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVYwAx-dO0spWY6Xi-30t1QOOXz8lWSp9UITmRSwU79K_rPzUHYgsh-UMFP3sHAEyInxB7NWNE3y3zxn1FjT-DnoxMCJg7rJgYoX4wK5-4GZrjZBW_E31lAJqMVY_QuRi8_kggtk4fuddHMP4HbPbWCdxvmeYZ1BaRgwS4cese1XiwtwfhFgH1VAujAVpE8VDCGptb0QYu7aTzvv0pRIeMkynjbv63ufb-U_d99_o9S2NZhHrRn-vFfOc2x5krGJd_4B5Ro0Igdwo"/>
+<div class="absolute -bottom-1 -right-1 bg-green-500 border-2 border-white dark:border-slate-800 rounded-full w-4 h-4"></div>
+</div>
+<div class="flex flex-col">
+<h3 class="font-bold text-slate-900 dark:text-white text-base">Thandiwe Zulu</h3>
+<span class="text-xs text-slate-500 dark:text-slate-400 font-mono">ID: 2024001</span>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<button aria-label="Mark Present" class="w-10 h-10 rounded-full bg-primary text-white shadow-md flex items-center justify-center font-bold text-sm transition-transform active:scale-95">P</button>
+<button aria-label="Mark Absent" class="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-700 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-600 flex items-center justify-center font-bold text-sm transition-colors">A</button>
+<button aria-label="Mark Late" class="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-700 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-600 flex items-center justify-center font-bold text-sm transition-colors">L</button>
+</div>
+</div>
+<!-- Student Card 2: Absent -->
+<div class="group flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm ring-1 ring-status-absent/20">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Portrait of student Kevin" class="w-12 h-12 rounded-full object-cover border border-slate-100 dark:border-slate-600 grayscale opacity-80" data-alt="Close up portrait of a male student looking forward" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8SRM65t458oeGrarrjkn2QpkJBzbZ6mw1rSL6EXtzRnKtOu0hR305Dl4gTmRoCskDeZ41rG2Aa3xrf7CGjpxHUnOBnHvIyNrRnxZBnu_gJQxvHry8628Qw0E5G7D1YWagkdMhW-Uk3Oic9VNih3mZIrwt4lhnhSOYTCt0lEX0IsqvKQrq_VB_g8q3Mgb9S72z6PosuuTqPCqUTqHV156qRC1aAUHkt0grhnKxl6k63PTrkFICBFvCyga3nx-NqHb5xEayTMJzYw0"/>
+</div>
+<div class="flex flex-col">
+<h3 class="font-bold text-slate-900 dark:text-white text-base">Kevin Naidoo</h3>
+<span class="text-xs text-slate-500 dark:text-slate-400 font-mono">ID: 2024042</span>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<button aria-label="Mark Present" class="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-700 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-600 flex items-center justify-center font-bold text-sm transition-colors">P</button>
+<button aria-label="Mark Absent" class="w-10 h-10 rounded-full bg-status-absent text-white shadow-md flex items-center justify-center font-bold text-sm transition-transform active:scale-95">A</button>
+<button aria-label="Mark Late" class="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-700 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-600 flex items-center justify-center font-bold text-sm transition-colors">L</button>
+</div>
+</div>
+<!-- Student Card 3: Late -->
+<div class="group flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm ring-1 ring-status-late/20">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Portrait of student Lerato" class="w-12 h-12 rounded-full object-cover border border-slate-100 dark:border-slate-600" data-alt="Close up portrait of a female student with braids" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1dC4OwcjBelz7qZ1NKiEd7Kwp4RbMsflvXv9j3f4HM-WWU7csTahhs8ZDeEIvzDOjTG5NLPY1VhHmmwJtKyrJEb7y_pjr7KHX3TG25v2nkgeOOko0vGLEFD19OvTt9sPwWYHXGCjUiLP59ls_JuiNE_M8jEHOPk9MCche5eLbq_YXtb2PLQ9THTO2UJX_JnNMeNyVJuS_LeNLOySPoRodU-pKJ53prTIJg7kM29ZZkMxFWHweRmGJlnWtd43jih_zoni4cY01XJ4"/>
+</div>
+<div class="flex flex-col">
+<h3 class="font-bold text-slate-900 dark:text-white text-base">Lerato Mokoena</h3>
+<span class="text-xs text-slate-500 dark:text-slate-400 font-mono">ID: 2024015</span>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<button aria-label="Mark Present" class="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-700 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-600 flex items-center justify-center font-bold text-sm transition-colors">P</button>
+<button aria-label="Mark Absent" class="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-700 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-600 flex items-center justify-center font-bold text-sm transition-colors">A</button>
+<button aria-label="Mark Late" class="w-10 h-10 rounded-full bg-status-late text-white shadow-md flex items-center justify-center font-bold text-sm transition-transform active:scale-95">L</button>
+</div>
+</div>
+<!-- Student Card 4: Unmarked -->
+<div class="group flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Portrait of student Sipho" class="w-12 h-12 rounded-full object-cover border border-slate-100 dark:border-slate-600" data-alt="Portrait of a young male student smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0k94ffAoAuKcs4WX5jsD1gCaOz3UyhNFK8eOAf-u579XVzAF7QAi5GRrHE2ewm7Lv3PZKhRYgd0n7V_g6EfIPiAf-4yyrpJ2__udsRo1QMY0jilFJ95qqjtPOtA0CWkuGyJEObG3Df_-ojTo3OvB4RsbqaVEIBDfqRY-XkhPjHySdCylsrlsu3KjUT2mtRbEem-MmbJw8QFjFZgZdqyfXVetk46Ka2ieze8Lt6h753BgCtSZSZ5t-3QSHjq1rnR23ADUn0caEzh8"/>
+</div>
+<div class="flex flex-col">
+<h3 class="font-bold text-slate-900 dark:text-white text-base">Sipho Dlamini</h3>
+<span class="text-xs text-slate-500 dark:text-slate-400 font-mono">ID: 2024088</span>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<button aria-label="Mark Present" class="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-700 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-600 flex items-center justify-center font-bold text-sm transition-colors">P</button>
+<button aria-label="Mark Absent" class="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-700 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-600 flex items-center justify-center font-bold text-sm transition-colors">A</button>
+<button aria-label="Mark Late" class="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-700 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-600 flex items-center justify-center font-bold text-sm transition-colors">L</button>
+</div>
+</div>
+<!-- Student Card 5: Unmarked -->
+<div class="group flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center border border-slate-100 dark:border-slate-600">
+<span class="text-indigo-600 dark:text-indigo-300 font-bold text-lg">JP</span>
+</div>
+</div>
+<div class="flex flex-col">
+<h3 class="font-bold text-slate-900 dark:text-white text-base">James Peterson</h3>
+<span class="text-xs text-slate-500 dark:text-slate-400 font-mono">ID: 2024092</span>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<button aria-label="Mark Present" class="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-700 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-600 flex items-center justify-center font-bold text-sm transition-colors">P</button>
+<button aria-label="Mark Absent" class="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-700 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-600 flex items-center justify-center font-bold text-sm transition-colors">A</button>
+<button aria-label="Mark Late" class="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-700 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-600 flex items-center justify-center font-bold text-sm transition-colors">L</button>
+</div>
+</div>
+</div>
+<!-- Spacer for floating footer -->
+<div class="h-24"></div>
+</main>
+<!-- Floating Footer -->
+<footer class="fixed bottom-0 left-0 right-0 z-30 max-w-md mx-auto">
+<div class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-t border-slate-200 dark:border-slate-700 p-4 pb-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+<div class="flex items-center justify-between gap-4">
+<div class="flex flex-col">
+<span class="text-slate-900 dark:text-white font-bold text-lg">3 Marked</span>
+<div class="flex gap-2 text-xs font-medium">
+<span class="text-primary">1 Present</span>
+<span class="text-slate-300">•</span>
+<span class="text-status-absent">1 Absent</span>
+<span class="text-slate-300">•</span>
+<span class="text-status-late">1 Late</span>
+</div>
+</div>
+<button class="flex-1 bg-primary hover:bg-primary-dark text-white font-bold text-base h-12 rounded-xl shadow-lg shadow-blue-200 dark:shadow-blue-900/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+<span>Submit Register</span>
+<span class="material-symbols-outlined text-[20px]">check</span>
+</button>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Learners Management - EdApp</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3d9cf5",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#101922",
+                        "surface-dark": "#1b252d",
+                        "surface-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for horizontal chip list */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-hidden max-w-md mx-auto border-x border-slate-200 dark:border-slate-800">
+<!-- Offline Banner -->
+<div class="bg-orange-500/10 border-b border-orange-500/20 px-4 py-2 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-orange-500 text-[18px]">wifi_off</span>
+<p class="text-orange-500 text-xs font-medium">Offline Mode • Showing cached data</p>
+</div>
+<!-- Top App Bar -->
+<header class="flex items-center justify-between p-4 sticky top-0 z-20 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md">
+<h1 class="text-2xl font-bold tracking-tight">Learners</h1>
+<div class="flex gap-2">
+<button class="flex items-center justify-center h-10 w-10 rounded-full bg-surface-light dark:bg-surface-dark text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shadow-sm">
+<span class="material-symbols-outlined">tune</span>
+</button>
+<button class="flex items-center justify-center h-10 w-10 rounded-full bg-primary text-white hover:bg-blue-600 transition-colors shadow-sm shadow-blue-500/20">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</header>
+<!-- Search Bar -->
+<div class="px-4 pb-2">
+<div class="relative flex items-center w-full h-12 rounded-xl focus-within:shadow-lg bg-surface-light dark:bg-surface-dark overflow-hidden border border-slate-200 dark:border-slate-700 transition-shadow">
+<div class="grid place-items-center h-full w-12 text-slate-400">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="peer h-full w-full outline-none text-sm text-slate-700 dark:text-slate-200 pr-2 bg-transparent placeholder-slate-400 dark:placeholder-slate-500 border-none focus:ring-0" id="search" placeholder="Search name, ID, or class..." type="text"/>
+</div>
+</div>
+<!-- Filter Chips -->
+<div class="flex gap-2 px-4 py-3 overflow-x-auto no-scrollbar w-full">
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-1.5 rounded-full bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-slate-700 pl-3 pr-4 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-slate-500 text-[18px]">filter_list</span>
+<span class="text-slate-700 dark:text-slate-300 text-xs font-medium">Filters</span>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-1.5 rounded-full bg-primary/15 border border-primary/20 pl-3 pr-4">
+<span class="text-primary text-xs font-medium">Active</span>
+<span class="material-symbols-outlined text-primary text-[16px]">close</span>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-1.5 rounded-full bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-slate-700 px-4">
+<span class="text-slate-700 dark:text-slate-300 text-xs font-medium">Grade 8</span>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-1.5 rounded-full bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-slate-700 px-4">
+<span class="text-slate-700 dark:text-slate-300 text-xs font-medium">Grade 9</span>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-1.5 rounded-full bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-slate-700 px-4">
+<span class="text-slate-700 dark:text-slate-300 text-xs font-medium">Grade 10</span>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-1.5 rounded-full bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-slate-700 px-4">
+<span class="text-slate-700 dark:text-slate-300 text-xs font-medium">Grade 11</span>
+</button>
+</div>
+<!-- Divider -->
+<div class="h-px w-full bg-slate-200 dark:bg-slate-800 mb-2"></div>
+<!-- Learners List -->
+<div class="flex flex-col pb-20">
+<!-- List Item 1 -->
+<div class="group relative flex items-center gap-4 px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors cursor-pointer border-b border-slate-100 dark:border-slate-800/50 last:border-0">
+<div class="relative shrink-0">
+<div class="h-12 w-12 rounded-full bg-cover bg-center ring-2 ring-slate-100 dark:ring-slate-700" data-alt="Portrait of a young female student" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCrtDkTIEaiJjeeEzVxv94nqT8pyH_53Ri5inIzltZ86Sg8d7aifYicjTCF9XWiLUwcMWHV288SMGXnKZa0IlwflR9Y2reXrw3-Dcdy1SzIhV718qtsYYGuqXveEPNnMVIqdTYJJXGb6YGdQH_HlrJL0tzWUIeVpsJOVJIFD-CHlD-hsKIGcoMPXHeWz0bkG4fxQ7402tjYga8aNzNK1_jXhkRmbFhvnTSYJTBwiHiasy0wNTHMbl2VIDpY6gjHDpZhacrP0HLDAGY");'></div>
+<div class="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-green-500 border-2 border-white dark:border-background-dark" title="Active"></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-baseline">
+<h3 class="text-base font-semibold text-slate-900 dark:text-white truncate">Thandiwe Zulu</h3>
+<span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Active</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">ID: 2024001 • Grade 10-A</p>
+</div>
+<button class="shrink-0 h-8 w-8 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<!-- List Item 2 -->
+<div class="group relative flex items-center gap-4 px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors cursor-pointer border-b border-slate-100 dark:border-slate-800/50 last:border-0">
+<div class="relative shrink-0">
+<div class="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-primary font-bold text-lg ring-2 ring-slate-100 dark:ring-slate-700">
+                        LM
+                    </div>
+<div class="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-amber-500 border-2 border-white dark:border-background-dark" title="Pending"></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-baseline">
+<h3 class="text-base font-semibold text-slate-900 dark:text-white truncate">Lerato Mokoena</h3>
+<span class="text-[10px] uppercase font-bold text-amber-500 tracking-wider">Pending</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">ID: 2024045 • Grade 8-C</p>
+</div>
+<button class="shrink-0 h-8 w-8 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<!-- List Item 3 -->
+<div class="group relative flex items-center gap-4 px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors cursor-pointer border-b border-slate-100 dark:border-slate-800/50 last:border-0">
+<div class="relative shrink-0">
+<div class="h-12 w-12 rounded-full bg-cover bg-center ring-2 ring-slate-100 dark:ring-slate-700" data-alt="Portrait of a young male student" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAygMFvCjoQ1dPUp3uwttZc-anAGIrBnD9NaK1tHeTwmTXTJxeNXzqkxsebYPJUsVQc7ZPdLH0c5TC688siRyIEmPGXgzdDeEr0etSr3f59iGFXOVwFpVZy7zMkcUXdtNX1fekcYB4cny0lpD4c8ys9xvP76cF_O4-ySTFPV-zhLbK_x6EyCzlHLvVqNahZWoBje-MK9bAeIp9u3B7dCWIuornMmjK76Qo-pCSMFWcA9bXp4jrfD0x_oCi2xWy-qK2lMKafKyJZx6I");'></div>
+<div class="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-red-500 border-2 border-white dark:border-background-dark" title="Suspended"></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-baseline">
+<h3 class="text-base font-semibold text-slate-900 dark:text-white truncate">Sipho Nkosi</h3>
+<span class="text-[10px] uppercase font-bold text-red-500 tracking-wider">Suspended</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">ID: 2023112 • Grade 12-B</p>
+</div>
+<button class="shrink-0 h-8 w-8 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<!-- List Item 4 -->
+<div class="group relative flex items-center gap-4 px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors cursor-pointer border-b border-slate-100 dark:border-slate-800/50 last:border-0">
+<div class="relative shrink-0">
+<div class="h-12 w-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold text-lg ring-2 ring-slate-100 dark:ring-slate-700">
+                        JD
+                    </div>
+<div class="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-green-500 border-2 border-white dark:border-background-dark" title="Active"></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-baseline">
+<h3 class="text-base font-semibold text-slate-900 dark:text-white truncate">James Dlamini</h3>
+<span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Active</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">ID: 2024089 • Grade 11-A</p>
+</div>
+<button class="shrink-0 h-8 w-8 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<!-- List Item 5 -->
+<div class="group relative flex items-center gap-4 px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors cursor-pointer border-b border-slate-100 dark:border-slate-800/50 last:border-0">
+<div class="relative shrink-0">
+<div class="h-12 w-12 rounded-full bg-cover bg-center ring-2 ring-slate-100 dark:ring-slate-700" data-alt="Portrait of a young female student with braids" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCqQyZ0TON_rglf38aB02bdV4OEGQLRbNe3vW_23GezgRgqgMAcqtyRg-2kYovIppQUF9AdBBc0ADusv3IgBDGsRQy7fBsOEW5BYG1Huvau53YrLIU6poW8RXfwU8gpc2Q8Ju3aJZ8iFX5q4Pf-Idj4N7r7Y1HkqUdwldhJAWnbOVQ7fAa1eWLC4wrjey3MrksX4VcWzLx1O6YydiWpcs2REOjy0oooVCv_bqhcZXZ6TRXQTbm9yz3Jw7NJHeHIb4WmFcrDOZe6pL8");'></div>
+<div class="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-green-500 border-2 border-white dark:border-background-dark" title="Active"></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-baseline">
+<h3 class="text-base font-semibold text-slate-900 dark:text-white truncate">Zola Khumalo</h3>
+<span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Active</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">ID: 2024102 • Grade 9-D</p>
+</div>
+<button class="shrink-0 h-8 w-8 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<!-- List Item 6 -->
+<div class="group relative flex items-center gap-4 px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors cursor-pointer border-b border-slate-100 dark:border-slate-800/50 last:border-0">
+<div class="relative shrink-0">
+<div class="h-12 w-12 rounded-full bg-cover bg-center ring-2 ring-slate-100 dark:ring-slate-700" data-alt="Portrait of a young male student smiling" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB9slwcNi5K4Z7dzipGIK3MFK7FVCyWLeMYeSVWiaUoW3NMxfJYqnUzd4_qb-xOrST-O4zD-CAih4wkr5gzEjLzzBmsjEeUTMFjxvaS2N8zaLKRtnY0BL4JHxqAYSeivPvExeytCagEebNnV81oQiBuPuT_evknqv712zcvnH0TlBlZC5egTkjIJAZOnyiBSqx4v238lE55YVuX5tv_Z1p-0CA-VE2R9mUTpwXkX3NXjb2mCes4wQe0yDxOb5s9Yrt5R0C2qnNZ0VI");'></div>
+<div class="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-green-500 border-2 border-white dark:border-background-dark" title="Active"></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-baseline">
+<h3 class="text-base font-semibold text-slate-900 dark:text-white truncate">David Naidoo</h3>
+<span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Active</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">ID: 2024221 • Grade 10-A</p>
+</div>
+<button class="shrink-0 h-8 w-8 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<!-- End of List / Load More -->
+<div class="p-6 flex flex-col items-center justify-center gap-2">
+<p class="text-xs text-slate-500 text-center">End of cached results</p>
+<button class="text-primary text-sm font-medium hover:underline">Load more from server</button>
+</div>
+</div>
+<!-- Floating Action Button (Mobile Alternative if header button isn't enough) - Optional, kept header button as primary -->
+<!-- 
+        <button class="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-primary shadow-lg shadow-blue-500/30 text-white flex items-center justify-center z-50">
+             <span class="material-symbols-outlined text-[28px]">add</span>
+        </button> 
+        -->
+</div>
+</body></html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Learner Home Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#389cfa",
+              "background-light": "#f5f7f8",
+              "background-dark": "#0f1923",
+            },
+            fontFamily: {
+              "display": ["Lexend", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined.filled { font-variation-settings: 'FILL' 1; }
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#0d151c] dark:text-white transition-colors duration-200">
+<div class="relative flex h-full min-h-screen w-full flex-col max-w-md mx-auto bg-background-light dark:bg-background-dark overflow-x-hidden pb-24 group/design-root">
+<!-- Top Bar & Greeting -->
+<header class="flex flex-col gap-2 p-4 pb-2 pt-6">
+<div class="flex items-center h-12 justify-between">
+<div class="flex items-center gap-3">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-11 border-2 border-primary/20 cursor-pointer" data-alt="Profile picture of a smiling student named Thabo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCrGfgucFpQf7EX2hBPsUCC43ceoTyhhdduowW8W7WDJI3hBRtaxb8mPcXQ-gydMLcXLfy79wsYrSthcN3DdySTJh8Ry1ErJOuT5qnfn22dSJSmqpueX_71pbPMpjG7OASn7GfG6IVX3rSxhDwnrqyao_zKVNWtEP56gy4a2ypvc6_DI7zj2iom7SpTJeQHLKufqDYhG9U-ayepWr7BAs2NMNrlQj_LcOZ6gnkjlreUXZnbV3C3CaFx5Q_Us8Lil0eCqc2C2R6FzVo");'>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-xs text-[#47749e] dark:text-gray-400 font-medium leading-none mb-1">Grade 11 • Science</p>
+<p class="text-[#0d151c] dark:text-white text-xl font-bold leading-none tracking-tight">Hi, Thabo! 👋</p>
+</div>
+</div>
+<div class="flex items-center justify-end gap-3">
+<!-- Theme Toggle (Mock) -->
+<button class="flex items-center justify-center rounded-full size-10 bg-white dark:bg-gray-800 shadow-sm text-gray-500 dark:text-gray-300">
+<span class="material-symbols-outlined">light_mode</span>
+</button>
+<button class="flex items-center justify-center rounded-xl size-10 bg-white dark:bg-gray-800 shadow-sm text-[#0d151c] dark:text-white relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2.5 right-2.5 size-2 bg-red-500 rounded-full border border-white dark:border-gray-800"></span>
+</button>
+</div>
+</div>
+</header>
+<!-- Progress Carousel -->
+<section class="flex flex-col gap-3 mt-2">
+<div class="flex justify-between items-end px-4">
+<h3 class="text-[#0d151c] dark:text-white text-sm font-bold uppercase tracking-wider opacity-80">This Week</h3>
+</div>
+<div class="flex overflow-x-auto no-scrollbar px-4 gap-3 pb-2 snap-x">
+<!-- Streak Card -->
+<div class="flex flex-col justify-between p-4 rounded-xl bg-orange-50 dark:bg-orange-900/20 min-w-[150px] border border-orange-100 dark:border-orange-800/30 snap-center shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="material-symbols-outlined text-orange-500 filled text-[28px]">local_fire_department</span>
+<span class="text-2xl font-bold text-orange-600 dark:text-orange-400">7</span>
+</div>
+<div>
+<p class="text-[#0d151c] dark:text-white text-base font-bold leading-tight">Day Streak</p>
+<p class="text-[#47749e] dark:text-orange-200/70 text-xs font-medium mt-0.5">Keep it up!</p>
+</div>
+</div>
+<!-- Weekly Goal Card -->
+<div class="flex flex-col justify-between p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 min-w-[150px] border border-blue-100 dark:border-blue-800/30 snap-center shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<div class="relative size-8">
+<!-- CSS Ring Chart Mockup -->
+<svg class="size-full -rotate-90" viewbox="0 0 36 36">
+<path class="text-blue-200 dark:text-blue-900" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="4"></path>
+<path class="text-primary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="60, 100" stroke-linecap="round" stroke-width="4"></path>
+</svg>
+</div>
+<span class="text-xs font-bold text-primary bg-white dark:bg-blue-950 px-2 py-1 rounded-full border border-blue-100 dark:border-blue-900">3/5</span>
+</div>
+<div>
+<p class="text-[#0d151c] dark:text-white text-base font-bold leading-tight">Weekly Goal</p>
+<p class="text-[#47749e] dark:text-blue-200/70 text-xs font-medium mt-0.5">Quizzes done</p>
+</div>
+</div>
+<!-- Mastery Card -->
+<div class="flex flex-col justify-between p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 min-w-[150px] border border-emerald-100 dark:border-emerald-800/30 snap-center shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="material-symbols-outlined text-emerald-500 filled text-[28px]">school</span>
+<span class="text-sm font-bold text-emerald-600 dark:text-emerald-400 bg-white dark:bg-emerald-950 px-2 py-1 rounded-full border border-emerald-100 dark:border-emerald-900">80%</span>
+</div>
+<div>
+<p class="text-[#0d151c] dark:text-white text-base font-bold leading-tight">Mastery</p>
+<p class="text-[#47749e] dark:text-emerald-200/70 text-xs font-medium mt-0.5">Overall progress</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Up Next Planner -->
+<section class="mt-6">
+<div class="flex items-center justify-between px-4 pb-3">
+<h3 class="text-[#0d151c] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Up Next Planner</h3>
+<button class="text-primary text-sm font-semibold">View All</button>
+</div>
+<div class="flex flex-col gap-3 px-4">
+<!-- ListItem 1 -->
+<div class="flex items-center gap-4 bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm border border-slate-100 dark:border-gray-700">
+<div class="flex items-center justify-center rounded-lg bg-[#e6edf4] dark:bg-slate-700 shrink-0 size-12 text-[#0d151c] dark:text-white">
+<span class="material-symbols-outlined">science</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-start">
+<p class="text-[#0d151c] dark:text-white text-base font-bold leading-normal truncate">Physical Sciences</p>
+<span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300">High</span>
+</div>
+<p class="text-[#47749e] dark:text-gray-400 text-sm font-normal leading-normal truncate">Newton's Laws Worksheet</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-xs text-primary">schedule</span>
+<p class="text-[#47749e] dark:text-gray-400 text-xs font-medium">Tomorrow, 08:00</p>
+</div>
+</div>
+</div>
+<!-- ListItem 2 -->
+<div class="flex items-center gap-4 bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm border border-slate-100 dark:border-gray-700">
+<div class="flex items-center justify-center rounded-lg bg-[#e6edf4] dark:bg-slate-700 shrink-0 size-12 text-[#0d151c] dark:text-white">
+<span class="material-symbols-outlined">calculate</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-start">
+<p class="text-[#0d151c] dark:text-white text-base font-bold leading-normal truncate">Mathematics Test</p>
+<span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-300">Med</span>
+</div>
+<p class="text-[#47749e] dark:text-gray-400 text-sm font-normal leading-normal truncate">Algebra &amp; Equations</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-xs text-primary">event</span>
+<p class="text-[#47749e] dark:text-gray-400 text-xs font-medium">Wed, 10:00</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Coding & Robotics Zone -->
+<section class="mt-8 px-4">
+<div class="relative w-full rounded-2xl overflow-hidden bg-background-dark p-5 text-white shadow-lg">
+<!-- Abstract tech background -->
+<div class="absolute inset-0 opacity-10" data-alt="Abstract dark pattern of computer code and geometric shapes" style="background-image: radial-gradient(#389cfa 1px, transparent 1px); background-size: 20px 20px;">
+</div>
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-2">
+<div class="p-1.5 bg-green-500/20 rounded-md">
+<span class="material-symbols-outlined text-green-400 text-sm">terminal</span>
+</div>
+<span class="text-xs font-bold uppercase tracking-wider text-green-400">Coding Zone</span>
+</div>
+<h3 class="text-xl font-bold mb-1">Fix the Bug: Python Loop 🐍</h3>
+<p class="text-gray-400 text-sm mb-4 leading-relaxed">Find the error in the 'while' loop logic to earn +50 XP towards your Robotics badge.</p>
+<button class="bg-primary hover:bg-blue-500 active:bg-blue-600 text-white font-bold py-2.5 px-5 rounded-lg text-sm w-full transition-colors flex items-center justify-center gap-2">
+                    Start Challenge
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Quick Play Arcade -->
+<section class="mt-8 px-4">
+<h3 class="text-[#0d151c] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] mb-4">Quick Play Arcade</h3>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex flex-col items-center justify-center p-4 bg-teal-50 dark:bg-teal-900/20 rounded-2xl border border-teal-100 dark:border-teal-800/30 active:scale-95 transition-transform">
+<div class="size-12 bg-white dark:bg-teal-950 rounded-full flex items-center justify-center text-teal-500 dark:text-teal-400 mb-3 shadow-sm">
+<span class="material-symbols-outlined">style</span>
+</div>
+<span class="font-bold text-sm text-teal-900 dark:text-teal-100">Flashcards</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl border border-indigo-100 dark:border-indigo-800/30 active:scale-95 transition-transform">
+<div class="size-12 bg-white dark:bg-indigo-950 rounded-full flex items-center justify-center text-indigo-500 dark:text-indigo-400 mb-3 shadow-sm">
+<span class="material-symbols-outlined">quiz</span>
+</div>
+<span class="font-bold text-sm text-indigo-900 dark:text-indigo-100">Quick Quiz</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 bg-rose-50 dark:bg-rose-900/20 rounded-2xl border border-rose-100 dark:border-rose-800/30 active:scale-95 transition-transform">
+<div class="size-12 bg-white dark:bg-rose-950 rounded-full flex items-center justify-center text-rose-500 dark:text-rose-400 mb-3 shadow-sm">
+<span class="material-symbols-outlined">spellcheck</span>
+</div>
+<span class="font-bold text-sm text-rose-900 dark:text-rose-100">Spelling Bee</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 bg-amber-50 dark:bg-amber-900/20 rounded-2xl border border-amber-100 dark:border-amber-800/30 active:scale-95 transition-transform">
+<div class="size-12 bg-white dark:bg-amber-950 rounded-full flex items-center justify-center text-amber-500 dark:text-amber-400 mb-3 shadow-sm">
+<span class="material-symbols-outlined">functions</span>
+</div>
+<span class="font-bold text-sm text-amber-900 dark:text-amber-100">Maths Drills</span>
+</button>
+</div>
+</section>
+<!-- School Feed -->
+<section class="mt-8 px-4">
+<h3 class="text-[#0d151c] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] mb-4">School Feed</h3>
+<div class="bg-white dark:bg-gray-800 rounded-2xl border border-slate-100 dark:border-gray-700 overflow-hidden shadow-sm flex flex-col">
+<div class="h-36 w-full bg-cover bg-center relative" data-alt="Group of diverse students holding a robotics trophy and smiling" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD1rgqMwLM4gLnfHwaOYtGPaAZvX-D1Yod1mCbvJ8gMjDrzhjzg4xkmhgEOdwLkPkjLlJSxTCELErV-1Il51UcSaNZ2RcempXFtkoZEaabkF3VSpf_cQlQJeiXo4qMbQJcjjfXwDxLVC6E8fECenvGAQBOZ6tr6P542jhNk80Sq0QkgQr_H6t_lmUJ1NAna6PKRxZVSq7vOmTS2-ASTi-OdF9mZIBpUA6JwEOPX2R2sqHMm7NxCv_WttUvtJoJxSqlYCKjfb4fueXY");'>
+<div class="absolute top-3 left-3 bg-primary/90 backdrop-blur-sm text-white text-[10px] font-bold uppercase px-2 py-1 rounded tracking-wide">Achievement</div>
+</div>
+<div class="p-4">
+<h4 class="font-bold text-lg text-[#0d151c] dark:text-white mb-1.5">Robotics Team wins Regional! 🏆</h4>
+<p class="text-sm text-[#47749e] dark:text-gray-400 line-clamp-2 mb-4 leading-relaxed">Congratulations to our Grade 11 team for securing 1st place. They will represent us at Nationals next month. We are so proud!</p>
+<button class="text-primary text-sm font-bold flex items-center gap-1 hover:gap-2 transition-all">
+                    Read more <span class="material-symbols-outlined text-base">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 w-full max-w-md bg-white dark:bg-gray-800 border-t border-slate-200 dark:border-gray-700 pt-3 pb-6 px-4 z-50 rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.04)]">
+<div class="flex justify-between items-center">
+<a class="flex flex-col items-center gap-1.5 w-14 group" href="#">
+<span class="material-symbols-outlined filled text-primary transition-colors">home</span>
+<span class="text-[10px] font-bold text-primary">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1.5 w-14 group" href="#">
+<span class="material-symbols-outlined text-gray-400 dark:text-gray-500 group-hover:text-primary dark:group-hover:text-primary transition-colors">calendar_month</span>
+<span class="text-[10px] font-medium text-gray-400 dark:text-gray-500 group-hover:text-primary dark:group-hover:text-primary transition-colors">Calendar</span>
+</a>
+<a class="flex flex-col items-center gap-1.5 w-14 group" href="#">
+<div class="bg-primary/10 rounded-full p-1 group-hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">library_books</span>
+</div>
+</a>
+<a class="flex flex-col items-center gap-1.5 w-14 group" href="#">
+<span class="material-symbols-outlined text-gray-400 dark:text-gray-500 group-hover:text-primary dark:group-hover:text-primary transition-colors">bar_chart</span>
+<span class="text-[10px] font-medium text-gray-400 dark:text-gray-500 group-hover:text-primary dark:group-hover:text-primary transition-colors">Grades</span>
+</a>
+<a class="flex flex-col items-center gap-1.5 w-14 group" href="#">
+<span class="material-symbols-outlined text-gray-400 dark:text-gray-500 group-hover:text-primary dark:group-hover:text-primary transition-colors">person</span>
+<span class="text-[10px] font-medium text-gray-400 dark:text-gray-500 group-hover:text-primary dark:group-hover:text-primary transition-colors">Profile</span>
+</a>
+</div>
+</nav>
+</div>
+</body></html>

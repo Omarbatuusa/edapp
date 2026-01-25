@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Parent Home Dashboard</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e293b",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased transition-colors duration-200">
+<div class="relative min-h-screen w-full flex flex-col pb-24 overflow-x-hidden max-w-md mx-auto bg-background-light dark:bg-background-dark shadow-2xl">
+<!-- Header Section -->
+<header class="sticky top-0 z-30 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm px-4 py-3 flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Greenwood High School Logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLpAqh5QoLfaRMGC0wrne5pIaqt5zM7lPdP_b2hTDsBjTl7USw7FqRA_mqjaRJqU1lYc_a2KuONc43WmVybtNkTy_q1KU66RsFQ7_MBvZfanCVmwIGEFY4801c75kygcnfhPwNkInlcC9z8pFevyOt0bvHMdCaKw-XGLhsEipzdwUDeyYU7uC1PiDu90QRxgAycZNrSPHiZrW0iuQX821D9hzMUoLJGeJq7_6kyjwQN-1auiwbmFNsYkPeXpI7HUV3xeOQ4s_9KRQ"/>
+</div>
+<div>
+<h2 class="text-sm font-semibold text-slate-900 dark:text-white leading-tight">Greenwood High</h2>
+<p class="text-xs text-slate-500 dark:text-slate-400">Term 3 • Week 4</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors relative">
+<span class="material-symbols-outlined text-slate-700 dark:text-slate-300">notifications</span>
+<span class="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-background-dark"></span>
+</button>
+<button class="w-10 h-10 rounded-full overflow-hidden border-2 border-slate-200 dark:border-slate-700">
+<div class="bg-center bg-no-repeat bg-cover w-full h-full" data-alt="Parent profile avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAvnsaX6c6YheYOEPGmtT4FQaL-OgoE-_0Z_OCA5Q8Rpq8MtIhG7kC_9tF4EG2aUpGNpKAUSXq5EGzu-SHIfcEZgSLwISq3epwFwxKTRAIhlLArlgScwMGCGWW_mlY3GEmHZ2eihZewsV6j8-jzUAk8M39IKsRrg4SsqqxhZo_HOi_fZUdVdpA-M8TOYUqSSld-EklHC1ZZsWERiexZa1Zxdp1Fhdix62CcrQ0oVNuHgSFPtIcsx-PSrbppXUdRR426v8jCglIb-0w");'></div>
+</button>
+</div>
+</header>
+<!-- Greeting -->
+<div class="px-4 pt-6 pb-2">
+<h1 class="text-2xl font-bold text-slate-900 dark:text-white">Good Morning, Sarah</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Here's what's happening today.</p>
+</div>
+<!-- Child Tabs -->
+<div class="px-4 pt-4 pb-2">
+<div class="flex gap-4 overflow-x-auto no-scrollbar pb-2">
+<!-- Active Child -->
+<button class="group flex flex-col items-center gap-2 min-w-[72px]">
+<div class="relative w-16 h-16 rounded-full p-1 border-2 border-primary">
+<div class="w-full h-full rounded-full overflow-hidden">
+<div class="bg-center bg-no-repeat bg-cover w-full h-full" data-alt="Portrait of child student Liam" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDJDqpmii1hlol8a_cFk5r3k964rJfVtNZ5nJnFIapwCGrlh7R_N-BHDNhFQPDPesm9SG5mTGVLaBpcHExA8FmQeUJ4q95i-frRzrGvkXsAnw5Ik4jzSJgo_DVXdYMx5Hc5AgKx6EXjTFgO0EiSx_VXfry1mAvcKj_y0qxF8nDj4LrlYzWO6_f3ajdsLB1ab2NLFDfjfSCnz9J1I50znUop6oLGvBH1PdmtQA5clUvJMcQ5Q4tfu4b4v8KilI6DcV38eto5SCKKv_Q");'></div>
+</div>
+<div class="absolute bottom-0 right-0 bg-primary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border border-white dark:border-background-dark">5A</div>
+</div>
+<span class="text-sm font-bold text-slate-900 dark:text-white">Liam</span>
+</button>
+<!-- Inactive Child -->
+<button class="group flex flex-col items-center gap-2 min-w-[72px] opacity-60 hover:opacity-100 transition-opacity">
+<div class="relative w-16 h-16 rounded-full p-1 border-2 border-transparent group-hover:border-slate-200 dark:group-hover:border-slate-700">
+<div class="w-full h-full rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+<div class="bg-center bg-no-repeat bg-cover w-full h-full grayscale" data-alt="Portrait of child student Emma" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCrM3L4gjAi5TGlI1TEzTfOrx42G8-xq2s5a15KkELaduzOHtV_vYe9UrgQ3NmrWMoGbP18f2H_hW9cs5Sm_Q4_qLVm3Bj4M2Mfq1kU7vCXt18O4zW_xXjTISW7X4BitT6GfxmuW6X3ob6u9On4Wne_x4CIfySl_QqpLjpiImiBB1JVDdHbxIOdJ8MV3boQaFjPRqeNBtujiF2AhnxN_Hh51l_KJKZZhf5CdDISHu8AKo9iKjJ7-k-mEfDA6WfHjZZsxj9maaLfiPU");'></div>
+</div>
+<div class="absolute bottom-0 right-0 bg-slate-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border border-white dark:border-background-dark">3B</div>
+</div>
+<span class="text-sm font-medium text-slate-600 dark:text-slate-400">Emma</span>
+</button>
+</div>
+</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-2 gap-3 px-4 py-4">
+<!-- Attendance -->
+<div class="col-span-2 sm:col-span-1 bg-surface-light dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-row sm:flex-col items-center sm:items-start justify-between gap-4">
+<div class="flex-1">
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400">Attendance</p>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="text-2xl font-bold text-slate-900 dark:text-white">98%</span>
+<span class="text-xs font-medium text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded">+2%</span>
+</div>
+<p class="text-xs text-slate-400 mt-1">Present today</p>
+</div>
+<div class="relative w-12 h-12 flex items-center justify-center">
+<!-- Circular Progress Mockup -->
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-slate-100 dark:text-slate-700" cx="24" cy="24" fill="transparent" r="20" stroke="currentColor" stroke-width="4"></circle>
+<circle class="text-primary" cx="24" cy="24" fill="transparent" r="20" stroke="currentColor" stroke-dasharray="126" stroke-dashoffset="2" stroke-linecap="round" stroke-width="4"></circle>
+</svg>
+</div>
+</div>
+<!-- Homework -->
+<div class="bg-surface-light dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col justify-between min-h-[120px]">
+<div class="flex justify-between items-start">
+<div class="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg text-orange-600 dark:text-orange-400">
+<span class="material-symbols-outlined text-[20px]">assignment</span>
+</div>
+<span class="text-xs font-bold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded-full">Due Tmrw</span>
+</div>
+<div>
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400">Homework</p>
+<p class="text-xl font-bold text-slate-900 dark:text-white mt-0.5">3 Items</p>
+</div>
+</div>
+<!-- Fees -->
+<div class="bg-surface-light dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col justify-between min-h-[120px]">
+<div class="flex justify-between items-start">
+<div class="p-2 bg-slate-50 dark:bg-slate-700 rounded-lg text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+</div>
+</div>
+<div>
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400">Fees Outstanding</p>
+<p class="text-xl font-bold text-slate-900 dark:text-white mt-0.5">R 450.00</p>
+</div>
+</div>
+</div>
+<!-- Quick Actions -->
+<div class="px-4 py-2">
+<h3 class="text-base font-semibold text-slate-900 dark:text-white mb-3">Quick Actions</h3>
+<div class="grid grid-cols-3 gap-3">
+<button class="flex flex-col items-center gap-2 p-3 rounded-xl bg-surface-light dark:bg-surface-dark border border-slate-100 dark:border-slate-800 active:scale-95 transition-transform shadow-sm">
+<div class="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+<span class="material-symbols-outlined">chat</span>
+</div>
+<span class="text-xs font-medium text-slate-700 dark:text-slate-300 text-center">Message<br/>Teacher</span>
+</button>
+<button class="flex flex-col items-center gap-2 p-3 rounded-xl bg-surface-light dark:bg-surface-dark border border-slate-100 dark:border-slate-800 active:scale-95 transition-transform shadow-sm">
+<div class="w-10 h-10 rounded-full bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 flex items-center justify-center">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<span class="text-xs font-medium text-slate-700 dark:text-slate-300 text-center">Pay<br/>Fees</span>
+</button>
+<button class="flex flex-col items-center gap-2 p-3 rounded-xl bg-surface-light dark:bg-surface-dark border border-slate-100 dark:border-slate-800 active:scale-95 transition-transform shadow-sm">
+<div class="w-10 h-10 rounded-full bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+<span class="material-symbols-outlined">sick</span>
+</div>
+<span class="text-xs font-medium text-slate-700 dark:text-slate-300 text-center">Report<br/>Absence</span>
+</button>
+</div>
+</div>
+<!-- Social Feed / Announcements -->
+<div class="px-4 py-6">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">School Updates</h3>
+<a class="text-sm font-medium text-primary hover:text-blue-600" href="#">View All</a>
+</div>
+<div class="flex flex-col gap-4">
+<!-- Announcement Card 1 -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+<div class="h-32 bg-slate-200 w-full relative">
+<div class="bg-center bg-no-repeat bg-cover w-full h-full" data-alt="School sports field with children playing" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCNKGhiXg-iXlHcC-yZ2A0rAUK_0O7UmjYd20RJ4bVliIFyY1dVvAgclpoaplagfT2XR_MVcF-7B8okfS63M911p4B0pOx04yXvaLG6dGLy9U3d08QrntcYj_jC31Ii4LiTFJE36tmxYerF42aqIjPb4TjcjPmEf5F_lAr3gZTZDmUGLwwvjUJNiJ6DXlAIez4GUc-RzGw2UNV91pPwiMouovIQ0HZj6zhVrUpu2Cb0XRVvVWbIy0e0Y6J69RxOe0X_pMQZWq3dpBw");'></div>
+<div class="absolute top-3 left-3 bg-white/90 dark:bg-black/80 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                            Sports
+                        </div>
+</div>
+<div class="p-4">
+<div class="flex items-center gap-2 mb-2 text-xs text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+<span>Friday, 24 Oct</span>
+</div>
+<h4 class="text-base font-bold text-slate-900 dark:text-white mb-2 leading-tight">Inter-house Athletics Day Confirmed</h4>
+<p class="text-sm text-slate-600 dark:text-slate-300 line-clamp-2">The annual inter-house athletics meeting will take place this Friday. Parents are welcome to attend from 09:00.</p>
+</div>
+</div>
+<!-- Announcement Card 2 -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 p-4 flex gap-4 items-center">
+<div class="w-16 h-16 shrink-0 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 flex items-center justify-center text-yellow-600 dark:text-yellow-400">
+<span class="material-symbols-outlined text-3xl">campaign</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2 mb-1 text-xs text-slate-500 dark:text-slate-400">
+<span class="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-300 px-1.5 rounded font-bold">Important</span>
+</div>
+<h4 class="text-sm font-bold text-slate-900 dark:text-white truncate">Term 4 Fees Adjustment</h4>
+<p class="text-xs text-slate-600 dark:text-slate-400 truncate">Please note the changes to the fee structure...</p>
+</div>
+<button class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 w-full max-w-md mx-auto z-40 bg-white/90 dark:bg-surface-dark/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 pb-safe">
+<div class="flex items-center justify-around h-16 px-2">
+<a class="flex flex-col items-center justify-center w-full h-full text-primary gap-1" href="#">
+<span class="material-symbols-outlined filled">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 gap-1" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="text-[10px] font-medium">Academics</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 gap-1" href="#">
+<div class="relative">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-primary rounded-full border-2 border-white dark:border-surface-dark"></span>
+</div>
+<span class="text-[10px] font-medium">Chat</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 gap-1" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="text-[10px] font-medium">Wallet</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 gap-1" href="#">
+<span class="material-symbols-outlined">menu</span>
+<span class="text-[10px] font-medium">Menu</span>
+</a>
+</div>
+<!-- iOS Home Indicator Safe Area -->
+<div class="h-1 w-full"></div>
+</nav>
+</div>
+<script>
+        // Simple script to demonstrate dark mode toggle functionality based on system preference or manual override
+        // In a real app, this would be handled by state management
+        // For this demo, we can just look at the class on HTML
+    </script>
+</body></html>

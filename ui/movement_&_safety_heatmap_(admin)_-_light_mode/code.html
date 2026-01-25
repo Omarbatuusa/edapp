@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Movement &amp; Safety Heatmap (Admin)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "primary-content": "#ffffff",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1a242f",
+                        "danger": "#ef4444",
+                        "warning": "#f59e0b",
+                        "success": "#10b981",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "body": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "2rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white transition-colors duration-200">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto bg-background-light dark:bg-background-dark shadow-xl">
+<!-- Sticky Header -->
+<header class="sticky top-0 z-50 flex items-center justify-between bg-surface-light/95 dark:bg-surface-dark/95 backdrop-blur-sm p-4 border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-slate-800 dark:text-white">arrow_back</span>
+</button>
+<div>
+<h1 class="text-lg font-bold leading-tight">Safety Heatmap</h1>
+<p class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-success animate-pulse"></span>
+                        Live: Updated just now
+                    </p>
+</div>
+</div>
+<button class="relative flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-slate-800 dark:text-white">notifications</span>
+<span class="absolute top-2 right-2 w-2.5 h-2.5 bg-danger rounded-full border-2 border-surface-light dark:border-surface-dark"></span>
+</button>
+</header>
+<!-- Filters Scroll -->
+<div class="flex gap-2 p-4 overflow-x-auto hide-scrollbar bg-surface-light dark:bg-surface-dark border-b border-slate-100 dark:border-slate-800/50">
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-primary text-white px-4 shadow-sm shadow-primary/30">
+<span class="text-sm font-medium">All Grades</span>
+<span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-slate-100 dark:bg-slate-800 px-4 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+<span class="text-sm font-medium text-slate-700 dark:text-slate-200">Zones</span>
+<span class="material-symbols-outlined text-[18px] text-slate-700 dark:text-slate-200">keyboard_arrow_down</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-slate-100 dark:bg-slate-800 px-4 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+<span class="text-sm font-medium text-slate-700 dark:text-slate-200">Time: Live</span>
+<span class="material-symbols-outlined text-[18px] text-slate-700 dark:text-slate-200">keyboard_arrow_down</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-slate-100 dark:bg-slate-800 px-4 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+<span class="text-sm font-medium text-slate-700 dark:text-slate-200">Risk Level</span>
+<span class="material-symbols-outlined text-[18px] text-slate-700 dark:text-slate-200">keyboard_arrow_down</span>
+</button>
+</div>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col gap-6 p-4 pb-24">
+<!-- Map Section -->
+<section class="flex flex-col gap-3">
+<div class="flex justify-between items-end">
+<h2 class="text-lg font-bold text-slate-900 dark:text-white">Campus View</h2>
+<button class="text-primary text-sm font-medium flex items-center gap-1">
+                        Expand Map <span class="material-symbols-outlined text-[16px]">open_in_full</span>
+</button>
+</div>
+<div class="relative w-full aspect-square bg-slate-200 dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-700">
+<!-- Map Image Placeholder -->
+<div class="absolute inset-0 bg-cover bg-center opacity-40 dark:opacity-20" data-alt="Blueprint floor plan of school building" data-location="Johannesburg, South Africa" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDZCxH56GjKuHxxRltHWYw8QuznLMiSY0HCP8RTbDbxLciKW6X2GlqaaIeAXt2d4Ir90t2I0OGueGoh_Dn8AkfBCD06NX7MuRCK2OfPu60jsof2ZlclbISCNuJAqhDAs1K6FKL2Hvb3KLeMPop0X5L8FWRvrHH-Zyj2tSYXudiem_S0Qv9X2ABHWciOVSj_3-07CINQhB79gJ-43uG-Aq242WNMsZh9JhrtHyZNykhILMkISFeIZ4effSFoIuFKoxmGH-EyoIH-zec');">
+</div>
+<!-- Interactive Zones Overlay -->
+<!-- Zone 1: Library - Normal -->
+<div class="absolute top-[20%] left-[10%] w-[35%] h-[25%] bg-primary/20 border-2 border-primary/50 rounded-xl flex items-center justify-center backdrop-blur-[2px]">
+<div class="bg-surface-light dark:bg-surface-dark px-2 py-1 rounded-md shadow-sm flex flex-col items-center">
+<span class="text-[10px] font-bold text-slate-900 dark:text-white uppercase tracking-wider">Library</span>
+<span class="text-[10px] text-slate-500 dark:text-slate-400">45 Learners</span>
+</div>
+</div>
+<!-- Zone 2: Bathroom - Warning/Hotspot -->
+<div class="absolute top-[15%] right-[10%] w-[25%] h-[20%] bg-danger/20 border-2 border-danger/60 rounded-xl flex items-center justify-center backdrop-blur-[2px] animate-pulse">
+<div class="bg-surface-light dark:bg-surface-dark px-2 py-1 rounded-md shadow-sm flex flex-col items-center border-l-2 border-danger">
+<span class="text-[10px] font-bold text-slate-900 dark:text-white uppercase tracking-wider">Restroom B</span>
+<span class="text-[10px] text-danger font-bold">Risk: High</span>
+</div>
+</div>
+<!-- Zone 3: Cafeteria - Low Traffic -->
+<div class="absolute bottom-[10%] left-[20%] w-[60%] h-[30%] bg-success/10 border-2 border-success/30 rounded-xl flex items-center justify-center backdrop-blur-[1px]">
+<div class="bg-surface-light dark:bg-surface-dark px-2 py-1 rounded-md shadow-sm flex flex-col items-center">
+<span class="text-[10px] font-bold text-slate-900 dark:text-white uppercase tracking-wider">Cafeteria</span>
+<span class="text-[10px] text-slate-500 dark:text-slate-400">12 Learners</span>
+</div>
+</div>
+<!-- Floating Map Controls -->
+<div class="absolute bottom-4 right-4 flex flex-col gap-2">
+<button class="w-10 h-10 bg-surface-light dark:bg-surface-dark rounded-full shadow-lg flex items-center justify-center text-slate-700 dark:text-slate-200">
+<span class="material-symbols-outlined">add</span>
+</button>
+<button class="w-10 h-10 bg-surface-light dark:bg-surface-dark rounded-full shadow-lg flex items-center justify-center text-slate-700 dark:text-slate-200">
+<span class="material-symbols-outlined">remove</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Priority Attention Carousel -->
+<section>
+<div class="flex items-center justify-between mb-3 px-1">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Priority Attention</h3>
+<span class="bg-danger/10 text-danger text-xs font-bold px-2 py-1 rounded-full">3 Alerts</span>
+</div>
+<div class="flex gap-4 overflow-x-auto hide-scrollbar pb-2 -mx-4 px-4 snap-x">
+<!-- Alert Card 1 -->
+<div class="snap-start shrink-0 w-[85%] bg-surface-light dark:bg-surface-dark p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-1 h-full bg-danger"></div>
+<div class="flex gap-4 items-start">
+<div class="w-12 h-12 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden shrink-0" data-alt="Portrait of student Thabo M." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBlu0fzA8cI6Yf9fccXXWJPeckIHY8WQ7g5kcezcncYnMwsj4Ie7Q1jg_B_c3qlRGXmxQ1rh1Uqpbib3udhV64eHfdSYHzc-NjbiaCY2PbDrWkfyay9AgS64YtHwPax69wR2VRh1xcmvEZ8ZfrRr35Bgthj-toIcqLRnr9UhWNVyn4JSEmNk61DAqHBK83aUdRkBPPKhOtYiapEqgTKbkwSMkljKfNvm4ttpFl4QJS37sz3eHMTNuiCwjJbcndZk63Pfux1FN-NC8U'); background-size: cover; background-position: center;">
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h4 class="font-bold text-slate-900 dark:text-white text-base">Thabo M.</h4>
+<span class="text-xs text-slate-500 dark:text-slate-400">Gr 10</span>
+</div>
+<p class="text-danger font-medium text-sm mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">timer</span>
+                                    &gt;20mins in Restroom
+                                </p>
+<div class="flex items-center justify-between mt-3">
+<span class="text-xs text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">
+                                        Last: 1st Flr Toilets
+                                    </span>
+<button class="bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                                        View Path
+                                    </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Alert Card 2 -->
+<div class="snap-start shrink-0 w-[85%] bg-surface-light dark:bg-surface-dark p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-warning"></div>
+<div class="flex gap-4 items-start">
+<div class="w-12 h-12 rounded-full bg-warning/20 flex items-center justify-center shrink-0 text-warning">
+<span class="material-symbols-outlined">group</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h4 class="font-bold text-slate-900 dark:text-white text-base">Grade 8 Group</h4>
+<span class="text-xs text-slate-500 dark:text-slate-400">5 Learners</span>
+</div>
+<p class="text-warning font-medium text-sm mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">block</span>
+                                    Unauthorized Area
+                                </p>
+<div class="flex items-center justify-between mt-3">
+<span class="text-xs text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">
+                                        Loc: Staff Parking
+                                    </span>
+<button class="bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                                        Details
+                                    </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Zone Statistics List -->
+<section>
+<div class="flex items-center justify-between mb-3 px-1">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Zone Statistics</h3>
+<button class="text-primary text-sm font-medium">View All</button>
+</div>
+<div class="flex flex-col gap-3">
+<!-- Stat Item 1 -->
+<div class="bg-surface-light dark:bg-surface-dark p-3 rounded-xl border border-slate-100 dark:border-slate-800 flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+<span class="material-symbols-outlined">library_books</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-1">
+<span class="font-medium text-sm">Library</span>
+<span class="text-xs text-slate-500 dark:text-slate-400">40% Capacity</span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+<div class="bg-indigo-500 h-full rounded-full" style="width: 40%"></div>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-lg font-bold">45</span>
+<span class="text-[10px] text-slate-400">Learners</span>
+</div>
+</div>
+<!-- Stat Item 2 -->
+<div class="bg-surface-light dark:bg-surface-dark p-3 rounded-xl border border-slate-100 dark:border-slate-800 flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center">
+<span class="material-symbols-outlined">sports_soccer</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-1">
+<span class="font-medium text-sm">Playground A</span>
+<span class="text-xs text-slate-500 dark:text-slate-400">85% Capacity</span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+<div class="bg-green-500 h-full rounded-full" style="width: 85%"></div>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-lg font-bold">120</span>
+<span class="text-[10px] text-slate-400">Learners</span>
+</div>
+</div>
+<!-- Stat Item 3 -->
+<div class="bg-surface-light dark:bg-surface-dark p-3 rounded-xl border border-slate-100 dark:border-slate-800 flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 flex items-center justify-center">
+<span class="material-symbols-outlined">meeting_room</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-1">
+<span class="font-medium text-sm">Admin Block</span>
+<span class="text-xs text-slate-500 dark:text-slate-400">5% Capacity</span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+<div class="bg-orange-500 h-full rounded-full" style="width: 5%"></div>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-lg font-bold">8</span>
+<span class="text-[10px] text-slate-400">Learners</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed bottom-6 right-6 z-40 bg-primary hover:bg-blue-600 text-white w-14 h-14 rounded-full shadow-lg shadow-primary/40 flex items-center justify-center transition-all active:scale-95">
+<span class="material-symbols-outlined text-[28px]">campaign</span>
+</button>
+<!-- Bottom Sheet Preview (Collapsed state implication or small peek) -->
+<!-- In a real app this would be a draggable sheet. Here just a visual hint of UI layers if needed, or omitted as the main content scrolls -->
+</div>
+</body></html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Start Chat (Parent)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#0d151c] dark:text-white pb-40 overflow-x-hidden selection:bg-primary/30">
+<!-- Top App Bar -->
+<div class="sticky top-0 z-50 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between transition-colors">
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-[#0d151c] dark:text-white">close</span>
+</button>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">New Message</h2>
+<div class="flex w-10 items-center justify-end">
+<!-- Placeholder for balance -->
+</div>
+</div>
+<!-- Step 1: Child Selector -->
+<div class="flex flex-col pt-5 animate-fade-in">
+<h3 class="tracking-light text-xl font-bold leading-tight px-4 text-left pb-3">Who is this regarding?</h3>
+<div class="flex gap-3 px-4 overflow-x-auto pb-2 no-scrollbar">
+<!-- Active Chip -->
+<button class="group flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary pl-2 pr-4 shadow-md shadow-primary/25 transition-transform active:scale-95">
+<div class="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 text-white">
+<span class="material-symbols-outlined text-[18px]">face_3</span>
+</div>
+<p class="text-white text-sm font-semibold leading-normal">Sarah</p>
+<span class="material-symbols-outlined text-white text-[18px]">check</span>
+</button>
+<!-- Inactive Chip -->
+<button class="group flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 pl-2 pr-4 transition-all hover:border-slate-300 dark:hover:border-slate-600 active:bg-slate-50 dark:active:bg-slate-700">
+<div class="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-[18px]">face_6</span>
+</div>
+<p class="text-slate-700 dark:text-slate-200 text-sm font-medium leading-normal">Michael</p>
+</button>
+<!-- Inactive Chip -->
+<button class="group flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 pl-2 pr-4 transition-all hover:border-slate-300 dark:hover:border-slate-600 active:bg-slate-50 dark:active:bg-slate-700">
+<div class="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-[18px]">groups</span>
+</div>
+<p class="text-slate-700 dark:text-slate-200 text-sm font-medium leading-normal">Both</p>
+</button>
+</div>
+</div>
+<!-- Step 2: Topic Selection -->
+<div class="flex flex-col pt-6">
+<h3 class="tracking-light text-xl font-bold leading-tight px-4 text-left pb-3">What do you need help with?</h3>
+<div class="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-3 px-4">
+<!-- Active Topic Card -->
+<button class="relative flex flex-col items-start gap-3 rounded-xl border-2 border-primary bg-primary/5 p-4 transition-all shadow-sm">
+<div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white">
+<span class="material-symbols-outlined">school</span>
+</div>
+<h2 class="text-[#0d151c] dark:text-white text-base font-bold leading-tight">Academics</h2>
+<div class="absolute top-3 right-3 text-primary">
+<span class="material-symbols-outlined text-[20px] fill-1">check_circle</span>
+</div>
+</button>
+<!-- Inactive Topic Cards -->
+<button class="group flex flex-col items-start gap-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 transition-all hover:border-primary/50 hover:shadow-md active:scale-[0.98]">
+<div class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<h2 class="text-[#0d151c] dark:text-white text-base font-bold leading-tight">Fees</h2>
+</button>
+<button class="group flex flex-col items-start gap-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 transition-all hover:border-primary/50 hover:shadow-md active:scale-[0.98]">
+<div class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined">directions_bus</span>
+</div>
+<h2 class="text-[#0d151c] dark:text-white text-base font-bold leading-tight">Transport</h2>
+</button>
+<button class="group flex flex-col items-start gap-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 transition-all hover:border-primary/50 hover:shadow-md active:scale-[0.98]">
+<div class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined">dns</span>
+</div>
+<h2 class="text-[#0d151c] dark:text-white text-base font-bold leading-tight">IT Support</h2>
+</button>
+<button class="group flex flex-col items-start gap-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 transition-all hover:border-primary/50 hover:shadow-md active:scale-[0.98]">
+<div class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined">favorite</span>
+</div>
+<h2 class="text-[#0d151c] dark:text-white text-base font-bold leading-tight">Health</h2>
+</button>
+<button class="group flex flex-col items-start gap-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 transition-all hover:border-primary/50 hover:shadow-md active:scale-[0.98]">
+<div class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</div>
+<h2 class="text-[#0d151c] dark:text-white text-base font-bold leading-tight">Other</h2>
+</button>
+</div>
+</div>
+<!-- Step 3: Destination Suggestion (Dynamic) -->
+<div class="flex flex-col pt-8">
+<h3 class="tracking-light text-xl font-bold leading-tight px-4 text-left pb-3">Recommended Action</h3>
+<div class="flex flex-col gap-3 px-4">
+<!-- Primary Recommendation -->
+<div class="relative overflow-hidden rounded-xl border-2 border-primary bg-white dark:bg-slate-800 p-4 shadow-sm transition-all">
+<div class="absolute right-0 top-0 rounded-bl-xl bg-primary px-3 py-1 text-xs font-bold text-white">Suggested</div>
+<div class="flex items-start gap-4">
+<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+<span class="material-symbols-outlined text-[24px]">person_outline</span>
+</div>
+<div class="flex-1">
+<h4 class="text-base font-bold text-[#0d151c] dark:text-white">Message Teacher</h4>
+<p class="mt-1 text-sm text-slate-500 dark:text-slate-400 leading-normal">Direct message Mrs. Krabappel regarding homework, grades, or classroom behavior.</p>
+<div class="mt-4 flex gap-2">
+<span class="inline-flex items-center gap-1 rounded-md bg-slate-100 dark:bg-slate-700 px-2 py-1 text-xs font-medium text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined text-[14px]">schedule</span> Usually replies in 2h
+                            </span>
+</div>
+</div>
+<div class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-primary">
+<div class="h-3 w-3 rounded-full bg-primary"></div>
+</div>
+</div>
+</div>
+<!-- Secondary Option -->
+<div class="relative overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm transition-all active:bg-slate-50 dark:active:bg-slate-700/50">
+<div class="flex items-start gap-4">
+<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400">
+<span class="material-symbols-outlined text-[24px]">forum</span>
+</div>
+<div class="flex-1">
+<h4 class="text-base font-bold text-[#0d151c] dark:text-white">Post to Class Channel</h4>
+<p class="mt-1 text-sm text-slate-500 dark:text-slate-400 leading-normal">Ask a general question visible to all parents in 5B.</p>
+</div>
+<div class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-slate-300 dark:border-slate-600">
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Message Templates (Optional Utility) -->
+<div class="px-4 mt-6">
+<button class="flex items-center gap-2 text-primary font-medium text-sm hover:underline">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+            Use a template for absent note
+        </button>
+</div>
+<!-- Floating Bottom Action Bar -->
+<div class="fixed bottom-0 left-0 w-full bg-white/95 dark:bg-[#0f1923]/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 p-4 pb-8 z-40 transition-colors">
+<button class="group relative flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 px-4 text-center font-bold text-white shadow-lg shadow-blue-500/30 transition-all hover:bg-blue-500 active:scale-[0.98]">
+            Start Conversation
+            <span class="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
+</button>
+<div class="mt-3 flex items-center justify-center gap-1.5 opacity-60">
+<span class="material-symbols-outlined text-[14px] text-slate-500 dark:text-slate-400">security</span>
+<p class="text-xs font-medium text-slate-500 dark:text-slate-400">Chats are monitored for school safety</p>
+</div>
+</div>
+</body></html>

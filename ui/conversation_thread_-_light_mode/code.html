@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Conversation Thread - Light Mode</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "incoming-bg": "#ffffff",
+                        "incoming-border": "#e5e7eb",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        'subtle': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased text-slate-900 dark:text-white h-screen flex flex-col overflow-hidden">
+<!-- Top App Bar -->
+<header class="flex items-center justify-between px-4 py-3 bg-white dark:bg-[#1a2634] border-b border-slate-200 dark:border-slate-800 shrink-0 z-10">
+<div class="flex items-center gap-3 flex-1 overflow-hidden">
+<button class="p-2 -ml-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-primary transition-colors">
+<span class="material-symbols-outlined text-2xl font-bold">arrow_back_ios_new</span>
+</button>
+<div class="relative shrink-0">
+<div class="w-10 h-10 rounded-full bg-cover bg-center border border-slate-100 dark:border-slate-700" data-alt="Portrait of a smiling teacher" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCsAyx_jxqHPndCUbrqVDH0yTeA9PlgM1ITkn5m_xAzj82bAHAIct2W06ZP9FO-LCpprNPbCQtmR-0NyN-JxaAE9J4ytQBiRZXvh3U4nJgQxR2VDwBJarE4BoDeNFFqAHTGzySvDwwvzXgD6D8X9n9pi3rclU-_8mZn3EY2nnqcB4_Ix2wqFx4ogECdFcZ15Jeq0LZ106wsUmzUHhetOqd_XaSbWZr1YxAFPV47zfknFvdwqfKK-jxVu0wRkpm8VaO6CnpkNaIPMlQ');"></div>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-[#1a2634] rounded-full"></div>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<h1 class="text-base font-bold text-slate-900 dark:text-white truncate leading-tight">Mrs. Johnson</h1>
+<span class="material-symbols-outlined text-[16px] text-primary" title="Verified Staff">verified</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 truncate leading-tight">Homeroom Teacher • Active now</p>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<button class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors">
+<span class="material-symbols-outlined text-2xl">search</span>
+</button>
+<button class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors">
+<span class="material-symbols-outlined text-2xl">info</span>
+</button>
+</div>
+</header>
+<!-- Chat Area -->
+<main class="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-6 scroll-smooth bg-[#f0f2f5] dark:bg-background-dark">
+<!-- Safety Notice -->
+<div class="flex justify-center w-full">
+<div class="bg-[#fff8e1] dark:bg-yellow-900/20 text-[#7a6a28] dark:text-yellow-200 px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 shadow-sm border border-[#ffe082] dark:border-yellow-800/50">
+<span class="material-symbols-outlined text-sm">lock</span>
+                Messages are monitored for school safety.
+            </div>
+</div>
+<!-- Date Separator -->
+<div class="flex justify-center sticky top-0 z-0">
+<span class="bg-slate-200/80 dark:bg-slate-700/80 backdrop-blur-sm text-slate-600 dark:text-slate-300 text-xs font-medium px-3 py-1 rounded-full shadow-sm">
+                Yesterday, Oct 24
+            </span>
+</div>
+<!-- Incoming Message (Standard) -->
+<div class="flex items-end gap-2 group">
+<div class="w-8 h-8 rounded-full bg-cover bg-center shrink-0 mb-1" data-alt="Small avatar of Mrs. Johnson" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB_ki8ygYkZcLxOmFFRlCk_gboe3wp7NsANMtRMH2NtgXCW423bcqqpVEI23Bmk1S_RlSk7tzJingqvltsyk32l87JbYX28HxQdU-5M-0wvqipHP1aTSRDufuM-ZH9WPKXJvoXx95lDdYo55yQkQJYrx04EUa9zFa2b75drrirraMHAsyilchI5wmMzjAuxNgjuVNn-tEGZkaEB1Ip8AwsvB4mxKHmBmPuIcRvy9nAZmvKlr_gg4G6nLE36AmuCT9jo4tJbUwnNdTY');"></div>
+<div class="flex flex-col gap-1 max-w-[85%] sm:max-w-[70%]">
+<span class="text-xs text-slate-500 ml-1">Mrs. Johnson</span>
+<div class="bg-white dark:bg-[#1a2634] p-3 rounded-2xl rounded-bl-sm shadow-subtle text-slate-800 dark:text-slate-100 relative">
+<p class="text-[15px] leading-relaxed">Good morning! Just a reminder about the field trip tomorrow. Please ensure all forms are submitted by noon.</p>
+<div class="flex justify-end items-center gap-1 mt-1">
+<span class="text-[10px] text-slate-400">10:02 AM</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Incoming Message (Needs Action Card) -->
+<div class="flex items-end gap-2 group">
+<div class="w-8 h-8 rounded-full bg-cover bg-center shrink-0 mb-1" data-alt="Small avatar of Mrs. Johnson" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC04BBh0zt0g-R4myTxT-MDr_Tte7jtImJVlfnWi6F3rN6Nh2lbF6Ao657Lb1tlAXKEjoXx63PJcRYXb7QpYu59-XC687f8o53GKILuxb89jlPyEPXtjeZpo6pUpkvPs0O2uuQtaz6L5Pj2lp0rbuDEMncBuh5aHFnCrnb6frOQ-eQSmxvV8SMU73XjGiHv-CyIGBlytCppoHDfXt5sNE-mjiIthRhByW8bxpqZANeDdI-8JzLSwrx-3fBdfDazOgDou2s6LyHsTX0');"></div>
+<div class="flex flex-col gap-1 max-w-[90%] sm:max-w-[75%]">
+<div class="bg-white dark:bg-[#1a2634] rounded-2xl rounded-bl-sm shadow-subtle overflow-hidden border border-slate-100 dark:border-slate-700">
+<!-- Card Content -->
+<div class="flex flex-col sm:flex-row">
+<!-- Left Info -->
+<div class="p-4 flex flex-col justify-between gap-3 flex-1">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">Action Required</span>
+</div>
+<h3 class="text-base font-bold text-slate-900 dark:text-white leading-tight mb-1">Permission Slip: Science Museum</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400">Due Tomorrow • Oct 26</p>
+</div>
+<div class="flex gap-2 mt-1">
+<button class="flex-1 bg-primary hover:bg-blue-600 text-white text-sm font-medium py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm shadow-blue-200 dark:shadow-none">
+<span class="material-symbols-outlined text-[18px]">edit_document</span>
+                                    Sign Digitally
+                                </button>
+</div>
+</div>
+<!-- Right Image (Decorative) -->
+<div class="sm:w-32 h-32 sm:h-auto bg-cover bg-center relative" data-alt="Abstract science equipment background" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAgvKYGuhWGrpw7Tr0fbOrDmjFcOff3gpOfERN8qWRMKad7lgC_bipsmugnIwy0_NAnbrLewxFbXHwZrht_5GDQBX7LcAV87WNBpmLI8saYv064z7U31QqyGprGJCZcZ-wlPqzL0vZAmAAonkoseK2d5Sd3e-phf12yrniR8haxBeEevj4NKaBjE0lqly3c0gEDmFrtJ3G3pKRB5XzKIqqYB0DzvNi6OiHZfvU1Wv3bgrqSV9_AHKaIoW6934L2GxPaEU1bcpwK5b4');">
+<div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent sm:bg-gradient-to-l"></div>
+</div>
+</div>
+<div class="px-4 pb-2 flex justify-end">
+<span class="text-[10px] text-slate-400">10:03 AM</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Date Separator -->
+<div class="flex justify-center">
+<span class="bg-slate-200/80 dark:bg-slate-700/80 backdrop-blur-sm text-slate-600 dark:text-slate-300 text-xs font-medium px-3 py-1 rounded-full shadow-sm">
+                Today
+            </span>
+</div>
+<!-- Outgoing Message (Self) -->
+<div class="flex items-end justify-end gap-2 group">
+<div class="flex flex-col items-end gap-1 max-w-[85%] sm:max-w-[70%]">
+<div class="bg-primary p-3 rounded-2xl rounded-br-sm shadow-md text-white relative">
+<!-- Reply Context Example -->
+<div class="mb-2 pl-2 border-l-2 border-white/40 opacity-90">
+<p class="text-[11px] font-bold text-white/90">Mrs. Johnson</p>
+<p class="text-[11px] truncate text-white/80">Permission Slip: Science Museum...</p>
+</div>
+<p class="text-[15px] leading-relaxed">Thanks for the reminder. I just signed it digitally. Let me know if you need anything else!</p>
+<div class="flex justify-end items-center gap-1 mt-1 opacity-90">
+<span class="text-[10px]">10:05 AM</span>
+<span class="material-symbols-outlined text-[14px]">done_all</span> <!-- Read Receipt -->
+</div>
+</div>
+</div>
+</div>
+<!-- Incoming Message (Simple) -->
+<div class="flex items-end gap-2 group">
+<div class="w-8 h-8 rounded-full bg-cover bg-center shrink-0 mb-1" data-alt="Small avatar of Mrs. Johnson" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA0lleyZBz7kXT67BW924u_5ZguggNp0fbjPIaayBwKFXsmmhK4O8MSl24ty52lRsPZ8aPvSVwFcJ0spwaJIjO6FhPfSQhChIuSZxA_ciVqcshyWYOW7aGNrsFmGUwOTGsBG5ysG41ixvQsCrvQXRK9hy_bsukFEqSeDLLcHxIOx_Z3sdNXo4gQrUPCvAnkvk--07VTuDG9bmavGjnl8LRGXWO-7y8T5nW7LVZ33vf3WCFItML_MeaarKCbz5OHT9stfPR0hW8iCMM');"></div>
+<div class="flex flex-col gap-1 max-w-[85%] sm:max-w-[70%]">
+<span class="text-xs text-slate-500 ml-1">Mrs. Johnson</span>
+<div class="bg-white dark:bg-[#1a2634] p-3 rounded-2xl rounded-bl-sm shadow-subtle text-slate-800 dark:text-slate-100 relative">
+<p class="text-[15px] leading-relaxed">Great, received! Please ensure prompts are ready.</p>
+<div class="flex justify-end items-center gap-1 mt-1">
+<span class="text-[10px] text-slate-400">10:07 AM</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Input Area -->
+<footer class="bg-white dark:bg-[#1a2634] p-3 border-t border-slate-200 dark:border-slate-800 shrink-0">
+<div class="flex items-end gap-2 max-w-4xl mx-auto">
+<button class="flex items-center justify-center w-10 h-10 rounded-full text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-400 transition-colors shrink-0">
+<span class="material-symbols-outlined text-2xl">add</span>
+</button>
+<div class="flex-1 bg-slate-100 dark:bg-slate-800 rounded-2xl flex items-center min-h-[44px] px-4 py-2 border border-transparent focus-within:border-primary/50 focus-within:bg-white dark:focus-within:bg-slate-900 transition-all">
+<textarea class="w-full bg-transparent border-none p-0 text-slate-800 dark:text-white placeholder:text-slate-400 focus:ring-0 resize-none max-h-32 text-[15px] leading-relaxed" placeholder="Message Mrs. Johnson..." rows="1" style="min-height: 24px;"></textarea>
+<button class="ml-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+<span class="material-symbols-outlined text-[20px]">sentiment_satisfied</span>
+</button>
+</div>
+<button class="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white hover:bg-blue-600 shadow-md transition-all shrink-0">
+<span class="material-symbols-outlined text-[20px] ml-0.5">send</span> <!-- Added ml-0.5 to optically center the send icon -->
+</button>
+</div>
+<div class="text-center mt-2">
+<p class="text-[10px] text-slate-400 dark:text-slate-500">School Admin can view this conversation.</p>
+</div>
+</footer>
+</body></html>

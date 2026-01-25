@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EdApp Notifications</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "urgent": "#ef4444", // Added for alert accents
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#0d151c] dark:text-white font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto bg-white dark:bg-[#0f1923] shadow-lg">
+<!-- Header -->
+<header class="flex items-center bg-white dark:bg-[#0f1923] p-4 pb-2 justify-between sticky top-0 z-20 border-b border-slate-100 dark:border-slate-800">
+<h2 class="text-[#0d151c] dark:text-white text-2xl font-bold leading-tight tracking-[-0.015em] flex-1">Notifications</h2>
+<div class="flex w-12 items-center justify-end">
+<button class="flex items-center justify-center overflow-hidden rounded-full h-10 w-10 bg-transparent text-[#0d151c] dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col gap-6 pb-20">
+<!-- Urgency Banner -->
+<div class="px-4 pt-4">
+<div class="flex items-stretch justify-between gap-4 rounded-xl bg-red-50 dark:bg-red-900/20 p-4 shadow-sm border border-red-100 dark:border-red-900/50">
+<div class="flex flex-[2_2_0px] flex-col justify-between gap-3">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-urgent text-[20px]">warning</span>
+<p class="text-urgent text-xs font-bold uppercase tracking-wider">Urgent Alert</p>
+</div>
+<p class="text-[#0d151c] dark:text-white text-base font-bold leading-tight">Snow Day Closure</p>
+<p class="text-slate-600 dark:text-slate-300 text-sm font-normal leading-normal line-clamp-2">School is closed tomorrow due to severe weather conditions.</p>
+</div>
+<button class="flex items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-white dark:bg-red-900 text-urgent dark:text-red-100 text-sm font-bold leading-normal w-fit shadow-sm border border-red-100 dark:border-red-800">
+<span class="truncate">View Details</span>
+</button>
+</div>
+<div class="w-24 bg-center bg-no-repeat bg-cover rounded-lg shrink-0" data-alt="Snow covered school building illustration" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAXjazSW_JN-Rrb7cKeG2bGTGXb9EF_Xet8YFTTltYxYVAE7wJNWRey5iFeNGGIY_h-0SG-HgxgJszJsiQO_rAD2WeTCu-Vaeo6t80kwR-drWGIt5qwbLRmsuGKytoixub4_MX07NDx9esNQdViJyFPSWDvHjJmoS2UMXAKJmLv7n3iURu1R48z8_DfNWVk8TZnk6_Fnmcc5fpm9HTph3UGzbxTT95DsD_DtryDQJxmWU11eb_Mn6Ma3M6kjkWfX_HXRwY_xKcL7OU");'></div>
+</div>
+</div>
+<!-- Action Required Section -->
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between px-4">
+<h2 class="text-[#0d151c] dark:text-white text-lg font-bold leading-tight">Action Required</h2>
+<span class="bg-primary/10 text-primary text-xs font-bold px-2 py-1 rounded-full">2 Pending</span>
+</div>
+<!-- Carousel -->
+<div class="flex overflow-x-auto overflow-y-hidden pb-4 px-4 gap-3 [-ms-scrollbar-style:none] [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden snap-x">
+<!-- Card 1 -->
+<div class="snap-center flex flex-col w-[260px] shrink-0 gap-3 rounded-xl bg-white dark:bg-slate-800 shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-3 border border-slate-100 dark:border-slate-700">
+<div class="w-full h-32 bg-center bg-no-repeat bg-cover rounded-lg relative" data-alt="Illustration of zoo animals for a field trip" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBIi-778FPa7K6if5COUJXW_4EGFkb8XzYUtlQWszHuFcpZYhoScRHw3xCBCzqUuEhENkLZt732E53rDiVMuZtvMw8YMzgvhk4HwxDyTjq3UzFkYFVsgXD7NxjilfxQORTRN1AXljd6PiYoCjPMc1j-vclfRLsFkn9mHnzOj5KSp6sUg5RJBjW-Ji2FUWiO7HbtoBSzhWIf2n_0uW_wZNyHr88kE4Dxa1HnvaGzv0XJDgljc4JpwxojLXfKjyoPY_723Fw5-xsLCms");'>
+<div class="absolute top-2 left-2 bg-white/90 dark:bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] font-bold text-slate-800 dark:text-white uppercase tracking-wide">Due Friday</div>
+</div>
+<div class="flex flex-col flex-1 gap-1">
+<p class="text-[#0d151c] dark:text-white text-base font-bold leading-tight">Zoo Trip Permission</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal">Class 5B • Mr. Thompson</p>
+</div>
+<button class="w-full flex cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white hover:bg-blue-600 transition-colors text-sm font-bold tracking-[0.015em]">
+                            Sign Slip
+                        </button>
+</div>
+<!-- Card 2 -->
+<div class="snap-center flex flex-col w-[260px] shrink-0 gap-3 rounded-xl bg-white dark:bg-slate-800 shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-3 border border-slate-100 dark:border-slate-700">
+<div class="w-full h-32 bg-center bg-no-repeat bg-cover rounded-lg relative" data-alt="Teacher and parent meeting discussion" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCY9fy_8TZZ-LoPDcvkdNtGXEZFy8uvLx28Mvz_473CvuTu0qp_ju5SUdL9_v4_sE6BC6d6yWJmcKjL0ezavb_mVZKlrza3vaGUmZVhsiSpHOKDkO6gVQeXlBxr2qs8qyCLA_ZYYwy4qwEzwZoymJ5oPRgwCJwcZ95SgfvPcn_5BtSJxGd4qs8Z2zmsJYG7fXiZlS_5KZnkQ41xmefLD81Sq2RgsyKTiNnit-tqhwYJXrO71zyYbQ5sGmmLgEXkEs8SBF-1EwMkxxk");'>
+<div class="absolute top-2 left-2 bg-white/90 dark:bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] font-bold text-slate-800 dark:text-white uppercase tracking-wide">Respond</div>
+</div>
+<div class="flex flex-col flex-1 gap-1">
+<p class="text-[#0d151c] dark:text-white text-base font-bold leading-tight">Meeting Request</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal">Mrs. Johnson • Math Dept</p>
+</div>
+<button class="w-full flex cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary/10 text-primary hover:bg-primary/20 dark:bg-slate-700 dark:text-white dark:hover:bg-slate-600 transition-colors text-sm font-bold tracking-[0.015em]">
+                            Confirm Time
+                        </button>
+</div>
+</div>
+</div>
+<!-- Sticky Filters -->
+<div class="sticky top-[72px] z-10 bg-white/95 dark:bg-[#0f1923]/95 backdrop-blur-md pt-2 pb-2 pl-4 border-b border-slate-50 dark:border-slate-800/50">
+<div class="flex gap-2 overflow-x-auto no-scrollbar pr-4">
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary text-white px-4 transition-all shadow-sm shadow-blue-200 dark:shadow-none">
+<p class="text-sm font-medium leading-normal">All</p>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 px-4 transition-all">
+<p class="text-sm font-medium leading-normal">Mentions</p>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 px-4 transition-all">
+<p class="text-sm font-medium leading-normal">Announcements</p>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 px-4 transition-all">
+<p class="text-sm font-medium leading-normal">Admin</p>
+</button>
+</div>
+</div>
+<!-- Daily Digest / Feed -->
+<div class="px-4 flex flex-col gap-4">
+<h2 class="text-[#0d151c] dark:text-white text-lg font-bold leading-tight">Daily Digest</h2>
+<div class="flex flex-col gap-0 divide-y divide-slate-100 dark:divide-slate-800 bg-slate-50 dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800">
+<!-- Item 1: High Priority / Unread -->
+<div class="p-4 flex gap-4 bg-white dark:bg-slate-800/50 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+<div class="relative shrink-0">
+<div class="w-12 h-12 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-orange-600 dark:text-orange-400">
+<span class="material-symbols-outlined">calculate</span>
+</div>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-primary border-2 border-white dark:border-slate-900 rounded-full"></div>
+</div>
+<div class="flex flex-col flex-1 gap-1 min-w-0">
+<div class="flex justify-between items-start">
+<p class="text-[#0d151c] dark:text-white text-sm font-bold truncate">Mrs. Johnson posted in Grade 4 Math</p>
+<span class="text-slate-400 text-xs whitespace-nowrap ml-2">2h ago</span>
+</div>
+<p class="text-slate-600 dark:text-slate-300 text-sm line-clamp-2">"Great work everyone! I've uploaded the solutions for today's worksheet. Please review before..."</p>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="p-4 flex gap-4 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<div class="shrink-0">
+<div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+<span class="material-symbols-outlined">campaign</span>
+</div>
+</div>
+<div class="flex flex-col flex-1 gap-1 min-w-0">
+<div class="flex justify-between items-start">
+<p class="text-[#0d151c] dark:text-white text-sm font-bold truncate">Principal Smith: Weekly Newsletter</p>
+<span class="text-slate-400 text-xs whitespace-nowrap ml-2">5h ago</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm line-clamp-1">Upcoming events for the Spring Festival and holiday schedule updates.</p>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="p-4 flex gap-4 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<div class="shrink-0">
+<div class="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
+<span class="material-symbols-outlined">library_books</span>
+</div>
+</div>
+<div class="flex flex-col flex-1 gap-1 min-w-0">
+<div class="flex justify-between items-start">
+<p class="text-[#0d151c] dark:text-white text-sm font-bold truncate">Library Reminder (Automated)</p>
+<span class="text-slate-400 text-xs whitespace-nowrap ml-2">6h ago</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm line-clamp-1">Friendly reminder: 'The Hobbit' is due back tomorrow.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Older Notifications -->
+<div class="px-4 flex flex-col gap-4">
+<h2 class="text-slate-500 dark:text-slate-400 text-sm font-bold leading-tight uppercase tracking-wider pl-2">Yesterday</h2>
+<div class="flex flex-col gap-4">
+<!-- Item 4 -->
+<div class="flex gap-4 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
+<span class="material-symbols-outlined text-[20px]">group</span>
+</div>
+<div class="flex flex-col flex-1 gap-0.5 min-w-0">
+<div class="flex justify-between items-center">
+<p class="text-[#0d151c] dark:text-white text-sm font-medium truncate">Parent Teacher Association</p>
+<span class="text-slate-400 text-xs whitespace-nowrap">Yesterday</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm line-clamp-1">Meeting minutes from Tuesday are now available.</p>
+</div>
+</div>
+<!-- Item 5 -->
+<div class="flex gap-4 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors opacity-70">
+<div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
+<span class="material-symbols-outlined text-[20px]">sports_soccer</span>
+</div>
+<div class="flex flex-col flex-1 gap-0.5 min-w-0">
+<div class="flex justify-between items-center">
+<p class="text-[#0d151c] dark:text-white text-sm font-medium truncate">Coach Mike</p>
+<span class="text-slate-400 text-xs whitespace-nowrap">Yesterday</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm line-clamp-1">Practice schedule change for next week.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Tab Navigation (Conceptual Mockup) -->
+<nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto h-[72px] bg-white dark:bg-[#0f1923] border-t border-slate-100 dark:border-slate-800 flex justify-around items-center px-2 pb-2 z-50">
+<button class="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="text-[10px] font-medium">Chats</span>
+</button>
+<button class="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">school</span>
+<span class="text-[10px] font-medium">Classes</span>
+</button>
+<button class="flex flex-col items-center gap-1 p-2 text-primary">
+<div class="relative">
+<span class="material-symbols-outlined fill-current">notifications</span>
+<span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-urgent rounded-full border-2 border-white dark:border-[#0f1923]"></span>
+</div>
+<span class="text-[10px] font-medium">Alerts</span>
+</button>
+<button class="flex flex-col items-center gap-1 p-2 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="text-[10px] font-medium">Calendar</span>
+</button>
+</nav>
+</div>
+</body></html>

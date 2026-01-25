@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Communication Hub</title>
+<!-- Google Fonts: Lexend -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#389cfa",
+              "background-light": "#f5f7f8",
+              "background-dark": "#0f1923",
+              "slate-850": "#1e293b", 
+            },
+            fontFamily: {
+              "display": ["Lexend", "sans-serif"],
+              "body": ["Noto Sans", "sans-serif"],
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Hide scrollbar for clean look in demos */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden">
+<div class="relative flex h-full min-h-screen w-full flex-col max-w-md mx-auto bg-white dark:bg-slate-900 shadow-2xl overflow-hidden">
+<!-- Top App Bar -->
+<div class="flex items-center bg-white dark:bg-slate-900 p-4 pb-2 justify-between sticky top-0 z-20 border-b border-slate-100 dark:border-slate-800">
+<div class="text-slate-900 dark:text-white flex size-12 shrink-0 items-center justify-start cursor-pointer transition-opacity hover:opacity-70">
+<span class="material-symbols-outlined text-2xl">arrow_back</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Communication Hub</h2>
+<div class="flex items-center justify-end gap-1 cursor-pointer group">
+<span class="material-symbols-outlined text-primary text-xl group-hover:scale-110 transition-transform">translate</span>
+<p class="text-primary text-sm font-bold leading-normal tracking-[0.015em] hidden sm:block">Translate</p>
+</div>
+</div>
+<!-- Office Hours Banner (MetaText) -->
+<div class="bg-blue-50 dark:bg-slate-800 border-b border-blue-100 dark:border-slate-700 px-4 py-2 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">schedule</span>
+<p class="text-slate-600 dark:text-slate-300 text-xs font-medium leading-normal text-center">
+                Office Hours: Mon-Fri, 8 AM - 3 PM. Responses may be delayed.
+            </p>
+</div>
+<!-- Tabs -->
+<div class="bg-white dark:bg-slate-900 pt-2 sticky top-[73px] z-10">
+<div class="flex border-b border-slate-200 dark:border-slate-700 px-4 justify-between">
+<a class="flex flex-col items-center justify-center border-b-[3px] border-primary text-slate-900 dark:text-white pb-3 pt-2 flex-1 transition-colors" href="#">
+<p class="text-primary text-sm font-bold leading-normal tracking-[0.015em]">Announcements</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-[3px] border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 pb-3 pt-2 flex-1 transition-colors" href="#">
+<div class="relative">
+<p class="text-sm font-bold leading-normal tracking-[0.015em]">Messages</p>
+<span class="absolute -top-1 -right-2 flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+</span>
+</div>
+</a>
+<a class="flex flex-col items-center justify-center border-b-[3px] border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 pb-3 pt-2 flex-1 transition-colors" href="#">
+<p class="text-sm font-bold leading-normal tracking-[0.015em]">Support</p>
+</a>
+</div>
+</div>
+<!-- Search Bar -->
+<div class="px-4 py-4 bg-white dark:bg-slate-900">
+<label class="flex flex-col h-12 w-full">
+<div class="flex w-full flex-1 items-stretch rounded-xl h-full shadow-sm ring-1 ring-slate-200 dark:ring-slate-700 focus-within:ring-2 focus-within:ring-primary transition-shadow">
+<div class="text-slate-400 dark:text-slate-500 flex bg-slate-50 dark:bg-slate-800 items-center justify-center pl-4 rounded-l-xl border-r-0">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl rounded-l-none text-slate-900 dark:text-white focus:outline-0 bg-slate-50 dark:bg-slate-800 h-full placeholder:text-slate-400 dark:placeholder:text-slate-500 px-4 pl-2 text-sm font-normal leading-normal" placeholder="Search announcements..." value=""/>
+<div class="text-slate-400 dark:text-slate-500 flex bg-slate-50 dark:bg-slate-800 items-center justify-center pr-4 rounded-r-xl border-l-0 cursor-pointer hover:text-primary">
+<span class="material-symbols-outlined">filter_list</span>
+</div>
+</div>
+</label>
+</div>
+<!-- Scrollable Content: Announcements Feed -->
+<div class="flex-1 overflow-y-auto pb-24 px-4 space-y-5 bg-white dark:bg-slate-900">
+<!-- Urgent Card -->
+<div class="relative group cursor-pointer">
+<div class="bg-cover bg-center flex flex-col items-stretch justify-end rounded-2xl pt-[160px] shadow-lg overflow-hidden relative transform transition-transform duration-300 hover:scale-[1.01]" style='background-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 40%, rgba(0, 0, 0, 0.8) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDmQ6wyVDQI2s1YRV1yVEWGlhtismt7M0drYEekVu8kG2yBTWPqITlJWRd79cxb3weRR3iOS1fTXC14qpfkvFewdTJ4YeFnk4S6cG3fPHs4LAgB7wmacvFUaZPd_YzHY22DVn768gQMTCYz_fvhocpJVZN6_gY6fDuODVKiDdqLYXPja_v-eW1PrTNWyM7gxNQIRcDc7APm02JfLZY93z70utm1njwbuLPPDNSuefNiwJ9ia4WjETQ888Fe0Aiob9XOT0qlAlTTaIA");'>
+<div class="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm animate-pulse">
+                        URGENT
+                     </div>
+<div class="sr-only" data-alt="Empty school hallway representing school closure"></div>
+<div class="flex w-full flex-col justify-between gap-2 p-5 z-10">
+<div class="flex max-w-[440px] flex-1 flex-col gap-1">
+<p class="text-white/90 text-xs font-medium uppercase tracking-wider">Alert</p>
+<h3 class="text-white text-2xl font-bold leading-tight drop-shadow-sm">School Closed on Monday due to Weather</h3>
+<div class="flex items-center gap-2 mt-2">
+<div class="bg-white/20 backdrop-blur-sm p-1 rounded-full">
+<span class="material-symbols-outlined text-white text-sm block">school</span>
+</div>
+<p class="text-white/90 text-xs font-medium">Principal's Office • 2 hours ago</p>
+</div>
+</div>
+<!-- Reaction Bar Overlay -->
+<div class="flex items-center gap-3 mt-3 pt-3 border-t border-white/20">
+<button class="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-full px-3 py-1.5 transition-colors">
+<span class="material-symbols-outlined text-white text-sm">thumb_up</span>
+<span class="text-white text-xs font-medium">42</span>
+</button>
+<button class="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-full px-3 py-1.5 transition-colors">
+<span class="material-symbols-filled text-red-400 text-sm">favorite</span>
+<span class="text-white text-xs font-medium">18</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Standard Card -->
+<div class="bg-slate-50 dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col gap-3">
+<div class="flex gap-4">
+<div class="w-24 h-24 shrink-0 rounded-xl overflow-hidden bg-slate-200">
+<img alt="Sports Day" class="w-full h-full object-cover" data-alt="Students participating in a running race on sports day" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYQrQ9pgCGejXSGhz0FZKfQaDnH-wlaZPy02LL0AB5jO1kSEiLu1iqpGZDhKo9Ob_GUH5cGAoSmVurcA2rwk6IkI4OgvwaYiqGk5varBbHFXq-pjTGi01HLw7UUz3xQgw1OjeqCWqsfPrFNkA2zBZGNj4vEh6RhR_AcmithK5fbxfP_PaOv4Y9z_cdeRjGph6awJnH0TVjXiCIFVr7HLoFT6vTciqdFpHcgiiip0l_WRxwhBIK-dot8elkACYPq6kebglx1dKlnyg"/>
+</div>
+<div class="flex flex-col flex-1 justify-between py-0.5">
+<div>
+<div class="flex justify-between items-start">
+<span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 mb-1">EVENT</span>
+<span class="text-xs text-slate-400 dark:text-slate-500">Yesterday</span>
+</div>
+<h3 class="text-slate-900 dark:text-white font-bold text-base leading-snug">Annual Sports Day Registration Open</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm line-clamp-2 mt-1">Please register your child for the upcoming inter-house athletics competition...</p>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between border-t border-slate-200 dark:border-slate-700 pt-3 mt-1">
+<div class="flex items-center gap-2">
+<div class="h-6 w-6 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 dark:bg-indigo-900 dark:text-indigo-300">
+<span class="material-symbols-outlined text-[14px]">sports_soccer</span>
+</div>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Coach Sithole</span>
+</div>
+<div class="flex gap-3 text-slate-400 dark:text-slate-500">
+<button class="flex items-center gap-1 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">add_reaction</span>
+</button>
+<button class="flex items-center gap-1 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">share</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Standard Card 2 -->
+<div class="bg-slate-50 dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col gap-3">
+<div class="flex gap-4">
+<div class="w-24 h-24 shrink-0 rounded-xl overflow-hidden bg-slate-200">
+<img alt="Academics" class="w-full h-full object-cover" data-alt="Stack of textbooks and a report card on a desk" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAY-serDxw-Uml1BVe96wuXQ59hAnM6lDQr742X9pAtqhkvDVWs3JOBlA0wRvKpR_2Vos7p2BKK74csRbkT0XcgqkZrx-9uJzmKk7JbVIMhq_lCVgvfYMytfnu5zgH5hCVrR_6v0wx_M6GcanrdKWkx6umoDwXG1IPNXQEABcGKvszIh2yW4QJfv0kTT8K7I_pTNgCe5ZTZ4wSAwn-dXBTArCWzEgfI-6QtU50CijkBXOa6hhKzGnoi_aolcMUpN-ozYgvNwd7GGjE"/>
+</div>
+<div class="flex flex-col flex-1 justify-between py-0.5">
+<div>
+<div class="flex justify-between items-start">
+<span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 mb-1">ACADEMIC</span>
+<span class="text-xs text-slate-400 dark:text-slate-500">2 days ago</span>
+</div>
+<h3 class="text-slate-900 dark:text-white font-bold text-base leading-snug">Term 2 Report Cards Available</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm line-clamp-2 mt-1">Report cards for the second term have been finalized and are now available for download.</p>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between border-t border-slate-200 dark:border-slate-700 pt-3 mt-1">
+<div class="flex items-center gap-2">
+<div class="h-6 w-6 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 dark:bg-purple-900 dark:text-purple-300">
+<span class="material-symbols-outlined text-[14px]">assignment</span>
+</div>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Admin</span>
+</div>
+<div class="flex gap-3 text-slate-400 dark:text-slate-500">
+<button class="flex items-center gap-1 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span class="text-xs font-bold uppercase">PDF</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Illustration for end of list -->
+<div class="flex flex-col items-center justify-center py-8 opacity-60">
+<span class="material-symbols-outlined text-4xl text-slate-300 mb-2">check_circle</span>
+<p class="text-slate-400 text-sm">You're all caught up!</p>
+</div>
+</div>
+<!-- Floating Action Button -->
+<div class="absolute bottom-6 right-6 z-30">
+<button class="flex items-center justify-center h-14 w-14 bg-primary hover:bg-blue-600 text-white rounded-full shadow-lg shadow-blue-500/40 transition-all hover:scale-105 active:scale-95">
+<span class="material-symbols-outlined text-2xl">edit_square</span>
+</button>
+</div>
+</div>
+</body></html>

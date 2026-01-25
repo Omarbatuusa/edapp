@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Community Feed - EdApp</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "surface-dark": "#182533",
+                        "surface-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "2rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display antialiased min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<header class="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center justify-between p-4 pb-3">
+<h1 class="text-xl font-bold tracking-tight">Community Feed</h1>
+<div class="flex items-center gap-3">
+<button class="relative p-2 text-slate-500 dark:text-slate-400 hover:text-primary transition-colors rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500 border border-white dark:border-background-dark"></span>
+</button>
+<div class="h-9 w-9 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden border border-slate-300 dark:border-slate-600">
+<img alt="Profile" class="h-full w-full object-cover" data-alt="User profile avatar smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-rD6IaKGkWCt9dJMkvwFKBxXC-OUbb_6-dwcdbYYPVH3Nm4lc0w8bz_JLwqbOgwp1-ulsn3PKmmdRm1xjPS22tsoRO-aRw5BZegZCE1EDOWzTQ9sNTxXFqPvMuUcr8mUbAhsbDoJGo87arZOHgJpQjP8iBgnx5Ovo6xHMtb-wZUKkqIANCVL_T3Dp27Gc5WCZI50bQOqvdMJzG2LlhvwLBKlr5BE_KAxlnev4V7grand5tJqcL3XMjT8JjsUy1ePEZBGaoyaVnp8"/>
+</div>
+</div>
+</div>
+<!-- Context Filters -->
+<div class="flex gap-2 px-4 pb-3 overflow-x-auto no-scrollbar">
+<button class="flex h-9 shrink-0 items-center justify-center px-4 rounded-full bg-primary text-white font-medium text-sm shadow-sm transition-transform active:scale-95">
+                All
+            </button>
+<button class="flex h-9 shrink-0 items-center justify-center px-4 rounded-full bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                Grade 12
+            </button>
+<button class="flex h-9 shrink-0 items-center justify-center px-4 rounded-full bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                Rugby Team
+            </button>
+<button class="flex h-9 shrink-0 items-center justify-center px-4 rounded-full bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                Staff Room
+            </button>
+<button class="flex h-9 shrink-0 items-center justify-center px-4 rounded-full bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                Boarding
+            </button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col gap-6 pb-20">
+<!-- Pinned Updates Section -->
+<section class="pt-4">
+<div class="flex items-center justify-between px-4 mb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">push_pin</span>
+<h2 class="text-lg font-bold">Pinned Updates</h2>
+</div>
+</div>
+<div class="flex overflow-x-auto gap-4 px-4 pb-2 no-scrollbar snap-x snap-mandatory">
+<!-- Critical Alert Card -->
+<div class="snap-start shrink-0 w-[85vw] max-w-sm rounded-xl overflow-hidden bg-surface-light dark:bg-surface-dark border-l-4 border-l-red-500 shadow-sm relative group">
+<!-- Image -->
+<div class="h-32 w-full bg-cover bg-center relative" data-alt="Stormy dark clouds over school campus" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC4pcTL44uU5llatUmBdszfmfJD6qaRprpEUFuvb5gzq9qMLclGgEfbslzEh5Zsl8Im9TlKf9swSNNep3L57eUJblKH7OPxcQOGW2MmuF3RdbO9rQSuNJCX_mMIhDVk-7oMnlxq4X7BZNCkWhtVgW6ApncZuVoKXiTI_R-kaC91albVPwmJmEcYqUhGlLnJqyyhOkFWiyilyj5q6yMQDsvjC6rIPba2iq-bQmlH0XV0AoywpYv7Js6YCzMLBk4DFmDM1TMQuCRaHGI');">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-dark/90 to-transparent"></div>
+<div class="absolute bottom-3 left-3">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-red-500/90 text-white text-xs font-bold uppercase tracking-wide">
+<span class="material-symbols-outlined text-[14px]">warning</span> Critical
+                            </span>
+</div>
+</div>
+<!-- Content -->
+<div class="p-4">
+<h3 class="font-bold text-lg mb-1">Campus Closed Tomorrow</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-3 line-clamp-2">Due to severe weather warnings issued by the municipality, the main campus will be closed.</p>
+<button class="w-full py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-sm font-semibold rounded-lg transition-colors">Read Policy</button>
+</div>
+<!-- Admin moderation cue -->
+<button class="absolute top-2 right-2 p-1.5 rounded-full bg-black/40 text-white hover:bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[18px]">more_horiz</span>
+</button>
+</div>
+<!-- Schedule Card -->
+<div class="snap-start shrink-0 w-[85vw] max-w-sm rounded-xl overflow-hidden bg-surface-light dark:bg-surface-dark border-l-4 border-l-primary shadow-sm relative group">
+<div class="h-32 w-full bg-cover bg-center relative" data-alt="Desk with study materials and exam papers" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAVeS9VhUEhX22QiGnWvqIactQdwmfegCnsDVUZlmZjVt0epmehcXkcyv7jQKdIJmBUsPQAAmKM0MXmvIXJurD-6FAldud8givT45qowFJ-mkfIDH_hs6RixOm5XArv-Tv3Tq56ETLG8pVw8nyDWac_W7IbHnkk6K37VcUfS1z0qLlJxzHNvq_jD145IyR1IHlEZoqe9NiRkEY-260-ppjTSe2A7BFndi6yrmlzsYTWOwuso8VY7OyNifz-pAcjmI0B5CACFJ_JlNA');">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-dark/90 to-transparent"></div>
+</div>
+<div class="p-4">
+<h3 class="font-bold text-lg mb-1">Final Exam Schedule</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-3 line-clamp-2">The updated timetable for Grade 12 finals is now available. Please download the PDF.</p>
+<button class="w-full py-2 bg-primary/10 hover:bg-primary/20 text-primary text-sm font-semibold rounded-lg transition-colors">View Schedule</button>
+</div>
+</div>
+</div>
+</section>
+<hr class="border-slate-200 dark:border-slate-800 mx-4"/>
+<!-- Feed Section -->
+<section class="flex flex-col gap-6 px-4">
+<h2 class="text-lg font-bold">Latest</h2>
+<!-- Event Card (Actionable) -->
+<article class="bg-surface-light dark:bg-surface-dark rounded-xl p-4 shadow-sm border border-slate-200 dark:border-transparent">
+<!-- Header -->
+<div class="flex justify-between items-start mb-3">
+<div class="flex gap-3">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Teacher avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBy5F6XR4_KKJasEmtIN0-tn6-VpSuT3mqy-Q1EVLxv7L8AM2plCvkyA88rQk8xH1iXcFbQLgSzbz1rqZ94DYPUCivqMOhlz6GGbOB12i59-0zOQWNVAa0gwPO154m7Q1LnKxM85MmyOOT61lh65k-JISUWZ1XFbysn2RRL0ABEdQgucYIPrnRLjSw5XrKsFvz5pskQioL5aA4UU6XsUnmjwp6m4IHgjsgHuSA2hhy9Je0rrcn99anprzqMbh0baX6za-DMGa26jLo"/>
+<div>
+<p class="font-bold text-sm">Mrs. Anderson</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Grade 5 Coordinator • 2h ago</p>
+</div>
+</div>
+<button class="text-slate-400 hover:text-white transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+<!-- Body -->
+<div class="mb-4">
+<p class="text-sm mb-3 text-slate-700 dark:text-slate-200">The Grade 5s are heading to the Science Museum next Friday! Please ensure consent forms are signed and payment is made by Wednesday.</p>
+<div class="relative w-full aspect-video rounded-lg overflow-hidden mb-3">
+<img class="object-cover w-full h-full" data-alt="Science museum exhibit with dinosaur skeleton" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgsAQnf-_rJRyv7WYAuPBuRqAMOjfZXZl7ddohmvA1hiz86Ih20bg_DvWQpHrxe45EYKS6VibmlEKxhhI07Bdv68hssnZacs9zjLzK2H5NKlsT8aECaRZsmFJEJCUEEvsrPpO3PYU5gzZFmca8LSvF5Z2ck3WhmkFATVDGe48fPjFs50CqvOGtDPJSSiP3924DdgkGL-O0c241SjAyZuXkTxPvMv3KPLORWBzOZ_d5PSGhyKddnPXi41kX2y2EXmJciZiAjMNdgPg"/>
+<div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded text-white text-xs font-medium">
+<span class="material-symbols-outlined text-[14px] align-text-bottom mr-1">calendar_month</span> 24 Nov
+                        </div>
+</div>
+</div>
+<!-- Actions Grid -->
+<div class="grid grid-cols-2 gap-3">
+<button class="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-primary hover:bg-blue-500 text-white font-semibold text-sm transition-colors">
+<span class="material-symbols-outlined text-[18px]">edit_document</span>
+                        Sign Consent
+                    </button>
+<button class="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-surface-light dark:bg-slate-700 border border-slate-200 dark:border-transparent hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-900 dark:text-white font-semibold text-sm transition-colors">
+                        Pay R150.00
+                    </button>
+</div>
+</article>
+<!-- Standard Post (Celebration) -->
+<article class="bg-surface-light dark:bg-surface-dark rounded-xl p-4 shadow-sm border border-slate-200 dark:border-transparent">
+<!-- Header -->
+<div class="flex justify-between items-start mb-3">
+<div class="flex gap-3">
+<div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold text-sm">SC</div>
+<div>
+<p class="font-bold text-sm">Sports Council</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Whole School • 5h ago</p>
+</div>
+</div>
+<button class="text-slate-400 hover:text-white transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+<!-- Body -->
+<div class="mb-4">
+<p class="text-sm mb-3 text-slate-700 dark:text-slate-200">Huge congratulations to the First XV for their victory against St. John's this weekend! 🏆 Final score 24-17. #Pride #Rugby</p>
+<div class="w-full aspect-[4/3] rounded-lg overflow-hidden bg-slate-800">
+<img class="object-cover w-full h-full" data-alt="Rugby team celebrating victory in a huddle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWaoi-lsNxO4D9dOG_b54Zv58e7VN-22_5O-yXEG3h7Q1L9NfBviIRVDlanFviLcNez7b0zq9pG6uAeykECs9LSfSbXqgD_WOYRWDPxzRn5OtwO6A6Hsh8oVtXsDvd8Gp26VIlYkDpVk3mIvaDatl-T5V4ZOGL_zKNgeKeIJs4wWJOKQ0wilunVJf62Ceku8mWLyvUu61u3BLPKccTCge-60MxUzM1Ast9GCQu7IVFXvqAa5vUod6-AvX_608UGMgup3kCXH4eabk"/>
+</div>
+</div>
+<!-- Limited Reactions -->
+<div class="flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-700/50">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+<span class="text-sm">👏</span>
+<span class="text-xs font-bold">124</span>
+</button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+<span class="text-sm">🔥</span>
+<span class="text-xs font-bold">45</span>
+</button>
+<button class="ml-auto p-2 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">share</span>
+</button>
+</div>
+</article>
+<!-- Link Post -->
+<article class="bg-surface-light dark:bg-surface-dark rounded-xl p-4 shadow-sm border border-slate-200 dark:border-transparent">
+<!-- Header -->
+<div class="flex justify-between items-start mb-3">
+<div class="flex gap-3">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Principal portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYvfotfkKHrQprIgrWUD2FgeZFnBPbsb-dtUjStJJvM4tJwiw5mdhag8uS-jeCCizwTMBe8qjPedaR4_ZZofHsoHiomLKfI5E2Nx_EGHgf3ffSi2ciDYq1L4lD4gg5AIMeBsmT11U3jLrr8XryZ5YOmSmWk6pMWfG00CyFp-u2SqIwA4Sn48ArV8Ta9r7iEuSHh5mJnXyxcUL9LFDQI8xh8M1ZAYZ24lXnrS3HbUgQElqls-PhnAbz6zmm0pZ50mVCHpZxzXEG73Y"/>
+<div>
+<p class="font-bold text-sm">Mr. Dlamini</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Principal's Office • 1d ago</p>
+</div>
+</div>
+<button class="text-slate-400 hover:text-white transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+<p class="text-sm mb-3 text-slate-700 dark:text-slate-200">The Term 3 Curriculum Overview is now available for download. Please review the key dates and assessment plans.</p>
+<!-- Link Preview Card -->
+<a class="block bg-slate-50 dark:bg-[#101a23] rounded-lg border border-slate-200 dark:border-slate-700/50 overflow-hidden hover:border-slate-300 dark:hover:border-slate-600 transition-colors group" href="#">
+<div class="flex">
+<div class="w-24 h-24 bg-slate-200 dark:bg-slate-700 shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-4xl text-slate-400 dark:text-slate-500">description</span>
+</div>
+<div class="p-3 flex flex-col justify-center">
+<p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">PDF Document</p>
+<p class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors line-clamp-1">Term_3_Curriculum_2023.pdf</p>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1">2.4 MB • edapp.school/docs</p>
+</div>
+</div>
+</a>
+<!-- Limited Reactions -->
+<div class="flex items-center gap-2 pt-4">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span class="text-xs font-bold">Noted</span>
+</button>
+</div>
+</article>
+</section>
+<!-- Finite Scroll Footer -->
+<div class="mt-8 mb-6 flex flex-col items-center justify-center text-center px-8 opacity-80">
+<div class="w-12 h-12 rounded-full bg-surface-light dark:bg-surface-dark flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-green-500">check</span>
+</div>
+<h3 class="text-lg font-bold text-slate-800 dark:text-white">You're all caught up!</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 max-w-[250px] mt-1">Check back later for more updates from your community.</p>
+</div>
+</main>
+<!-- Floating Action Button (Admin/Author only context) -->
+<div class="fixed bottom-6 right-6 z-40">
+<button class="h-14 w-14 rounded-full bg-primary text-white shadow-lg shadow-blue-500/30 flex items-center justify-center hover:scale-105 transition-transform active:scale-95">
+<span class="material-symbols-outlined text-2xl">edit_square</span>
+</button>
+</div>
+</body></html>

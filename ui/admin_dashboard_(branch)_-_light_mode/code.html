@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EdApp Branch Admin Dashboard</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Lexend -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#389cfa",
+              "background-light": "#f5f7f8",
+              "background-dark": "#0f1923",
+            },
+            fontFamily: {
+              "display": ["Lexend", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden pb-24">
+<!-- TopAppBar -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-20">
+<div class="flex shrink-0 items-center gap-3">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-white dark:border-slate-700 shadow-sm relative" data-alt="Branch admin user avatar profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBqpzQ3dWw-V8G4S6g4fQtoA2GoEZgcxtvOqGjPJSJ5A9ofaYTau_Es1r74mkXkyyx5qxl8Em8HdVppZhs7Kg46i2vycOeEcV5jRZURZqE9_zo-J2OXDcV4WPvTO7ZWSNU554ojnarr6gbUwo-QJGkqZMDLBconrZnIiIdF9mwCDwrLr3E4yHQG3ffQfUxxtILdCDosqayIfdZD_6qCYEx3hobPGgWbDD5wBBeQ7m-NkdMMdyuJMYUGfBESDpNeRT3bkdrv8YsqDL4");'>
+<div class="absolute bottom-0 right-0 size-3 bg-green-500 rounded-full border-2 border-white dark:border-slate-800"></div>
+</div>
+<div class="flex flex-col">
+<h2 class="text-slate-900 dark:text-white text-sm font-bold leading-tight tracking-[-0.015em]">Sandton Campus</h2>
+<span class="text-slate-500 dark:text-slate-400 text-xs">Branch Admin</span>
+</div>
+</div>
+<div class="flex items-center justify-end">
+<button class="relative flex cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 w-10 bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined" style="font-size: 24px;">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full"></span>
+</button>
+</div>
+</div>
+<!-- Greeting Headline -->
+<div class="px-4 pb-2 pt-2">
+<h3 class="text-slate-900 dark:text-white tracking-tight text-2xl font-bold leading-tight">Good Morning,<br/>Mr. Dlamini</h3>
+</div>
+<!-- Admissions Pipeline Section -->
+<div>
+<div class="flex justify-between items-center px-4 pb-2 pt-4">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Admissions Pipeline</h3>
+<a class="text-primary text-sm font-semibold" href="#">View All</a>
+</div>
+<!-- Horizontal Scroll Container for Stats -->
+<div class="flex overflow-x-auto gap-4 px-4 pb-4 snap-x hide-scrollbar">
+<!-- New Apps Card -->
+<div class="flex min-w-[160px] flex-1 flex-col gap-1 rounded-xl p-5 bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 snap-center">
+<div class="flex items-center gap-2 mb-1">
+<div class="p-1.5 rounded-md bg-blue-50 dark:bg-blue-900/30 text-primary">
+<span class="material-symbols-outlined text-[20px]">description</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium leading-normal">New Apps</p>
+</div>
+<div class="flex items-end justify-between">
+<p class="text-slate-900 dark:text-white tracking-tight text-3xl font-bold leading-tight">15</p>
+<div class="flex items-center text-green-600 text-xs font-semibold bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+<span>2%</span>
+</div>
+</div>
+</div>
+<!-- Interviews Card -->
+<div class="flex min-w-[160px] flex-1 flex-col gap-1 rounded-xl p-5 bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 snap-center">
+<div class="flex items-center gap-2 mb-1">
+<div class="p-1.5 rounded-md bg-purple-50 dark:bg-purple-900/30 text-purple-500">
+<span class="material-symbols-outlined text-[20px]">groups</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium leading-normal">Interview</p>
+</div>
+<div class="flex items-end justify-between">
+<p class="text-slate-900 dark:text-white tracking-tight text-3xl font-bold leading-tight">4</p>
+<div class="flex items-center text-slate-500 text-xs font-semibold bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">
+<span>—</span>
+</div>
+</div>
+</div>
+<!-- Accepted Card -->
+<div class="flex min-w-[160px] flex-1 flex-col gap-1 rounded-xl p-5 bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 snap-center">
+<div class="flex items-center gap-2 mb-1">
+<div class="p-1.5 rounded-md bg-green-50 dark:bg-green-900/30 text-green-600">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium leading-normal">Accepted</p>
+</div>
+<div class="flex items-end justify-between">
+<p class="text-slate-900 dark:text-white tracking-tight text-3xl font-bold leading-tight">28</p>
+<div class="flex items-center text-green-600 text-xs font-semibold bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+<span>5%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Actions Section -->
+<div>
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-4">Quick Actions</h3>
+<div class="grid grid-cols-4 gap-2 px-4">
+<!-- Action 1 -->
+<button class="flex flex-col items-center gap-2 group">
+<div class="size-14 rounded-2xl bg-primary text-white flex items-center justify-center shadow-lg shadow-blue-200 dark:shadow-none group-active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-size: 28px;">person_add</span>
+</div>
+<span class="text-xs font-medium text-slate-700 dark:text-slate-300 text-center leading-tight">Add<br/>Learner</span>
+</button>
+<!-- Action 2 -->
+<button class="flex flex-col items-center gap-2 group">
+<div class="size-14 rounded-2xl bg-primary text-white flex items-center justify-center shadow-lg shadow-blue-200 dark:shadow-none group-active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-size: 28px;">chat</span>
+</div>
+<span class="text-xs font-medium text-slate-700 dark:text-slate-300 text-center leading-tight">Message<br/>Parent</span>
+</button>
+<!-- Action 3 -->
+<button class="flex flex-col items-center gap-2 group">
+<div class="size-14 rounded-2xl bg-primary text-white flex items-center justify-center shadow-lg shadow-blue-200 dark:shadow-none group-active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-size: 28px;">badge</span>
+</div>
+<span class="text-xs font-medium text-slate-700 dark:text-slate-300 text-center leading-tight">Staff<br/>Check-in</span>
+</button>
+<!-- Action 4 -->
+<button class="flex flex-col items-center gap-2 group">
+<div class="size-14 rounded-2xl bg-primary text-white flex items-center justify-center shadow-lg shadow-blue-200 dark:shadow-none group-active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-size: 28px;">receipt_long</span>
+</div>
+<span class="text-xs font-medium text-slate-700 dark:text-slate-300 text-center leading-tight">Create<br/>Invoice</span>
+</button>
+</div>
+</div>
+<!-- Critical Alerts Section -->
+<div class="mt-2">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-6">Critical Alerts</h3>
+<div class="px-4 flex flex-col gap-3">
+<!-- Alert Item 1 -->
+<div class="flex items-start gap-3 p-4 bg-white dark:bg-slate-800 rounded-xl shadow-sm border-l-4 border-l-orange-500 border border-slate-100 dark:border-slate-700/50">
+<div class="bg-orange-100 dark:bg-orange-900/30 text-orange-600 rounded-full p-1 shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px] block">warning</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold text-slate-900 dark:text-white truncate">Staff Attendance Warning</p>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">2 Staff members marked late/absent today without notice.</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-[20px]">chevron_right</span>
+</div>
+<!-- Alert Item 2 -->
+<div class="flex items-start gap-3 p-4 bg-white dark:bg-slate-800 rounded-xl shadow-sm border-l-4 border-l-red-500 border border-slate-100 dark:border-slate-700/50">
+<div class="bg-red-100 dark:bg-red-900/30 text-red-600 rounded-full p-1 shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px] block">payments</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold text-slate-900 dark:text-white truncate">Pending Payments</p>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">5 Confirmations pending &gt; 48hrs.</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-[20px]">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Support Ticket Summary Section -->
+<div class="mt-2">
+<div class="flex justify-between items-center px-4 pb-3 pt-6">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Support Tickets</h3>
+<span class="text-xs font-medium px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Last 24h</span>
+</div>
+<div class="mx-4 p-4 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+<div class="flex justify-between items-center mb-3">
+<div class="flex items-center gap-2">
+<span class="flex size-2 rounded-full bg-red-500"></span>
+<span class="text-sm font-medium text-slate-700 dark:text-slate-300">SLA Breach Risk</span>
+</div>
+<span class="text-sm font-bold text-red-600">2 Tickets</span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2 mb-4 overflow-hidden">
+<div class="bg-primary h-2 rounded-full" style="width: 75%"></div>
+</div>
+<div class="flex justify-between text-xs text-slate-500 dark:text-slate-400">
+<div class="flex flex-col gap-1">
+<span class="uppercase tracking-wide font-semibold text-[10px]">Open</span>
+<span class="text-lg font-bold text-slate-900 dark:text-white">8</span>
+</div>
+<div class="w-px bg-slate-200 dark:bg-slate-700 h-8 self-center"></div>
+<div class="flex flex-col gap-1">
+<span class="uppercase tracking-wide font-semibold text-[10px]">Resolved</span>
+<span class="text-lg font-bold text-slate-900 dark:text-white">12</span>
+</div>
+<div class="w-px bg-slate-200 dark:bg-slate-700 h-8 self-center"></div>
+<div class="flex flex-col gap-1">
+<span class="uppercase tracking-wide font-semibold text-[10px]">Avg Time</span>
+<span class="text-lg font-bold text-slate-900 dark:text-white">4h 12m</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Spacer for Bottom Nav -->
+<div class="h-6"></div>
+</div>
+<!-- Bottom Navigation Bar -->
+<div class="fixed bottom-0 left-0 w-full bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 pb-safe z-30">
+<div class="flex justify-around items-center h-16 px-2">
+<a class="flex flex-col items-center justify-center w-full h-full gap-1 text-primary" href="#">
+<span class="material-symbols-outlined text-[24px]">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full gap-1 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300" href="#">
+<span class="material-symbols-outlined text-[24px]">school</span>
+<span class="text-[10px] font-medium">Admissions</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full gap-1 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300" href="#">
+<span class="material-symbols-outlined text-[24px]">menu_book</span>
+<span class="text-[10px] font-medium">Academics</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full gap-1 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300" href="#">
+<span class="material-symbols-outlined text-[24px]">account_balance_wallet</span>
+<span class="text-[10px] font-medium">Finance</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full gap-1 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300" href="#">
+<span class="material-symbols-outlined text-[24px]">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</a>
+</div>
+</div>
+<style>
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .hide-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+    
+    /* Safe area padding for iPhone Home Indicator */
+    .pb-safe {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+</style>
+</body></html>

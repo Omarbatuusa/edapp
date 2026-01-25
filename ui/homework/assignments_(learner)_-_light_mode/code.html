@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EdApp - My Assignments</title>
+<!-- Google Fonts: Lexend -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "text-main": "#0d151c",
+                        "text-sub": "#47749e",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-size: 24px;
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Hide scrollbar for clean horizontal scrolling */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-main antialiased selection:bg-primary/20">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden pb-24">
+<!-- Top Navigation / Header -->
+<header class="flex flex-col gap-2 p-4 pb-2 bg-background-light dark:bg-background-dark sticky top-0 z-10">
+<div class="flex items-center justify-between h-12">
+<div class="flex flex-col">
+<span class="text-sm font-medium text-text-sub dark:text-slate-400">Wednesday, 24 Oct</span>
+<h1 class="text-2xl font-bold leading-tight text-text-main dark:text-white">My Assignments</h1>
+</div>
+<button class="flex items-center justify-center w-10 h-10 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 text-text-main dark:text-white">
+<span class="material-symbols-outlined">calendar_month</span>
+</button>
+</div>
+</header>
+<!-- Gamification / Progress Bar (Foundation Phase Focus) -->
+<section class="px-4 py-2">
+<div class="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-700">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined filled text-yellow-400">star</span>
+<p class="text-text-main dark:text-white text-base font-bold">Weekly Star Goal</p>
+</div>
+<span class="text-primary text-sm font-bold bg-primary/10 px-2 py-0.5 rounded-lg">Level 4</span>
+</div>
+<div class="h-3 w-full rounded-full bg-slate-100 dark:bg-slate-700 overflow-hidden">
+<div class="h-full rounded-full bg-primary transition-all duration-500" style="width: 75%;"></div>
+</div>
+<div class="flex justify-between mt-2">
+<p class="text-text-sub dark:text-slate-400 text-xs font-medium">3/4 Tasks Done</p>
+<p class="text-text-sub dark:text-slate-400 text-xs font-medium">Keep it up! 🚀</p>
+</div>
+</div>
+</section>
+<!-- Filters Section -->
+<section class="flex flex-col gap-4 py-2">
+<!-- Segmented Buttons (Status) -->
+<div class="px-4">
+<div class="flex h-10 w-full items-center justify-center rounded-xl bg-slate-200/50 dark:bg-slate-800 p-1">
+<label class="group flex cursor-pointer h-full flex-1 items-center justify-center overflow-hidden rounded-lg px-2 has-[:checked]:bg-white dark:has-[:checked]:bg-slate-700 has-[:checked]:shadow-sm has-[:checked]:text-primary text-text-sub dark:text-slate-400 transition-all">
+<span class="truncate text-sm font-medium">Active</span>
+<input checked="" class="invisible w-0 h-0 absolute" name="status-filter" type="radio" value="Active"/>
+</label>
+<label class="group flex cursor-pointer h-full flex-1 items-center justify-center overflow-hidden rounded-lg px-2 has-[:checked]:bg-white dark:has-[:checked]:bg-slate-700 has-[:checked]:shadow-sm has-[:checked]:text-primary text-text-sub dark:text-slate-400 transition-all">
+<span class="truncate text-sm font-medium">Overdue</span>
+<input class="invisible w-0 h-0 absolute" name="status-filter" type="radio" value="Overdue"/>
+</label>
+<label class="group flex cursor-pointer h-full flex-1 items-center justify-center overflow-hidden rounded-lg px-2 has-[:checked]:bg-white dark:has-[:checked]:bg-slate-700 has-[:checked]:shadow-sm has-[:checked]:text-primary text-text-sub dark:text-slate-400 transition-all">
+<span class="truncate text-sm font-medium">Completed</span>
+<input class="invisible w-0 h-0 absolute" name="status-filter" type="radio" value="Completed"/>
+</label>
+</div>
+</div>
+<!-- Chips (Subjects) -->
+<div class="flex gap-2 px-4 overflow-x-auto no-scrollbar pb-1">
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-primary text-white px-4 transition-colors">
+<span class="text-sm font-medium">All</span>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 px-4 text-text-main dark:text-slate-200">
+<span class="text-sm font-medium">Mathematics</span>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 px-4 text-text-main dark:text-slate-200">
+<span class="text-sm font-medium">History</span>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 px-4 text-text-main dark:text-slate-200">
+<span class="text-sm font-medium">English</span>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 px-4 text-text-main dark:text-slate-200">
+<span class="text-sm font-medium">Natural Science</span>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 px-4 text-text-main dark:text-slate-200">
+<span class="text-sm font-medium">Art</span>
+</button>
+</div>
+</section>
+<!-- Assignments List -->
+<main class="flex flex-col gap-4 p-4">
+<!-- Card 1: Urgent / Active -->
+<div class="group relative flex flex-col gap-0 rounded-xl bg-white dark:bg-slate-800 p-4 shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+<!-- Status Badge -->
+<div class="absolute top-4 right-4 z-10">
+<div class="flex items-center gap-1 bg-red-50 text-red-600 px-2 py-1 rounded-md">
+<span class="material-symbols-outlined text-[16px]">alarm</span>
+<span class="text-xs font-bold uppercase tracking-wide">Due Tomorrow</span>
+</div>
+</div>
+<div class="flex gap-4 items-stretch">
+<!-- Content Side -->
+<div class="flex flex-1 flex-col justify-between gap-3 z-10">
+<div class="flex flex-col gap-1 pr-24"> <!-- Padding right to avoid overlap with badge if needed on small screens, though layout separates them -->
+<p class="text-primary text-sm font-semibold tracking-wide uppercase">Mathematics</p>
+<h3 class="text-text-main dark:text-white text-lg font-bold leading-tight line-clamp-2">Fractions Worksheet</h3>
+<p class="text-text-sub dark:text-slate-400 text-sm mt-1">Pages 42-45 in workbook</p>
+</div>
+<div class="flex items-center gap-3 pt-2">
+<button class="flex items-center justify-center gap-2 h-9 px-4 rounded-lg bg-primary text-white text-sm font-semibold shadow-sm hover:bg-blue-600 transition w-fit">
+<span class="material-symbols-outlined text-[18px]">upload_file</span>
+                                Submit
+                            </button>
+<button class="flex items-center justify-center w-9 h-9 rounded-lg bg-slate-50 dark:bg-slate-700 text-text-sub dark:text-slate-300">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Image Side -->
+<div class="hidden sm:block w-24 h-24 shrink-0 rounded-lg bg-center bg-cover bg-no-repeat shadow-inner" data-alt="Close up of mathematics tools like ruler and calculator on grid paper" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCOf910pMvPFwPT5V03QEBMjZ4rK8kcu4tP7-bhYd11eN483gPvnrY0CkdobnxO_Sb-3T1SCgnh6XaqpwGdkpCETrX18UsAj6r8eYXQUB2EYY10i4z563fIk14C0DHS04TI48GnoPo7Cn5lHBmG6d7zYlEuDXDKQ7gRdF65OsfAdDjezadmLwjX6YA5ko5a7Pf_eIFqHf4S_vcgQrli3qpiNOfjPKTf8FMtL1TPW3s3ywF9uwL4eEa3mh8fdkADFrDBOpKu6V08Iuo");'>
+</div>
+</div>
+</div>
+<!-- Card 2: Draft / In Progress -->
+<div class="flex items-stretch justify-between gap-4 rounded-xl bg-white dark:bg-slate-800 p-4 shadow-sm border border-slate-100 dark:border-slate-700">
+<div class="flex flex-[2_2_0px] flex-col gap-2">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-start">
+<p class="text-orange-500 text-sm font-medium">History</p>
+<span class="text-xs font-medium text-text-sub bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded sm:hidden">Due Fri</span>
+</div>
+<p class="text-text-main dark:text-white text-base font-bold leading-tight">Nelson Mandela Essay</p>
+<p class="text-text-sub dark:text-slate-400 text-sm font-normal leading-normal">Draft Saved • Due Friday</p>
+</div>
+<div class="mt-2 flex gap-2">
+<button class="flex items-center justify-center gap-2 h-8 px-4 rounded-lg bg-slate-100 dark:bg-slate-700 text-text-main dark:text-white text-sm font-medium w-fit hover:bg-slate-200 dark:hover:bg-slate-600 transition">
+                            Continue
+                        </button>
+</div>
+</div>
+<div class="w-24 h-24 bg-center bg-no-repeat bg-cover rounded-lg shrink-0" data-alt="Statue of Nelson Mandela with sunset background" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAQB8QMM9RqnKVFo3Rl5c90CWaX68gAJjWVqnHr9fMw7XMhNDwEnlwdx1O8-QIuBzbvIqvfMfix4WPOxUATEcgMQq7uvYPHCpZZbCT_seYUeTagW_tKn2QSE4qLAl1XqznyzTQyFHL5cfV86XgeKEQslWb3-9Dj0w9dKhg7zJjmrk6LAuoJtM3x74jBFAN-zAASBofNOWs77wr74NcwPN7tR2a-PNbolbCnpOldYBnjpB8cj2dEdDbYuEQActzAH4sJPAXokdqral4");'></div>
+</div>
+<!-- Card 3: Standard / Low Urgency -->
+<div class="flex items-stretch justify-between gap-4 rounded-xl bg-white dark:bg-slate-800 p-4 shadow-sm border border-slate-100 dark:border-slate-700 opacity-90">
+<div class="flex flex-[2_2_0px] flex-col gap-2">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-start">
+<p class="text-purple-500 text-sm font-medium">Natural Science</p>
+<span class="text-xs font-medium text-text-sub bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded sm:hidden">Next Week</span>
+</div>
+<p class="text-text-main dark:text-white text-base font-bold leading-tight">Solar System Model</p>
+<p class="text-text-sub dark:text-slate-400 text-sm font-normal leading-normal">Project • Due 12 Nov</p>
+</div>
+<div class="mt-2">
+<button class="flex items-center justify-center gap-2 h-8 px-4 rounded-lg bg-slate-100 dark:bg-slate-700 text-text-sub dark:text-slate-300 text-sm font-medium w-fit">
+                            View Details
+                        </button>
+</div>
+</div>
+<div class="w-24 h-24 bg-center bg-no-repeat bg-cover rounded-lg shrink-0" data-alt="Colorful illustration of solar system planets" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC_j9LadxQPFTI97UvlyWelA5FTzKb5wdmgR3z-IFT9hXLFBKrDihLGbvnZL6p2KDKQg8kGVzCKLea0tXskskD2t7McFb0ZE99V6CHPn5iaQ1OPUEGnpNIhELB0BL-QRxEKia3249pgmz014mdhdlWwCGceHnBQDywOnS-qsuY9wM7cvn98EIOm8X2LkobF_nxOBrc8oYMdXOU62tOvBNA047keOQ7O-4D0P9-zP0xKzdGIm6PpQozmT0JE3cWCzupLILtxsNGYAQo");'></div>
+</div>
+<!-- Completed Example (Visually dimmer or distinct) -->
+<div class="flex items-center gap-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 p-4 border border-slate-100 dark:border-slate-700/50 grayscale-[0.8] hover:grayscale-0 transition-all">
+<div class="flex items-center justify-center w-12 h-12 rounded-full bg-green-100 text-green-600 shrink-0">
+<span class="material-symbols-outlined">check</span>
+</div>
+<div class="flex flex-col flex-1">
+<p class="text-text-sub dark:text-slate-500 text-xs font-medium uppercase">English • Completed</p>
+<p class="text-text-main dark:text-slate-400 text-base font-bold decoration-slate-400">Poetry Analysis</p>
+</div>
+<div class="text-right">
+<span class="text-lg font-bold text-green-600">8/10</span>
+<p class="text-xs text-text-sub">Grade</p>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (Senior Phase / Planner Focus) -->
+<button class="fixed bottom-24 right-4 z-50 flex items-center justify-center w-14 h-14 rounded-full bg-primary shadow-lg shadow-blue-500/30 text-white hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" style="font-size: 28px;">add</span>
+</button>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 z-40 w-full h-20 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 pb-2">
+<div class="grid h-full grid-cols-4 mx-auto">
+<button class="inline-flex flex-col items-center justify-center px-5 group hover:bg-slate-50 dark:hover:bg-slate-800" type="button">
+<span class="material-symbols-outlined mb-1 text-text-sub group-hover:text-primary dark:text-slate-500 dark:group-hover:text-primary">home</span>
+<span class="text-xs text-text-sub group-hover:text-primary dark:text-slate-500 dark:group-hover:text-primary">Home</span>
+</button>
+<button class="inline-flex flex-col items-center justify-center px-5 group hover:bg-slate-50 dark:hover:bg-slate-800" type="button">
+<span class="material-symbols-outlined mb-1 text-text-sub group-hover:text-primary dark:text-slate-500 dark:group-hover:text-primary">school</span>
+<span class="text-xs text-text-sub group-hover:text-primary dark:text-slate-500 dark:group-hover:text-primary">Learn</span>
+</button>
+<button class="inline-flex flex-col items-center justify-center px-5 group" type="button">
+<span class="material-symbols-outlined filled mb-1 text-primary">assignment</span>
+<span class="text-xs font-medium text-primary">Work</span>
+</button>
+<button class="inline-flex flex-col items-center justify-center px-5 group hover:bg-slate-50 dark:hover:bg-slate-800" type="button">
+<span class="material-symbols-outlined mb-1 text-text-sub group-hover:text-primary dark:text-slate-500 dark:group-hover:text-primary">account_circle</span>
+<span class="text-xs text-text-sub group-hover:text-primary dark:text-slate-500 dark:group-hover:text-primary">Profile</span>
+</button>
+</div>
+</nav>
+</div>
+</body></html>

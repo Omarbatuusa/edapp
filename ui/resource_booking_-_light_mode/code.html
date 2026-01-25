@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Smart Campus Resource Booking</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden">
+<div class="relative flex h-full min-h-screen w-full flex-col max-w-md mx-auto bg-background-light dark:bg-background-dark shadow-2xl overflow-hidden">
+<!-- Header -->
+<div class="flex items-center justify-between p-4 pb-2 bg-background-light dark:bg-background-dark sticky top-0 z-20">
+<button class="text-slate-900 dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Book Resources</h2>
+<div class="flex w-10 items-center justify-end">
+<button class="flex size-10 items-center justify-center overflow-hidden rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<img alt="User Profile" class="size-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2hWtQjHza_dBYltiLJeoZVjHeiQ0XajbZTfzbisHDyerflMCg-gOwqfXsD88CowxVMCu1Wjwp_nPTIAsO7cRWYPQVKBz9DmEL0EWG451BtTqSYIM6c40jzoaq_TWJQTrhpFwkJ-nOY3ImPNpX5QnzUAqyZqSUkW_MF2JtiTynqd_vRJHARxal6vFRrSzptyINnbuEvikndEUACjyyo9hHbPmwn-AaG27q06KHZnBM3L6oT1yjH7vPrrQBDvgTt4p4ckLLVEV-yuU"/>
+</button>
+</div>
+</div>
+<!-- Search Bar -->
+<div class="px-4 pb-2">
+<div class="relative flex items-center w-full h-12 rounded-xl focus-within:ring-2 ring-primary/50 bg-white dark:bg-slate-800 shadow-sm overflow-hidden border border-slate-200 dark:border-slate-700">
+<div class="grid place-items-center h-full w-12 text-slate-400">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="peer h-full w-full outline-none text-sm text-slate-700 dark:text-slate-200 pr-2 bg-transparent placeholder-slate-400 font-display" id="search" placeholder="Search rooms, equipment..." type="text"/>
+</div>
+</div>
+<!-- Smart Suggestion (Movement Tracking Integration) -->
+<div class="px-4 py-2">
+<div class="flex items-start gap-3 p-3 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800">
+<span class="material-symbols-outlined text-primary mt-0.5 text-[20px]">directions_walk</span>
+<div class="flex-1">
+<p class="text-xs text-primary font-bold uppercase tracking-wider mb-0.5">Smart Suggestion</p>
+<p class="text-xs text-slate-600 dark:text-slate-300 leading-normal">
+                        Your previous class is in Block A. Showing nearby resources to save travel time.
+                    </p>
+</div>
+</div>
+</div>
+<!-- Date Picker (Week View Variant) -->
+<div class="flex flex-col gap-2 p-4 pt-2">
+<div class="flex items-center justify-between mb-2">
+<p class="text-slate-900 dark:text-white text-base font-bold leading-tight">September 2023</p>
+<div class="flex gap-1">
+<button class="size-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="size-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="flex justify-between items-center gap-2 overflow-x-auto no-scrollbar pb-2">
+<!-- Day Items -->
+<button class="flex flex-col items-center justify-center min-w-[48px] h-[72px] rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm gap-1 group">
+<span class="text-[11px] font-medium text-slate-400 group-hover:text-primary">Mon</span>
+<span class="text-lg font-bold text-slate-900 dark:text-white">18</span>
+</button>
+<button class="flex flex-col items-center justify-center min-w-[48px] h-[72px] rounded-2xl bg-primary text-white shadow-md shadow-blue-500/30 gap-1 transform scale-105">
+<span class="text-[11px] font-medium text-white/80">Tue</span>
+<span class="text-lg font-bold">19</span>
+<div class="size-1 bg-white rounded-full"></div>
+</button>
+<button class="flex flex-col items-center justify-center min-w-[48px] h-[72px] rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm gap-1 group">
+<span class="text-[11px] font-medium text-slate-400 group-hover:text-primary">Wed</span>
+<span class="text-lg font-bold text-slate-900 dark:text-white">20</span>
+</button>
+<button class="flex flex-col items-center justify-center min-w-[48px] h-[72px] rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm gap-1 group">
+<span class="text-[11px] font-medium text-slate-400 group-hover:text-primary">Thu</span>
+<span class="text-lg font-bold text-slate-900 dark:text-white">21</span>
+</button>
+<button class="flex flex-col items-center justify-center min-w-[48px] h-[72px] rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm gap-1 group">
+<span class="text-[11px] font-medium text-slate-400 group-hover:text-primary">Fri</span>
+<span class="text-lg font-bold text-slate-900 dark:text-white">22</span>
+</button>
+<button class="flex flex-col items-center justify-center min-w-[48px] h-[72px] rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 gap-1 opacity-60">
+<span class="text-[11px] font-medium text-slate-400">Sat</span>
+<span class="text-lg font-bold text-slate-500">23</span>
+</button>
+</div>
+</div>
+<!-- Filter Chips -->
+<div class="flex gap-3 px-4 pb-4 overflow-x-auto no-scrollbar">
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-slate-900 dark:bg-white px-4 shadow-sm transition-transform active:scale-95">
+<p class="text-white dark:text-slate-900 text-sm font-medium leading-normal">All Resources</p>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 shadow-sm transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[18px] text-slate-500">meeting_room</span>
+<p class="text-slate-700 dark:text-slate-200 text-sm font-medium leading-normal">Meeting Rooms</p>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 shadow-sm transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[18px] text-slate-500">science</span>
+<p class="text-slate-700 dark:text-slate-200 text-sm font-medium leading-normal">Science Labs</p>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 shadow-sm transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[18px] text-slate-500">videocam</span>
+<p class="text-slate-700 dark:text-slate-200 text-sm font-medium leading-normal">AV Equipment</p>
+</button>
+</div>
+<!-- Section Title & View Toggle -->
+<div class="flex items-center justify-between px-4 py-2">
+<h2 class="text-slate-900 dark:text-white tracking-tight text-lg font-bold leading-tight">Available Rooms</h2>
+<div class="flex bg-slate-200 dark:bg-slate-800 p-0.5 rounded-lg">
+<button class="px-2 py-1 rounded-md bg-white dark:bg-slate-600 shadow-sm">
+<span class="material-symbols-outlined text-[20px] text-primary">view_list</span>
+</button>
+<button class="px-2 py-1 rounded-md">
+<span class="material-symbols-outlined text-[20px] text-slate-500 dark:text-slate-400">calendar_view_day</span>
+</button>
+</div>
+</div>
+<!-- Resource Cards List -->
+<div class="flex flex-col gap-4 p-4 pb-24">
+<!-- Card 1 -->
+<div class="flex flex-col rounded-2xl bg-white dark:bg-slate-800 shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none dark:border dark:border-slate-700 overflow-hidden group">
+<div class="relative h-40 w-full bg-slate-100">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Modern bright meeting room with glass walls and a large table" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBKBsWe5ndCdF3Hv4jD7pzUxI7E-HXwTUvZ1CsZFTaGq4qRvzLhHBhRvdti3NSHsih2atay189fLt7794B6T1V2DtqsVA2f5AJifL84CFoMycZbLLLATBW-KCUGYF2xxO8zsWx6ZQp0mPtcjDhoefdzZyzTrHM6ihj4kyh9aHrQSpKlAROIgZuhjLsB8P7L9GWekPzlXc2mGuGthXpS-VO3ZFrZeHpozojVmW9Ear2RhVT1Iw0rqJyGj75wUU3Dh58esGcdOLEGgVA");'></div>
+<div class="absolute top-3 right-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-green-600 text-[14px]">check_circle</span>
+<span class="text-xs font-bold text-slate-800 dark:text-slate-200">Available</span>
+</div>
+<div class="absolute bottom-3 left-3 flex gap-2">
+<div class="bg-black/50 backdrop-blur-md px-2 py-1 rounded-md flex items-center gap-1">
+<span class="material-symbols-outlined text-white text-[12px]">group</span>
+<span class="text-[10px] font-bold text-white">8 Seats</span>
+</div>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight">Meeting Room B</h3>
+<div class="flex items-center gap-1 mt-1 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<p class="text-xs font-medium">Admin Block • 2nd Floor</p>
+</div>
+</div>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[11px] font-medium">WiFi</span>
+<span class="px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[11px] font-medium">Projector</span>
+<span class="px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[11px] font-medium">Whiteboard</span>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-700 mt-1">
+<div class="flex flex-col">
+<p class="text-[10px] uppercase tracking-wide text-slate-400 font-bold">Next Slot</p>
+<p class="text-sm font-semibold text-primary">14:00 - 15:00</p>
+</div>
+<button class="flex items-center justify-center rounded-xl h-9 px-5 bg-primary hover:bg-blue-600 text-white text-sm font-bold shadow-sm shadow-blue-500/20 active:scale-95 transition-all">
+                            Book Now
+                        </button>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="flex flex-col rounded-2xl bg-white dark:bg-slate-800 shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none dark:border dark:border-slate-700 overflow-hidden group opacity-90">
+<div class="relative h-40 w-full bg-slate-100">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Science laboratory with white benches and microscopes" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCgjkplk13fx3sHgbrDDdY5aVhsWyCuljJYyKPk3yk8iAsvzjUIgEDxr1srTUR8nTryoBURlZZ_8qMGkkuBqrtybZ3gVwSDJjoBkGaAYl2truY4mfJu2Lu2nn-cVJv4FxBgtqyw0TuwOzuTgl8IO0PimIFlSE70_0lyLQzabIb1VldwLOf8yEBJddJIFNELr2FmbvpmELdQsUp_sjDT42DpwoSYJecFZzk-ZYfAZ7fCHfsp1isibXD8Sh8gDA8PtcN8smQcXJNNyXc");'></div>
+<div class="absolute top-3 right-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-orange-500 text-[14px]">schedule</span>
+<span class="text-xs font-bold text-slate-800 dark:text-slate-200">Booked until 14:30</span>
+</div>
+<div class="absolute bottom-3 left-3 flex gap-2">
+<div class="bg-black/50 backdrop-blur-md px-2 py-1 rounded-md flex items-center gap-1">
+<span class="material-symbols-outlined text-white text-[12px]">group</span>
+<span class="text-[10px] font-bold text-white">30 Capacity</span>
+</div>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight">Science Lab 3</h3>
+<div class="flex items-center gap-1 mt-1 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<p class="text-xs font-medium">Science Wing • Block C</p>
+</div>
+</div>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[11px] font-medium">Chemical Safe</span>
+<span class="px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[11px] font-medium">Smart Board</span>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-700 mt-1">
+<div class="flex flex-col">
+<p class="text-[10px] uppercase tracking-wide text-slate-400 font-bold">Next Slot</p>
+<p class="text-sm font-semibold text-slate-700 dark:text-slate-300">14:30 - 15:30</p>
+</div>
+<button class="flex items-center justify-center rounded-xl h-9 px-5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-900 dark:text-white text-sm font-bold active:scale-95 transition-all">
+                            Details
+                        </button>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="flex flex-col rounded-2xl bg-white dark:bg-slate-800 shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none dark:border dark:border-slate-700 overflow-hidden group">
+<div class="relative h-40 w-full bg-slate-100">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Cozy creative studio space with bean bags and computers" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAsF2Ke5j0JDPeIm0KgopYEH5rb9m0cnmhLEqIq5-kHXs6sa7iMWGQ4XUuXMxfJTY0zF7FfuOG4kx8hgq2vh2JTljyVSwaeh0hF9D8wRCeIGMMcTYdGmsu1oRLZlrQ7chcA0szzjzYOln5dmH29CCjpg3pvxioekFDQ6fpv9ziVXMcXj-fUX-3sXOeQr6P0zCR3kHDV_D2J1dkoa_Sl0NzV5JO2arR8Cf5oeruCEeWc9xzLpNn62Y2Mu9XY87WaDrbH8FmUGJfY_Zw");'></div>
+<div class="absolute top-3 right-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-green-600 text-[14px]">check_circle</span>
+<span class="text-xs font-bold text-slate-800 dark:text-slate-200">Available</span>
+</div>
+<div class="absolute bottom-3 left-3 flex gap-2">
+<div class="bg-black/50 backdrop-blur-md px-2 py-1 rounded-md flex items-center gap-1">
+<span class="material-symbols-outlined text-white text-[12px]">group</span>
+<span class="text-[10px] font-bold text-white">12 Seats</span>
+</div>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight">Creative Studio</h3>
+<div class="flex items-center gap-1 mt-1 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<p class="text-xs font-medium">Arts Centre • 1st Floor</p>
+</div>
+</div>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[11px] font-medium">Mac Minis</span>
+<span class="px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[11px] font-medium">Soundproof</span>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-700 mt-1">
+<div class="flex flex-col">
+<p class="text-[10px] uppercase tracking-wide text-slate-400 font-bold">Next Slot</p>
+<p class="text-sm font-semibold text-primary">Anytime</p>
+</div>
+<button class="flex items-center justify-center rounded-xl h-9 px-5 bg-primary hover:bg-blue-600 text-white text-sm font-bold shadow-sm shadow-blue-500/20 active:scale-95 transition-all">
+                            Book Now
+                        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Simulated Bottom Sheet (Collapsed/Hint) -->
+<div class="fixed bottom-0 w-full max-w-md z-30">
+<!-- Gradient fade -->
+<div class="h-12 w-full bg-gradient-to-t from-background-light dark:from-background-dark to-transparent pointer-events-none"></div>
+<!-- Bottom Nav / Action Bar -->
+<div class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 p-4 pb-6 flex items-center justify-between shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+<div class="flex flex-col">
+<span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Selected</span>
+<span class="text-sm font-bold text-slate-900 dark:text-white">None</span>
+</div>
+<button class="flex items-center gap-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-xl font-bold text-sm shadow-lg hover:shadow-xl transition-all">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                    Quick Booking
+                </button>
+</div>
+</div>
+</div>
+</body></html>

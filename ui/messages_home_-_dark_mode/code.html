@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Messages Home - EdApp</title>
+<!-- Fonts: Lexend -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "surface-dark": "#15222e",
+                        "surface-highlight": "#1e2e3d",
+                        "secondary-text": "#8eaecc",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for horizontal scroll areas */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display antialiased overflow-x-hidden selection:bg-primary/30">
+<div class="relative flex min-h-screen w-full flex-col max-w-md mx-auto bg-background-dark shadow-2xl overflow-hidden pb-24">
+<!-- Header Section -->
+<header class="sticky top-0 z-40 bg-background-dark/95 backdrop-blur-md border-b border-[#1e2e3d]">
+<!-- Top App Bar -->
+<div class="flex items-center p-4 justify-between">
+<div class="flex items-center gap-3">
+<div class="relative group cursor-pointer">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 ring-2 ring-primary/20" data-alt="User profile picture showing a smiling parent" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBm-UyFAvsFDXcebDifY1UR2mxjjMFfEcwBB_73uDqG0E7h6ZnO_jbMIJnLqWkvq1XA7N1HV6Uo6jFBNA5ux5nhflsPZkuf2t6zsYS6BjkcoC_V9WP52TbzZM0UbJbdC-Lykd9Im2raqKKyBePlV_qt2_MdVEbapnKsVO_3t4M4e-zVo0u9UZnWEwe5RvBvry8sWHQsUFMic2C8Nb9PYvNycWjnW4crzylZbc1kurChwjH3hVfRKn-vj3sKSxXzjmhwOEVp8_UNEug");'>
+</div>
+<div class="absolute bottom-0 right-0 size-3 bg-green-500 rounded-full border-2 border-background-dark"></div>
+</div>
+<h2 class="text-white text-xl font-bold leading-tight tracking-tight">Messages</h2>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-white/5 transition-colors text-white">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-white/5 transition-colors text-white">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Offline Banner -->
+<div class="bg-orange-900/20 border-y border-orange-500/10 px-4 py-1.5 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-orange-400 text-[16px]">wifi_off</span>
+<p class="text-orange-200/80 text-xs font-medium">Offline Mode: Showing cached messages</p>
+</div>
+<!-- Child Selector Chips -->
+<div class="flex gap-3 px-4 py-3 overflow-x-auto no-scrollbar items-center">
+<button class="flex h-9 shrink-0 items-center justify-center px-4 rounded-xl bg-primary text-white transition-transform active:scale-95 shadow-lg shadow-primary/20">
+<span class="text-sm font-semibold">All</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-2 px-4 rounded-xl bg-surface-highlight hover:bg-surface-highlight/80 text-secondary-text transition-all active:scale-95 border border-transparent hover:border-white/5">
+<div class="size-5 rounded-full bg-cover bg-center" data-alt="Avatar of child Emma" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAvLBE1YVkMnRZ6LzWf_T2bjqbTeARUG9wJUxqKjGvLEv5DlFpJBaK0P1VOW0_IaI3SVx09-ycbIcOAC3wzGAZDFahgNyJEm3vXxVGU2T2DRYSRwXLOpXncaxUlkwCjWvbm5uOMvqiqxfmStDGCOqJbBnftyipq2uQogqQES2UAtzsFiFDKsZbZFyXRJEIld1uIsVBuFKBh1eR5_mKfEj7BRX0URbC913O-ENxdKx199NXAdzIq_EUrzibdJcDzPZEzRkMPoK0hNSM')"></div>
+<span class="text-sm font-medium">Emma (G5)</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-2 px-4 rounded-xl bg-surface-highlight hover:bg-surface-highlight/80 text-secondary-text transition-all active:scale-95 border border-transparent hover:border-white/5">
+<div class="size-5 rounded-full bg-cover bg-center" data-alt="Avatar of child Liam" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC_ZvU40Qs0gOmH9TVzefdLrO8uckNjQHF7EuSF694fcN_qtrUoW8De_4QfNFlk43UZBbgw3eFTp-YmBCyVjt1jVhr5oA7Sm-ymwT9IEo1862wVHicjuW4iRh_hWStCNO4VYmVosw0Nw7Fy3uNknZtAENnyhpqSky5IfpxnlmB-licFAY4mKkFxnr6OAIA2ISPGQvksWsZI-AIn6JokzqMOifzFRbfVFhrIGO0C2TZxpvPZlF06NqieW3tfrzMPe83hEgjuQnYTym0')"></div>
+<span class="text-sm font-medium">Liam (G2)</span>
+</button>
+</div>
+<!-- Navigation Tabs -->
+<div class="flex border-b border-[#2f4d6a] px-2 justify-between mt-1">
+<button class="flex flex-col items-center justify-center px-2 pb-3 pt-2 flex-1 relative group">
+<span class="text-white text-sm font-bold tracking-wide z-10">All</span>
+<div class="absolute bottom-0 h-[3px] w-full bg-primary rounded-t-full"></div>
+</button>
+<button class="flex flex-col items-center justify-center px-2 pb-3 pt-2 flex-1 relative group">
+<span class="text-secondary-text group-hover:text-white transition-colors text-sm font-bold tracking-wide z-10">Classes</span>
+<div class="absolute bottom-0 h-[3px] w-full bg-transparent group-hover:bg-white/10 rounded-t-full transition-colors"></div>
+</button>
+<button class="flex flex-col items-center justify-center px-2 pb-3 pt-2 flex-1 relative group">
+<span class="text-secondary-text group-hover:text-white transition-colors text-sm font-bold tracking-wide z-10">Direct</span>
+<div class="absolute bottom-0 h-[3px] w-full bg-transparent group-hover:bg-white/10 rounded-t-full transition-colors"></div>
+</button>
+<button class="flex flex-col items-center justify-center px-2 pb-3 pt-2 flex-1 relative group">
+<span class="text-secondary-text group-hover:text-white transition-colors text-sm font-bold tracking-wide z-10">Support</span>
+<div class="absolute bottom-0 h-[3px] w-full bg-transparent group-hover:bg-white/10 rounded-t-full transition-colors"></div>
+</button>
+</div>
+</header>
+<!-- Quick Filters -->
+<div class="flex gap-2 px-4 py-4 overflow-x-auto no-scrollbar">
+<button class="flex h-7 items-center gap-1.5 px-3 rounded-lg bg-surface-highlight border border-white/5 text-xs font-medium text-secondary-text hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[16px]">filter_list</span>
+                Filter
+            </button>
+<button class="flex h-7 items-center gap-1.5 px-3 rounded-lg bg-primary/10 border border-primary/20 text-xs font-medium text-primary hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-[16px] fill-1">mark_chat_unread</span>
+                Unread
+            </button>
+<button class="flex h-7 items-center gap-1.5 px-3 rounded-lg bg-red-500/10 border border-red-500/20 text-xs font-medium text-red-400 hover:bg-red-500/20 transition-colors">
+<span class="material-symbols-outlined text-[16px]">priority_high</span>
+                Urgent
+            </button>
+</div>
+<!-- Conversation List -->
+<div class="flex flex-col px-2 space-y-1">
+<!-- Item 1: Urgent -->
+<div class="group flex items-center gap-4 p-3 rounded-2xl hover:bg-surface-highlight transition-colors cursor-pointer relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-red-500/50 hidden group-hover:block"></div>
+<div class="relative shrink-0">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-12 shadow-sm" data-alt="School logo shield" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCTxXHDj2zHShLeGcigUXeWTNZWE53m9pgE-N17xUifHsa1aaY3vTgsvY6nzzPpVLzNbn9SzcufenEINIRjUWf8iJaCaqS_M-eUJVQJlfbKHeTTJYY3lrIT7hGE2xsvml2TMK3YBGiVDNWjlvCENG0HsOdGvA3hFen3WmIvga5RMOEz4OgtJz0HoCokzGGob0lTSYYUF4E6aku-t8UF62B-6iNyx3uVBKTqDzXLpT_FJyHWan2I4TNPiVn7Gh4jXNZhSHuOMR37aeU");'></div>
+<div class="absolute -bottom-1 -right-1 bg-red-500 rounded-full p-0.5 border-2 border-background-dark flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[12px] font-bold">priority_high</span>
+</div>
+</div>
+<div class="flex flex-1 flex-col min-w-0">
+<div class="flex justify-between items-start mb-0.5">
+<div class="flex items-center gap-2">
+<h3 class="text-white text-base font-bold truncate">Principal Skinner</h3>
+<span class="bg-red-500/20 text-red-400 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">Admin</span>
+</div>
+<span class="text-red-400 text-xs font-medium whitespace-nowrap ml-2">10:05 AM</span>
+</div>
+<p class="text-white font-medium text-sm truncate pr-4">URGENT: School closing early due to heavy snowfall. Please pickup...</p>
+</div>
+</div>
+<!-- Item 2: Unread Class Message -->
+<div class="group flex items-center gap-4 p-3 rounded-2xl hover:bg-surface-highlight transition-colors cursor-pointer relative">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary/50 hidden group-hover:block"></div>
+<div class="relative shrink-0">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-12" data-alt="Teacher portrait Mrs Krabappel" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAk-5Z04qMKIADxzjXND0Mnl_KJmzSofu0dPmYk2weqr_3jFaFrol96SwZsLE5URpkT-Lz5Tgtecna50Ek69SGpfIe5ZoND_KKlXum_Ar9uvt2UZemBUWxW7kgBLAibmOvHOhw1ofdcURE1EiaafknnpYI6HbNU8pYf89MAE3C1vindzZgQR0D48Jbhedp9Ea_hIJ5bm0y4K2G2GWOew7_e2WNQv8ZqYvY4ig4J2FIyT4pMzkQ4AOviNDPsWUnFdssHh-XvWc3XvOo");'></div>
+<div class="absolute bottom-0 right-0 size-3.5 bg-green-500 rounded-full border-2 border-background-dark"></div>
+</div>
+<div class="flex flex-1 flex-col min-w-0">
+<div class="flex justify-between items-start mb-0.5">
+<div class="flex items-center gap-2">
+<h3 class="text-white text-base font-bold truncate">Mrs. Krabappel</h3>
+<span class="bg-primary/20 text-primary text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">Teacher</span>
+</div>
+<span class="text-primary text-xs font-medium whitespace-nowrap ml-2">9:30 AM</span>
+</div>
+<div class="flex justify-between items-center">
+<p class="text-white text-sm truncate pr-2 font-medium">Don't forget the math homework is due tomorrow morning!</p>
+<div class="flex items-center justify-center h-5 min-w-[20px] px-1.5 rounded-full bg-primary text-white text-[10px] font-bold">2</div>
+</div>
+</div>
+</div>
+<!-- Item 3: Read Direct Message -->
+<div class="group flex items-center gap-4 p-3 rounded-2xl hover:bg-surface-highlight transition-colors cursor-pointer">
+<div class="relative shrink-0">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-12 grayscale-[0.2]" data-alt="Substitute teacher portrait" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBouwzXofh4oLH_UOPSq7lqtyBW-k7CKQn2WqHnmKjxQj6kx_z22BpdoxkG3iW59xAW92FV35hYvplN8fcpsJrZDz3bo2gzUpL8T7QfFbtAZeWsuxyCA1pv2deUD7gXFyQfnJx82bRUJHW8Tfk4t-wpgMeopnScYAaJvIIYszIb4e-nTVpZ7lBdEnrEMTOGetQk7aLq3UnRDQlphqOV4fy7Q19-1P0sE9rh8qavejB67NpKOSebZoU28am6XBZBT65GeRNlvvtakD0");'></div>
+</div>
+<div class="flex flex-1 flex-col min-w-0">
+<div class="flex justify-between items-start mb-0.5">
+<div class="flex items-center gap-2">
+<h3 class="text-white/90 text-base font-semibold truncate">Mr. Bergstrom</h3>
+<span class="bg-surface-highlight border border-white/10 text-secondary-text text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">Sub</span>
+</div>
+<span class="text-secondary-text text-xs font-normal whitespace-nowrap ml-2">Yesterday</span>
+</div>
+<p class="text-secondary-text text-sm truncate pr-4">You are Lisa Simpson.</p>
+</div>
+</div>
+<!-- Item 4: Support Ticket -->
+<div class="group flex items-center gap-4 p-3 rounded-2xl hover:bg-surface-highlight transition-colors cursor-pointer">
+<div class="relative shrink-0">
+<div class="flex items-center justify-center bg-purple-500/20 rounded-full size-12 border border-purple-500/20">
+<span class="material-symbols-outlined text-purple-400">support_agent</span>
+</div>
+</div>
+<div class="flex flex-1 flex-col min-w-0">
+<div class="flex justify-between items-start mb-0.5">
+<div class="flex items-center gap-2">
+<h3 class="text-white/90 text-base font-semibold truncate">IT Support</h3>
+<span class="bg-purple-500/20 text-purple-300 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">Staff</span>
+</div>
+<span class="text-secondary-text text-xs font-normal whitespace-nowrap ml-2">Tue</span>
+</div>
+<p class="text-secondary-text text-sm truncate pr-4">Your ticket #3492 has been resolved.</p>
+</div>
+</div>
+<!-- Item 5: Moderated Message (Hidden) -->
+<div class="group flex items-center gap-4 p-3 rounded-2xl hover:bg-surface-highlight transition-colors cursor-pointer opacity-70">
+<div class="relative shrink-0">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-12" data-alt="Student avatar placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBO3pIrU17Bz53pwQmrpalNkrfSmwTHBVTe_WOWnvPyLzF9dBZywADpXnsAjC3MzMeD9VY2jGcGTJjwoK1o8R-36AyZ_nBEm-WjdLIOw2agLlBv2W08-Df1292sU8Ne0uL1GAZR5igE2AKcyURGWXOqVwn3R-l05elSoxHB5Gmqw0gw4C5yo1bKLaBVpFhLrF3Nz35rDb3X_ZYX-St459EOgFQ4qLPVLOILAyM4y7pwExT4eYhM-qgF-6vI0LPeNAPVomu_siIjtF8");'></div>
+</div>
+<div class="flex flex-1 flex-col min-w-0">
+<div class="flex justify-between items-start mb-0.5">
+<div class="flex items-center gap-2">
+<h3 class="text-white/80 text-base font-semibold truncate">Nelson Muntz</h3>
+<span class="bg-surface-highlight border border-white/10 text-secondary-text text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">Student</span>
+</div>
+<span class="text-secondary-text text-xs font-normal whitespace-nowrap ml-2">Mon</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-secondary-text">visibility_off</span>
+<p class="text-secondary-text text-sm truncate italic">Message hidden by moderator</p>
+</div>
+</div>
+</div>
+<!-- Skeleton Loading State (Demo) -->
+<div class="px-3 pt-4 pb-2">
+<p class="text-xs font-bold text-secondary-text uppercase tracking-widest mb-2 opacity-50">Older Messages</p>
+</div>
+<div class="flex items-center gap-4 p-3 rounded-2xl animate-pulse">
+<div class="size-12 rounded-full bg-surface-highlight shrink-0"></div>
+<div class="flex flex-col flex-1 gap-2">
+<div class="flex justify-between w-full">
+<div class="h-4 bg-surface-highlight rounded w-32"></div>
+<div class="h-3 bg-surface-highlight rounded w-12"></div>
+</div>
+<div class="h-3 bg-surface-highlight rounded w-3/4"></div>
+</div>
+</div>
+<div class="flex items-center gap-4 p-3 rounded-2xl animate-pulse">
+<div class="size-12 rounded-full bg-surface-highlight shrink-0"></div>
+<div class="flex flex-col flex-1 gap-2">
+<div class="flex justify-between w-full">
+<div class="h-4 bg-surface-highlight rounded w-24"></div>
+<div class="h-3 bg-surface-highlight rounded w-10"></div>
+</div>
+<div class="h-3 bg-surface-highlight rounded w-full"></div>
+</div>
+</div>
+</div>
+<!-- Floating Action Button -->
+<button class="fixed bottom-24 right-4 z-50 flex items-center justify-center size-14 rounded-2xl bg-primary text-white shadow-xl shadow-primary/30 hover:bg-blue-500 hover:scale-105 transition-all active:scale-95 group">
+<span class="material-symbols-outlined text-3xl group-hover:rotate-90 transition-transform duration-300">add_comment</span>
+</button>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 right-0 bg-[#101a23]/95 backdrop-blur-lg border-t border-[#1e2e3d] pb-6 pt-2 z-50">
+<div class="flex justify-around items-end max-w-md mx-auto">
+<a class="flex flex-col items-center gap-1 p-2 group w-16" href="#">
+<span class="material-symbols-outlined text-[#8eaecc] group-hover:text-white transition-colors text-[26px]">home</span>
+<span class="text-[10px] font-medium text-[#8eaecc] group-hover:text-white">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 group w-16" href="#">
+<span class="material-symbols-outlined text-[#8eaecc] group-hover:text-white transition-colors text-[26px]">calendar_month</span>
+<span class="text-[10px] font-medium text-[#8eaecc] group-hover:text-white">Calendar</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 group w-16 relative" href="#">
+<div class="absolute top-1.5 right-3 size-2.5 bg-red-500 rounded-full border-2 border-[#101a23]"></div>
+<span class="material-symbols-outlined text-primary text-[26px] fill-1">chat_bubble</span>
+<span class="text-[10px] font-bold text-primary">Messages</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 group w-16" href="#">
+<span class="material-symbols-outlined text-[#8eaecc] group-hover:text-white transition-colors text-[26px]">account_circle</span>
+<span class="text-[10px] font-medium text-[#8eaecc] group-hover:text-white">Profile</span>
+</a>
+</div>
+</nav>
+</div>
+</body></html>

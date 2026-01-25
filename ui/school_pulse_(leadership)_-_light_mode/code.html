@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>School Pulse Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e293b",
+                        "danger": "#ef4444",
+                        "warning": "#f59e0b",
+                        "success": "#22c55e",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Simulate mobile safe area */
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white font-display">
+<!-- Mobile Container Wrapper -->
+<div class="relative min-h-screen w-full flex flex-col max-w-md mx-auto bg-background-light dark:bg-background-dark overflow-x-hidden shadow-2xl border-x border-slate-200 dark:border-slate-800">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm px-4 py-3 flex items-center justify-between border-b border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 ring-2 ring-white dark:ring-slate-700 shadow-sm" data-alt="Portrait of Mr. Dlamini, the principal" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAZ21iXunApicHy_Hhyjjm_khXRrV-_7LAA2ceiUSuIO8FKjY4cZCCq_4sX5hKZj0zQeE-COKNNNElTMpYfYg8b1xdFyYRXft8LliyFzry0xDmnsThH1cB2xtD2SHjEYLcSDBLt_P3L94SpWOu9TBolOMvwiOup1V11mlj5P86TmpezGelijqbuRgrnG-s66p64xOIYYPISdsdBoE4NXjapuKfSIT1t42bMyw6MJDRzbOdCfxNC9H4HO6_H_s0dkTSu8y6CEeCx1_E");'>
+</div>
+<div class="absolute bottom-0 right-0 size-3 bg-success rounded-full ring-2 ring-white dark:ring-slate-800"></div>
+</div>
+<div class="flex flex-col">
+<span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Principal</span>
+<h2 class="text-slate-900 dark:text-white text-base font-bold leading-tight">Mr. Dlamini</h2>
+</div>
+</div>
+<button class="flex items-center justify-center size-10 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 relative hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined text-slate-700 dark:text-slate-200" style="font-size: 24px;">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-danger rounded-full ring-1 ring-white dark:ring-slate-800"></span>
+</button>
+</header>
+<!-- Main Content Scroll Area -->
+<main class="flex-1 pb-32">
+<!-- Headline & Live Status Badge -->
+<div class="px-4 py-5 flex justify-between items-end">
+<div>
+<h1 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">School Pulse</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Mon, 12 Oct • Term 4</p>
+</div>
+<div class="px-3 py-1 bg-success/10 text-success rounded-full text-xs font-bold border border-success/20 flex items-center gap-1 shadow-sm">
+<span class="size-2 bg-success rounded-full animate-pulse"></span>
+                    OPERATIONAL
+                </div>
+</div>
+<!-- Stats Grid (Pulse Cards) -->
+<div class="px-4 grid grid-cols-2 gap-3 mb-6">
+<!-- Attendance Card -->
+<div class="col-span-1 bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between h-[140px] group hover:border-primary/30 transition-colors">
+<div class="flex justify-between items-start">
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined" style="font-size: 20px;">person_check</span>
+</div>
+<span class="text-xs font-bold text-success bg-success/10 px-2 py-0.5 rounded-full border border-success/10">+2%</span>
+</div>
+<div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Attendance</p>
+<p class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">94%</p>
+</div>
+</div>
+<!-- Incidents Card -->
+<div class="col-span-1 bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between h-[140px] group hover:border-danger/30 transition-colors">
+<div class="flex justify-between items-start">
+<div class="p-2 bg-danger/10 rounded-lg text-danger">
+<span class="material-symbols-outlined" style="font-size: 20px;">warning</span>
+</div>
+<span class="text-xs font-bold text-danger bg-danger/10 px-2 py-0.5 rounded-full border border-danger/10">Active</span>
+</div>
+<div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Incidents</p>
+<p class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">3</p>
+</div>
+</div>
+<!-- Transport Card -->
+<div class="col-span-1 bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between h-[120px]">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-warning" style="font-size: 20px;">directions_bus</span>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Transport</p>
+</div>
+<div>
+<p class="text-xl font-bold text-slate-900 dark:text-white">2 Late</p>
+<p class="text-xs text-slate-400 mt-1">Bus 4 &amp; 7</p>
+</div>
+</div>
+<!-- Tickets Card -->
+<div class="col-span-1 bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between h-[120px]">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary" style="font-size: 20px;">confirmation_number</span>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Tickets</p>
+</div>
+<div>
+<div class="flex items-baseline gap-1.5">
+<p class="text-xl font-bold text-slate-900 dark:text-white">12</p>
+<span class="text-[10px] bg-danger/10 text-danger border border-danger/10 px-1.5 rounded-md font-bold">2 Urgent</span>
+</div>
+<p class="text-xs text-slate-400 mt-1">Support Desk</p>
+</div>
+</div>
+</div>
+<!-- Chart Section: Attendance Breakdown -->
+<div class="px-4 mb-6">
+<div class="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm border border-slate-100 dark:border-slate-700">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-base font-bold text-slate-900 dark:text-white">Attendance by Grade</h3>
+<button class="text-primary text-sm font-medium hover:bg-primary/5 px-2 py-1 rounded-lg transition-colors">View All</button>
+</div>
+<div class="flex items-end justify-between h-32 gap-3 px-2">
+<!-- Bar Item Grade 8 -->
+<div class="flex flex-col items-center gap-2 flex-1 group cursor-pointer">
+<div class="w-full bg-slate-100 dark:bg-slate-700 rounded-t-lg relative h-full flex items-end overflow-hidden">
+<div class="w-full bg-primary/40 group-hover:bg-primary transition-all duration-300 rounded-t-lg" style="height: 92%;"></div>
+</div>
+<span class="text-xs text-slate-500 font-medium">Gr 8</span>
+</div>
+<!-- Bar Item Grade 9 -->
+<div class="flex flex-col items-center gap-2 flex-1 group cursor-pointer">
+<div class="w-full bg-slate-100 dark:bg-slate-700 rounded-t-lg relative h-full flex items-end overflow-hidden">
+<div class="w-full bg-primary/60 group-hover:bg-primary transition-all duration-300 rounded-t-lg" style="height: 95%;"></div>
+</div>
+<span class="text-xs text-slate-500 font-medium">Gr 9</span>
+</div>
+<!-- Bar Item Grade 10 (Problem Area) -->
+<div class="flex flex-col items-center gap-2 flex-1 group cursor-pointer">
+<div class="w-full bg-slate-100 dark:bg-slate-700 rounded-t-lg relative h-full flex items-end overflow-hidden">
+<div class="w-full bg-danger text-white flex items-start justify-center text-[10px] font-bold pt-1 rounded-t-lg shadow-sm" style="height: 85%;">
+<span class="mt-1">!</span>
+</div>
+</div>
+<span class="text-xs text-danger font-bold">Gr 10</span>
+</div>
+<!-- Bar Item Grade 11 -->
+<div class="flex flex-col items-center gap-2 flex-1 group cursor-pointer">
+<div class="w-full bg-slate-100 dark:bg-slate-700 rounded-t-lg relative h-full flex items-end overflow-hidden">
+<div class="w-full bg-primary/80 group-hover:bg-primary transition-all duration-300 rounded-t-lg" style="height: 96%;"></div>
+</div>
+<span class="text-xs text-slate-500 font-medium">Gr 11</span>
+</div>
+<!-- Bar Item Grade 12 -->
+<div class="flex flex-col items-center gap-2 flex-1 group cursor-pointer">
+<div class="w-full bg-slate-100 dark:bg-slate-700 rounded-t-lg relative h-full flex items-end overflow-hidden">
+<div class="w-full bg-primary group-hover:bg-primary transition-all duration-300 rounded-t-lg shadow-sm" style="height: 98%;"></div>
+</div>
+<span class="text-xs text-slate-500 font-medium">Gr 12</span>
+</div>
+</div>
+</div>
+</div>
+<!-- At-Risk Watchlist -->
+<div class="px-4 mb-6">
+<div class="flex justify-between items-center mb-3">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">At-Risk Watchlist</h3>
+<span class="bg-danger/10 text-danger border border-danger/10 text-xs px-2.5 py-1 rounded-full font-bold">5 Flagged</span>
+</div>
+<div class="flex flex-col gap-3">
+<!-- List Item 1 -->
+<div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center gap-4 active:scale-[0.99] transition-transform cursor-pointer">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-12 flex-shrink-0" data-alt="Portrait of student Thabo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDOIEoIjhLWTk4hTuSMnOLf7zuFXt77qex6_hcEhC5lm6wA_IJ_s5ZHKRhZ4g-6xx3crfwSm2qHLAtGUXmFqcmugMIkxN35FjAbAYeOmN_V7JFpXJIAX5ilDxzSpBx2P9tNUcFBIbj2cqAjMPKKa8UeAhZvZLni3_xT3rHtSF4z-gr4YrX7_I8yoIMCaMyexc9uIFDAclaVOKeXLByVi_413BPkBtIcrGH0cwQsYlFCnBETz7hGpDNmboB0X4RlBMwTIQY1hJ5qSRU");'>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h4 class="text-slate-900 dark:text-white font-bold truncate">Thabo M.</h4>
+<span class="text-[10px] font-bold text-white bg-danger px-2 py-0.5 rounded-full shadow-sm">HIGH RISK</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 mb-2">Grade 10 • Class B</p>
+<div class="flex flex-wrap gap-1">
+<span class="text-[10px] px-2 py-0.5 bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded border border-slate-200 dark:border-slate-600 font-medium">Fees Overdue</span>
+<span class="text-[10px] px-2 py-0.5 bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded border border-slate-200 dark:border-slate-600 font-medium">Absent (3d)</span>
+</div>
+</div>
+<div class="text-slate-300">
+<span class="material-symbols-outlined" style="font-size: 20px;">chevron_right</span>
+</div>
+</div>
+<!-- List Item 2 -->
+<div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center gap-4 active:scale-[0.99] transition-transform cursor-pointer">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-12 flex-shrink-0 grayscale" data-alt="Portrait of student Sarah" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBUStjT_2Hs9TGfjMpA5-dm_g2ik9JKscLGFwJC9bq7vVZPhn5AHhT8q45-VAP_5_7KdtnDag1Ql7Mxvno03lZFjAQ-WkOLiuvNjL0HUTjJjwHTt9q6YtJTY-ex6i4uR383zZ5HlMDvs5VezrFL6whBMyyVgIQ1hYtne-rCBYCqjSZ6pRCO001DnRRZP4lTqMZPgyT-zCkXvvHZSbTc8RmJ0DcDjwrHFNget0vvwrYWvSNxF8CRyUQAdIykXDnADeN6SqPP4IxUgXU");'>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h4 class="text-slate-900 dark:text-white font-bold truncate">Sarah J.</h4>
+<span class="text-[10px] font-bold text-warning bg-warning/10 px-2 py-0.5 rounded-full border border-warning/20">MED RISK</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 mb-2">Grade 8 • Class A</p>
+<div class="flex flex-wrap gap-1">
+<span class="text-[10px] px-2 py-0.5 bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded border border-slate-200 dark:border-slate-600 font-medium">Behavior Report</span>
+</div>
+</div>
+<div class="text-slate-300">
+<span class="material-symbols-outlined" style="font-size: 20px;">chevron_right</span>
+</div>
+</div>
+</div>
+<button class="w-full mt-3 py-3 text-sm font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center justify-center gap-2">
+                    View All At-Risk Students
+                    <span class="material-symbols-outlined" style="font-size: 16px;">arrow_forward</span>
+</button>
+</div>
+<!-- Transport Widget -->
+<div class="px-4 mb-6">
+<div class="bg-slate-900 dark:bg-slate-800 rounded-2xl p-5 shadow-lg text-white relative overflow-hidden">
+<!-- Subtle background decoration -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+<div class="flex items-center justify-between mb-4 relative z-10">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-white/10 rounded-lg">
+<span class="material-symbols-outlined text-warning">bus_alert</span>
+</div>
+<div>
+<h3 class="font-bold text-lg">Transport Alert</h3>
+<p class="text-white/60 text-xs">Updated 2m ago</p>
+</div>
+</div>
+</div>
+<div class="space-y-3 relative z-10">
+<div class="flex justify-between items-center bg-white/5 p-3 rounded-lg border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+<div class="flex flex-col">
+<span class="font-bold text-sm">Bus Route #4</span>
+<span class="text-xs text-white/50">North Suburbs</span>
+</div>
+<span class="text-warning font-bold text-xs bg-warning/10 px-2 py-1 rounded border border-warning/20">+25m Late</span>
+</div>
+<div class="flex justify-between items-center bg-white/5 p-3 rounded-lg border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+<div class="flex flex-col">
+<span class="font-bold text-sm">Bus Route #7</span>
+<span class="text-xs text-white/50">East Campus</span>
+</div>
+<span class="text-warning font-bold text-xs bg-warning/10 px-2 py-1 rounded border border-warning/20">+10m Late</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed bottom-24 right-4 z-40 bg-slate-900 dark:bg-primary text-white size-14 rounded-full shadow-xl shadow-slate-900/20 flex items-center justify-center hover:scale-105 active:scale-95 transition-all group">
+<span class="material-symbols-outlined group-hover:rotate-90 transition-transform duration-300" style="font-size: 28px;">add</span>
+</button>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 w-full max-w-md bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 pb-safe pt-2 px-2 z-50 rounded-t-2xl shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.05)]">
+<div class="flex justify-around items-center h-16">
+<a class="flex flex-col items-center gap-1 w-16 text-primary relative group" href="#">
+<span class="material-symbols-outlined filled" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="text-[10px] font-bold">Pulse</span>
+<span class="absolute -top-3 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary rounded-full"></span>
+</a>
+<a class="flex flex-col items-center gap-1 w-16 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="text-[10px] font-medium">Academics</span>
+</a>
+<a class="flex flex-col items-center gap-1 w-16 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="text-[10px] font-medium">Staff</span>
+</a>
+<a class="flex flex-col items-center gap-1 w-16 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</a>
+</div>
+</nav>
+</div>
+</body></html>

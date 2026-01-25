@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Coding &amp; Robotics Hub</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#389cfa",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e293b",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display antialiased pb-24">
+<!-- Top App Bar -->
+<div class="sticky top-0 z-10 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm p-4 pb-2 border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 ring-2 ring-primary/20" data-alt="User profile avatar showing a smiling student" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDO_2HB3JjSIOJL7FoYH6RnAOH8NEYjOyXrEu2O4oE36aaqfEA2rjnPIOUtL_1b7N2SywvortnEIx8g58MePhbdJGcr0mzJJh0r0_VgU9ccJ-s3DO1PRtXCmBQ05S7PzJVgXxyFu-ePqYMlcMW2pqESZE4BPUEmoMexpiUKYax1iCr4bvwvm5WusSkzPGav4jnLRhO7J6e_3vnp6zGCxtRD41sECL69wov0GDWmvjohnakYeYNim3ZPISoNOH9YzaiyFTO9F79yfww");'>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-primary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white dark:border-background-dark">
+                        Lvl 5
+                    </div>
+</div>
+<div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight">Hi, Sarah!</h2>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-medium">Ready to code?</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex items-center justify-center size-10 rounded-full bg-white dark:bg-surface-dark shadow-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors relative">
+<span class="material-symbols-outlined text-[24px]">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border border-white dark:border-surface-dark"></span>
+</button>
+</div>
+</div>
+</div>
+<!-- Profile Stats -->
+<div class="px-4 py-4">
+<div class="flex gap-3">
+<div class="flex flex-1 flex-col gap-1 rounded-xl bg-white dark:bg-surface-dark shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none p-3 items-center text-center border border-slate-100 dark:border-slate-800">
+<div class="bg-blue-50 dark:bg-blue-900/20 p-2 rounded-full mb-1 text-primary">
+<span class="material-symbols-outlined text-[20px]">psychology</span>
+</div>
+<p class="text-slate-900 dark:text-white text-xl font-bold leading-tight">Master</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-normal">Tech Rank</p>
+</div>
+<div class="flex flex-1 flex-col gap-1 rounded-xl bg-white dark:bg-surface-dark shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none p-3 items-center text-center border border-slate-100 dark:border-slate-800">
+<div class="bg-amber-50 dark:bg-amber-900/20 p-2 rounded-full mb-1 text-amber-500">
+<span class="material-symbols-outlined text-[20px]">bolt</span>
+</div>
+<p class="text-slate-900 dark:text-white text-xl font-bold leading-tight">1,250</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-normal">XP Earned</p>
+</div>
+<div class="flex flex-1 flex-col gap-1 rounded-xl bg-white dark:bg-surface-dark shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none p-3 items-center text-center border border-slate-100 dark:border-slate-800">
+<div class="bg-emerald-50 dark:bg-emerald-900/20 p-2 rounded-full mb-1 text-emerald-500">
+<span class="material-symbols-outlined text-[20px]">emoji_events</span>
+</div>
+<p class="text-slate-900 dark:text-white text-xl font-bold leading-tight">3</p>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-normal">Badges</p>
+</div>
+</div>
+</div>
+<!-- Current Mission Card -->
+<div class="px-4 pb-2">
+<div class="flex items-center justify-between mb-3">
+<h2 class="text-slate-900 dark:text-white text-lg font-bold">Current Mission</h2>
+<a class="text-primary text-sm font-medium hover:underline" href="#">View All</a>
+</div>
+<div class="flex flex-col items-stretch justify-start rounded-2xl bg-white dark:bg-surface-dark shadow-[0_4px_20px_rgba(0,0,0,0.06)] dark:shadow-none overflow-hidden border border-slate-100 dark:border-slate-800 group cursor-pointer transition-transform active:scale-[0.99]">
+<div class="relative w-full h-40 bg-slate-200 dark:bg-slate-700">
+<div class="absolute inset-0 bg-center bg-no-repeat bg-cover" data-alt="A small robot following a black line on a white surface" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC_Gb__XpUO8CyWPEjLpyfbnUkwC9rooJMIdj6bDF7vwMLZSunxhdZdoVVxALaMYUGAigoAmh2gwPBlVXrywWPA5p1WSlZXnLx0zEUJBX3MvKZgPACHZ2Wjdrlkww7UilZIo2dnNXs42RJ83aYv2Dw7KmmFzh1ZcuVZOUagkB2wNNWo7qA7uYFdJKWuZFKU1I-zzLA3pLil_yzMXED-5uuK6f1iVp4z63REbJDUDL5pTmLqab-DlGf8e7lFymg9apuGTFxA7TcF1-w");'>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute bottom-3 left-4 right-4">
+<div class="flex justify-between items-end">
+<span class="bg-white/20 backdrop-blur-md text-white text-xs px-2 py-1 rounded-lg border border-white/10">Robotics 101</span>
+</div>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight">Build a Line-Following Bot</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Module 4: Sensor Integration</p>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex justify-between text-xs font-medium">
+<span class="text-primary">60% Complete</span>
+<span class="text-slate-400">3/5 Tasks</span>
+</div>
+<div class="h-2 w-full bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full w-[60%] shadow-[0_0_10px_rgba(56,156,250,0.5)]"></div>
+</div>
+</div>
+<button class="mt-2 flex w-full cursor-pointer items-center justify-center rounded-xl h-10 bg-primary text-white text-sm font-bold shadow-lg shadow-blue-500/30 hover:bg-blue-600 transition-colors">
+                    Continue Challenge
+                </button>
+</div>
+</div>
+</div>
+<!-- Competitions Zone -->
+<div class="pt-6 pb-2">
+<div class="px-4 flex items-center justify-between mb-3">
+<h2 class="text-slate-900 dark:text-white text-xl font-bold">Competitions</h2>
+<span class="flex size-8 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-primary">
+<span class="material-symbols-outlined text-[20px]">trophy</span>
+</span>
+</div>
+<div class="px-4 flex flex-col gap-3">
+<!-- Competition Item 1 -->
+<div class="flex p-3 gap-3 bg-white dark:bg-surface-dark rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
+<div class="flex flex-col items-center justify-center w-16 bg-orange-50 dark:bg-orange-900/20 rounded-lg text-orange-600 dark:text-orange-400 shrink-0 border border-orange-100 dark:border-orange-900/30">
+<span class="text-xs font-bold uppercase tracking-wider mt-1">OCT</span>
+<span class="text-2xl font-black leading-none mb-1">24</span>
+</div>
+<div class="flex-1 flex flex-col justify-center">
+<div class="flex items-center gap-2 mb-1">
+<span class="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase">Live</span>
+<h3 class="text-slate-900 dark:text-white font-bold text-sm truncate">Inter-School Robo-Wars</h3>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs line-clamp-1">Submit your autonomous bot code by 5 PM.</p>
+</div>
+<button class="self-center size-9 flex items-center justify-center rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+<!-- Competition Item 2 -->
+<div class="flex p-3 gap-3 bg-white dark:bg-surface-dark rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
+<div class="flex flex-col items-center justify-center w-16 bg-purple-50 dark:bg-purple-900/20 rounded-lg text-purple-600 dark:text-purple-400 shrink-0 border border-purple-100 dark:border-purple-900/30">
+<span class="text-xs font-bold uppercase tracking-wider mt-1">NOV</span>
+<span class="text-2xl font-black leading-none mb-1">02</span>
+</div>
+<div class="flex-1 flex flex-col justify-center">
+<div class="flex items-center gap-2 mb-1">
+<h3 class="text-slate-900 dark:text-white font-bold text-sm truncate">Grade 10 Python Hackathon</h3>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs line-clamp-1">Join a team of 3. Solve logic puzzles.</p>
+</div>
+<button class="self-center h-8 px-3 flex items-center justify-center rounded-lg bg-primary/10 text-primary text-xs font-bold">
+                    Join
+                </button>
+</div>
+</div>
+</div>
+<!-- Featured Challenges / Learning Paths -->
+<div class="pt-6">
+<div class="px-4 mb-3">
+<h2 class="text-slate-900 dark:text-white text-xl font-bold">Explore Topics</h2>
+</div>
+<div class="flex overflow-x-auto pb-6 px-4 gap-4 snap-x snap-mandatory [-ms-scrollbar-style:none] [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden">
+<!-- Card 1 -->
+<div class="snap-center shrink-0 w-60 flex flex-col gap-3 group">
+<div class="w-full aspect-video bg-slate-200 dark:bg-slate-700 rounded-xl overflow-hidden relative shadow-sm">
+<div class="absolute inset-0 bg-center bg-no-repeat bg-cover transition-transform duration-500 group-hover:scale-110" data-alt="Colorful building blocks representing block coding interface" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDNrODMrFdgkstjUKXa4hHRmY-qUVeEr-s9hd2HX48VkXjCxqVpNJueSsAGJuA2K3A4TMMAPlurwg3Yi8S6-0pcPQLrlaervEXBxtpQkE1gVVo-FI9V3NOSuFm09Dao-ujCuRzXp3vEHHJCJsi7CY5_N_SmIvBMeVeeyGKo8agmxfv5BYNpFxtnleqfsn5lsS0pBAKTtVZhnfdvcp1fH3nr6NbA1AaYP6mWj4Fd6cVV8LVuG38uW3CcarKB32XEnpqefB4eq_Y5P2w");'>
+</div>
+<div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
+<div class="absolute top-2 left-2 bg-white/90 dark:bg-black/60 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-slate-800 dark:text-white">Beginner</div>
+</div>
+<div>
+<h4 class="text-slate-900 dark:text-white font-bold text-base">Intro to Block Coding</h4>
+<p class="text-slate-500 dark:text-slate-400 text-xs mt-1">Master loops and variables visually.</p>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="snap-center shrink-0 w-60 flex flex-col gap-3 group">
+<div class="w-full aspect-video bg-slate-200 dark:bg-slate-700 rounded-xl overflow-hidden relative shadow-sm">
+<div class="absolute inset-0 bg-center bg-no-repeat bg-cover transition-transform duration-500 group-hover:scale-110" data-alt="Arduino board with wires and LEDs" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBZHrd-mnEobOH8UmfApl4PeDEaK2f815uv1UZn0Pkg3sz__TbxvVVIYd3N2OZ6nk440oUWwrP0DuxTtf2ByNJ2Pz8FQ2EWn2kT4U5q7No5WRlUwQLJyFDeHvy4nQfjdaCgPXq6QkXA6hmRFcPlLMVUFcDvJrl1OuaAt_9jWxGayWLgmIb-WthcSPKv8Fq75HklB3zaPMr_3ZmG32o8njHxLhMcMqYkSKmldVcrOtnYX6e8dViFJC4ZlASDrjxVyB1mcztcKqz0xCM");'>
+</div>
+<div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
+<div class="absolute top-2 left-2 bg-white/90 dark:bg-black/60 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-slate-800 dark:text-white">Intermediate</div>
+</div>
+<div>
+<h4 class="text-slate-900 dark:text-white font-bold text-base">Arduino Basics</h4>
+<p class="text-slate-500 dark:text-slate-400 text-xs mt-1">Control hardware with C++ code.</p>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="snap-center shrink-0 w-60 flex flex-col gap-3 group">
+<div class="w-full aspect-video bg-slate-200 dark:bg-slate-700 rounded-xl overflow-hidden relative shadow-sm">
+<div class="absolute inset-0 bg-center bg-no-repeat bg-cover transition-transform duration-500 group-hover:scale-110" data-alt="Computer screen displaying Python code logic" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD8T6AnvmvF0bx1JUGcW6Y1fQhkJSN7bNX40tVrKGO7PP32-Jpf-3GvC-krozxtcB_VauA2orH0mxMrFKhiH7gwem6VpH6_wepeXD6gfv3f_ABQcfGsOu-k1JrOZp45DrSsJH-ekwwMqf-xqeRTjcC0rUfwKImOcbl7RG2d0drftT0apegKyC4GUpjkutJ4f-WLY_5cFTnuw_nFrTRMIgruEzM4eDrl8sYuMGXrCUX321H3VDLz_pjIqSJv1cvbU191J7pxeG94GZ0");'>
+</div>
+<div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
+<div class="absolute top-2 left-2 bg-white/90 dark:bg-black/60 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-slate-800 dark:text-white">Advanced</div>
+</div>
+<div>
+<h4 class="text-slate-900 dark:text-white font-bold text-base">Python Logic Puzzles</h4>
+<p class="text-slate-500 dark:text-slate-400 text-xs mt-1">Algorithmic thinking challenges.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation -->
+<div class="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-background-dark/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 pb-safe">
+<div class="flex justify-around items-center h-16 max-w-lg mx-auto">
+<button class="flex flex-col items-center justify-center gap-1 w-full h-full text-slate-400 dark:text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[24px]">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-1 w-full h-full text-slate-400 dark:text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[24px]">school</span>
+<span class="text-[10px] font-medium">Learn</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-1 w-full h-full text-primary relative">
+<div class="absolute -top-6 bg-primary rounded-full p-3 shadow-lg shadow-blue-500/40 border-4 border-white dark:border-background-dark transform transition-transform hover:-translate-y-1">
+<span class="material-symbols-outlined text-white text-[24px]">smart_toy</span>
+</div>
+<span class="text-[10px] font-bold translate-y-3">Hub</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-1 w-full h-full text-slate-400 dark:text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[24px]">leaderboard</span>
+<span class="text-[10px] font-medium">Rank</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-1 w-full h-full text-slate-400 dark:text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[24px]">person</span>
+<span class="text-[10px] font-medium">Profile</span>
+</button>
+</div>
+</div>
+<!-- Spacing for bottom nav safe area -->
+<div class="h-6"></div>
+</body></html>
