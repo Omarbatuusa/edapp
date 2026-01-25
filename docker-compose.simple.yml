@@ -1,0 +1,67 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: edapp
+      POSTGRES_PASSWORD: EdApp2026SecureDB
+      POSTGRES_DB: edapp_production
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - edapp_network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U edapp" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    command: redis-server --requirepass EdApp2026SecureRedis
+    volumes:
+      - redis_data:/data
+    networks:
+      - edapp_network
+
+  api:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://edapp:EdApp2026SecureDB@db:5432/edapp_production
+      - REDIS_URL=redis://:EdApp2026SecureRedis@redis:6379
+      - PORT=3333
+    volumes:
+      - ./firebase-service-account.json:/usr/src/app/firebase-service-account.json:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - edapp_network
+
+  proxy:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/html:/usr/share/nginx/html:ro
+    depends_on:
+      - api
+    networks:
+      - edapp_network
+
+networks:
+  edapp_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:

@@ -1,0 +1,249 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Design Tokens - Colors */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+
+    /* App Container */
+    --app-max-width: 480px;
+    --app-padding: 1rem;
+
+    /* Transitions */
+    --transition-slide: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fade: 200ms ease-in-out;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+  }
+}
+
+@layer base {
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* App Container - Centered on Desktop */
+.app-container {
+  width: 100%;
+  max-width: var(--app-max-width);
+  margin: 0 auto;
+  padding: var(--app-padding);
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Mobile-App Page Wrapper */
+.app-page {
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, hsl(var(--background)), hsl(var(--muted)));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Slide Transitions */
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-bottom {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.slide-in-right {
+  animation: slide-in-right var(--transition-slide);
+}
+
+.slide-in-left {
+  animation: slide-in-left var(--transition-slide);
+}
+
+.slide-in-bottom {
+  animation: slide-in-bottom var(--transition-slide);
+}
+
+.fade-in {
+  animation: fade-in var(--transition-fade);
+}
+
+/* Card Enhancements */
+.card-elevated {
+  @apply shadow-xl border-2 transition-all duration-300;
+}
+
+.card-elevated:hover {
+  @apply shadow-2xl scale-[1.02];
+}
+
+/* Role Card Specific Styles */
+.role-card {
+  @apply relative rounded-xl border-2 bg-white p-6 transition-all duration-200 ease-in-out;
+  @apply hover:shadow-lg hover:scale-105;
+}
+
+.role-card.selected {
+  @apply border-primary ring-2 ring-primary ring-offset-2;
+}
+
+.role-card:not(.selected) {
+  @apply border-gray-200 hover:border-primary;
+}
+
+/* Button Outline Behavior */
+.btn-outline-effect {
+  @apply relative;
+}
+
+.btn-outline-effect::after {
+  content: '';
+  @apply absolute inset-0 rounded-lg border-2 border-transparent;
+  @apply transition-all duration-200;
+  margin: -2px;
+}
+
+.btn-outline-effect:active::after {
+  @apply border-primary;
+  margin: -4px;
+}
+
+/* Form Field Outline */
+.input-outline-effect {
+  @apply transition-all duration-200;
+}
+
+.input-outline-effect:focus {
+  @apply ring-2 ring-primary ring-offset-2;
+}
+
+/* Smooth Page Transitions */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity var(--transition-fade), transform var(--transition-slide);
+}
+
+.page-transition-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity var(--transition-fade), transform var(--transition-slide);
+}
+
+/* Utility Classes */
+.text-gradient {
+  @apply bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent;
+}
+
+.bg-app-gradient {
+  @apply bg-gradient-to-b from-gray-50 to-gray-100;
+}
+
+.bg-app-gradient-dark {
+  @apply bg-gradient-to-b from-gray-900 to-gray-800;
+}
+
+/* Responsive Breakpoints */
+@media (min-width: 768px) {
+  .app-container {
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .app-container {
+    padding: 2rem;
+  }
+}
