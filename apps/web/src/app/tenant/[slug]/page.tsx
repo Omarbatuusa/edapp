@@ -1,187 +1,126 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Users, GraduationCap, Baby, Shield } from "lucide-react"
-import { auth } from "@/lib/firebase"
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"
-import { apiClient } from "@/lib/api-client"
+import { use, useState } from "react"
 import { useRouter } from "next/navigation"
-import { use, useEffect, useState } from "react"
-import AppContainer from "@/components/layout/AppContainer"
+import Image from "next/image"
+import { AuthFooter } from "@/components/layout/AuthFooter"
+import { ThemeToggle } from "@/components/discovery/theme-toggle"
+import { HelpPopup } from "@/components/discovery/help-popup"
 
-export default function TenantLoginPage({ params }: { params: Promise<{ slug: string }> }) {
-    const router = useRouter()
+// Mock Tenant Data (In production, fetch from API)
+const MOCK_TENANT = {
+    name: "University of Excellence",
+    campus: "Main Campus • London",
+    logoUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuC96FXTYpIW1fqA_8czdGZvU6P_lFoVuIZZ1lhBzMSykuIEyQEElOa0-AB8eFKKQhEUUcNKGDznJwQTXAVT5Q6tSK6xbDteUL38WpifPHGqw5jvjvBAxtZr8tnMiFQ1Iazh_k1yw89QLWwMV4gDr5e0nBFuStsd9n1pq7B9u8kideTnBdlz3T3EuCJ9JcF7qnH9S-Xca5wX-eyf59mdPPU-dTyFFV0Hjr1Dh710MQq_kKGssRnXVxovzURFa0Z67wQZZcrGd7RAU1w"
+}
+
+export default function TenantConfirmationPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = use(params)
-    const [lastRole, setLastRole] = useState<string | null>(null)
+    const router = useRouter()
+    const [showHelp, setShowHelp] = useState(false)
 
-    useEffect(() => {
-        const stored = localStorage.getItem(`lastRole_${slug}`)
-        if (stored) {
-            setLastRole(stored)
-        }
-    }, [slug])
+    const handleContinue = () => {
+        router.push(`/tenant/${slug}/login`)
+    }
 
-    const handleRoleSelect = async (role: string) => {
-        localStorage.setItem(`lastRole_${slug}`, role)
-        setLastRole(role)
-
-        if (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
-            alert("Firebase API Key is missing. Please configure environment variables.");
-            return;
-        }
-
-        try {
-            const provider = new GoogleAuthProvider();
-            const result = await signInWithPopup(auth, provider);
-            const token = await result.user.getIdToken();
-
-            const response = await apiClient.post('/auth/login', { token });
-            console.log("Login Response:", response.data);
-
-            alert(`Welcome back, ${result.user.displayName}! Role: ${response.data.user.role}`);
-
-        } catch (error: any) {
-            console.error("Login Failed", error);
-            alert(`Login Failed: ${error.message}`);
-        }
+    const handleChangeSchool = () => {
+        // Navigate back to discovery via full URL redirect
+        const protocol = window.location.protocol
+        const isLocalhost = window.location.hostname.includes('localhost')
+        window.location.href = isLocalhost
+            ? `${protocol}//localhost:3000`
+            : `${protocol}//app.edapp.co.za`
     }
 
     const handleApplyNow = () => {
-        if (typeof window !== 'undefined') {
-            const protocol = window.location.protocol
-            const isLocalhost = window.location.hostname.includes('localhost')
-
-            if (isLocalhost) {
-                window.location.href = `${protocol}//apply-${slug}.localhost:3000`
-            } else {
-                window.location.href = `${protocol}//apply-${slug}.edapp.co.za`
-            }
-        }
+        const protocol = window.location.protocol
+        const isLocalhost = window.location.hostname.includes('localhost')
+        const applyUrl = isLocalhost
+            ? `${protocol}//apply-${slug}.localhost:3000`
+            : `${protocol}//apply-${slug}.edapp.co.za`
+        window.location.href = applyUrl
     }
 
-    const roles = [
-        {
-            id: 'admin',
-            title: 'Admin',
-            description: 'School administrators and management',
-            icon: Shield,
-            color: 'indigo'
-        },
-        {
-            id: 'staff',
-            title: 'Staff',
-            description: 'Teachers and staff members',
-            icon: Users,
-            color: 'blue'
-        },
-        {
-            id: 'student',
-            title: 'Student',
-            description: 'Access your courses and grades',
-            icon: GraduationCap,
-            color: 'green'
-        },
-        {
-            id: 'parent',
-            title: 'Parent',
-            description: "View your child's progress",
-            icon: Baby,
-            color: 'purple'
-        }
-    ]
-
     return (
-        <AppContainer>
-            <div className="w-full max-w-4xl mx-auto space-y-8 fade-in">
-                <div className="text-center space-y-2">
-                    <h1 className="text-3xl font-bold text-gradient">Welcome to {slug.toUpperCase()}</h1>
-                    <p className="text-muted-foreground">Select your portal to continue</p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {roles.map((role, index) => {
-                        const Icon = role.icon
-                        const isLastRole = lastRole === role.id
-
-                        return (
-                            <button
-                                key={role.id}
-                                onClick={() => handleRoleSelect(role.id)}
-                                className={`role-card ${isLastRole ? 'selected' : ''}`}
-                                style={{
-                                    animationDelay: `${index * 100}ms`
-                                }}
-                            >
-                                {isLastRole && (
-                                    <div className="absolute -top-2 -right-2 bg-primary text-white text-xs px-2 py-1 rounded-full slide-in-bottom">
-                                        Last used
-                                    </div>
-                                )}
-
-                                <div className="flex flex-col items-center text-center space-y-4">
-                                    <div className={`
-                    p-4 rounded-full transition-colors duration-200
-                    ${isLastRole
-                                            ? 'bg-primary/10'
-                                            : 'bg-gray-100 group-hover:bg-primary/10'
-                                        }
-                  `}>
-                                        <Icon className={`
-                      h-8 w-8 transition-colors duration-200
-                      ${isLastRole
-                                                ? 'text-primary'
-                                                : 'text-gray-600 group-hover:text-primary'
-                                            }
-                    `} />
-                                    </div>
-
-                                    <div>
-                                        <h3 className="font-semibold text-lg">{role.title}</h3>
-                                        <p className="text-sm text-muted-foreground mt-1">
-                                            {role.description}
-                                        </p>
-                                    </div>
-
-                                    <Button
-                                        className={`
-                      w-full transition-all btn-outline-effect
-                      ${isLastRole
-                                                ? 'bg-primary hover:bg-primary/90'
-                                                : 'bg-gray-900 hover:bg-gray-800'
-                                            }
-                    `}
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            handleRoleSelect(role.id)
-                                        }}
-                                    >
-                                        Login as {role.title}
-                                    </Button>
-                                </div>
-                            </button>
-                        )
-                    })}
-                </div>
-
-                {/* Apply Now Card */}
-                <div className="text-center slide-in-bottom">
+        <div className="bg-[#f6f7f8] dark:bg-[#101922] text-[#0d141b] dark:text-slate-100 min-h-screen flex flex-col font-display transition-colors duration-300">
+            {/* Header - consistent */}
+            <header className="flex items-center justify-between p-4 sticky top-0 bg-[#f6f7f8]/80 dark:bg-[#101922]/80 backdrop-blur-md z-10">
+                <button
+                    onClick={handleChangeSchool}
+                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors"
+                    aria-label="Back"
+                >
+                    <span className="material-symbols-outlined text-2xl">chevron_left</span>
+                </button>
+                <div className="flex items-center gap-1">
+                    <ThemeToggle />
                     <button
-                        onClick={handleApplyNow}
-                        className="inline-flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 hover:border-primary hover:text-primary transition-all duration-200"
+                        onClick={() => setShowHelp(true)}
+                        className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors"
+                        aria-label="Help"
                     >
-                        Not a current learner or parent? <span className="ml-1 font-semibold">Apply Now →</span>
+                        <span className="material-symbols-outlined text-2xl">help_outline</span>
+                    </button>
+                </div>
+            </header>
+
+            {/* Main Content - centered */}
+            <main className="flex-1 flex flex-col items-center justify-center px-6 pb-8 max-w-md mx-auto w-full">
+                {/* Tenant Logo */}
+                <div className="relative h-24 w-24 rounded-full overflow-hidden border-4 border-white dark:border-slate-800 shadow-lg mb-6">
+                    <Image
+                        src={MOCK_TENANT.logoUrl}
+                        alt={MOCK_TENANT.name}
+                        fill
+                        className="object-cover"
+                        priority
+                    />
+                </div>
+
+                {/* Tenant Name & Campus */}
+                <h1 className="text-2xl font-bold tracking-tight text-center">
+                    {MOCK_TENANT.name}
+                </h1>
+                <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 text-center italic">
+                    {MOCK_TENANT.campus}
+                </p>
+
+                {/* Actions */}
+                <div className="w-full mt-10 space-y-3 max-w-sm">
+                    {/* Primary: Continue to Login */}
+                    <button
+                        onClick={handleContinue}
+                        className="w-full h-14 bg-primary text-white font-semibold rounded-xl active:scale-[0.98] transition-all flex items-center justify-center"
+                    >
+                        Continue to Login
+                    </button>
+
+                    {/* Secondary: Change school */}
+                    <button
+                        onClick={handleChangeSchool}
+                        className="w-full h-12 text-primary font-medium active:opacity-60 transition-opacity"
+                    >
+                        Change school
                     </button>
                 </div>
 
-                {/* Footer */}
-                <div className="text-center space-y-2 pt-8">
-                    <div className="flex justify-center space-x-4 text-xs text-gray-500">
-                        <a href="/privacy" className="hover:text-gray-700 transition-colors">Privacy Policy</a>
-                        <span>•</span>
-                        <a href="/terms" className="hover:text-gray-700 transition-colors">Terms of Service</a>
-                    </div>
+                {/* Apply Now Link */}
+                <div className="mt-8 text-center">
+                    <p className="text-sm text-slate-400">
+                        Not current learner or parent?{' '}
+                        <button
+                            onClick={handleApplyNow}
+                            className="text-primary font-medium hover:underline"
+                        >
+                            Apply Now
+                        </button>
+                    </p>
                 </div>
-            </div>
-        </AppContainer>
+            </main>
+
+            <AuthFooter />
+
+            <HelpPopup isOpen={showHelp} onClose={() => setShowHelp(false)} />
+        </div>
     )
 }

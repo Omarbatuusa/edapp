@@ -11,9 +11,8 @@ export function middleware(request: NextRequest) {
     // Route based on domain
     if (hostname.startsWith('app.') || hostname === 'localhost' || hostname.startsWith('localhost:')) {
         // app.edapp.co.za -> Discovery
-        if (!url.pathname.startsWith('/discovery') && url.pathname === '/') {
-            url.pathname = '/discovery';
-            return NextResponse.rewrite(url);
+        if (url.pathname === '/') {
+            return NextResponse.next();
         }
     } else if (hostname.startsWith('admin.')) {
         // admin.edapp.co.za -> Platform Admin Login
@@ -29,9 +28,9 @@ export function middleware(request: NextRequest) {
             return NextResponse.rewrite(url);
         }
     } else if (tenant) {
-        // {tenant}.edapp.co.za -> Tenant Login
+        // {tenant}.edapp.co.za -> Tenant Confirmation (NOT directly to login)
         if (!url.pathname.startsWith('/tenant') && url.pathname === '/') {
-            url.pathname = `/tenant/${tenant}/login`;
+            url.pathname = `/tenant/${tenant}`;
             return NextResponse.rewrite(url);
         }
     }

@@ -2,6 +2,8 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useState } from "react"
+import { AuthProvider } from "@/contexts/AuthContext"
+import { ThemeProvider } from "next-themes"
 
 export default function Providers({ children }: { children: React.ReactNode }) {
     const [queryClient] = useState(() => new QueryClient({
@@ -14,7 +16,11 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 
     return (
         <QueryClientProvider client={queryClient}>
-            {children}
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+                <AuthProvider>
+                    {children}
+                </AuthProvider>
+            </ThemeProvider>
         </QueryClientProvider>
     )
 }

@@ -183,7 +183,7 @@ export default function ApplicantPortalPage() {
                                             </button>
                                         </p>
                                     )}
-                                </p>
+                                </div>
                             </form>
                         </CardContent>
                     </Card>

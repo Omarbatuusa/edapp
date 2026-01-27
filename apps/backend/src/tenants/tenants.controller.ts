@@ -12,4 +12,12 @@ export class TenantsController {
         if (!tenant) throw new NotFoundException('Tenant not found');
         return tenant;
     }
+
+    @Get('lookup-by-code')
+    async lookupByCode(@Query('code') code: string) {
+        if (!code) return null;
+        const tenant = await this.tenantsService.findByCode(code.toUpperCase());
+        if (!tenant) throw new NotFoundException('School not found');
+        return tenant;
+    }
 }

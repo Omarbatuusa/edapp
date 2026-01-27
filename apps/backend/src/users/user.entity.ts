@@ -1,15 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { Tenant } from '../tenants/tenant.entity';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 
-export enum UserRole {
-    PLATFORM_ADMIN = 'platform_admin', // admin.edapp.co.za
-    ADMIN = 'admin',
-    STAFF = 'staff',
-    HEAD_OF_DEPARTMENT = 'hod',
-    TEACHER = 'teacher',
-    PARENT = 'parent',
-    LEARNER = 'learner',
-    APPLICANT = 'applicant' // apply-{tenant}.edapp.co.za
+export enum UserStatus {
+    ACTIVE = 'active',
+    DISABLED = 'disabled'
 }
 
 @Entity('users')
@@ -21,48 +14,56 @@ export class User {
     email: string;
 
     @Column({ nullable: true })
-    firebaseUid: string;
-
-    @Column({ type: 'enum', enum: UserRole, default: UserRole.LEARNER })
-    role: UserRole;
+    phone_e164: string; // E.164 format: +27123456789
 
     @Column({ nullable: true })
-    firstName: string;
+    display_name: string;
 
     @Column({ nullable: true })
-    lastName: string;
+    first_name: string;
 
-    // Learner Authentication
+    @Column({ nullable: true })
+    last_name: string;
+
+    // Password auth (optional - for email/password login)
+    @Column({ nullable: true })
+    password_hash: string;
+
+    // Firebase auth (optional - for Google/Apple SSO)
+    @Column({ nullable: true })
+    firebase_uid: string;
+
+    // Learner-specific fields
     @Column({ nullable: true, unique: true })
-    studentNumber: string; // for learner login
+    student_number: string;
 
     @Column({ nullable: true })
-    pinHash: string; // bcrypt hash of PIN (4-6 digits)
+    pin_hash: string; // bcrypt hash of PIN (4-6 digits)
 
     // Security & Rate Limiting
     @Column({ default: 0 })
-    loginAttempts: number;
+    login_attempts: number;
 
     @Column({ type: 'timestamp', nullable: true })
-    lastLoginAt: Date;
+    last_login_at: Date;
 
     @Column({ type: 'timestamp', nullable: true })
-    lockedUntil: Date | null; // progressive lockout
+    locked_until: Date | null;
 
     // Push Notifications (FCM)
-    @Column({ type: 'simple-array', nullable: true })
-    deviceTokens: string[]; // FCM device tokens
+    @Column({ type: 'jsonb', nullable: true, default: [] })
+    device_tokens: string[];
 
-    @ManyToOne(() => Tenant)
-    @JoinColumn({ name: 'tenantId' })
-    tenant: Tenant;
-
-    @Column()
-    tenantId: string;
+    @Column({ type: 'enum', enum: UserStatus, default: UserStatus.ACTIVE })
+    status: UserStatus;
 
     @CreateDateColumn()
-    createdAt: Date;
+    created_at: Date;
 
     @UpdateDateColumn()
-    updatedAt: Date;
+    updated_at: Date;
+
+    // Roles are managed via role_assignments table (not directly on user)
+    // @OneToMany(() => RoleAssignment, assignment => assignment.user)
+    // role_assignments: RoleAssignment[];
 }
