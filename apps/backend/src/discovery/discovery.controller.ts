@@ -1,71 +1,35 @@
-import { Controller, Post, Body, Get, Param, Req, BadRequestException, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Headers, HttpException, HttpStatus } from '@nestjs/common';
 import { DiscoveryService } from './discovery.service';
-import { RateLimitGuard, RateLimit } from '../auth/rate-limit.guard';
 
-@Controller('discovery')
+@Controller('v1/discovery')
 export class DiscoveryController {
-    constructor(private discoveryService: DiscoveryService) { }
+    constructor(private readonly discoveryService: DiscoveryService) { }
 
-    @Post('validate-code')
-    @UseGuards(RateLimitGuard)
-    @RateLimit(10, 60) // 10 attempts per hour
+    @Post('validate')
     async validateSchoolCode(
         @Body('code') code: string,
-        @Req() req: any
+        @Headers('x-forwarded-for') ip: string,
     ) {
-        if (!code || code.trim().length === 0) {
-            throw new BadRequestException('School code is required');
+        if (!code) {
+            throw new HttpException('School code is required', HttpStatus.BAD_REQUEST);
         }
 
-        const tenant = await this.discoveryService.findTenantByCode(code);
+        // Normalize code
+        const normalizedCode = code.trim().toUpperCase();
+
+        // Find tenant by code
+        const tenant = await this.discoveryService.findByCode(normalizedCode);
 
         if (!tenant) {
-            throw new BadRequestException('School not found');
+            throw new HttpException('School not found', HttpStatus.NOT_FOUND);
         }
 
+        // Return tenant info (without sensitive data)
         return {
-            success: true,
-            tenant: {
-                slug: tenant.slug,
-                name: tenant.name,
-                logo: tenant.logo || null,
-                campus: tenant.campus || null,
-            }
-        };
-    }
-
-    @Get('qr/:token')
-    async validateQRToken(@Param('token') token: string) {
-        // TODO: Implement QR token validation
-        // Token should be signed, short-lived, optionally one-time use
-
-        const tenant = await this.discoveryService.validateQRToken(token);
-
-        if (!tenant) {
-            throw new BadRequestException('Invalid or expired QR code');
-        }
-
-        return {
-            success: true,
-            tenant: {
-                slug: tenant.slug,
-                name: tenant.name,
-                logo: tenant.logo || null,
-                campus: tenant.campus || null,
-            }
-        };
-    }
-
-    @Post('generate-qr')
-    async generateQRCode(@Body('tenantId') tenantId: string) {
-        // Platform admin endpoint to generate QR codes for tenants
-        const qrData = await this.discoveryService.generateQRToken(tenantId);
-
-        return {
-            success: true,
-            token: qrData.token,
-            url: `https://app.edapp.co.za/q/${qrData.token}`,
-            expiresAt: qrData.expiresAt,
+            slug: tenant.slug,
+            name: tenant.name,
+            campus: tenant.campus,
+            logo: tenant.logo_url,
         };
     }
 }

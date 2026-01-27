@@ -1,69 +1,63 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Brand } from '../brands/brand.entity';
+
+export enum TenantStatus {
+    ACTIVE = 'active',
+    PAUSED = 'paused',
+    ARCHIVED = 'archived'
+}
 
 @Entity('tenants')
 export class Tenant {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
+    // Brand relationship (grouping only)
+    @ManyToOne(() => Brand, { nullable: true })
+    @JoinColumn({ name: 'brand_id' })
+    brand: Brand;
+
+    @Column({ nullable: true })
+    brand_id: string;
+
     @Column({ unique: true })
-    name: string;
+    tenant_slug: string; // e.g., rainbow, allied, lia, jeppe
 
     @Column({ unique: true })
-    slug: string; // school code or subdomain part
+    school_code: string; // AAA## format e.g., RAI01, ALL01, LIA01, JEP01
 
-    @Column({ type: 'simple-array', nullable: true })
-    hosts: string[]; // e.g. ["lia.edapp.co.za", "app.edapp.co.za"]
+    @Column()
+    school_name: string; // Display name e.g., "Rainbow City Schools"
 
-    @Column({ nullable: true })
-    schoolCode: string; // "LIA", "TAS"
-
-    @Column({ nullable: true })
-    logo: string; // URL to school logo
-
-    @Column({ nullable: true })
-    campus: string; // Campus or branch name
-
-    @Column({ default: true })
-    isActive: boolean;
-
-    @Column({ type: 'jsonb', nullable: true })
-    config: Record<string, any>; // branding, policies
+    @Column({ type: 'enum', enum: TenantStatus, default: TenantStatus.ACTIVE })
+    status: TenantStatus;
 
     // Adaptive Authentication Configuration
-    @Column({ type: 'jsonb', nullable: true })
-    authConfig: {
-        enableEmailPassword?: boolean;
-        enableEmailMagicLink?: boolean;
-        enableGoogleSignIn?: boolean;
-        enableAppleSignIn?: boolean;
-        enableStudentPin?: boolean;
-        pinLength?: number; // 4-6 digits
+    @Column({ type: 'jsonb', nullable: true, default: {} })
+    auth_config: {
+        enable_email_password?: boolean;
+        enable_email_magic_link?: boolean;
+        enable_google_signin?: boolean;
+        enable_apple_signin?: boolean;
+        enable_student_pin?: boolean;
+        pin_length?: number;
     };
 
-    // Tenant Branding (subtle accents only)
-    @Column({ type: 'jsonb', nullable: true })
-    brandingConfig: {
-        primaryColor?: string; // hex color for accents
-        logoUrl?: string;
-        faviconUrl?: string;
+    // Rate Limiting Configuration
+    @Column({ type: 'jsonb', nullable: true, default: {} })
+    rate_limit_config: {
+        discovery_attempts_per_hour?: number;
+        login_attempts_before_lockout?: number;
+        lockout_duration_minutes?: number;
     };
 
     // QR Code Security
     @Column({ nullable: true })
-    qrTokenSecret: string; // for signing QR tokens
-
-    // Rate Limiting Configuration
-    @Column({ type: 'jsonb', nullable: true })
-    rateLimitConfig: {
-        discoveryAttemptsPerHour?: number;
-        loginAttemptsBeforeLockout?: number;
-        lockoutDurationMinutes?: number;
-        turnstileThreshold?: number;
-    };
+    qr_token_secret: string;
 
     @CreateDateColumn()
-    createdAt: Date;
+    created_at: Date;
 
     @UpdateDateColumn()
-    updatedAt: Date;
+    updated_at: Date;
 }

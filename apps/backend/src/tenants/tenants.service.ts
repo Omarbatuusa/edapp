@@ -1,51 +1,100 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Tenant } from './tenant.entity';
+import { Tenant, TenantStatus } from './tenant.entity';
+import { TenantDomain, TenantDomainType } from './tenant-domain.entity';
 
 @Injectable()
-export class TenantsService implements OnModuleInit {
+export class TenantsService {
     constructor(
         @InjectRepository(Tenant)
-        private tenantsRepository: Repository<Tenant>,
+        private readonly tenantRepo: Repository<Tenant>,
+        @InjectRepository(TenantDomain)
+        private readonly domainRepo: Repository<TenantDomain>,
     ) { }
 
-    async onModuleInit() {
-        // Seed test tenant if not exists
-        const count = await this.tenantsRepository.count();
-        if (count === 0) {
-            console.log('Seeding initial tenant...');
-            await this.tenantsRepository.save({
-                name: 'Lakewood International Academy',
-                slug: 'lia',
-                hosts: ['lia.edapp.co.za', 'localhost'], // localhost for testing
-                schoolCode: 'LIA',
-                config: {
-                    brandColor: '#F4B400',
-                    logoUrl: 'https://via.placeholder.com/150',
-                },
-            });
-        }
+    // ========== LOOKUP METHODS ==========
+
+    /**
+     * Find tenant by hostname (e.g., lia.edapp.co.za or apply-lia.edapp.co.za)
+     * Returns tenant with portal type (app/apply)
+     */
+    async findByHost(host: string): Promise<{ tenant: Tenant; portal_type: TenantDomainType } | null> {
+        const domain = await this.domainRepo.findOne({
+            where: { host },
+            relations: ['tenant'],
+        });
+
+        if (!domain || !domain.tenant) return null;
+
+        return {
+            tenant: domain.tenant,
+            portal_type: domain.type,
+        };
     }
 
-    async findByHost(host: string): Promise<Tenant | null> {
-        // Naive array contains check (Postgres doesn't perform well with simple-array for large datasets, but fine for multi-tenant config)
-        // Actually, we load all and filter or use LIKE?
-        // simple-array stores as comma separated string.
-        // Better to just store hosts in a separate table, but for now strict requirement "simple"
-        // Let's iterate or use query builder. 
-        // Using simple-array means string matching.
-
-        // For exact match in "hosts" array stored as string: 
-        // It is "host1,host2". 
-        // We can fetch by slug if we know it, but here we only have host.
-
-        // Let's just find one where hosts LIKE %host%
-        const tenants = await this.tenantsRepository.find();
-        return tenants.find(t => t.hosts.includes(host)) || null;
+    /**
+     * Find tenant by school code (e.g., LIA01, RAI01)
+     */
+    async findBySchoolCode(code: string): Promise<Tenant | null> {
+        return this.tenantRepo.findOne({
+            where: { school_code: code.toUpperCase(), status: TenantStatus.ACTIVE },
+        });
     }
 
+    /**
+     * Find tenant by slug (e.g., lia, rainbow)
+     */
     async findBySlug(slug: string): Promise<Tenant | null> {
-        return this.tenantsRepository.findOneBy({ slug });
+        return this.tenantRepo.findOne({
+            where: { tenant_slug: slug.toLowerCase(), status: TenantStatus.ACTIVE },
+        });
+    }
+
+    /**
+     * Get all domains for a tenant
+     */
+    async getDomains(tenant_id: string): Promise<TenantDomain[]> {
+        return this.domainRepo.find({ where: { tenant_id } });
+    }
+
+    // ========== CRUD METHODS (Platform Admin only) ==========
+
+    async findAll(): Promise<Tenant[]> {
+        return this.tenantRepo.find({ where: { status: TenantStatus.ACTIVE } });
+    }
+
+    async findById(id: string): Promise<Tenant | null> {
+        return this.tenantRepo.findOne({ where: { id } });
+    }
+
+    async create(data: Partial<Tenant>): Promise<Tenant> {
+        const tenant = this.tenantRepo.create(data);
+        const saved = await this.tenantRepo.save(tenant);
+
+        // Auto-create domains
+        await this.domainRepo.save([
+            {
+                tenant_id: saved.id,
+                type: TenantDomainType.APP,
+                host: `${saved.tenant_slug}.edapp.co.za`,
+                is_primary: true,
+            },
+            {
+                tenant_id: saved.id,
+                type: TenantDomainType.APPLY,
+                host: `apply-${saved.tenant_slug}.edapp.co.za`,
+                is_primary: true,
+            },
+        ]);
+
+        return saved;
+    }
+
+    async update(id: string, data: Partial<Tenant>): Promise<Tenant | null> {
+        const tenant = await this.findById(id);
+        if (!tenant) return null;
+        Object.assign(tenant, data);
+        return this.tenantRepo.save(tenant);
     }
 }

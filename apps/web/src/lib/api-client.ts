@@ -7,15 +7,23 @@ const api = axios.create({
     },
 });
 
-api.interceptors.request.use((config) => {
+api.interceptors.request.use(async (config) => {
     // Pass Host header if doing server-side fetching, or let browser handle it
     // But for multi-tenant, we might need to explicit send a header if proxy doesn't forward it?
     // Nginx forwards Host header.
 
-    // Also attach Token if exists
-    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+    // Attach Firebase token if user is authenticated
+    if (typeof window !== 'undefined') {
+        try {
+            const { auth } = await import('@/lib/firebase');
+            const user = auth.currentUser;
+            if (user) {
+                const token = await user.getIdToken();
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+        } catch (error) {
+            console.error('Error getting auth token:', error);
+        }
     }
     return config;
 });

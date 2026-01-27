@@ -3,8 +3,20 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+
+// Entities
+import { Brand } from './brands/brand.entity';
+import { Tenant } from './tenants/tenant.entity';
+import { TenantDomain } from './tenants/tenant-domain.entity';
+import { Branch } from './branches/branch.entity';
+import { User } from './users/user.entity';
+import { RoleAssignment } from './users/role-assignment.entity';
+
+// Modules
+import { BrandsModule } from './brands/brands.module';
 import { TenantsModule } from './tenants/tenants.module';
 import { TenantsMiddleware } from './tenants/tenants.middleware';
+import { BranchesModule } from './branches/branches.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { DiscoveryModule } from './discovery/discovery.module';
@@ -31,13 +43,16 @@ import { BullModule } from '@nestjs/bullmq';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.get<string>('DATABASE_URL'),
+        entities: [Brand, Tenant, TenantDomain, Branch, User, RoleAssignment],
         autoLoadEntities: true,
         synchronize: true, // DEV only, set to false in prod
-        logging: true,
+        logging: configService.get('NODE_ENV') !== 'production',
       }),
       inject: [ConfigService],
     }),
+    BrandsModule,
     TenantsModule,
+    BranchesModule,
     AuthModule,
     UsersModule,
     DiscoveryModule,

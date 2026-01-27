@@ -3,10 +3,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DiscoveryController } from './discovery.controller';
 import { DiscoveryService } from './discovery.service';
 import { Tenant } from '../tenants/tenant.entity';
+import { TenantDomain } from '../tenants/tenant-domain.entity';
+import { Branch } from '../branches/branch.entity';
 import { RateLimitGuard } from '../auth/rate-limit.guard';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Tenant])],
+    imports: [TypeOrmModule.forFeature([Tenant, TenantDomain, Branch])],
     controllers: [DiscoveryController],
     providers: [DiscoveryService, RateLimitGuard],
     exports: [DiscoveryService],

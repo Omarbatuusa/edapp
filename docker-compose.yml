@@ -7,9 +7,10 @@ services:
     restart: always
     ports:
       - "80:80"
-      # - "443:443" # Uncomment when SSL certs are ready
+      - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
     depends_on:
       - web
       - api
@@ -20,11 +21,13 @@ services:
     build:
       context: ./apps/web
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: /v1
     container_name: edapp_web
     restart: always
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=http://localhost/v1
+      - NEXT_PUBLIC_API_URL=/v1
     expose:
       - "3000"
     networks:
@@ -36,11 +39,10 @@ services:
       dockerfile: Dockerfile
     container_name: edapp_api
     restart: always
-    environment:
-      - NODE_ENV=production
-      - PORT=3333
-      - DATABASE_URL=postgresql://postgres:postgres@database:5432/edapp
-      - REDIS_URL=redis://redis:6379
+    env_file:
+      - .env.production
+    volumes:
+      - ./firebase-service-account.json:/app/firebase-service-account.json:ro
     expose:
       - "3333"
     depends_on:
@@ -53,10 +55,8 @@ services:
     image: postgres:15-alpine
     container_name: edapp_db
     restart: always
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=edapp
+    env_file:
+      - .env.production
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:

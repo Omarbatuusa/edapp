@@ -6,12 +6,15 @@
   :root {
     /* Design Tokens - Colors */
     --background: 0 0% 100%;
+    /* #ffffff */
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
+    --primary: 210.2 88% 50%;
+    /* #137fec -> 210, 88%, 50% roughly, let's use exact hex override if possible or close HSL */
+    /* HSL for #137fec is approx 210, 88%, 50% */
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -23,7 +26,7 @@
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --ring: 210.2 88% 50%;
     --radius: 0.5rem;
 
     /* App Container */
@@ -36,14 +39,16 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 210 36% 10%;
+    /* #101922 -> 210, 36%, 10% */
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: 210 36% 10%;
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: 210 36% 10%;
     --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 210.2 88% 50%;
+    /* #137fec */
+    --primary-foreground: 210 40% 98%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
@@ -54,7 +59,7 @@
     --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    --ring: 210.2 88% 50%;
   }
 }
 
@@ -64,6 +69,23 @@
     color: hsl(var(--foreground));
     font-feature-settings: "rlig" 1, "calt" 1;
   }
+}
+
+/* Apple-Minimal Design Utilities */
+.ios-shadow {
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+}
+
+.ios-shadow-lg {
+  box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.08);
+}
+
+.selection-ring {
+  box-shadow: 0 0 0 3px hsl(var(--primary));
+}
+
+.selection-ring-subtle {
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.3);
 }
 
 /* App Container - Centered on Desktop */
@@ -246,4 +268,78 @@
   .app-container {
     padding: 2rem;
   }
+}
+
+/* App Container - Centered on desktop */
+.app-page {
+  min-height: 100vh;
+  background: hsl(var(--background));
+}
+
+.app-container {
+  max-width: var(--app-max-width);
+  margin: 0 auto;
+  padding: var(--app-padding);
+}
+
+@media (min-width: 768px) {
+  .app-container {
+    padding: 2rem;
+  }
+}
+
+/* Card Elevated Effect */
+.card-elevated {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.2s;
+}
+
+.card-elevated:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Button Outline Effect */
+.btn-outline-effect {
+  position: relative;
+}
+
+.btn-outline-effect::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border: 3px solid currentColor;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.btn-outline-effect:hover::after {
+  opacity: 0.3;
+}
+
+.btn-outline-effect:active::after {
+  opacity: 0.5;
+}
+
+/* Slide In Animation */
+@keyframes slideInBottom {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-in-bottom {
+  animation: slideInBottom 0.3s ease-out;
+}
+
+/* Custom Utilities */
+.ios-input-shadow {
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
 }
