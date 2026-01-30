@@ -21,6 +21,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { DiscoveryModule } from './discovery/discovery.module';
 import { AuditModule } from './audit/audit.module';
+import { StorageModule } from './storage/storage.module';
 
 import { BullModule } from '@nestjs/bullmq';
 
@@ -57,6 +58,7 @@ import { BullModule } from '@nestjs/bullmq';
     UsersModule,
     DiscoveryModule,
     AuditModule,
+    StorageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
