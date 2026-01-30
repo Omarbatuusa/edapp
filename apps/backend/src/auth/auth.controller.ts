@@ -1,11 +1,20 @@
-import { Controller, Post, Body, Req, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Body, Req, UnauthorizedException, NotImplementedException } from '@nestjs/common';
 import { EnhancedAuthService } from './enhanced-auth.service';
 import type { Request } from 'express';
 
+/**
+ * Auth Controller
+ * 
+ * Handles authentication endpoints for the EdApp platform.
+ * Uses Firebase Auth for token verification.
+ */
 @Controller('auth')
 export class AuthController {
     constructor(private authService: EnhancedAuthService) { }
 
+    /**
+     * Verify Firebase token and return user info
+     */
     @Post('login')
     async login(
         @Body('token') token: string,
@@ -16,21 +25,34 @@ export class AuthController {
             throw new UnauthorizedException('Token and tenant slug are required');
         }
 
-        const user = await this.authService.verifyTokenWithTenant(token, tenantSlug);
+        const result = await this.authService.verifyTokenWithTenant(token, tenantSlug);
 
+        // Return user info using actual User entity properties (snake_case)
         return {
             success: true,
-            user: {
-                id: user.id,
-                email: user.email,
-                role: user.role,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                tenantId: user.tenantId,
+            tenant: {
+                id: result.tenant.id,
+                slug: result.tenant.tenant_slug,
+                name: result.tenant.school_name,
             },
+            user: result.user ? {
+                id: result.user.id,
+                email: result.user.email,
+                display_name: result.user.display_name,
+                first_name: result.user.first_name,
+                last_name: result.user.last_name,
+            } : null,
+            firebaseUid: result.decodedToken.uid,
         };
     }
 
+    /**
+     * Learner PIN login - Stub Implementation
+     * 
+     * TODO: Full implementation requires:
+     * 1. Adding tenant_id and role to User entity
+     * 2. Implementing validateStudentPin in EnhancedAuthService
+     */
     @Post('learner/login')
     async learnerLogin(
         @Body('studentNumber') studentNumber: string,
@@ -42,35 +64,10 @@ export class AuthController {
             throw new UnauthorizedException('Student number, PIN, and tenant slug are required');
         }
 
-        const ipAddress = req.ip || req.socket.remoteAddress;
-        const result = await this.authService.validateStudentPin(
-            studentNumber,
-            pin,
-            tenantSlug,
-            ipAddress,
+        // Stub: Learner PIN login not fully implemented yet
+        // This requires User entity to have tenant_id and role fields
+        throw new NotImplementedException(
+            'Learner PIN login is not yet available. Please use Firebase authentication.'
         );
-
-        if (!result.success) {
-            if (result.lockedUntil) {
-                return {
-                    success: false,
-                    locked: true,
-                    lockedUntil: result.lockedUntil,
-                    message: 'Account temporarily locked due to too many failed attempts',
-                };
-            }
-
-            return {
-                success: false,
-                attemptsRemaining: result.attemptsRemaining,
-                message: `Invalid PIN. ${result.attemptsRemaining} attempts remaining.`,
-            };
-        }
-
-        return {
-            success: true,
-            customToken: result.customToken,
-            message: 'Login successful',
-        };
     }
 }
