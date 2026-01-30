@@ -18,18 +18,18 @@ export class DiscoveryController {
         const normalizedCode = code.trim().toUpperCase();
 
         // Find tenant by code
-        const tenant = await this.discoveryService.findByCode(normalizedCode);
+        const result = await this.discoveryService.findByCode(normalizedCode);
 
-        if (!tenant) {
+        if (!result) {
             throw new HttpException('School not found', HttpStatus.NOT_FOUND);
         }
 
         // Return tenant info (without sensitive data)
         return {
-            slug: tenant.slug,
-            name: tenant.name,
-            campus: tenant.campus,
-            logo: tenant.logo_url,
+            slug: result.tenant_slug,
+            name: result.school_name,
+            campus: result.main_branch?.name || '',
+            logo: result.main_branch?.logo_url || null,
         };
     }
 }

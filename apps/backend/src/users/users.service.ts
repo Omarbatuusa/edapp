@@ -15,7 +15,7 @@ export class UsersService {
     }
 
     async findOneByFirebaseUid(firebaseUid: string): Promise<User | null> {
-        return this.usersRepository.findOne({ where: { firebaseUid } });
+        return this.usersRepository.findOne({ where: { firebase_uid: firebaseUid } });
     }
 
     async create(userData: Partial<User>): Promise<User> {
