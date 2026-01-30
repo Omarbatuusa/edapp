@@ -23,6 +23,8 @@ COPY package*.json ./
 RUN npm ci --only=production
 
 COPY --from=development /usr/src/app/dist ./dist
-COPY firebase-service-account.json ./
+
+# Note: firebase-service-account.json is mounted via docker-compose volumes
+# This keeps sensitive credentials out of the Docker image
 
 CMD ["node", "dist/main"]
