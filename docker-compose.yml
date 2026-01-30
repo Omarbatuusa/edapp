@@ -1,3 +1,6 @@
+# EdApp Docker Compose - Production Configuration
+# SECURITY: Only reverse-proxy publishes host ports (80/443)
+# Internal services (db, redis, api, web) are isolated on private network
 version: '3.8'
 
 services:
@@ -52,6 +55,7 @@ services:
       - edapp_network
 
   database:
+    # SECURITY: No ports published - internal only (not accessible from host)
     image: postgres:15-alpine
     container_name: edapp_db
     restart: always
@@ -63,9 +67,11 @@ services:
       - edapp_network
 
   redis:
+    # SECURITY: No ports published - internal only (not accessible from host)
     image: redis:7-alpine
     container_name: edapp_redis
     restart: always
+    command: redis-server --requirepass ${REDIS_PASSWORD:-edapp_redis_secret}
     volumes:
       - redis_data:/data
     networks:
