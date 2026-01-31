@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { Brand } from '../brands/brand.entity';
+import { Branch } from '../branches/branch.entity';
 
 export enum TenantStatus {
     ACTIVE = 'active',
@@ -60,4 +61,8 @@ export class Tenant {
 
     @UpdateDateColumn()
     updated_at: Date;
+
+    // Branches relation
+    @OneToMany(() => Branch, (branch) => branch.tenant)
+    branches: Branch[];
 }

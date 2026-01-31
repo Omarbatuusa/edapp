@@ -44,11 +44,25 @@ export class TenantsService {
 
     /**
      * Find tenant by slug (e.g., lia, rainbow)
+     * Includes main branch for display
      */
-    async findBySlug(slug: string): Promise<Tenant | null> {
-        return this.tenantRepo.findOne({
+    async findBySlug(slug: string): Promise<(Tenant & { main_branch?: { branch_name: string; is_main_branch: boolean } }) | null> {
+        const tenant = await this.tenantRepo.findOne({
             where: { tenant_slug: slug.toLowerCase(), status: TenantStatus.ACTIVE },
+            relations: ['branches'],
         });
+
+        if (!tenant) return null;
+
+        // Find main branch and attach to response
+        const mainBranch = tenant.branches?.find(b => b.is_main_branch);
+        return {
+            ...tenant,
+            main_branch: mainBranch ? {
+                branch_name: mainBranch.branch_name,
+                is_main_branch: mainBranch.is_main_branch,
+            } : undefined,
+        };
     }
 
     /**
