@@ -20,4 +20,12 @@ export class TenantsController {
         if (!tenant) throw new NotFoundException('School not found');
         return tenant;
     }
+
+    @Get('lookup-by-slug')
+    async lookupBySlug(@Query('slug') slug: string) {
+        if (!slug) return null;
+        const tenant = await this.tenantsService.findBySlug(slug.toLowerCase());
+        if (!tenant) throw new NotFoundException('Tenant not found');
+        return tenant;
+    }
 }

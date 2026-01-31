@@ -1,23 +1,49 @@
 "use client"
 
-import { use, useState } from "react"
+import { use, useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { AuthFooter } from "@/components/layout/AuthFooter"
 import { ThemeToggle } from "@/components/discovery/theme-toggle"
 import { HelpPopup } from "@/components/discovery/help-popup"
 
-// Mock Tenant Data (In production, fetch from API)
-const MOCK_TENANT = {
-    name: "University of Excellence",
-    campus: "Main Campus • London",
-    logoUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuC96FXTYpIW1fqA_8czdGZvU6P_lFoVuIZZ1lhBzMSykuIEyQEElOa0-AB8eFKKQhEUUcNKGDznJwQTXAVT5Q6tSK6xbDteUL38WpifPHGqw5jvjvBAxtZr8tnMiFQ1Iazh_k1yw89QLWwMV4gDr5e0nBFuStsd9n1pq7B9u8kideTnBdlz3T3EuCJ9JcF7qnH9S-Xca5wX-eyf59mdPPU-dTyFFV0Hjr1Dh710MQq_kKGssRnXVxovzURFa0Z67wQZZcrGd7RAU1w"
+// Default logo for tenants without custom logo
+const DEFAULT_LOGO = "https://lh3.googleusercontent.com/aida-public/AB6AXuC96FXTYpIW1fqA_8czdGZvU6P_lFoVuIZZ1lhBzMSykuIEyQEElOa0-AB8eFKKQhEUUcNKGDznJwQTXAVT5Q6tSK6xbDteUL38WpifPHGqw5jvjvBAxtZr8tnMiFQ1Iazh_k1yw89QLWwMV4gDr5e0nBFuStsd9n1pq7B9u8kideTnBdlz3T3EuCJ9JcF7qnH9S-Xca5wX-eyf59mdPPU-dTyFFV0Hjr1Dh710MQq_kKGssRnXVxovzURFa0Z67wQZZcrGd7RAU1w"
+
+interface TenantData {
+    school_name: string;
+    school_code: string;
+    tenant_slug: string;
+    logo_url?: string;
 }
 
 export default function TenantConfirmationPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = use(params)
     const router = useRouter()
     const [showHelp, setShowHelp] = useState(false)
+    const [tenant, setTenant] = useState<TenantData | null>(null)
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+
+    useEffect(() => {
+        async function fetchTenant() {
+            try {
+                const res = await fetch(`/v1/tenants/lookup-by-slug?slug=${slug}`)
+                if (!res.ok) {
+                    setError('School not found')
+                    setLoading(false)
+                    return
+                }
+                const data = await res.json()
+                setTenant(data)
+            } catch (err) {
+                setError('Failed to load school data')
+            } finally {
+                setLoading(false)
+            }
+        }
+        fetchTenant()
+    }, [slug])
 
     const handleContinue = () => {
         router.push(`/tenant/${slug}/login`)
@@ -39,6 +65,27 @@ export default function TenantConfirmationPage({ params }: { params: Promise<{ s
             ? `${protocol}//apply-${slug}.localhost:3000`
             : `${protocol}//apply-${slug}.edapp.co.za`
         window.location.href = applyUrl
+    }
+
+    // Loading state
+    if (loading) {
+        return (
+            <div className="bg-[#f6f7f8] dark:bg-[#101922] text-[#0d141b] dark:text-slate-100 min-h-screen flex flex-col items-center justify-center">
+                <div className="animate-pulse">Loading...</div>
+            </div>
+        )
+    }
+
+    // Error state
+    if (error || !tenant) {
+        return (
+            <div className="bg-[#f6f7f8] dark:bg-[#101922] text-[#0d141b] dark:text-slate-100 min-h-screen flex flex-col items-center justify-center">
+                <h1 className="text-xl font-bold mb-4">{error || 'School not found'}</h1>
+                <button onClick={handleChangeSchool} className="text-primary font-medium">
+                    Go to School Discovery
+                </button>
+            </div>
+        )
     }
 
     return (
@@ -69,20 +116,20 @@ export default function TenantConfirmationPage({ params }: { params: Promise<{ s
                 {/* Tenant Logo */}
                 <div className="relative h-24 w-24 rounded-full overflow-hidden border-4 border-white dark:border-slate-800 shadow-lg mb-6">
                     <Image
-                        src={MOCK_TENANT.logoUrl}
-                        alt={MOCK_TENANT.name}
+                        src={tenant.logo_url || DEFAULT_LOGO}
+                        alt={tenant.school_name}
                         fill
                         className="object-cover"
                         priority
                     />
                 </div>
 
-                {/* Tenant Name & Campus */}
+                {/* Tenant Name & Code */}
                 <h1 className="text-2xl font-bold tracking-tight text-center">
-                    {MOCK_TENANT.name}
+                    {tenant.school_name}
                 </h1>
                 <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 text-center italic">
-                    {MOCK_TENANT.campus}
+                    School Code: {tenant.school_code}
                 </p>
 
                 {/* Actions */}
