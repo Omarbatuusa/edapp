@@ -47,21 +47,11 @@ export default function TenantConfirmationPage({ params }: { params: Promise<{ s
                 if (!res.ok) {
                     res = await fetch(`/v1/tenants/lookup-by-code?code=${slug.toUpperCase()}`)
 
-                    if (res.ok) {
-                        const data = await res.json()
-                        // Redirect to the correct tenant slug URL
-                        const protocol = window.location.protocol
-                        const isLocalhost = window.location.hostname.includes('localhost')
-                        const correctUrl = isLocalhost
-                            ? `${protocol}//${data.tenant_slug}.localhost:3000`
-                            : `${protocol}//${data.tenant_slug}.edapp.co.za`
-                        window.location.href = correctUrl
+                    if (!res.ok) {
+                        setError('School not found')
+                        setLoading(false)
                         return
                     }
-
-                    setError('School not found')
-                    setLoading(false)
-                    return
                 }
 
                 const data = await res.json()
@@ -76,7 +66,9 @@ export default function TenantConfirmationPage({ params }: { params: Promise<{ s
     }, [slug])
 
     const handleContinue = () => {
-        router.push(`/tenant/${slug}/login`)
+        // Use the correct tenant_slug from API data (handles school code access)
+        const correctSlug = tenant?.tenant_slug || slug
+        router.push(`/tenant/${correctSlug}/login`)
     }
 
     const handleChangeSchool = () => {
@@ -89,11 +81,13 @@ export default function TenantConfirmationPage({ params }: { params: Promise<{ s
     }
 
     const handleApplyNow = () => {
+        // Use the correct tenant_slug from API data
+        const correctSlug = tenant?.tenant_slug || slug
         const protocol = window.location.protocol
         const isLocalhost = window.location.hostname.includes('localhost')
         const applyUrl = isLocalhost
-            ? `${protocol}//apply-${slug}.localhost:3000`
-            : `${protocol}//apply-${slug}.edapp.co.za`
+            ? `${protocol}//apply-${correctSlug}.localhost:3000`
+            : `${protocol}//apply-${correctSlug}.edapp.co.za`
         window.location.href = applyUrl
     }
 
