@@ -34,6 +34,7 @@ export default function RoleLoginPage({ params }: { params: Promise<{ slug: stri
     const [showPassword, setShowPassword] = useState(false)
     const [scrolled, setScrolled] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [tenant, setTenant] = useState<{ school_name: string; tenant_slug: string } | null>(null)
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -48,6 +49,25 @@ export default function RoleLoginPage({ params }: { params: Promise<{ slug: stri
         window.addEventListener('scroll', handleScroll)
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
+
+    // Fetch tenant info
+    useEffect(() => {
+        async function fetchTenant() {
+            try {
+                let res = await fetch(`/v1/tenants/lookup-by-slug?slug=${slug}`)
+                if (!res.ok) {
+                    res = await fetch(`/v1/tenants/lookup-by-code?code=${slug.toUpperCase()}`)
+                }
+                if (res.ok) {
+                    const data = await res.json()
+                    setTenant(data)
+                }
+            } catch (err) {
+                // Fail silently
+            }
+        }
+        fetchTenant()
+    }, [slug])
 
     useEffect(() => {
         const enabledMethods = Object.entries(FEATURE_FLAGS.methods).filter(([_, enabled]) => enabled)
@@ -113,6 +133,12 @@ export default function RoleLoginPage({ params }: { params: Promise<{ slug: stri
             <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 text-center">
                 Select your sign in method.
             </p>
+            {/* Tenant name - small, subtle */}
+            {tenant && (
+                <p className="mt-1 text-xs text-slate-400 dark:text-slate-500 text-center">
+                    {tenant.school_name}
+                </p>
+            )}
 
             {/* Methods */}
             <div className="w-full mt-8 space-y-3 max-w-sm">
@@ -293,7 +319,7 @@ export default function RoleLoginPage({ params }: { params: Promise<{ slug: stri
     )
 
     return (
-        <div className="bg-[#f6f7f8] dark:bg-[#101922] text-[#0d141b] dark:text-slate-100 min-h-screen flex flex-col font-display transition-colors duration-300 overflow-x-hidden">
+        <div className="bg-[#f6f7f8] dark:bg-[#101922] text-[#0d141b] dark:text-slate-100 min-h-screen min-h-[100dvh] flex flex-col font-display transition-colors duration-300 overflow-x-hidden">
             {/* Header - sticky with scroll shadow */}
             <header className={`flex items-center justify-between p-4 sticky top-0 bg-[#f6f7f8]/95 dark:bg-[#101922]/95 backdrop-blur-md z-20 transition-shadow duration-200 ${scrolled ? 'shadow-md' : ''}`}>
                 <button
@@ -321,9 +347,13 @@ export default function RoleLoginPage({ params }: { params: Promise<{ slug: stri
                 {view === 'email_magic' && <EmailPasswordForm />}
             </main>
 
-            <AuthFooter />
+            {/* Footer - sticky at bottom with shadow when not scrolled to bottom */}
+            <footer className={`sticky bottom-0 bg-[#f6f7f8]/95 dark:bg-[#101922]/95 backdrop-blur-md z-20 transition-shadow duration-200 ${scrolled ? '' : 'shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]'}`}>
+                <AuthFooter />
+            </footer>
 
             <HelpPopup isOpen={showHelp} onClose={() => setShowHelp(false)} />
         </div>
     )
 }
+

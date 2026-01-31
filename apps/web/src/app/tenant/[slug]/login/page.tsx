@@ -6,6 +6,11 @@ import { AuthFooter } from "@/components/layout/AuthFooter"
 import { ThemeToggle } from "@/components/discovery/theme-toggle"
 import { HelpPopup } from "@/components/discovery/help-popup"
 
+interface TenantData {
+    school_name: string;
+    tenant_slug: string;
+}
+
 export default function RoleSelectionPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = use(params)
     const router = useRouter()
@@ -14,6 +19,7 @@ export default function RoleSelectionPage({ params }: { params: Promise<{ slug: 
     const [showHelp, setShowHelp] = useState(false)
     const [selectedRole, setSelectedRole] = useState<string | null>(null)
     const [scrolled, setScrolled] = useState(false)
+    const [tenant, setTenant] = useState<TenantData | null>(null)
 
     // Scroll shadow detection
     useEffect(() => {
@@ -21,6 +27,25 @@ export default function RoleSelectionPage({ params }: { params: Promise<{ slug: 
         window.addEventListener('scroll', handleScroll)
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
+
+    // Fetch tenant info
+    useEffect(() => {
+        async function fetchTenant() {
+            try {
+                let res = await fetch(`/v1/tenants/lookup-by-slug?slug=${slug}`)
+                if (!res.ok) {
+                    res = await fetch(`/v1/tenants/lookup-by-code?code=${slug.toUpperCase()}`)
+                }
+                if (res.ok) {
+                    const data = await res.json()
+                    setTenant(data)
+                }
+            } catch (err) {
+                // Fail silently - tenant name is optional enhancement
+            }
+        }
+        fetchTenant()
+    }, [slug])
 
     useEffect(() => {
         const stored = localStorage.getItem(`last_role_${slug}`)
@@ -34,14 +59,16 @@ export default function RoleSelectionPage({ params }: { params: Promise<{ slug: 
         setSelectedRole(roleId)
         localStorage.setItem(`last_role_${slug}`, roleId)
 
+        const correctSlug = tenant?.tenant_slug || slug
         setTimeout(() => {
-            router.push(`/tenant/${slug}/login/${roleId}`)
+            router.push(`/tenant/${correctSlug}/login/${roleId}`)
         }, 150)
     }
 
     // Back to Tenant Confirmation (the screen with school logo)
     const handleBack = () => {
-        router.push(`/tenant/${slug}`)
+        const correctSlug = tenant?.tenant_slug || slug
+        router.push(`/tenant/${correctSlug}`)
     }
 
     const roles = [
@@ -72,7 +99,7 @@ export default function RoleSelectionPage({ params }: { params: Promise<{ slug: 
     ]
 
     return (
-        <div className="bg-[#f6f7f8] dark:bg-[#101922] text-[#0d141b] dark:text-slate-100 min-h-screen flex flex-col font-display transition-colors duration-300 overflow-x-hidden">
+        <div className="bg-[#f6f7f8] dark:bg-[#101922] text-[#0d141b] dark:text-slate-100 min-h-screen min-h-[100dvh] flex flex-col font-display transition-colors duration-300 overflow-x-hidden overflow-y-auto">
             {/* Header - sticky with scroll shadow */}
             <header className={`flex items-center justify-between p-4 sticky top-0 bg-[#f6f7f8]/95 dark:bg-[#101922]/95 backdrop-blur-md z-20 transition-shadow duration-200 ${scrolled ? 'shadow-md' : ''}`}>
                 <button
@@ -94,7 +121,7 @@ export default function RoleSelectionPage({ params }: { params: Promise<{ slug: 
                 </div>
             </header>
 
-            {/* Main Content - centered like Discovery */}
+            {/* Main Content - stable height container */}
             <main className="flex-1 flex flex-col items-center px-6 pb-8 max-w-md mx-auto w-full">
                 {/* Headline - minimal & professional */}
                 <h1 className="text-2xl font-bold tracking-tight text-center mt-8">
@@ -103,6 +130,12 @@ export default function RoleSelectionPage({ params }: { params: Promise<{ slug: 
                 <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 text-center">
                     Select how you'll be using the platform.
                 </p>
+                {/* Tenant name - small, subtle */}
+                {tenant && (
+                    <p className="mt-1 text-xs text-slate-400 dark:text-slate-500 text-center">
+                        {tenant.school_name}
+                    </p>
+                )}
 
                 {/* Role Cards */}
                 <div className="w-full mt-8 space-y-3">
@@ -166,7 +199,10 @@ export default function RoleSelectionPage({ params }: { params: Promise<{ slug: 
                 </div>
             </main>
 
-            <AuthFooter />
+            {/* Footer - sticky at bottom with shadow */}
+            <footer className={`sticky bottom-0 bg-[#f6f7f8]/95 dark:bg-[#101922]/95 backdrop-blur-md z-20 transition-shadow duration-200 ${scrolled ? '' : 'shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]'}`}>
+                <AuthFooter />
+            </footer>
 
             <HelpPopup isOpen={showHelp} onClose={() => setShowHelp(false)} />
         </div>
