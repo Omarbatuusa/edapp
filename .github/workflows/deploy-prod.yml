@@ -1,0 +1,45 @@
+name: Deploy (Prod)
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Deploy via git pull + docker compose
+        shell: bash
+        run: |
+          set -e
+          cd /opt/edapp
+          
+          echo ":: Fetching latest code..."
+          git fetch --all
+          git reset --hard origin/main
+
+          echo ":: Checking .env.production..."
+          if [ ! -f ".env.production" ]; then
+            echo "ERROR: /opt/edapp/.env.production missing"
+            exit 1
+          fi
+
+          echo ":: Building and starting containers..."
+          docker compose up -d --build
+
+          echo ":: Waiting for services to start..."
+          sleep 10
+
+          echo ":: Running health check..."
+          # Try health endpoint, fall back to basic connectivity check
+          if ! curl -fsS --max-time 10 http://localhost/v1/health 2>/dev/null; then
+            echo "Health endpoint not responding, checking API directly..."
+            if ! curl -fsS --max-time 10 http://localhost:3333/v1/health 2>/dev/null; then
+              echo "API health check failed. Container logs:"
+              docker compose logs --tail=50 edapp_api
+              exit 1
+            fi
+          fi
+
+          echo ":: Deployment successful!"
+          docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
