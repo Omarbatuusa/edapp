@@ -15,6 +15,10 @@ interface TenantData {
     school_code: string;
     tenant_slug: string;
     logo_url?: string;
+    main_branch?: {
+        branch_name: string;
+        is_main_branch: boolean;
+    };
 }
 
 export default function TenantConfirmationPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -24,6 +28,14 @@ export default function TenantConfirmationPage({ params }: { params: Promise<{ s
     const [tenant, setTenant] = useState<TenantData | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const [scrolled, setScrolled] = useState(false)
+
+    // Scroll shadow detection
+    useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 10)
+        window.addEventListener('scroll', handleScroll)
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [])
 
     useEffect(() => {
         async function fetchTenant() {
@@ -89,9 +101,9 @@ export default function TenantConfirmationPage({ params }: { params: Promise<{ s
     }
 
     return (
-        <div className="bg-[#f6f7f8] dark:bg-[#101922] text-[#0d141b] dark:text-slate-100 min-h-screen flex flex-col font-display transition-colors duration-300">
-            {/* Header - consistent */}
-            <header className="flex items-center justify-between p-4 sticky top-0 bg-[#f6f7f8]/80 dark:bg-[#101922]/80 backdrop-blur-md z-10">
+        <div className="bg-[#f6f7f8] dark:bg-[#101922] text-[#0d141b] dark:text-slate-100 min-h-screen flex flex-col font-display transition-colors duration-300 overflow-x-hidden">
+            {/* Header - sticky with scroll shadow */}
+            <header className={`flex items-center justify-between p-4 sticky top-0 bg-[#f6f7f8]/95 dark:bg-[#101922]/95 backdrop-blur-md z-20 transition-shadow duration-200 ${scrolled ? 'shadow-md' : ''}`}>
                 <button
                     onClick={handleChangeSchool}
                     className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors"
@@ -124,12 +136,17 @@ export default function TenantConfirmationPage({ params }: { params: Promise<{ s
                     />
                 </div>
 
-                {/* Tenant Name & Code */}
+                {/* Tenant Name & Branch */}
                 <h1 className="text-2xl font-bold tracking-tight text-center">
                     {tenant.school_name}
                 </h1>
-                <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 text-center italic">
-                    School Code: {tenant.school_code}
+                {tenant.main_branch && (
+                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 text-center">
+                        Branch: {tenant.main_branch.branch_name}
+                    </p>
+                )}
+                <p className="mt-1 text-xs text-slate-400 dark:text-slate-500 text-center">
+                    {tenant.school_code}
                 </p>
 
                 {/* Actions */}

@@ -13,6 +13,14 @@ export default function RoleSelectionPage({ params }: { params: Promise<{ slug: 
     const [lastRole, setLastRole] = useState<string | null>(null)
     const [showHelp, setShowHelp] = useState(false)
     const [selectedRole, setSelectedRole] = useState<string | null>(null)
+    const [scrolled, setScrolled] = useState(false)
+
+    // Scroll shadow detection
+    useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 10)
+        window.addEventListener('scroll', handleScroll)
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [])
 
     useEffect(() => {
         const stored = localStorage.getItem(`last_role_${slug}`)
@@ -64,9 +72,9 @@ export default function RoleSelectionPage({ params }: { params: Promise<{ slug: 
     ]
 
     return (
-        <div className="bg-[#f6f7f8] dark:bg-[#101922] text-[#0d141b] dark:text-slate-100 min-h-screen flex flex-col font-display transition-colors duration-300">
-            {/* Header - consistent with Discovery */}
-            <header className="flex items-center justify-between p-4 sticky top-0 bg-[#f6f7f8]/80 dark:bg-[#101922]/80 backdrop-blur-md z-10">
+        <div className="bg-[#f6f7f8] dark:bg-[#101922] text-[#0d141b] dark:text-slate-100 min-h-screen flex flex-col font-display transition-colors duration-300 overflow-x-hidden">
+            {/* Header - sticky with scroll shadow */}
+            <header className={`flex items-center justify-between p-4 sticky top-0 bg-[#f6f7f8]/95 dark:bg-[#101922]/95 backdrop-blur-md z-20 transition-shadow duration-200 ${scrolled ? 'shadow-md' : ''}`}>
                 <button
                     onClick={handleBack}
                     className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors"
@@ -130,8 +138,8 @@ export default function RoleSelectionPage({ params }: { params: Promise<{ slug: 
 
                                 {/* Icon */}
                                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isLastRole
-                                        ? 'bg-primary text-white'
-                                        : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
+                                    ? 'bg-primary text-white'
+                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
                                     }`}>
                                     <span className="material-symbols-outlined text-xl">
                                         {role.icon}
