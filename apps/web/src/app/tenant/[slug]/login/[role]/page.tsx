@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { AuthFooter } from "@/components/layout/AuthFooter"
 import { ThemeToggle } from "@/components/discovery/theme-toggle"
 import { HelpPopup } from "@/components/discovery/help-popup"
+import { useAuth } from "@/contexts/AuthContext"
 
 // Mock Feature Flags (In production, fetch from Tenant Configuration)
 const FEATURE_FLAGS = {
@@ -25,12 +26,14 @@ const ROLE_CONFIG: Record<string, { label: string; icon: string }> = {
 export default function RoleLoginPage({ params }: { params: Promise<{ slug: string, role: string }> }) {
     const { slug, role } = use(params)
     const router = useRouter()
+    const { login } = useAuth()
 
     const [view, setView] = useState<'methods' | 'email_password' | 'email_magic'>('methods')
     const [showHelp, setShowHelp] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
     const [scrolled, setScrolled] = useState(false)
+    const [error, setError] = useState<string | null>(null)
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -72,10 +75,27 @@ export default function RoleLoginPage({ params }: { params: Promise<{ slug: stri
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
-        setTimeout(() => {
+        setError(null)
+
+        try {
+            await login(email, password)
+            // Redirect to dashboard after successful login
+            router.push(`/tenant/${slug}/dashboard`)
+        } catch (err: unknown) {
+            const errorMessage = err instanceof Error ? err.message : 'Login failed'
+            // Parse Firebase error codes for user-friendly messages
+            if (errorMessage.includes('auth/invalid-credential') || errorMessage.includes('auth/wrong-password')) {
+                setError('Invalid email or password')
+            } else if (errorMessage.includes('auth/user-not-found')) {
+                setError('No account found with this email')
+            } else if (errorMessage.includes('auth/too-many-requests')) {
+                setError('Too many attempts. Please try again later')
+            } else {
+                setError('Login failed. Please try again')
+            }
+        } finally {
             setIsLoading(false)
-            alert(`Login: ${email}\nRole: ${role}\nRemember: ${rememberDuration} days`)
-        }, 1000)
+        }
     }
 
     // Method Picker
@@ -198,13 +218,13 @@ export default function RoleLoginPage({ params }: { params: Promise<{ slug: stri
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Password"
-                        className="w-full h-14 rounded-xl bg-slate-100 dark:bg-slate-800 px-5 pl-12 pr-12 text-base border-none focus:ring-2 focus:ring-primary/20 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
+                        className="w-full h-14 rounded-xl bg-slate-100 dark:bg-slate-800 px-5 pl-12 pr-14 text-base border-none focus:ring-2 focus:ring-primary/20 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
                         required
                     />
                     <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-200/50 dark:hover:bg-slate-700/50 transition-colors"
                         aria-label={showPassword ? "Hide password" : "Show password"}
                     >
                         <span className="material-symbols-outlined text-xl">
@@ -212,6 +232,13 @@ export default function RoleLoginPage({ params }: { params: Promise<{ slug: stri
                         </span>
                     </button>
                 </div>
+
+                {/* Error message */}
+                {error && (
+                    <div className="p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+                        <p className="text-sm text-red-600 dark:text-red-400 text-center">{error}</p>
+                    </div>
+                )}
 
                 {/* Remember Device */}
                 <div className="space-y-3 pt-2">
