@@ -7,6 +7,7 @@ import { auth } from '@/lib/firebase';
 interface AuthContextType {
     user: User | null;
     loading: boolean;
+    isConfigured: boolean;
     login: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
 }
@@ -17,7 +18,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
+    // Check if Firebase is properly configured
+    const isConfigured = auth !== null;
+
     useEffect(() => {
+        // If auth is not configured, stop loading and skip subscription
+        if (!auth) {
+            setLoading(false);
+            return;
+        }
+
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setUser(user);
             setLoading(false);
@@ -27,15 +37,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const login = async (email: string, password: string) => {
+        if (!auth) {
+            throw new Error('Firebase authentication is not configured');
+        }
         await signInWithEmailAndPassword(auth, email, password);
     };
 
     const logout = async () => {
+        if (!auth) {
+            throw new Error('Firebase authentication is not configured');
+        }
         await signOut(auth);
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, logout }}>
+        <AuthContext.Provider value={{ user, loading, isConfigured, login, logout }}>
             {children}
         </AuthContext.Provider>
     );
