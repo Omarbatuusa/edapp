@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { User, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 
 interface AuthContextType {
@@ -10,6 +10,7 @@ interface AuthContextType {
     isConfigured: boolean;
     login: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
+    resetPassword: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -50,8 +51,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await signOut(auth);
     };
 
+    const resetPassword = async (email: string) => {
+        if (!auth) {
+            throw new Error('Firebase authentication is not configured');
+        }
+        await sendPasswordResetEmail(auth, email);
+    };
+
     return (
-        <AuthContext.Provider value={{ user, loading, isConfigured, login, logout }}>
+        <AuthContext.Provider value={{ user, loading, isConfigured, login, logout, resetPassword }}>
             {children}
         </AuthContext.Provider>
     );

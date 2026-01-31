@@ -26,7 +26,7 @@ const ROLE_CONFIG: Record<string, { label: string; icon: string }> = {
 export default function RoleLoginPage({ params }: { params: Promise<{ slug: string, role: string }> }) {
     const { slug, role } = use(params)
     const router = useRouter()
-    const { login } = useAuth()
+    const { login, resetPassword } = useAuth()
 
     const [view, setView] = useState<'methods' | 'email_password' | 'email_magic'>('methods')
     const [showHelp, setShowHelp] = useState(false)
@@ -34,6 +34,7 @@ export default function RoleLoginPage({ params }: { params: Promise<{ slug: stri
     const [showPassword, setShowPassword] = useState(false)
     const [scrolled, setScrolled] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [successMessage, setSuccessMessage] = useState<string | null>(null)
     const [tenant, setTenant] = useState<{ school_name: string; tenant_slug: string } | null>(null)
 
     const [email, setEmail] = useState("")
@@ -115,6 +116,32 @@ export default function RoleLoginPage({ params }: { params: Promise<{ slug: stri
                 setError('Too many attempts. Please try again later')
             } else {
                 setError('Login failed. Please try again')
+            }
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const handleForgotPassword = async () => {
+        if (!email) {
+            setError('Please enter your email address first')
+            return
+        }
+        setIsLoading(true)
+        setError(null)
+        setSuccessMessage(null)
+
+        try {
+            await resetPassword(email)
+            setSuccessMessage('Password reset email sent! Check your inbox.')
+        } catch (err: unknown) {
+            const errorMessage = err instanceof Error ? err.message : 'Failed to send reset email'
+            if (errorMessage.includes('auth/user-not-found')) {
+                setError('No account found with this email')
+            } else if (errorMessage.includes('auth/too-many-requests')) {
+                setError('Too many attempts. Please try again later')
+            } else {
+                setError('Failed to send reset email. Please try again')
             }
         } finally {
             setIsLoading(false)
@@ -485,6 +512,25 @@ export default function RoleLoginPage({ params }: { params: Promise<{ slug: stri
                                     </span>
                                 </button>
                             </div>
+
+                            {/* Forgot Password Link */}
+                            <div className="flex justify-end -mt-1">
+                                <button
+                                    type="button"
+                                    onClick={handleForgotPassword}
+                                    disabled={isLoading}
+                                    className="text-sm text-primary hover:text-primary/80 transition-colors disabled:opacity-50"
+                                >
+                                    Forgot password?
+                                </button>
+                            </div>
+
+                            {/* Success message */}
+                            {successMessage && (
+                                <div className="p-3 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+                                    <p className="text-sm text-green-600 dark:text-green-400 text-center">{successMessage}</p>
+                                </div>
+                            )}
 
                             {/* Error message */}
                             {error && (
