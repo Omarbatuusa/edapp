@@ -45,7 +45,7 @@ services:
     env_file:
       - .env.production
     volumes:
-      - ./firebase-service-account.json:/app/firebase-service-account.json:ro
+      - ./firebase-service-account.json:/usr/src/app/firebase-service-account.json:ro
     expose:
       - "3333"
     depends_on:
