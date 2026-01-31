@@ -16,10 +16,12 @@ api.interceptors.request.use(async (config) => {
     if (typeof window !== 'undefined') {
         try {
             const { auth } = await import('@/lib/firebase');
-            const user = auth.currentUser;
-            if (user) {
-                const token = await user.getIdToken();
-                config.headers.Authorization = `Bearer ${token}`;
+            if (auth) {
+                const user = auth.currentUser;
+                if (user) {
+                    const token = await user.getIdToken();
+                    config.headers.Authorization = `Bearer ${token}`;
+                }
             }
         } catch (error) {
             console.error('Error getting auth token:', error);
