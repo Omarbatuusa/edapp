@@ -99,8 +99,11 @@ export default function RoleLoginPage({ params }: { params: Promise<{ slug: stri
 
         try {
             await login(email, password)
+            // Save the current role to localStorage for dashboard context
+            const correctSlug = tenant?.tenant_slug || slug
+            localStorage.setItem(`edapp_role_${correctSlug}`, role)
             // Redirect to dashboard after successful login
-            router.push(`/tenant/${slug}/dashboard`)
+            router.push(`/tenant/${correctSlug}/dashboard`)
         } catch (err: unknown) {
             const errorMessage = err instanceof Error ? err.message : 'Login failed'
             // Parse Firebase error codes for user-friendly messages
