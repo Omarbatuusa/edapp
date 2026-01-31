@@ -40,12 +40,30 @@ export default function TenantConfirmationPage({ params }: { params: Promise<{ s
     useEffect(() => {
         async function fetchTenant() {
             try {
-                const res = await fetch(`/v1/tenants/lookup-by-slug?slug=${slug}`)
+                // First try lookup by slug
+                let res = await fetch(`/v1/tenants/lookup-by-slug?slug=${slug}`)
+
+                // If slug lookup fails, try school code lookup
                 if (!res.ok) {
+                    res = await fetch(`/v1/tenants/lookup-by-code?code=${slug.toUpperCase()}`)
+
+                    if (res.ok) {
+                        const data = await res.json()
+                        // Redirect to the correct tenant slug URL
+                        const protocol = window.location.protocol
+                        const isLocalhost = window.location.hostname.includes('localhost')
+                        const correctUrl = isLocalhost
+                            ? `${protocol}//${data.tenant_slug}.localhost:3000`
+                            : `${protocol}//${data.tenant_slug}.edapp.co.za`
+                        window.location.href = correctUrl
+                        return
+                    }
+
                     setError('School not found')
                     setLoading(false)
                     return
                 }
+
                 const data = await res.json()
                 setTenant(data)
             } catch (err) {
