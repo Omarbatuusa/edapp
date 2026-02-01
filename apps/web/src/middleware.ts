@@ -36,8 +36,12 @@ export function middleware(request: NextRequest) {
         }
     } else if (tenant) {
         // {tenant}.edapp.co.za -> /tenant/[slug]
-        // Rewrite all requests to the tenant specific route structure
-        if (!url.pathname.startsWith('/tenant')) {
+
+        // Exclude policy routes from tenant rewriting to serve global content
+        const policyRoutes = ['/terms', '/privacy', '/cookies', '/acceptable-use', '/popia-notice', '/child-safety', '/communications-notices'];
+        const isPolicyRoute = policyRoutes.some(route => url.pathname.startsWith(route));
+
+        if (!isPolicyRoute && !url.pathname.startsWith('/tenant')) {
             url.pathname = `/tenant/${tenant}${url.pathname === '/' ? '' : url.pathname}`;
             return NextResponse.rewrite(url);
         }

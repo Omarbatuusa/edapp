@@ -3,6 +3,7 @@ import { randomBytes } from 'crypto';
 
 interface HandoffData {
     sessionToken: string;
+    userId: string;
     tenantSlug: string;
     role: string;
     expiresAt: number;
@@ -14,12 +15,13 @@ export class HandoffService {
     private readonly codes = new Map<string, HandoffData>();
     private readonly TTL_MS = 60 * 1000; // 60 seconds
 
-    createCode(sessionToken: string, tenantSlug: string, role: string): string {
+    createCode(sessionToken: string, userId: string, tenantSlug: string, role: string): string {
         const code = randomBytes(32).toString('hex');
         const expiresAt = Date.now() + this.TTL_MS;
 
         this.codes.set(code, {
             sessionToken,
+            userId,
             tenantSlug,
             role,
             expiresAt,
@@ -30,7 +32,7 @@ export class HandoffService {
         return code;
     }
 
-    exchangeCode(code: string, expectedTenantSlug: string): string {
+    exchangeCode(code: string, expectedTenantSlug: string): { sessionToken: string; userId: string; role: string } {
         const data = this.codes.get(code);
 
         if (!data) {
@@ -53,6 +55,10 @@ export class HandoffService {
         // Single-use: delete immediately
         this.codes.delete(code);
 
-        return data.sessionToken;
+        return {
+            sessionToken: data.sessionToken,
+            userId: data.userId,
+            role: data.role
+        };
     }
 }

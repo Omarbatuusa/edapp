@@ -61,7 +61,7 @@ function BrokerLoginContent() {
         fetchTenant();
     }, [tenantSlug]);
 
-    const completeHandoff = async (sessionToken: string) => {
+    const completeHandoff = async (sessionToken: string, userId: string) => {
         if (!tenantSlug || !role) return;
 
         try {
@@ -70,7 +70,7 @@ function BrokerLoginContent() {
             const res = await fetch('/v1/auth/handoff/create', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sessionToken, tenantSlug, role })
+                body: JSON.stringify({ sessionToken, userId, tenantSlug, role })
             });
 
             if (!res.ok) throw new Error('Handoff creation failed');
@@ -101,23 +101,25 @@ function BrokerLoginContent() {
     };
 
     const handleGoogleLogin = async () => {
-        // Mock Google Login for MVP
+        const mockUserId = `google-user-${Date.now()}`;
         const mockSessionToken = `mock_google_session_${Date.now()}`;
-        await completeHandoff(mockSessionToken);
+        await completeHandoff(mockSessionToken, mockUserId);
     };
 
     const handleEmailLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!email) return;
+        const mockUserId = `email-user-${email.replace(/[^a-zA-Z0-9]/g, '')}`;
         const mockSessionToken = `mock_email_session_${Date.now()}`;
-        await completeHandoff(mockSessionToken);
+        await completeHandoff(mockSessionToken, mockUserId);
     };
 
     const handleLearnerLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!studentNumber || pin.length < 4) return;
+        const mockUserId = `learner-${studentNumber}`;
         const mockSessionToken = `mock_learner_session_${Date.now()}`;
-        await completeHandoff(mockSessionToken);
+        await completeHandoff(mockSessionToken, mockUserId);
     };
 
     if (loading && !tenant) {
@@ -140,9 +142,7 @@ function BrokerLoginContent() {
 
     return (
         <div className="w-full max-w-sm space-y-6">
-            {/* Header Section */}
             <div className="flex flex-col items-center text-center">
-                {/* Logo */}
                 <div className="relative h-20 w-20 rounded-full overflow-hidden border-4 border-white dark:border-slate-800 shadow-lg mb-4">
                     <Image
                         src={tenant?.logo_url || DEFAULT_LOGO}
@@ -153,12 +153,10 @@ function BrokerLoginContent() {
                     />
                 </div>
 
-                {/* School Name */}
                 <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-white">
                     {tenant?.school_name}
                 </h1>
 
-                {/* Branch Name - PROMINENT DISPLAY */}
                 {tenant?.main_branch && (
                     <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
                         <span className="material-symbols-outlined text-sm mr-1.5 text-slate-500">domain</span>
@@ -173,10 +171,7 @@ function BrokerLoginContent() {
                 </p>
             </div>
 
-            {/* Login Options / Forms */}
             <div className="space-y-4 pt-2">
-
-                {/* LEARNER ROLE: Show PIN Form */}
                 {role === 'learner' ? (
                     <form onSubmit={handleLearnerLogin} className="space-y-4">
                         <div className="relative">
@@ -218,9 +213,7 @@ function BrokerLoginContent() {
                         </button>
                     </form>
                 ) : (
-                    /* STANDARD ROLES: Show Methods */
                     <>
-                        {/* Google Login */}
                         <button
                             onClick={handleGoogleLogin}
                             className="w-full h-12 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center gap-3 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors ios-shadow"
@@ -229,13 +222,21 @@ function BrokerLoginContent() {
                             <span className="font-medium text-slate-700 dark:text-slate-200">Continue with Google</span>
                         </button>
 
+                        <div className="flex gap-3">
+                            <button disabled className="flex-1 h-12 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center opacity-50 cursor-not-allowed">
+                                <span className="material-symbols-outlined text-xl">window</span>
+                            </button>
+                            <button disabled className="flex-1 h-12 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center opacity-50 cursor-not-allowed">
+                                <span className="material-symbols-outlined text-xl">apple</span>
+                            </button>
+                        </div>
+
                         <div className="relative flex items-center py-2">
                             <div className="flex-grow border-t border-slate-200 dark:border-slate-700"></div>
                             <span className="flex-shrink-0 mx-4 text-xs text-slate-400 uppercase tracking-wide">Or</span>
                             <div className="flex-grow border-t border-slate-200 dark:border-slate-700"></div>
                         </div>
 
-                        {/* Email Login */}
                         <form onSubmit={handleEmailLogin} className="space-y-4">
                             <div>
                                 <input
@@ -254,9 +255,21 @@ function BrokerLoginContent() {
                             >
                                 Continue with Email
                             </button>
+                            <p className="text-center text-[10px] text-slate-400">
+                                We'll send a magic link or code to your email.
+                            </p>
                         </form>
                     </>
                 )}
+
+                <div className="pt-6 border-t border-slate-200 dark:border-slate-800 text-center">
+                    <p className="text-sm text-slate-500">
+                        Not a student yet?{' '}
+                        <a href={`//apply-${tenantSlug}.edapp.co.za`} className="text-primary font-medium hover:underline">
+                            Apply to {tenant?.school_name}
+                        </a>
+                    </p>
+                </div>
             </div>
         </div>
     );

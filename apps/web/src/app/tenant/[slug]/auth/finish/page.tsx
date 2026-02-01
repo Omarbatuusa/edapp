@@ -1,55 +1,88 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext'; // Assuming this exists and has setSession or similar
+import { useSearchParams, useRouter, useParams } from 'next/navigation';
 
 function AuthFinishContent() {
     const searchParams = useSearchParams();
+    const params = useParams();
     const router = useRouter();
-    // In a real app, useAuth would expose a method to set the session token
-    // const { setSession } = useAuth(); 
-
-    // For now, we mock the session setting or assume we set a cookie
     const [error, setError] = useState<string | null>(null);
+    const [status, setStatus] = useState('Finalizing secure session...');
 
     useEffect(() => {
         const handoffCode = searchParams.get('handoff');
+        const tenantSlug = params.slug as string;
 
-        if (!handoffCode) {
-            setError('Missing handoff code');
+        if (!handoffCode || !tenantSlug) {
+            setError('Missing handoff code or tenant context');
             return;
         }
 
-        async function exchangeCode() {
+        async function finalizeAuth() {
             try {
-                // Exchange code for session token
-                const res = await fetch('/v1/auth/handoff/exchange', {
+                // 1. Exchange code for session token & user info
+                setStatus('Verifying session...');
+                const exchangeRes = await fetch('/v1/auth/handoff/exchange', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-tenant-slug': tenantSlug
+                    },
                     body: JSON.stringify({ code: handoffCode })
                 });
 
-                if (!res.ok) {
+                if (!exchangeRes.ok) {
                     throw new Error('Invalid or expired login session');
                 }
 
-                const { sessionToken } = await res.json();
+                const { sessionToken, userId, role } = await exchangeRes.json();
 
-                // Save session (e.g., cookie or local storage via AuthContext)
-                // document.cookie = `session_token=${sessionToken}; path=/; secure; samesite=strict`;
-                localStorage.setItem('session_token', sessionToken); // Simplification for MVP
+                // 2. Save session
+                localStorage.setItem('session_token', sessionToken);
+                localStorage.setItem('user_id', userId);
+                localStorage.setItem('user_role', role);
 
-                // Redirect to Dashboard
-                router.replace('/dashboard'); // Or tenant specific dashboard
+                // 3. Get Tenant UUID for policy check
+                setStatus('Checking policy requirements...');
+                const tenantRes = await fetch(`/v1/tenants/lookup-by-slug?slug=${tenantSlug}`);
+                if (!tenantRes.ok) throw new Error('Tenant lookup failed');
+                const tenantData = await tenantRes.json();
+                const tenantId = tenantData.id;
+
+                // 4. Check Policy Status
+                const policyRes = await fetch(`/v1/policies/check-status?userId=${userId}&tenantId=${tenantId}&intent=app`);
+                const policyData = await policyRes.json();
+
+                if (!policyData.accepted) {
+                    // Redirect to Consent Gate
+                    setStatus('Redirecting to consent...');
+                    // Add delay for UX
+                    setTimeout(() => {
+                        const consentUrl = `/tenant/${tenantSlug}/auth/consent?userId=${userId}&tenantId=${tenantId}&role=${role}`;
+                        router.replace(consentUrl);
+                    }, 500);
+                    return;
+                }
+
+                // 5. Redirect to Dashboard
+                setStatus('Redirecting to dashboard...');
+                setTimeout(() => {
+                    const dashboardUrl = role === 'learner'
+                        ? `/tenant/${tenantSlug}/dashboard/learner` // Example path
+                        : `/tenant/${tenantSlug}/dashboard`;
+
+                    router.replace(dashboardUrl);
+                }, 500);
 
             } catch (err) {
+                console.error(err);
                 setError('Login failed. Please try again.');
             }
         }
 
-        exchangeCode();
-    }, [searchParams, router]);
+        finalizeAuth();
+    }, [searchParams, params, router]);
 
     if (error) {
         return (
@@ -70,7 +103,7 @@ function AuthFinishContent() {
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-[#f6f7f8] dark:bg-[#101922]">
             <div className="w-12 h-12 border-4 border-indigo-600/30 border-t-indigo-600 rounded-full animate-spin"></div>
-            <p className="mt-4 text-sm text-slate-500 font-medium animate-pulse">Finalizing secure session...</p>
+            <p className="mt-4 text-sm text-slate-500 font-medium animate-pulse">{status}</p>
         </div>
     );
 }
