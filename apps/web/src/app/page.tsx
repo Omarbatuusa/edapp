@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useTheme } from "next-themes"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { AuthFooter } from "@/components/layout/AuthFooter"
 import { AuthHeader } from "@/components/layout/AuthHeader"
 import { HelpPopup } from "@/components/discovery/help-popup"
@@ -25,6 +26,7 @@ interface TenantData {
 type Step = 'search' | 'confirm'
 
 export default function DiscoveryPage() {
+  const router = useRouter()
   const [step, setStep] = useState<Step>('search')
   const [code, setCode] = useState("")
   const [loading, setLoading] = useState(false)
@@ -62,15 +64,8 @@ export default function DiscoveryPage() {
   const handleContinue = () => {
     if (!tenant) return
 
-    const protocol = window.location.protocol
-    const mainDomain = window.location.host.replace('app.', '').replace('www.', '')
-
-    // Redirect to login page on the tenant subdomain
-    if (mainDomain.includes('localhost')) {
-      window.location.href = `${protocol}//${tenant.tenant_slug}.localhost:3000/login`
-    } else {
-      window.location.href = `${protocol}//${tenant.tenant_slug}.${mainDomain}/login`
-    }
+    // iOS-style transition: Use client-side routing
+    router.push(`/tenant/${tenant.tenant_slug}/login`)
   }
 
   const handleBack = () => {
@@ -86,6 +81,7 @@ export default function DiscoveryPage() {
     <div className="bg-[#f6f7f8] dark:bg-[#101922] text-[#0d141b] dark:text-slate-100 min-h-screen min-h-[100dvh] flex flex-col font-display transition-colors duration-300">
       {/* Top Navigation */}
       <AuthHeader
+        variant="discovery"
         onBack={step === 'confirm' ? handleBack : undefined}
         onHelp={() => setShowHelp(true)}
       />
@@ -94,9 +90,16 @@ export default function DiscoveryPage() {
       <main className="flex-1 flex flex-col items-center justify-center px-6 pb-8 max-w-md mx-auto w-full">
 
         {step === 'search' && (
-          <>
+          <div className="animate-in fade-in slide-in-from-right-4 duration-300 w-full">
             {/* Logo */}
             <div className="mb-8 flex flex-col items-center text-center">
+              {/* Note: Header already has EdApp logo in discovery variant, do we need it here too? 
+                  The mockups often show a large logo in body. 
+                  Prompt says: "Tenant discovery has a clean 'EdApp only' header... Header should show: EdApp logo + EdApp title only".
+                  If header has it, maybe remove from body to avoid duplication? 
+                  The prompt doesn't explicitly say "remove from body", but "header should show". 
+                  Let's keep the body logo for the "Search" state as it feels empty otherwise. 
+              */}
               <div className="mb-5 h-14 w-14 flex items-center justify-center">
                 <Image
                   src="/logo.png"
@@ -110,7 +113,7 @@ export default function DiscoveryPage() {
               <h1 className="text-2xl font-bold tracking-tight">
                 Find your school
               </h1>
-              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 px-4">
+              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 px-4 text-center">
                 Enter the unique code provided by your institution.
               </p>
             </div>
@@ -170,11 +173,11 @@ export default function DiscoveryPage() {
                 EdApp Super Admin
               </a>
             </div>
-          </>
+          </div>
         )}
 
         {step === 'confirm' && tenant && (
-          <>
+          <div className="animate-in fade-in slide-in-from-right-8 duration-300 w-full flex flex-col items-center">
             {/* Tenant Logo */}
             <div className="relative h-24 w-24 rounded-full overflow-hidden border-4 border-white dark:border-slate-800 shadow-lg mb-6">
               <Image
@@ -218,7 +221,7 @@ export default function DiscoveryPage() {
                 Change school
               </button>
             </div>
-          </>
+          </div>
         )}
 
       </main>
