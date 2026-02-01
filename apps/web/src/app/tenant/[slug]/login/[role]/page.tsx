@@ -17,13 +17,8 @@ export default function TenantLoginRedirect({ params }: { params: Promise<{ slug
         let brokerHost = 'auth.edapp.co.za';
 
         if (host.includes('localhost')) {
-            // Development override or fallback
-            // In dev, usually we access localhost:3000 -> auth.localhost:3000 ?
-            // Since we can't easily do subdomains on localhost without hosts file,
-            // we will just use the same host but rely on middleware rewriting if we were using a different strategy.
-            // BUT here we need to redirect TO the broker domain.
-            // If user mapped auth.edapp.co.za to localhost in hosts file, this works.
-            brokerHost = 'auth.edapp.co.za'; // Assume hosts file setup for dev or stick to prod logic for now
+            // Keep on localhost for dev
+            brokerHost = host;
         }
 
         const returnUrl = encodeURIComponent(window.location.href);

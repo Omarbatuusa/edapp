@@ -31,46 +31,41 @@ export function AuthHeader({
     return (
         <header
             className={`flex items-center justify-between px-4 sticky top-0 z-30 w-full transition-all duration-300 ${scrolled
-                ? 'h-14 bg-white/95 dark:bg-[#101922]/95 backdrop-blur-md shadow-sm'
+                ? 'h-14 bg-background/80 backdrop-blur-md border-b border-border/5' // Minimal border
                 : 'h-16 bg-transparent'
                 } ${transparent ? 'bg-transparent' : ''}`}
         >
-            {/* Left: Back button */}
+            {/* Left: Back button or Minimal Brand */}
             <div className="w-10 flex items-center justify-center">
-                {onBack && (
+                {onBack ? (
                     <button
                         onClick={onBack}
-                        className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors"
+                        className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-secondary/50 text-foreground/80 transition-colors"
                         aria-label="Back"
                     >
                         <span className="material-symbols-outlined text-2xl">chevron_left</span>
                     </button>
+                ) : (
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                        <span className="text-primary font-bold text-xs">EA</span>
+                    </div>
                 )}
             </div>
 
-            {/* Center: Optional title - fade in on scroll if needed, or always show if requested */}
+            {/* Center: Title (Fade-in) */}
             <div className={`flex-1 text-center transition-opacity duration-300 ${showTitle || scrolled ? 'opacity-100' : 'opacity-0'}`}>
                 {title && (
-                    <span className="text-sm font-semibold tracking-wide text-slate-800 dark:text-slate-100">
+                    <span className="text-sm font-semibold tracking-wide text-foreground/90">
                         {title}
                     </span>
                 )}
             </div>
 
-            {/* Right: Theme toggle + Help */}
+            {/* Right: Theme Toggle (Minimal) */}
             <div className="w-10 flex items-center justify-end gap-1">
                 <div className={scrolled ? 'scale-90 transition-transform' : ''}>
                     <ThemeToggle />
                 </div>
-                {onHelp && (
-                    <button
-                        onClick={onHelp}
-                        className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors"
-                        aria-label="Help"
-                    >
-                        <span className="material-symbols-outlined text-2xl">help_outline</span>
-                    </button>
-                )}
             </div>
         </header>
     )

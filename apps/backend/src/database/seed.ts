@@ -261,6 +261,66 @@ async function seed() {
         { user_id: superAdmin2.id, role: UserRole.PLATFORM_SUPER_ADMIN, is_active: true },
     ]);
 
+    // ========== 7. CREATE LAKEWOOD DEMO USERS ==========
+    console.log('\n🏫 Creating Lakewood (LIA) Demo Users...');
+
+    const liaTenant = tenantMap['lia'];
+
+    // 1. Tenant Admin
+    const liaAdmin = await userRepo.save({
+        email: 'admin@lakewood.edu',
+        display_name: 'Principal Skinner',
+        first_name: 'Seymour',
+        last_name: 'Skinner',
+        password_hash: passwordHash,
+        status: UserStatus.ACTIVE,
+    });
+
+    // 2. Teacher
+    const liaTeacher = await userRepo.save({
+        email: 'teacher@lakewood.edu',
+        display_name: 'Edna Krabappel',
+        first_name: 'Edna',
+        last_name: 'Krabappel',
+        password_hash: passwordHash,
+        status: UserStatus.ACTIVE,
+    });
+
+    // 3. Parent
+    const liaParent = await userRepo.save({
+        email: 'parent@lakewood.edu',
+        display_name: 'Marge Simpson',
+        first_name: 'Marge',
+        last_name: 'Simpson',
+        password_hash: passwordHash,
+        status: UserStatus.ACTIVE,
+    });
+
+    // 4. Student (Learner)
+    const liaStudent = await userRepo.save({
+        email: 'student@lakewood.edu', // Optional for learner
+        student_number: 'LIA001',
+        pin_hash: await bcrypt.hash('1234', 10),
+        display_name: 'Bart Simpson',
+        first_name: 'Bart',
+        last_name: 'Simpson',
+        status: UserStatus.ACTIVE,
+    });
+
+    // ========== 8. ASSIGN ROLES FOR DEMO USERS ==========
+    console.log('\n🔑 Assigning LIA Roles...');
+
+    await roleRepo.save([
+        // Umar -> Also LIA Admin (for testing)
+        { user_id: superAdmin1.id, tenant_id: liaTenant.id, role: UserRole.TENANT_MAIN_ADMIN, is_active: true },
+
+        // Demo Users
+        { user_id: liaAdmin.id, tenant_id: liaTenant.id, role: UserRole.TENANT_MAIN_ADMIN, is_active: true },
+        { user_id: liaTeacher.id, tenant_id: liaTenant.id, role: UserRole.TEACHER, is_active: true },
+        { user_id: liaParent.id, tenant_id: liaTenant.id, role: UserRole.PARENT, is_active: true },
+        { user_id: liaStudent.id, tenant_id: liaTenant.id, role: UserRole.LEARNER, is_active: true },
+    ]);
+
     console.log(`   ✅ Created role assignments`);
 
     // ========== SUMMARY ==========
@@ -279,6 +339,11 @@ async function seed() {
     console.log('   - ALL01 (Allied Schools)');
     console.log('   - LIA01 (Lakewood International Academy)');
     console.log('   - JEP01 (Jeppe Education Centre)');
+    console.log('\n🧪 Demo Accounts (Lakewood - LIA):');
+    console.log('   - Tenant Admin: admin@lakewood.edu / Janat@2000');
+    console.log('   - Teacher: teacher@lakewood.edu / Janat@2000');
+    console.log('   - Parent: parent@lakewood.edu / Janat@2000');
+    console.log('   - Student: LIA001 / Pin: 1234');
 
     await AppDataSource.destroy();
 }

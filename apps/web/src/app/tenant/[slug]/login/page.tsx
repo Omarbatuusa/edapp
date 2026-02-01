@@ -3,7 +3,7 @@
 import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import { AuthFooter } from "@/components/layout/AuthFooter"
-import { ThemeToggle } from "@/components/discovery/theme-toggle"
+import { AuthHeader } from "@/components/layout/AuthHeader"
 import { HelpPopup } from "@/components/discovery/help-popup"
 
 interface TenantData {
@@ -110,51 +110,36 @@ export default function RoleSelectionPage({ params }: { params: Promise<{ slug: 
     return (
         <div className="bg-[#f6f7f8] dark:bg-[#101922] text-[#0d141b] dark:text-slate-100 min-h-screen min-h-[100dvh] flex flex-col font-display transition-colors duration-300 overflow-x-hidden overflow-y-auto">
             {/* Header */}
-            <header className={`flex items-center justify-between p-4 sticky top-0 bg-[#f6f7f8]/95 dark:bg-[#101922]/95 backdrop-blur-md z-20 transition-shadow duration-200 ${scrolled ? 'shadow-md' : ''}`}>
-                <button
-                    onClick={handleBack}
-                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors"
-                    aria-label="Back"
-                >
-                    <span className="material-symbols-outlined text-2xl">chevron_left</span>
-                </button>
-                <div className="flex items-center gap-1">
-                    <ThemeToggle />
-                    <button
-                        onClick={() => setShowHelp(true)}
-                        className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors"
-                        aria-label="Help"
-                    >
-                        <span className="material-symbols-outlined text-2xl">help_outline</span>
-                    </button>
-                </div>
-            </header>
+            <AuthHeader
+                onBack={handleBack}
+                onHelp={() => setShowHelp(true)}
+                transparent={!scrolled}
+            />
 
             {/* Main Content */}
-            <main className="flex-1 flex flex-col items-center px-6 pb-8 max-w-md mx-auto w-full">
-                <h1 className="text-2xl font-bold tracking-tight text-center mt-8">
+            <main className="flex-1 flex flex-col items-center px-6 pb-8 max-w-[480px] mx-auto w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <h1 className="text-2xl font-bold tracking-tight text-center mt-4">
                     Choose your role
                 </h1>
-                <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 text-center">
+                <p className="mt-2 text-sm text-muted-foreground text-center">
                     Select how you'll be using the platform.
                 </p>
                 {/* Tenant and Branch name */}
                 <div className="mt-2 text-center">
-                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                         {tenant ? tenant.school_name : slug}
                     </p>
                     {tenant?.main_branch && !tenant.main_branch.is_main_branch && (
-                        <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                        <p className="text-xs text-muted-foreground/80 mt-0.5">
                             {tenant.main_branch.branch_name}
                         </p>
                     )}
                 </div>
 
-                {/* Role Cards */}
                 <div className="w-full mt-8 space-y-3">
                     {roles.map((role) => {
-                        const isLastRole = lastRole === role.id
-                        const isSelected = selectedRole === role.id
+                        const isLastRole = lastRole === role.id;
+                        const isSelected = selectedRole === role.id;
 
                         return (
                             <button
@@ -162,44 +147,39 @@ export default function RoleSelectionPage({ params }: { params: Promise<{ slug: 
                                 onClick={() => handleRoleSelect(role.id)}
                                 disabled={selectedRole !== null}
                                 className={`
-                                    relative w-full px-4 py-4 rounded-xl transition-all duration-150
-                                    bg-white dark:bg-slate-900/50 
-                                    border border-slate-200 dark:border-slate-800
-                                    flex items-center gap-4 
-                                    text-left
-                                    active:scale-[0.98]
-                                    disabled:opacity-60
-                                    ${isLastRole ? 'border-primary/30 bg-primary/5 dark:bg-primary/10' : 'hover:border-slate-300 dark:hover:border-slate-700'}
-                                    ${isSelected ? 'scale-[0.98]' : ''}
+                                    role-card-apple w-full flex items-center gap-4 text-left
+                                    active:scale-[0.98] disabled:opacity-60
+                                    ${isLastRole ? 'ring-2 ring-primary/20 bg-primary/5' : ''}
+                                    ${isSelected ? 'selected' : ''}
                                 `}
                             >
                                 {isLastRole && (
-                                    <div className="absolute top-2 right-3">
-                                        <span className="text-[10px] font-semibold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                                    <div className="absolute top-3 right-3">
+                                        <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-full">
                                             Last used
                                         </span>
                                     </div>
                                 )}
 
-                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isLastRole
-                                    ? 'bg-primary text-white'
-                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
+                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors ${isLastRole
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'bg-secondary text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary'
                                     }`}>
-                                    <span className="material-symbols-outlined text-xl">
+                                    <span className="material-symbols-outlined text-2xl">
                                         {role.icon}
                                     </span>
                                 </div>
 
                                 <div className="flex-1 min-w-0">
-                                    <h3 className="text-base font-semibold text-slate-800 dark:text-slate-100">
+                                    <h3 className="text-base font-semibold text-foreground">
                                         {role.title}
                                     </h3>
-                                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                                    <p className="text-sm text-muted-foreground">
                                         {role.description}
                                     </p>
                                 </div>
 
-                                <span className="material-symbols-outlined text-slate-300 dark:text-slate-600 text-xl shrink-0">
+                                <span className="material-symbols-outlined text-muted-foreground/50 text-xl shrink-0">
                                     chevron_right
                                 </span>
                             </button>
@@ -209,7 +189,7 @@ export default function RoleSelectionPage({ params }: { params: Promise<{ slug: 
             </main>
 
             {/* Footer */}
-            <footer className={`sticky bottom-0 bg-[#f6f7f8]/95 dark:bg-[#101922]/95 backdrop-blur-md z-20 transition-shadow duration-200 ${scrolled ? '' : 'shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]'}`}>
+            <footer className={`sticky bottom-0 bg-background/95 backdrop-blur-md z-20 transition-all duration-300 ${scrolled ? 'border-t border-border/5' : ''}`}>
                 <AuthFooter />
             </footer>
 
