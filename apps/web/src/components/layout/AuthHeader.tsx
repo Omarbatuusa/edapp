@@ -2,7 +2,7 @@
 
 import { ThemeToggle } from "@/components/discovery/theme-toggle"
 import { useState, useEffect } from "react"
-import { ChevronLeft, HelpCircle } from 'lucide-react'
+import { ChevronLeft, CircleHelp } from 'lucide-react'
 import Image from "next/image"
 
 interface AuthHeaderProps {
@@ -102,7 +102,7 @@ export function AuthHeader({
                         className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-secondary/80 text-muted-foreground transition-colors"
                         aria-label="Help"
                     >
-                        <HelpCircle size={20} />
+                        <CircleHelp size={20} />
                     </button>
                 )}
                 <div className="scale-90">
