@@ -7,6 +7,7 @@ import { RoleProvider } from '@/contexts/RoleContext'
 import { BottomNav } from '@/components/dashboard/bottom-nav'
 import { RoleSwitcher } from '@/components/dashboard/role-switcher'
 import { ThemeToggle } from '@/components/discovery/theme-toggle'
+import { Shell } from '@/components/layout/Shell'
 
 interface DashboardLayoutProps {
     children: React.ReactNode
@@ -55,40 +56,13 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
 
     return (
         <RoleProvider tenantSlug={slug} initialRole={getInitialRole()}>
-            <div className="min-h-screen min-h-[100dvh] bg-[#f6f7f8] dark:bg-[#101922] text-[#0d141b] dark:text-slate-100 flex flex-col">
-                {/* Header */}
-                <header className="sticky top-0 bg-white/95 dark:bg-[#101922]/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 z-30">
-                    <div className="flex items-center justify-between h-14 px-4 max-w-5xl mx-auto">
-                        {/* Logo / School Name */}
-                        <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                                <span className="material-symbols-outlined text-white text-lg">school</span>
-                            </div>
-                            <span className="font-semibold text-sm hidden sm:block">EdApp</span>
-                        </div>
-
-                        {/* Right side - Role Switcher + Theme + Profile */}
-                        <div className="flex items-center gap-2">
-                            <RoleSwitcher />
-                            <ThemeToggle />
-                            <button
-                                className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center overflow-hidden"
-                                title="Profile"
-                            >
-                                <span className="material-symbols-outlined text-slate-500 dark:text-slate-400 text-lg">person</span>
-                            </button>
-                        </div>
-                    </div>
-                </header>
-
-                {/* Main Content */}
-                <main className="flex-1 pb-20 md:pb-0">
-                    {children}
-                </main>
-
-                {/* Bottom Navigation (mobile only) */}
-                <BottomNav tenantSlug={slug} />
-            </div>
+            <Shell
+                tenantName={slug.toUpperCase()} // In real app, fetch tenant details
+                user={user}
+                role={getInitialRole()}
+            >
+                {children}
+            </Shell>
         </RoleProvider>
     )
 }

@@ -46,50 +46,50 @@ export default function ApplicantPortalPage() {
     }
 
     return (
-        <div className="bg-[#f6f7f8] dark:bg-[#101922] text-[#0d141b] dark:text-slate-100 min-h-screen min-h-[100dvh] flex flex-col font-display transition-colors duration-300">
+        <div className="flex flex-col min-h-screen bg-background font-display transition-colors duration-300">
             <AuthHeader
                 onBack={handleBack}
                 onHelp={() => setShowHelp(true)}
             />
 
-            <main className="flex-1 flex flex-col items-center justify-center px-6 pb-8 max-w-md mx-auto w-full">
+            <main className="flex-1 flex flex-col items-center justify-center px-6 pb-8 max-w-[480px] mx-auto w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
 
                 {/* Header Text */}
                 <div className="mb-8 text-center">
-                    <h1 className="text-2xl font-bold tracking-tight mb-2">
+                    <h1 className="text-2xl font-bold tracking-tight mb-2 text-foreground">
                         Apply to {slug ? slug.toUpperCase() : 'School'}
                     </h1>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                    <p className="text-sm text-muted-foreground">
                         {isSignup ? 'Create an account to start your application' : 'Sign in to continue your application'}
                     </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="w-full space-y-4">
+                <form onSubmit={handleSubmit} className="w-full space-y-4 surface-card relative overflow-visible">
                     {isSignup && (
                         <>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <div className="relative">
-                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
+                                    <div className="relative group">
+                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/50 transition-colors group-focus-within:text-primary pointer-events-none" />
                                         <input
                                             type="text"
                                             placeholder="First Name"
                                             value={firstName}
                                             onChange={(e) => setFirstName(e.target.value)}
-                                            className="w-full h-14 rounded-xl bg-slate-100 dark:bg-slate-800 px-5 pl-12 text-base border-none focus:ring-2 focus:ring-primary/20 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
+                                            className="w-full pl-12 surface-input"
                                             required
                                         />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <div className="relative">
-                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
+                                    <div className="relative group">
+                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/50 transition-colors group-focus-within:text-primary pointer-events-none" />
                                         <input
                                             type="text"
                                             placeholder="Last Name"
                                             value={lastName}
                                             onChange={(e) => setLastName(e.target.value)}
-                                            className="w-full h-14 rounded-xl bg-slate-100 dark:bg-slate-800 px-5 pl-12 text-base border-none focus:ring-2 focus:ring-primary/20 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
+                                            className="w-full pl-12 surface-input"
                                             required
                                         />
                                     </div>
@@ -97,14 +97,14 @@ export default function ApplicantPortalPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <div className="relative">
-                                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
+                                <div className="relative group">
+                                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/50 transition-colors group-focus-within:text-primary pointer-events-none" />
                                     <input
                                         type="tel"
                                         placeholder="Phone Number (Optional)"
                                         value={phone}
                                         onChange={(e) => setPhone(e.target.value)}
-                                        className="w-full h-14 rounded-xl bg-slate-100 dark:bg-slate-800 px-5 pl-12 text-base border-none focus:ring-2 focus:ring-primary/20 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
+                                        className="w-full pl-12 surface-input"
                                     />
                                 </div>
                             </div>
@@ -112,65 +112,65 @@ export default function ApplicantPortalPage() {
                     )}
 
                     <div className="space-y-2">
-                        <div className="relative">
-                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
+                        <div className="relative group">
+                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/50 transition-colors group-focus-within:text-primary pointer-events-none" />
                             <input
                                 type="email"
                                 placeholder="Email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="w-full h-14 rounded-xl bg-slate-100 dark:bg-slate-800 px-5 pl-12 text-base border-none focus:ring-2 focus:ring-primary/20 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
+                                className="w-full pl-12 surface-input"
                                 required
                             />
                         </div>
                     </div>
 
                     <div className="space-y-2">
-                        <div className="relative">
-                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
+                        <div className="relative group">
+                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/50 transition-colors group-focus-within:text-primary pointer-events-none" />
                             <input
                                 type="password"
                                 placeholder="Password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full h-14 rounded-xl bg-slate-100 dark:bg-slate-800 px-5 pl-12 text-base border-none focus:ring-2 focus:ring-primary/20 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
+                                className="w-full pl-12 surface-input"
                                 required
                             />
                         </div>
                     </div>
 
                     {error && (
-                        <p className="text-sm text-red-500 bg-red-50 dark:bg-red-900/20 px-4 py-3 rounded-xl text-center">{error}</p>
+                        <p className="text-sm text-destructive bg-destructive/10 px-4 py-3 rounded-xl text-center font-medium">{error}</p>
                     )}
 
                     <button
                         type="submit"
-                        className="w-full h-14 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                        className="w-full h-12 mt-4 bg-primary text-primary-foreground font-semibold rounded-xl active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:shadow-primary/30"
                         disabled={loading}
                     >
                         {loading ? 'Please wait...' : isSignup ? 'Create Account' : 'Sign In'}
                         <ArrowRight className="h-5 w-5" />
                     </button>
 
-                    <div className="text-center text-sm pt-2">
+                    <div className="text-center text-sm pt-4 border-t border-border/50 mt-4">
                         {isSignup ? (
-                            <p className="text-slate-500">
+                            <p className="text-muted-foreground">
                                 Already have an account?{' '}
                                 <button
                                     type="button"
                                     onClick={() => setIsSignup(false)}
-                                    className="text-green-600 hover:underline font-medium"
+                                    className="text-primary hover:underline font-semibold"
                                 >
                                     Sign in
                                 </button>
                             </p>
                         ) : (
-                            <p className="text-slate-500">
+                            <p className="text-muted-foreground">
                                 Don't have an account?{' '}
                                 <button
                                     type="button"
                                     onClick={() => setIsSignup(true)}
-                                    className="text-green-600 hover:underline font-medium"
+                                    className="text-primary hover:underline font-semibold"
                                 >
                                     Create one
                                 </button>
@@ -179,12 +179,12 @@ export default function ApplicantPortalPage() {
                     </div>
                 </form>
 
-                <div className="mt-8 text-center text-sm text-slate-400">
+                <div className="mt-8 text-center text-sm text-muted-foreground/60">
                     <p>
                         Current student or parent?{' '}
                         <button
                             onClick={() => router.push(`/tenant/${slug}/login`)}
-                            className="text-primary hover:underline font-medium"
+                            className="text-foreground hover:underline font-medium"
                         >
                             Go to Login
                         </button>
@@ -192,7 +192,10 @@ export default function ApplicantPortalPage() {
                 </div>
             </main>
 
-            <AuthFooter />
+            <footer className="sticky bottom-0 bg-background/80 backdrop-blur-md border-t border-border/10">
+                <AuthFooter />
+            </footer>
+
             <HelpPopup isOpen={showHelp} onClose={() => setShowHelp(false)} />
         </div>
     );

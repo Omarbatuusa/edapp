@@ -30,15 +30,15 @@ function BrokerStartContent() {
 
     return (
         <div className="flex flex-col items-center justify-center space-y-4">
-            <div className="w-12 h-12 border-4 border-indigo-600/30 border-t-indigo-600 rounded-full animate-spin"></div>
-            <p className="text-sm text-slate-500 font-medium animate-pulse">Initializing secure session...</p>
+            <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+            <p className="text-sm text-muted-foreground font-medium animate-pulse">Initializing secure session...</p>
         </div>
     );
 }
 
 export default function BrokerStartPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-2 border-indigo-600 rounded-full animate-spin"></div></div>}>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-2 border-primary rounded-full animate-spin"></div></div>}>
             <BrokerStartContent />
         </Suspense>
     );
