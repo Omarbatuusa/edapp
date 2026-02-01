@@ -5,8 +5,10 @@ import { TenantDomain } from './tenant-domain.entity';
 import { TenantsService } from './tenants.service';
 import { TenantsController } from './tenants.controller';
 
+import { TenantSettings } from './tenant-settings.entity';
+
 @Module({
-    imports: [TypeOrmModule.forFeature([Tenant, TenantDomain])],
+    imports: [TypeOrmModule.forFeature([Tenant, TenantDomain, TenantSettings])],
     providers: [TenantsService],
     controllers: [TenantsController],
     exports: [TypeOrmModule, TenantsService],

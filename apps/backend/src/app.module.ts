@@ -11,6 +11,10 @@ import { TenantDomain } from './tenants/tenant-domain.entity';
 import { Branch } from './branches/branch.entity';
 import { User } from './users/user.entity';
 import { RoleAssignment } from './users/role-assignment.entity';
+import { TenantSettings } from './tenants/tenant-settings.entity';
+import { PolicyDocument } from './policies/policy-document.entity';
+import { PolicyVersion } from './policies/policy-version.entity';
+import { UserPolicyAcceptance } from './policies/user-policy-acceptance.entity';
 
 // Modules
 import { BrandsModule } from './brands/brands.module';
@@ -22,6 +26,7 @@ import { UsersModule } from './users/users.module';
 import { DiscoveryModule } from './discovery/discovery.module';
 import { AuditModule } from './audit/audit.module';
 import { StorageModule } from './storage/storage.module';
+import { PoliciesModule } from './policies/policies.module';
 
 import { BullModule } from '@nestjs/bullmq';
 
@@ -44,7 +49,18 @@ import { BullModule } from '@nestjs/bullmq';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.get<string>('DATABASE_URL'),
-        entities: [Brand, Tenant, TenantDomain, Branch, User, RoleAssignment],
+        entities: [
+          Brand,
+          Tenant,
+          TenantDomain,
+          TenantSettings,
+          Branch,
+          User,
+          RoleAssignment,
+          PolicyDocument,
+          PolicyVersion,
+          UserPolicyAcceptance,
+        ],
         autoLoadEntities: true,
         synchronize: true, // DEV only, set to false in prod
         logging: configService.get('NODE_ENV') !== 'production',
@@ -59,6 +75,7 @@ import { BullModule } from '@nestjs/bullmq';
     DiscoveryModule,
     AuditModule,
     StorageModule,
+    PoliciesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
