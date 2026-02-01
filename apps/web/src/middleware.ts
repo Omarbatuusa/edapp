@@ -35,9 +35,10 @@ export function middleware(request: NextRequest) {
             return NextResponse.rewrite(url);
         }
     } else if (tenant) {
-        // {tenant}.edapp.co.za -> Tenant Confirmation (NOT directly to login)
-        if (!url.pathname.startsWith('/tenant') && url.pathname === '/') {
-            url.pathname = `/tenant/${tenant}`;
+        // {tenant}.edapp.co.za -> /tenant/[slug]
+        // Rewrite all requests to the tenant specific route structure
+        if (!url.pathname.startsWith('/tenant')) {
+            url.pathname = `/tenant/${tenant}${url.pathname === '/' ? '' : url.pathname}`;
             return NextResponse.rewrite(url);
         }
     }
