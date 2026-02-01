@@ -94,8 +94,10 @@ function BrokerLoginContent() {
             const finishUrl = `${protocol}//${targetDomain}/auth/finish?handoff=${code}`;
             window.location.href = finishUrl;
 
-        } catch (err) {
-            setError('Authentication failed. Please try again.');
+        } catch (err: any) {
+            console.error('Handoff error:', err);
+            const msg = err?.message || 'Unknown error';
+            setError(`Authentication failed: ${msg}. Please try again.`);
             setLoading(false);
         }
     };
@@ -229,10 +231,11 @@ function BrokerLoginContent() {
 
                             <div className="flex gap-3">
                                 <button disabled className="flex-1 h-12 bg-secondary/20 rounded-xl flex items-center justify-center opacity-40 cursor-not-allowed">
-                                    <span className="material-symbols-outlined text-xl">window</span>
+                                    {/* Microsoft Icon */}
+                                    <svg viewBox="0 0 23 23" width="20" height="20"><path fill="#f25022" d="M1 1h10v10H1z" /><path fill="#00a4ef" d="M1 12h10v10H1z" /><path fill="#7fba00" d="M12 1h10v10H12z" /><path fill="#ffb900" d="M12 12h10v10H12z" /></svg>
                                 </button>
                                 <button disabled className="flex-1 h-12 bg-secondary/20 rounded-xl flex items-center justify-center opacity-40 cursor-not-allowed">
-                                    <span className="material-symbols-outlined text-xl">apple</span>
+                                    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.74 1.18 0 2.45-1.05 3.9-1.05 1.58.06 3.19.85 4.14 2.1-3.75 1.95-3.14 6.94.39 8.44-.75 1.77-1.9 3.54-3.51 5.33zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" /></svg>
                                 </button>
                             </div>
 
