@@ -2,6 +2,7 @@
 
 import { ThemeToggle } from "@/components/discovery/theme-toggle"
 import { useState, useEffect } from "react"
+import { ChevronLeft, HelpCircle } from 'lucide-react'
 
 interface AuthHeaderProps {
     onBack?: () => void
@@ -43,7 +44,7 @@ export function AuthHeader({
                         className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-secondary/50 text-foreground/80 transition-colors"
                         aria-label="Back"
                     >
-                        <span className="material-symbols-outlined text-2xl">chevron_left</span>
+                        <ChevronLeft size={24} />
                     </button>
                 ) : (
                     <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
@@ -61,8 +62,17 @@ export function AuthHeader({
                 )}
             </div>
 
-            {/* Right: Theme Toggle (Minimal) */}
-            <div className="w-10 flex items-center justify-end gap-1">
+            {/* Right: Help & Theme */}
+            <div className="flex items-center justify-end gap-2">
+                {onHelp && (
+                    <button
+                        onClick={onHelp}
+                        className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-secondary/50 text-muted-foreground transition-colors"
+                        aria-label="Help"
+                    >
+                        <HelpCircle size={20} />
+                    </button>
+                )}
                 <div className={scrolled ? 'scale-90 transition-transform' : ''}>
                     <ThemeToggle />
                 </div>
