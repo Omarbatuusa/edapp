@@ -7,6 +7,8 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthController } from './auth.controller';
 import { User } from '../users/user.entity';
 import { Tenant } from '../tenants/tenant.entity';
+import { HandoffController } from './handoff.controller';
+import { HandoffService } from './handoff.service';
 
 @Global()
 @Module({
@@ -14,8 +16,8 @@ import { Tenant } from '../tenants/tenant.entity';
         ConfigModule,
         TypeOrmModule.forFeature([User, Tenant]),
     ],
-    controllers: [AuthController],
-    providers: [AuthService, EnhancedAuthService, FirebaseAuthGuard],
-    exports: [AuthService, EnhancedAuthService, FirebaseAuthGuard],
+    controllers: [AuthController, HandoffController],
+    providers: [AuthService, EnhancedAuthService, FirebaseAuthGuard, HandoffService],
+    exports: [AuthService, EnhancedAuthService, FirebaseAuthGuard, HandoffService],
 })
 export class AuthModule { }
