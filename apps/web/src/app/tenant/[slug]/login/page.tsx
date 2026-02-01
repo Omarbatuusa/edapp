@@ -6,9 +6,14 @@ import { AuthFooter } from "@/components/layout/AuthFooter"
 import { AuthHeader } from "@/components/layout/AuthHeader"
 import { HelpPopup } from "@/components/discovery/help-popup"
 
+// Default logo for tenants without custom logo
+const DEFAULT_LOGO = "https://lh3.googleusercontent.com/aida-public/AB6AXuC96FXTYpIW1fqA_8czdGZvU6P_lFoVuIZZ1lhBzMSykuIEyQEElOa0-AB8eFKKQhEUUcNKGDznJwQTXAVT5Q6tSK6xbDteUL38WpifPHGqw5jvjvBAxtZr8tnMiFQ1Iazh_k1yw89QLWwMV4gDr5e0nBFuStsd9n1pq7B9u8kideTnBdlz3T3EuCJ9JcF7qnH9S-Xca5wX-eyf59mdPPU-dTyFFV0Hjr1Dh710MQq_kKGssRnXVxovzURFa0Z67wQZZcrGd7RAU1w"
+
+
 interface TenantData {
     school_name: string;
     tenant_slug: string;
+    logo_url?: string;
     main_branch?: {
         branch_name: string;
         is_main_branch: boolean;
@@ -70,73 +75,64 @@ export default function RoleSelectionPage({ params }: { params: Promise<{ slug: 
     }
 
     const handleBack = () => {
-        const protocol = window.location.protocol
-        const host = window.location.host
-        if (host.includes('localhost')) {
-            window.location.href = `${protocol}//localhost:3000`
-            return
-        }
-        const baseDomain = host.substring(host.indexOf('.') + 1)
-        window.location.href = `${protocol}//app.${baseDomain}`
+        // Go back to Discovery logic, keeping query if needed, or just home.
+        // Using router.push('/') for client-side transition
+        router.push('/')
     }
 
     const roles = [
         {
-            id: 'admin',
-            title: 'Admin',
-            description: 'Manage users and content',
-            icon: 'admin_panel_settings'
-        },
-        {
             id: 'staff',
             title: 'Staff',
-            description: 'View progress and reporting',
+            subtitle: 'Teaching & Support',
+            description: 'Teachers & Faculty',
             icon: 'badge'
         },
         {
+            id: 'admin',
+            title: 'Admin',
+            subtitle: 'School Management',
+            description: 'System Managers',
+            icon: 'admin_panel_settings'
+        },
+        {
             id: 'parent',
-            title: 'Parent / Guardian',
+            title: 'Parent or Guardian',
+            subtitle: 'Family Access',
             description: "Monitor child's learning journey",
             icon: 'family_restroom'
         },
         {
             id: 'learner',
             title: 'Learner',
-            description: 'Access your courses and lessons',
+            subtitle: 'Student Access',
+            description: 'Access courses & lessons',
             icon: 'school'
         }
     ]
 
     return (
-        <div className="bg-[#f6f7f8] dark:bg-[#101922] text-[#0d141b] dark:text-slate-100 min-h-screen min-h-[100dvh] flex flex-col font-display transition-colors duration-300 overflow-x-hidden overflow-y-auto">
+        <div className="bg-[#f6f7f8] dark:bg-[#101922] text-[#0d141b] dark:text-slate-100 min-h-screen min-h-[100dvh] flex flex-col font-display transition-colors duration-300 overflow-x-hidden overflow-y-auto w-full">
             {/* Header */}
             <AuthHeader
                 onBack={handleBack}
                 onHelp={() => setShowHelp(true)}
+                variant="tenant"
+                tenantName={tenant?.school_name}
+                tenantLogo={tenant?.logo_url || DEFAULT_LOGO}
                 transparent={!scrolled}
             />
 
             {/* Main Content */}
-            <main className="flex-1 flex flex-col items-center px-6 pb-8 max-w-[480px] mx-auto w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <main className="flex-1 flex flex-col items-center px-4 pb-8 max-w-[480px] mx-auto w-full animate-in fade-in slide-in-from-right-8 duration-500">
                 <h1 className="text-2xl font-bold tracking-tight text-center mt-4">
                     Choose your role
                 </h1>
-                <p className="mt-2 text-sm text-muted-foreground text-center">
+                <p className="mt-2 text-sm text-muted-foreground text-center mb-8">
                     Select how you'll be using the platform.
                 </p>
-                {/* Tenant and Branch name */}
-                <div className="mt-2 text-center">
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                        {tenant ? tenant.school_name : slug}
-                    </p>
-                    {tenant?.main_branch && !tenant.main_branch.is_main_branch && (
-                        <p className="text-xs text-muted-foreground/80 mt-0.5">
-                            {tenant.main_branch.branch_name}
-                        </p>
-                    )}
-                </div>
 
-                <div className="w-full mt-8 space-y-3">
+                <div className="w-full space-y-3">
                     {roles.map((role) => {
                         const isLastRole = lastRole === role.id;
                         const isSelected = selectedRole === role.id;
@@ -147,8 +143,8 @@ export default function RoleSelectionPage({ params }: { params: Promise<{ slug: 
                                 onClick={() => handleRoleSelect(role.id)}
                                 disabled={selectedRole !== null}
                                 className={`
-                                    role-card-apple w-full flex items-center gap-4 text-left
-                                    active:scale-[0.98] disabled:opacity-60
+                                    role-card-apple w-full flex items-center gap-4 text-left p-4
+                                    active:scale-[0.98] disabled:opacity-60 relative group
                                     ${isLastRole ? 'ring-2 ring-primary/20 bg-primary/5' : ''}
                                     ${isSelected ? 'selected' : ''}
                                 `}
@@ -171,15 +167,32 @@ export default function RoleSelectionPage({ params }: { params: Promise<{ slug: 
                                 </div>
 
                                 <div className="flex-1 min-w-0">
-                                    <h3 className="text-base font-semibold text-foreground">
+                                    <h3 className="text-base font-semibold text-foreground leading-tight">
                                         {role.title}
                                     </h3>
-                                    <p className="text-sm text-muted-foreground">
-                                        {role.description}
+                                    {/* Subtitle */}
+                                    <p className="text-[13px] font-medium text-muted-foreground/80 mt-0.5">
+                                        {role.subtitle}
                                     </p>
+                                    {/* Description (Old one? Prompt says short subtitle line under role title. 
+                                        The prompt lists EXACT subtitles. It doesn't explicitly say "Remove description" but 
+                                        "Update... to include a small subtitle line... Keep spacing tight...".
+                                        The example image in prompt has "Staff -> Teachers & Faculty".
+                                        The user's NEW request says: "Staff -> Teaching & Support".
+                                        If I add subtitle, maybe I should use it INSTEAD of description or WITH it?
+                                        "Subtitle sits directly under the role title".
+                                        The old description was "Teachers & Faculty".
+                                        The new subtitle is "Teaching & Support".
+                                        It seems the subtitle REPLACES the description or acts as the main secondary text.
+                                        I will use the subtitle line AS the description line essentially, or render both if spacing permits.
+                                        The prompt says "Keep spacing tight... do not increase card height significantly."
+                                        I'll stick to just the subtitle line as the secondary text for cleaner look, unless the "Description" adds immense value.
+                                        Actually, "Teachers & Faculty" vs "Teaching & Support".
+                                        I'll just use the subtitle as the secondary line.
+                                    */}
                                 </div>
 
-                                <span className="material-symbols-outlined text-muted-foreground/50 text-xl shrink-0">
+                                <span className="material-symbols-outlined text-muted-foreground/50 text-xl shrink-0 group-hover:text-primary/50 transition-colors">
                                     chevron_right
                                 </span>
                             </button>

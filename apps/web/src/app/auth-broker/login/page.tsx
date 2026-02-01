@@ -3,6 +3,8 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
 const DEFAULT_LOGO = "https://lh3.googleusercontent.com/aida-public/AB6AXuC96FXTYpIW1fqA_8czdGZvU6P_lFoVuIZZ1lhBzMSykuIEyQEElOa0-AB8eFKKQhEUUcNKGDznJwQTXAVT5Q6tSK6xbDteUL38WpifPHGqw5jvjvBAxtZr8tnMiFQ1Iazh_k1yw89QLWwMV4gDr5e0nBFuStsd9n1pq7B9u8kideTnBdlz3T3EuCJ9JcF7qnH9S-Xca5wX-eyf59mdPPU-dTyFFV0Hjr1Dh710MQq_kKGssRnXVxovzURFa0Z67wQZZcrGd7RAU1w";
 
@@ -25,6 +27,7 @@ function BrokerLoginContent() {
 
     // State for standard auth
     const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
     // State for learner auth
     const [studentNumber, setStudentNumber] = useState('');
@@ -103,17 +106,35 @@ function BrokerLoginContent() {
     };
 
     const handleGoogleLogin = async () => {
-        const mockUserId = `google-user-${Date.now()}`;
-        const mockSessionToken = `mock_google_session_${Date.now()}`;
-        await completeHandoff(mockSessionToken, mockUserId);
+        try {
+            setLoading(true);
+            const provider = new GoogleAuthProvider();
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+            const token = await user.getIdToken();
+            await completeHandoff(token, user.uid);
+        } catch (err: any) {
+            console.error('Google Auth Error:', err);
+            setError(err.message);
+            setLoading(false);
+        }
     };
 
     const handleEmailLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!email) return;
-        const mockUserId = `email-user-${email.replace(/[^a-zA-Z0-9]/g, '')}`;
-        const mockSessionToken = `mock_email_session_${Date.now()}`;
-        await completeHandoff(mockSessionToken, mockUserId);
+        if (!email || !password) return;
+
+        try {
+            setLoading(true);
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            const token = await user.getIdToken();
+            await completeHandoff(token, user.uid);
+        } catch (err: any) {
+            console.error('Email Auth Error:', err);
+            setError(err.message);
+            setLoading(false);
+        }
     };
 
     const handleLearnerLogin = async (e: React.FormEvent) => {
@@ -252,19 +273,29 @@ function BrokerLoginContent() {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         placeholder="Email address"
-                                        className="w-full surface-input text-center"
+                                        className="w-full surface-input"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <input
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        placeholder="Password"
+                                        className="w-full surface-input"
                                         required
                                     />
                                 </div>
                                 <button
                                     type="submit"
-                                    disabled={!email}
+                                    disabled={!email || !password || loading}
                                     className="w-full h-12 bg-foreground text-background font-semibold rounded-xl active:scale-[0.98] transition-all disabled:opacity-50 shadow-lg shadow-black/5"
                                 >
-                                    Continue with Email
+                                    {loading ? 'Signing in...' : 'Sign In'}
                                 </button>
                                 <p className="text-center text-[10px] text-muted-foreground/60">
-                                    We'll send a magic link or code to your email.
+                                    Protected by Firebase Auth
                                 </p>
                             </form>
                         </>
