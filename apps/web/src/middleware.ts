@@ -20,6 +20,13 @@ export function middleware(request: NextRequest) {
             url.pathname = '/admin/login';
             return NextResponse.rewrite(url);
         }
+    } else if (hostname.startsWith('auth.')) {
+        // auth.edapp.co.za -> Central Auth Broker
+        // Rewrite requests to /auth-broker internal route
+        if (!url.pathname.startsWith('/auth-broker')) {
+            url.pathname = `/auth-broker${url.pathname === '/' ? '/start' : url.pathname}`;
+            return NextResponse.rewrite(url);
+        }
     } else if (hostname.startsWith('apply-')) {
         // apply-{tenant}.edapp.co.za -> Applicant Portal
         const tenantSlug = hostname.replace('apply-', '').split('.')[0];
@@ -55,6 +62,11 @@ function extractTenantFromHost(host: string): string | null {
 
     // admin.edapp.co.za -> null (platform admin)
     if (hostname.startsWith('admin.')) {
+        return null;
+    }
+
+    // auth.edapp.co.za -> null (central auth broker)
+    if (hostname.startsWith('auth.')) {
         return null;
     }
 
