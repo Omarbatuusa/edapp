@@ -106,6 +106,10 @@ function BrokerLoginContent() {
     };
 
     const handleGoogleLogin = async () => {
+        if (!auth) {
+            setError('Firebase authentication is not configured');
+            return;
+        }
         try {
             setLoading(true);
             const provider = new GoogleAuthProvider();
@@ -120,9 +124,14 @@ function BrokerLoginContent() {
         }
     };
 
+
     const handleEmailLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!email || !password) return;
+        if (!auth) {
+            setError('Firebase authentication is not configured');
+            return;
+        }
 
         try {
             setLoading(true);
@@ -136,6 +145,7 @@ function BrokerLoginContent() {
             setLoading(false);
         }
     };
+
 
     const handleLearnerLogin = async (e: React.FormEvent) => {
         e.preventDefault();
