@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { AuthFooter } from "@/components/layout/AuthFooter"
+import { AuthHeader } from "@/components/layout/AuthHeader"
 import { ThemeToggle } from "@/components/discovery/theme-toggle"
 import { HelpPopup } from "@/components/discovery/help-popup"
 import { useAuth } from "@/contexts/AuthContext"
@@ -50,27 +51,12 @@ export default function AdminLoginPage() {
     }
 
     return (
-        <div className="bg-[#f6f7f8] dark:bg-[#101922] text-[#0d141b] dark:text-slate-100 min-h-screen flex flex-col font-display transition-colors duration-300">
+        <div className="bg-[#f6f7f8] dark:bg-[#101922] text-[#0d141b] dark:text-slate-100 min-h-screen min-h-[100dvh] flex flex-col font-display transition-colors duration-300">
             {/* Header - consistent */}
-            <header className="flex items-center justify-between p-4 sticky top-0 bg-[#f6f7f8]/80 dark:bg-[#101922]/80 backdrop-blur-md z-10">
-                <button
-                    onClick={handleBack}
-                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors"
-                    aria-label="Back"
-                >
-                    <span className="material-symbols-outlined text-2xl">chevron_left</span>
-                </button>
-                <div className="flex items-center gap-1">
-                    <ThemeToggle />
-                    <button
-                        onClick={() => setShowHelp(true)}
-                        className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors"
-                        aria-label="Help"
-                    >
-                        <span className="material-symbols-outlined text-2xl">help_outline</span>
-                    </button>
-                </div>
-            </header>
+            <AuthHeader
+                onBack={handleBack}
+                onHelp={() => setShowHelp(true)}
+            />
 
             {/* Main Content */}
             <main className="flex-1 flex flex-col items-center justify-center px-6 pb-8 max-w-md mx-auto w-full">
@@ -143,8 +129,8 @@ export default function AdminLoginPage() {
                                         type="button"
                                         onClick={() => setRememberDuration(d)}
                                         className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-all ${rememberDuration === d
-                                                ? 'bg-white dark:bg-slate-700 text-indigo-600 shadow-sm'
-                                                : 'text-slate-500 hover:text-slate-700'
+                                            ? 'bg-white dark:bg-slate-700 text-indigo-600 shadow-sm'
+                                            : 'text-slate-500 hover:text-slate-700'
                                             }`}
                                     >
                                         {d} days

@@ -66,9 +66,20 @@ export default function RoleSelectionPage({ params }: { params: Promise<{ slug: 
     }
 
     // Back to Tenant Confirmation (the screen with school logo)
+    // Back to Tenant Confirmation (the screen with school logo) - effectively Change School
     const handleBack = () => {
-        const correctSlug = tenant?.tenant_slug || slug
-        router.push(`/tenant/${correctSlug}`)
+        const protocol = window.location.protocol
+        const host = window.location.host
+
+        // Handle localhost development environment
+        if (host.includes('localhost')) {
+            window.location.href = `${protocol}//localhost:3000`
+            return
+        }
+
+        // Handle production environment
+        const baseDomain = host.substring(host.indexOf('.') + 1)
+        window.location.href = `${protocol}//app.${baseDomain}`
     }
 
     const roles = [
