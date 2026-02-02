@@ -93,23 +93,6 @@ export default function DiscoveryPage() {
           <div className="animate-in fade-in slide-in-from-right-4 duration-300 w-full">
             {/* Logo */}
             <div className="mb-8 flex flex-col items-center text-center">
-              {/* Note: Header already has EdApp logo in discovery variant, do we need it here too? 
-                  The mockups often show a large logo in body. 
-                  Prompt says: "Tenant discovery has a clean 'EdApp only' header... Header should show: EdApp logo + EdApp title only".
-                  If header has it, maybe remove from body to avoid duplication? 
-                  The prompt doesn't explicitly say "remove from body", but "header should show". 
-                  Let's keep the body logo for the "Search" state as it feels empty otherwise. 
-              */}
-              <div className="mb-5 h-14 w-14 flex items-center justify-center">
-                <Image
-                  src="/logo.png"
-                  alt="EdApp Logo"
-                  width={56}
-                  height={56}
-                  className="object-contain"
-                  priority
-                />
-              </div>
               <h1 className="text-2xl font-bold tracking-tight">
                 Find your school
               </h1>
@@ -117,6 +100,7 @@ export default function DiscoveryPage() {
                 Enter the unique code provided by your institution.
               </p>
             </div>
+
 
             {/* Form */}
             <form onSubmit={handleLookup} className="w-full space-y-5">
