@@ -86,12 +86,17 @@ export function AuthHeader({
                 {/* Discovery Mode (EdApp Only) */}
                 {variant === 'discovery' && (
                     <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-                            <span className="material-symbols-outlined text-white text-[20px]">school</span>
-                        </div>
+                        <Image
+                            src="/logo.png"
+                            alt="EdApp"
+                            width={32}
+                            height={32}
+                            className="object-contain"
+                        />
                         <span className="font-bold text-lg tracking-tight">EdApp</span>
                     </div>
                 )}
+
             </div>
 
             {/* Right: Help & Theme */}
