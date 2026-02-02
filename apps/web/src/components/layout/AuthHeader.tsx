@@ -8,9 +8,10 @@ import Image from "next/image"
 interface AuthHeaderProps {
     onBack?: () => void
     onHelp?: () => void
-    variant?: 'discovery' | 'tenant' // 'discovery' = EdApp only, 'tenant' = School info
+    variant?: 'discovery' | 'tenant'
     tenantName?: string
     tenantLogo?: string
+    tenantSlug?: string
     transparent?: boolean
 }
 
@@ -20,35 +21,43 @@ export function AuthHeader({
     variant = 'tenant',
     tenantName,
     tenantLogo,
+    tenantSlug,
     transparent = false
 }: AuthHeaderProps) {
     const [scrolled, setScrolled] = useState(false)
 
     useEffect(() => {
+        // Listen for scroll on app-content instead of window
+        const content = document.querySelector('.app-content')
+        if (!content) return
+
         const handleScroll = () => {
-            setScrolled(window.scrollY > 0)
+            setScrolled(content.scrollTop > 0)
         }
-        window.addEventListener('scroll', handleScroll, { passive: true })
-        return () => window.removeEventListener('scroll', handleScroll)
+        content.addEventListener('scroll', handleScroll, { passive: true })
+        return () => content.removeEventListener('scroll', handleScroll)
     }, [])
+
+    const handleChangeSchool = () => {
+        // Navigate to main app domain
+        window.location.href = 'https://app.edapp.co.za'
+    }
 
     return (
         <header
-            className={`flex items-center justify-between px-4 sticky top-0 z-30 w-full transition-all duration-300 ${scrolled
-                ? 'h-14 bg-background/80 backdrop-blur-md shadow-sm'
-                : 'h-16 bg-transparent'
-                } ${transparent && !scrolled ? 'bg-transparent' : 'bg-background/80 backdrop-blur-md'}`}
+            className={`flex items-center justify-between px-4 shrink-0 z-30 w-full transition-all duration-300 ${scrolled
+                ? 'h-14 bg-background/95 backdrop-blur-md shadow-sm'
+                : 'h-16 bg-background/80 backdrop-blur-md'
+                }`}
         >
             {/* Left Section */}
             <div className="flex items-center gap-3 flex-1 min-w-0">
-                {/* Back Button */}
-                {/* On Mobile/Discovery, if no onBack, we show nothing or brand? Spec says: Discovery -> EdApp Only. Tenant Code -> No Chevron. */}
                 {variant === 'tenant' && (
                     <div className="flex items-center gap-3 min-w-0">
                         {onBack && (
                             <button
                                 onClick={onBack}
-                                className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-secondary/50 text-foreground/80 transition-colors shrink-0"
+                                className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-secondary/50 text-foreground/80 transition-colors shrink-0"
                                 aria-label="Back"
                             >
                                 <ChevronLeft size={24} />
@@ -69,12 +78,11 @@ export function AuthHeader({
 
                         {/* Tenant Name & Change School */}
                         <div className="flex flex-col min-w-0 justify-center">
-                            {/* Desktop/Tablet: Show Name + Change school link. Mobile: Truncate Name. */}
                             <h1 className="text-sm font-semibold tracking-tight leading-none text-foreground truncate">
                                 {tenantName}
                             </h1>
                             <button
-                                onClick={onBack}
+                                onClick={handleChangeSchool}
                                 className="text-[11px] text-primary hover:underline text-left flex items-center gap-0.5 leading-tight mt-0.5 truncate"
                             >
                                 Change school <span className="text-[9px]">›</span>
@@ -85,18 +93,20 @@ export function AuthHeader({
 
                 {/* Discovery Mode (EdApp Only) */}
                 {variant === 'discovery' && (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2.5">
                         <Image
                             src="/logo.png"
-                            alt="EdApp"
+                            alt="edAPP"
                             width={32}
                             height={32}
                             className="object-contain"
                         />
-                        <span className="font-bold text-lg tracking-tight">EdApp</span>
+                        <div className="flex flex-col">
+                            <span className="font-bold text-base tracking-tight leading-none">edAPP</span>
+                            <span className="text-[10px] text-muted-foreground font-medium leading-tight mt-0.5">School & Home Sync</span>
+                        </div>
                     </div>
                 )}
-
             </div>
 
             {/* Right: Help & Theme */}
