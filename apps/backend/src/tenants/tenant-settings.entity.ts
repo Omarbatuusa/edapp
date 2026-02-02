@@ -28,6 +28,27 @@ export class TenantSettings {
     @Column({ default: true })
     email_enabled: boolean;
 
+    // Authentication methods configuration
+    @Column('simple-json', {
+        nullable: true,
+        default: JSON.stringify({
+            google_enabled: true,
+            email_password_enabled: true,
+            email_magic_link_enabled: true,
+            email_otp_enabled: false,
+            mfa_enabled: false,
+            mfa_required_roles: []
+        })
+    })
+    auth_methods: {
+        google_enabled: boolean;
+        email_password_enabled: boolean;
+        email_magic_link_enabled: boolean;
+        email_otp_enabled: boolean;
+        mfa_enabled: boolean;
+        mfa_required_roles: string[];
+    };
+
     @CreateDateColumn()
     created_at: Date;
 
