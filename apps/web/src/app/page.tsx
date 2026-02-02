@@ -1,39 +1,18 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Link from "next/link"
-import { useTheme } from "next-themes"
-import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { AuthFooter } from "@/components/layout/AuthFooter"
 import { AuthHeader } from "@/components/layout/AuthHeader"
 import { HelpPopup } from "@/components/discovery/help-popup"
 
-// Default logo for tenants without custom logo
-const DEFAULT_LOGO = "https://lh3.googleusercontent.com/aida-public/AB6AXuC96FXTYpIW1fqA_8czdGZvU6P_lFoVuIZZ1lhBzMSykuIEyQEElOa0-AB8eFKKQhEUUcNKGDznJwQTXAVT5Q6tSK6xbDteUL38WpifPHGqw5jvjvBAxtZr8tnMiFQ1Iazh_k1yw89QLWwMV4gDr5e0nBFuStsd9n1pq7B9u8kideTnBdlz3T3EuCJ9JcF7qnH9S-Xca5wX-eyf59mdPPU-dTyFFV0Hjr1Dh710MQq_kKGssRnXVxovzURFa0Z67wQZZcrGd7RAU1w"
-
-interface TenantData {
-  school_name: string;
-  school_code: string;
-  tenant_slug: string;
-  logo_url?: string;
-  main_branch?: {
-    branch_name: string;
-    is_main_branch: boolean;
-  };
-}
-
-type Step = 'search' | 'confirm'
-
 export default function DiscoveryPage() {
   const router = useRouter()
-  const [step, setStep] = useState<Step>('search')
   const [code, setCode] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
-  const [tenant, setTenant] = useState<TenantData | null>(null)
 
   useEffect(() => {
     setMounted(true)
@@ -52,46 +31,29 @@ export default function DiscoveryPage() {
         throw new Error('School not found')
       }
       const data = await res.json()
-      setTenant(data)
-      setStep('confirm')
+      // Go directly to role selection - no confirmation step
+      router.push(`/tenant/${data.tenant_slug}/login`)
     } catch (err) {
       setError('School not found. Please check the code and try again.')
-    } finally {
       setLoading(false)
     }
-  }
-
-  const handleContinue = () => {
-    if (!tenant) return
-
-    // iOS-style transition: Use client-side routing
-    router.push(`/tenant/${tenant.tenant_slug}/login`)
-  }
-
-  const handleBack = () => {
-    setStep('search')
-    setCode("")
-    setTenant(null)
-    setError(null)
   }
 
   if (!mounted) return null
 
   return (
-    <div className="bg-[#f6f7f8] dark:bg-[#101922] text-[#0d141b] dark:text-slate-100 min-h-screen min-h-[100dvh] flex flex-col font-display transition-colors duration-300">
+    <div className="app-shell">
       {/* Top Navigation */}
       <AuthHeader
         variant="discovery"
-        onBack={step === 'confirm' ? handleBack : undefined}
         onHelp={() => setShowHelp(true)}
       />
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 pb-8 max-w-md mx-auto w-full">
-
-        {step === 'search' && (
+      {/* Main Content - Only scrollable element */}
+      <main className="app-content">
+        <div className="flex-1 flex flex-col items-center justify-center px-6 pb-8 max-w-md mx-auto w-full">
           <div className="animate-in fade-in slide-in-from-right-4 duration-300 w-full">
-            {/* Logo */}
+            {/* Heading */}
             <div className="mb-8 flex flex-col items-center text-center">
               <h1 className="text-2xl font-bold tracking-tight">
                 Find your school
@@ -100,7 +62,6 @@ export default function DiscoveryPage() {
                 Enter the unique code provided by your institution.
               </p>
             </div>
-
 
             {/* Form */}
             <form onSubmit={handleLookup} className="w-full space-y-5">
@@ -158,56 +119,7 @@ export default function DiscoveryPage() {
               </a>
             </div>
           </div>
-        )}
-
-        {step === 'confirm' && tenant && (
-          <div className="animate-in fade-in slide-in-from-right-8 duration-300 w-full flex flex-col items-center">
-            {/* Tenant Logo */}
-            <div className="relative h-24 w-24 rounded-full overflow-hidden border-4 border-white dark:border-slate-800 shadow-lg mb-6">
-              <Image
-                src={tenant.logo_url || DEFAULT_LOGO}
-                alt={tenant.school_name}
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
-
-            {/* Tenant Name & Branch */}
-            <h1 className="text-2xl font-bold tracking-tight text-center">
-              {tenant.school_name}
-            </h1>
-            {tenant.main_branch && (
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 text-center">
-                Branch: {tenant.main_branch.branch_name}
-              </p>
-            )}
-            <p className="mt-1 text-xs text-slate-400 dark:text-slate-500 text-center">
-              {tenant.school_code}
-            </p>
-
-            {/* Actions */}
-            <div className="w-full mt-10 space-y-3 max-w-sm">
-              {/* Primary: Continue to Login */}
-              <button
-                onClick={handleContinue}
-                className="w-full h-14 bg-primary text-white font-semibold rounded-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2 ios-shadow"
-              >
-                <span>Continue to Login</span>
-                <span className="material-symbols-outlined text-xl">arrow_forward</span>
-              </button>
-
-              {/* Secondary: Change school */}
-              <button
-                onClick={handleBack}
-                className="w-full h-12 text-primary font-medium active:opacity-60 transition-opacity"
-              >
-                Change school
-              </button>
-            </div>
-          </div>
-        )}
-
+        </div>
       </main>
 
       <AuthFooter />
@@ -225,4 +137,3 @@ export default function DiscoveryPage() {
     </div>
   )
 }
-
