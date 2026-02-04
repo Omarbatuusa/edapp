@@ -21,36 +21,43 @@ function PolicyPopup({ isOpen, onClose, title, content }: PolicyPopupProps) {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4">
             {/* Backdrop */}
             <div
-                className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
                 onClick={onClose}
             />
 
-            {/* Modal */}
-            <div className="relative w-full sm:max-w-lg max-h-[85vh] bg-white dark:bg-slate-900 rounded-t-2xl sm:rounded-2xl shadow-2xl animate-in slide-in-from-bottom duration-300 sm:animate-in sm:zoom-in-95 sm:slide-in-from-bottom-0 flex flex-col">
-                {/* Header */}
-                <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800 shrink-0">
-                    <h3 className="text-lg font-semibold text-foreground">{title}</h3>
-                    <button
-                        onClick={onClose}
-                        className="p-2 -mr-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                    >
-                        <span className="material-symbols-outlined text-xl text-muted-foreground">close</span>
-                    </button>
+            {/* Modal - with side margins on mobile */}
+            <div className="relative w-full max-w-lg max-h-[80vh] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl animate-in slide-in-from-bottom-4 duration-300 flex flex-col overflow-hidden">
+                {/* Header with gradient accent */}
+                <div className="bg-gradient-to-r from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 px-5 py-4 border-b border-slate-200 dark:border-slate-800 shrink-0">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                                <span className="material-symbols-outlined text-primary text-xl">policy</span>
+                            </div>
+                            <h3 className="text-lg font-semibold text-foreground">{title}</h3>
+                        </div>
+                        <button
+                            onClick={onClose}
+                            className="p-2 rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors"
+                        >
+                            <span className="material-symbols-outlined text-xl text-muted-foreground">close</span>
+                        </button>
+                    </div>
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto p-4 text-sm text-muted-foreground leading-relaxed">
+                <div className="flex-1 overflow-y-auto px-5 py-4 text-sm text-muted-foreground leading-relaxed">
                     {content}
                 </div>
 
                 {/* Footer */}
-                <div className="p-4 border-t border-slate-200 dark:border-slate-800 shrink-0">
+                <div className="px-5 py-4 border-t border-slate-200 dark:border-slate-800 shrink-0 bg-slate-50 dark:bg-slate-900/50">
                     <button
                         onClick={onClose}
-                        className="w-full h-11 bg-primary text-primary-foreground font-semibold rounded-xl transition-all active:scale-[0.98]"
+                        className="w-full h-12 bg-primary text-primary-foreground font-semibold rounded-xl transition-all active:scale-[0.98] shadow-lg shadow-primary/20"
                     >
                         I understand
                     </button>
@@ -176,8 +183,8 @@ export default function ConsentGate({ tenantName, onContinue, onCancel, loading 
                             Required
                         </h2>
                         <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${allRequiredChecked
-                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                                : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400'
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                            : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400'
                             }`}>
                             {requiredCount}/4 completed
                         </span>
@@ -186,8 +193,8 @@ export default function ConsentGate({ tenantName, onContinue, onCancel, loading 
                     <div className="space-y-3">
                         {/* Terms */}
                         <label className={`flex gap-3 p-3 rounded-xl cursor-pointer transition-all border ${required.terms
-                                ? 'bg-primary/5 border-primary/30 dark:bg-primary/10'
-                                : 'bg-slate-50 dark:bg-slate-800/50 border-transparent hover:border-slate-200 dark:hover:border-slate-700'
+                            ? 'bg-primary/5 border-primary/30 dark:bg-primary/10'
+                            : 'bg-slate-50 dark:bg-slate-800/50 border-transparent hover:border-slate-200 dark:hover:border-slate-700'
                             }`}>
                             <input
                                 type="checkbox"
@@ -212,8 +219,8 @@ export default function ConsentGate({ tenantName, onContinue, onCancel, loading 
 
                         {/* Privacy */}
                         <label className={`flex gap-3 p-3 rounded-xl cursor-pointer transition-all border ${required.privacy
-                                ? 'bg-primary/5 border-primary/30 dark:bg-primary/10'
-                                : 'bg-slate-50 dark:bg-slate-800/50 border-transparent hover:border-slate-200 dark:hover:border-slate-700'
+                            ? 'bg-primary/5 border-primary/30 dark:bg-primary/10'
+                            : 'bg-slate-50 dark:bg-slate-800/50 border-transparent hover:border-slate-200 dark:hover:border-slate-700'
                             }`}>
                             <input
                                 type="checkbox"
@@ -238,8 +245,8 @@ export default function ConsentGate({ tenantName, onContinue, onCancel, loading 
 
                         {/* Child Safety */}
                         <label className={`flex gap-3 p-3 rounded-xl cursor-pointer transition-all border ${required.childSafety
-                                ? 'bg-primary/5 border-primary/30 dark:bg-primary/10'
-                                : 'bg-slate-50 dark:bg-slate-800/50 border-transparent hover:border-slate-200 dark:hover:border-slate-700'
+                            ? 'bg-primary/5 border-primary/30 dark:bg-primary/10'
+                            : 'bg-slate-50 dark:bg-slate-800/50 border-transparent hover:border-slate-200 dark:hover:border-slate-700'
                             }`}>
                             <input
                                 type="checkbox"
@@ -264,8 +271,8 @@ export default function ConsentGate({ tenantName, onContinue, onCancel, loading 
 
                         {/* Communications */}
                         <label className={`flex gap-3 p-3 rounded-xl cursor-pointer transition-all border ${required.communications
-                                ? 'bg-primary/5 border-primary/30 dark:bg-primary/10'
-                                : 'bg-slate-50 dark:bg-slate-800/50 border-transparent hover:border-slate-200 dark:hover:border-slate-700'
+                            ? 'bg-primary/5 border-primary/30 dark:bg-primary/10'
+                            : 'bg-slate-50 dark:bg-slate-800/50 border-transparent hover:border-slate-200 dark:hover:border-slate-700'
                             }`}>
                             <input
                                 type="checkbox"

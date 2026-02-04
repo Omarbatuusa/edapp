@@ -2,9 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams, useParams } from 'next/navigation';
+import { AuthHeader } from '@/components/layout/AuthHeader';
 import { AuthFooter } from '@/components/layout/AuthFooter';
+import { HelpPopup } from '@/components/discovery/help-popup';
 import ConsentGate from '@/components/auth/ConsentGate';
-import Image from 'next/image';
+
+const DEFAULT_LOGO = "https://lh3.googleusercontent.com/aida-public/AB6AXuC96FXTYpIW1fqA_8czdGZvU6P_lFoVuIZZ1lhBzMSykuIEyQEElOa0-AB8eFKKQhEUUcNKGDznJwQTXAVT5Q6tSK6xbDteUL38WpifPHGqw5jvjvBAxtZr8tnMiFQ1Iazh_k1yw89QLWwMV4gDr5e0nBFuStsd9n1pq7B9u8kideTnBdlz3T3EuCJ9JcF7qnH9S-Xca5wX-eyf59mdPPU-dTyFFV0Hjr1Dh710MQq_kKGssRnXVxovzURFa0Z67wQZZcrGd7RAU1w";
 
 export default function TenantConsentPage() {
     const router = useRouter();
@@ -13,35 +16,39 @@ export default function TenantConsentPage() {
 
     const [loading, setLoading] = useState(false);
     const [tenantName, setTenantName] = useState('your school');
+    const [tenantLogo, setTenantLogo] = useState(DEFAULT_LOGO);
     const [tenantId, setTenantId] = useState<string | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
     const [role, setRole] = useState<string | null>(null);
+    const [showHelp, setShowHelp] = useState(false);
+
+    const slug = params.slug as string;
 
     useEffect(() => {
         const tId = searchParams.get('tenantId');
         const uId = searchParams.get('userId');
         const r = searchParams.get('role');
-        const slug = params.slug as string;
 
         setTenantId(tId);
         setUserId(uId);
         setRole(r);
 
-        async function fetchTenantName() {
+        async function fetchTenantDetails() {
             if (slug) {
                 try {
                     const res = await fetch(`/v1/tenants/lookup-by-slug?slug=${slug}`);
                     if (res.ok) {
                         const data = await res.json();
-                        setTenantName(data.school_name);
+                        setTenantName(data.school_name || 'your school');
+                        setTenantLogo(data.logo_url || DEFAULT_LOGO);
                     }
                 } catch (e) {
-                    console.error('Failed to fetch tenant name');
+                    console.error('Failed to fetch tenant details');
                 }
             }
         }
-        fetchTenantName();
-    }, [searchParams, params.slug]);
+        fetchTenantDetails();
+    }, [searchParams, slug]);
 
     const handleContinue = async (consents: any) => {
         if (!userId || !tenantId) return;
@@ -61,9 +68,8 @@ export default function TenantConsentPage() {
             });
 
             if (res.ok) {
-                const slug = params.slug as string;
                 let dest = `/tenant/${slug}/dashboard`;
-                if (role === 'learner') dest = `/tenant/${slug}/dashboard/learner`;
+                if (role === 'learner') dest = `/tenant/${slug}/learner`;
                 router.push(dest);
             } else {
                 alert('Failed to save consent. Please try again.');
@@ -80,34 +86,25 @@ export default function TenantConsentPage() {
         router.push('/');
     };
 
-    return (
-        <div className="bg-[#f6f7f8] dark:bg-[#101922] text-[#0d141b] dark:text-slate-100 min-h-screen min-h-[100dvh] flex flex-col font-display transition-colors duration-300">
-            {/* Header with tenant name */}
-            <header className="flex items-center justify-between px-4 py-3 sticky top-0 bg-[#f6f7f8]/95 dark:bg-[#101922]/95 backdrop-blur-md z-20 border-b border-slate-200 dark:border-slate-800">
-                <button
-                    onClick={handleCancel}
-                    className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors -ml-2 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
-                >
-                    <span className="material-symbols-outlined text-xl">chevron_left</span>
-                </button>
-                <div className="flex items-center gap-2">
-                    <Image
-                        src="/edapp-logo.svg"
-                        alt="EdApp"
-                        width={24}
-                        height={24}
-                        className="dark:invert"
-                    />
-                    <span className="text-sm font-medium text-foreground truncate max-w-[180px]">
-                        {tenantName}
-                    </span>
-                </div>
-                <div className="w-10" /> {/* Spacer for balance */}
-            </header>
+    const handleBack = () => {
+        router.back();
+    };
 
-            {/* Scrollable content area */}
-            <main className="flex-1 overflow-y-auto">
-                <div className="flex flex-col items-center justify-start px-4 sm:px-6 py-6 sm:py-10 w-full min-h-full">
+    return (
+        <div className="flex flex-col h-[100dvh] bg-background">
+            {/* Header - Same as login page */}
+            <AuthHeader
+                variant="tenant"
+                tenantName={tenantName}
+                tenantLogo={tenantLogo}
+                tenantSlug={slug}
+                onBack={handleBack}
+                onHelp={() => setShowHelp(true)}
+            />
+
+            {/* Scrollable Content */}
+            <main className="flex-1 overflow-y-auto app-content">
+                <div className="flex flex-col items-center px-4 py-8 min-h-full">
                     <ConsentGate
                         tenantName={tenantName}
                         onContinue={handleContinue}
@@ -117,7 +114,11 @@ export default function TenantConsentPage() {
                 </div>
             </main>
 
+            {/* Footer */}
             <AuthFooter />
+
+            {/* Help Popup */}
+            <HelpPopup isOpen={showHelp} onClose={() => setShowHelp(false)} />
         </div>
     );
 }
