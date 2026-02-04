@@ -52,7 +52,7 @@ export default function AdminLoginPage() {
     return (
         <div className="app-shell">
             {/* Header - platform-admin variant with edAPP logo */}
-            <AuthHeader variant="platform-admin" />
+            <AuthHeader variant="platform-admin" onHelp={() => setShowHelp(true)} />
 
             {/* Main Content */}
             <main className="app-content">
