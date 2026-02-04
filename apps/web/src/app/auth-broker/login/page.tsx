@@ -2,7 +2,6 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import Image from 'next/image';
 import Link from 'next/link';
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendSignInLinkToEmail } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
@@ -290,31 +289,13 @@ function BrokerLoginContent() {
             <main className="app-content">
                 <div className="flex-1 flex flex-col items-center justify-center px-6 pb-8 max-w-md mx-auto w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
 
-                    {/* Hero Section */}
+                    {/* Sign in as Role */}
                     <div className="text-center mb-8">
-                        <div className="relative h-20 w-20 mx-auto rounded-full overflow-hidden shadow-xl mb-5 ring-4 ring-background">
-                            <Image
-                                src={tenant?.logo_url || DEFAULT_LOGO}
-                                alt={tenant?.school_name || 'School'}
-                                fill
-                                className="object-cover"
-                                priority
-                            />
-                        </div>
-
                         <h1 className="text-2xl font-bold tracking-tight text-foreground">
-                            {tenant?.school_name}
+                            Sign in
                         </h1>
-
-                        {tenant?.main_branch && (
-                            <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full bg-secondary/80 text-secondary-foreground">
-                                <span className="material-symbols-outlined text-[14px] mr-1.5 opacity-60">domain</span>
-                                <span className="text-xs font-medium">{tenant.main_branch.branch_name}</span>
-                            </div>
-                        )}
-
-                        <p className="mt-4 text-sm text-muted-foreground">
-                            Sign in as <span className="font-semibold text-foreground capitalize">{role}</span>
+                        <p className="mt-2 text-sm text-muted-foreground">
+                            Continue as <span className="font-semibold text-foreground capitalize">{role}</span>
                         </p>
                     </div>
 
@@ -546,25 +527,11 @@ function BrokerLoginContent() {
                             </div>
                         )}
                     </div>
-
-                    {/* Apply Now Link */}
-                    {role !== 'learner' && (
-                        <div className="mt-10 text-center">
-                            <p className="text-xs text-muted-foreground">
-                                Not a student yet?{' '}
-                                <a
-                                    href={`https://apply-${tenantSlug}.edapp.co.za`}
-                                    className="text-indigo-600 font-medium hover:underline"
-                                >
-                                    Apply to {tenant?.school_name}
-                                </a>
-                            </p>
-                        </div>
-                    )}
                 </div>
-
-                <AuthFooter />
             </main>
+
+            {/* Footer outside main for sticky positioning */}
+            <AuthFooter />
 
             <HelpPopup isOpen={showHelp} onClose={() => setShowHelp(false)} />
         </div>

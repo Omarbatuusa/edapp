@@ -2,7 +2,6 @@
 
 import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
 import { AuthFooter } from "@/components/layout/AuthFooter"
 import { AuthHeader } from "@/components/layout/AuthHeader"
 import { HelpPopup } from "@/components/discovery/help-popup"
@@ -134,14 +133,14 @@ export default function RoleSelectionPage({ params }: { params: Promise<{ slug: 
                                     onClick={() => handleRoleSelect(role.id)}
                                     disabled={selectedRole !== null}
                                     className={`
-                                        role-card-apple w-full flex items-center gap-4 text-left p-4
+                                        role-card-apple role-card-hover w-full flex items-center gap-4 text-left p-4
                                         active:scale-[0.98] disabled:opacity-60 relative group
                                         ${isLastRole ? 'ring-2 ring-primary/20 bg-primary/5' : ''}
                                         ${isSelected ? 'selected' : ''}
                                     `}
                                 >
                                     {isLastRole && (
-                                        <div className="absolute top-3 right-3">
+                                        <div className="absolute top-1.5 right-10">
                                             <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-full">
                                                 Last used
                                             </span>
@@ -173,24 +172,11 @@ export default function RoleSelectionPage({ params }: { params: Promise<{ slug: 
                             )
                         })}
                     </div>
-
-                    {/* Apply Now Link */}
-                    <div className="mt-8 text-center">
-                        <p className="text-sm text-muted-foreground">
-                            Not a current learner or parent?{' '}
-                            <Link
-                                href={`/tenant/${correctSlug}/apply`}
-                                className="text-primary font-semibold hover:underline"
-                            >
-                                Apply Now
-                            </Link>
-                        </p>
-                    </div>
                 </div>
-
-                {/* Footer inside scroll area */}
-                <AuthFooter />
             </main>
+
+            {/* Footer outside main for sticky positioning */}
+            <AuthFooter />
 
             <HelpPopup isOpen={showHelp} onClose={() => setShowHelp(false)} />
         </div>
