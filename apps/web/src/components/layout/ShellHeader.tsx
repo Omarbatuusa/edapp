@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { RoleSwitcher, type UserRoleAssignment } from "@/components/dashboard/RoleSwitcher"
 
 interface ShellHeaderProps {
     tenantName?: string
@@ -12,6 +13,10 @@ interface ShellHeaderProps {
     onEmergency?: () => void
     notificationsCount?: number
     onMenuClick?: () => void
+    // Role Switcher props
+    currentRole?: UserRoleAssignment
+    allRoles?: UserRoleAssignment[]
+    onRoleSwitch?: (role: UserRoleAssignment) => void
 }
 
 export function ShellHeader({
@@ -21,13 +26,26 @@ export function ShellHeader({
     onSearch,
     onEmergency,
     notificationsCount = 0,
-    onMenuClick
+    onMenuClick,
+    currentRole,
+    allRoles = [],
+    onRoleSwitch
 }: ShellHeaderProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
 
     // Derive display values safely
     const displayName = user?.display_name || user?.first_name || "User"
     const displayInitial = displayName.charAt(0)
+
+    // Default role if not provided
+    const defaultRole: UserRoleAssignment = currentRole || {
+        id: 'default',
+        role: 'parent',
+        tenant_name: tenantName,
+        is_active: true
+    }
+
+    const roles = allRoles.length > 0 ? allRoles : [defaultRole]
 
     return (
         <header className="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-xl border-b border-border/10 shadow-sm transition-all duration-300">
@@ -65,10 +83,18 @@ export function ShellHeader({
                 {/* Right: Actions */}
                 <div className="flex items-center gap-1 sm:gap-2">
 
+                    {/* Role Switcher - Facebook style */}
+                    <RoleSwitcher
+                        currentRole={defaultRole}
+                        allRoles={roles}
+                        onSwitch={onRoleSwitch || (() => { })}
+                        compact={true}
+                    />
+
                     {/* Emergency Hub (Shield) - ALWAYS VISIBLE */}
                     <button
                         onClick={onEmergency}
-                        className="w-9 h-9 flex items-center justify-center rounded-full bg-red-50 text-red-600 hover:bg-red-100 transition-colors mr-1"
+                        className="w-9 h-9 flex items-center justify-center rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
                         aria-label="Emergency Hub"
                     >
                         <span className="material-symbols-outlined text-[22px] filled">shield</span>
@@ -90,7 +116,7 @@ export function ShellHeader({
                         {user?.photoURL ? (
                             <img src={user.photoURL} alt={displayName} className="w-full h-full object-cover" />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50 text-indigo-600 font-medium text-xs">
+                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 text-indigo-600 dark:text-indigo-300 font-medium text-xs">
                                 {displayInitial}
                             </div>
                         )}
@@ -100,3 +126,4 @@ export function ShellHeader({
         </header>
     )
 }
+
