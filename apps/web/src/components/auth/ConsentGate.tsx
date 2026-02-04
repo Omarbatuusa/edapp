@@ -19,14 +19,12 @@ export default function ConsentGate({ tenantName, onContinue, onCancel, loading 
     });
 
     const [optional, setOptional] = useState({
-        notifications: false, // "Recommended" but technically optional to proceed? Prompt says "Required checkbox group" vs "Optional preferences".
-        // Actually notifications is listed under "Optional preferences".
-        email: false,
-        sms: false,
-        marketing: false
+        notifications: false,
+        email: false
     });
 
     const allRequiredChecked = required.terms && required.privacy && required.childSafety && required.communications;
+    const requiredCount = Object.values(required).filter(Boolean).length;
 
     const handleContinue = () => {
         if (!allRequiredChecked) return;
@@ -37,127 +35,187 @@ export default function ConsentGate({ tenantName, onContinue, onCancel, loading 
     };
 
     return (
-        <div className="w-full max-w-md mx-auto relative z-10 animate-in fade-in zoom-in-95 duration-500">
-            <h1 className="text-2xl font-bold tracking-tight text-center mb-2 text-foreground">Before you continue</h1>
-            <p className="text-sm text-muted-foreground text-center mb-8">
-                We need a few confirmations to use EdApp for {tenantName}. You can change your preferences later in Settings.
-            </p>
+        <div className="w-full max-w-lg mx-auto relative z-10 animate-in fade-in duration-300">
+            {/* Header */}
+            <div className="text-center mb-6">
+                <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground mb-2">
+                    Before you continue
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                    We need a few confirmations to use EdApp for {tenantName}.
+                </p>
+            </div>
 
-            <div className="surface-card space-y-6">
-                {/* Required Section */}
-                <div className="space-y-4">
-                    <label className="flex gap-3 items-start group cursor-pointer">
+            {/* Required Section */}
+            <div className="bg-white dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 mb-4">
+                <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        Required
+                    </h2>
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${allRequiredChecked
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                            : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400'
+                        }`}>
+                        {requiredCount}/4 completed
+                    </span>
+                </div>
+
+                <div className="space-y-3">
+                    {/* Terms */}
+                    <label className={`flex gap-3 p-3 rounded-xl cursor-pointer transition-all border ${required.terms
+                            ? 'bg-primary/5 border-primary/30 dark:bg-primary/10'
+                            : 'bg-slate-50 dark:bg-slate-800/50 border-transparent hover:border-slate-200 dark:hover:border-slate-700'
+                        }`}>
                         <input
                             type="checkbox"
-                            className="mt-1 w-5 h-5 rounded border-border text-primary focus:ring-primary/20 transition cursor-pointer"
+                            className="mt-0.5 w-5 h-5 rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary/20 transition cursor-pointer"
                             checked={required.terms}
                             onChange={(e) => setRequired({ ...required, terms: e.target.checked })}
                         />
-                        <div className="text-sm">
-                            <div className="font-medium text-foreground">
-                                I agree to the <Link href="/terms" target="_blank" className="text-primary hover:underline">Terms of Use</Link>.
+                        <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-foreground">
+                                I agree to the <Link href="/terms" target="_blank" className="text-primary hover:underline">Terms of Use</Link>
+                                <span className="text-red-500 ml-0.5">*</span>
                             </div>
-                            <p className="text-muted-foreground text-xs mt-0.5">This covers account rules, acceptable use, and service limits.</p>
+                            <p className="text-xs text-muted-foreground mt-0.5">Account rules, acceptable use, and service limits.</p>
                         </div>
                     </label>
 
-                    <label className="flex gap-3 items-start group cursor-pointer">
+                    {/* Privacy */}
+                    <label className={`flex gap-3 p-3 rounded-xl cursor-pointer transition-all border ${required.privacy
+                            ? 'bg-primary/5 border-primary/30 dark:bg-primary/10'
+                            : 'bg-slate-50 dark:bg-slate-800/50 border-transparent hover:border-slate-200 dark:hover:border-slate-700'
+                        }`}>
                         <input
                             type="checkbox"
-                            className="mt-1 w-5 h-5 rounded border-border text-primary focus:ring-primary/20 transition cursor-pointer"
+                            className="mt-0.5 w-5 h-5 rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary/20 transition cursor-pointer"
                             checked={required.privacy}
                             onChange={(e) => setRequired({ ...required, privacy: e.target.checked })}
                         />
-                        <div className="text-sm">
-                            <div className="font-medium text-foreground">
-                                I confirm I’ve read the <Link href="/privacy" target="_blank" className="text-primary hover:underline">Privacy Notice</Link>.
+                        <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-foreground">
+                                I've read the <Link href="/privacy" target="_blank" className="text-primary hover:underline">Privacy Notice</Link>
+                                <span className="text-red-500 ml-0.5">*</span>
                             </div>
-                            <p className="text-muted-foreground text-xs mt-0.5">It explains how your school and EdApp process personal information under POPIA.</p>
+                            <p className="text-xs text-muted-foreground mt-0.5">How your school and EdApp process data under POPIA.</p>
                         </div>
                     </label>
 
-                    <label className="flex gap-3 items-start group cursor-pointer">
+                    {/* Child Safety */}
+                    <label className={`flex gap-3 p-3 rounded-xl cursor-pointer transition-all border ${required.childSafety
+                            ? 'bg-primary/5 border-primary/30 dark:bg-primary/10'
+                            : 'bg-slate-50 dark:bg-slate-800/50 border-transparent hover:border-slate-200 dark:hover:border-slate-700'
+                        }`}>
                         <input
                             type="checkbox"
-                            className="mt-1 w-5 h-5 rounded border-border text-primary focus:ring-primary/20 transition cursor-pointer"
+                            className="mt-0.5 w-5 h-5 rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary/20 transition cursor-pointer"
                             checked={required.childSafety}
                             onChange={(e) => setRequired({ ...required, childSafety: e.target.checked })}
                         />
-                        <div className="text-sm">
-                            <div className="font-medium text-foreground">
-                                I will follow the <Link href="/child-safety" target="_blank" className="text-primary hover:underline">Child Safety & Community Rules</Link>.
+                        <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-foreground">
+                                I'll follow the <Link href="/child-safety" target="_blank" className="text-primary hover:underline">Child Safety & Community Rules</Link>
+                                <span className="text-red-500 ml-0.5">*</span>
                             </div>
-                            <p className="text-muted-foreground text-xs mt-0.5">Help keep communication respectful and safe for learners.</p>
+                            <p className="text-xs text-muted-foreground mt-0.5">Keep communication respectful and safe for learners.</p>
                         </div>
                     </label>
 
-                    <label className="flex gap-3 items-start group cursor-pointer">
+                    {/* Communications */}
+                    <label className={`flex gap-3 p-3 rounded-xl cursor-pointer transition-all border ${required.communications
+                            ? 'bg-primary/5 border-primary/30 dark:bg-primary/10'
+                            : 'bg-slate-50 dark:bg-slate-800/50 border-transparent hover:border-slate-200 dark:hover:border-slate-700'
+                        }`}>
                         <input
                             type="checkbox"
-                            className="mt-1 w-5 h-5 rounded border-border text-primary focus:ring-primary/20 transition cursor-pointer"
+                            className="mt-0.5 w-5 h-5 rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary/20 transition cursor-pointer"
                             checked={required.communications}
                             onChange={(e) => setRequired({ ...required, communications: e.target.checked })}
                         />
-                        <div className="text-sm">
-                            <div className="font-medium text-foreground">
-                                I understand EdApp may send important school <Link href="/communications-notices" target="_blank" className="text-primary hover:underline">notices</Link>.
+                        <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-foreground">
+                                I understand EdApp may send school <Link href="/communications-notices" target="_blank" className="text-primary hover:underline">notices</Link>
+                                <span className="text-red-500 ml-0.5">*</span>
                             </div>
-                            <p className="text-muted-foreground text-xs mt-0.5">Emergency alerts and critical updates may override quiet hours.</p>
-                        </div>
-                    </label>
-                </div>
-
-                <div className="h-px bg-border/50 my-4" />
-
-                {/* Optional Section */}
-                <div className="space-y-4">
-                    <label className="flex gap-3 items-start group cursor-pointer">
-                        <input
-                            type="checkbox"
-                            className="mt-1 w-5 h-5 rounded border-border text-muted-foreground focus:ring-muted-foreground/20 transition cursor-pointer"
-                            checked={optional.notifications}
-                            onChange={(e) => setOptional({ ...optional, notifications: e.target.checked })}
-                        />
-                        <div className="text-sm">
-                            <div className="font-medium text-foreground/80">
-                                Turn on notifications. (Recommended)
-                            </div>
-                            <p className="text-muted-foreground text-xs mt-0.5">Get updates for messages, attendance, homework, and announcements.</p>
-                        </div>
-                    </label>
-
-                    <label className="flex gap-3 items-start group cursor-pointer">
-                        <input
-                            type="checkbox"
-                            className="mt-1 w-5 h-5 rounded border-border text-muted-foreground focus:ring-muted-foreground/20 transition cursor-pointer"
-                            checked={optional.email}
-                            onChange={(e) => setOptional({ ...optional, email: e.target.checked })}
-                        />
-                        <div className="text-sm">
-                            <div className="font-medium text-foreground/80">
-                                Send me email updates when needed.
-                            </div>
-                            <p className="text-muted-foreground text-xs mt-0.5">For receipts, letters, and important notices.</p>
+                            <p className="text-xs text-muted-foreground mt-0.5">Emergency alerts may override quiet hours.</p>
                         </div>
                     </label>
                 </div>
             </div>
 
-            <div className="mt-8 space-y-3">
-                <button
-                    onClick={handleContinue}
-                    disabled={!allRequiredChecked || loading}
-                    className="w-full h-12 bg-primary text-primary-foreground font-semibold rounded-xl active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:shadow-primary/30"
-                >
-                    {loading ? 'Processing...' : 'Continue'}
-                </button>
+            {/* Optional Section */}
+            <div className="bg-white dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 mb-6">
+                <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+                    Optional Preferences
+                </h2>
 
-                <button
-                    onClick={onCancel}
-                    className="w-full h-10 text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
-                >
-                    Cancel / Sign Out
-                </button>
+                <div className="space-y-3">
+                    <label className="flex gap-3 p-3 rounded-xl cursor-pointer bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                        <input
+                            type="checkbox"
+                            className="mt-0.5 w-5 h-5 rounded border-slate-300 dark:border-slate-600 text-slate-600 focus:ring-slate-600/20 transition cursor-pointer"
+                            checked={optional.notifications}
+                            onChange={(e) => setOptional({ ...optional, notifications: e.target.checked })}
+                        />
+                        <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-foreground/80 flex items-center gap-2">
+                                Enable push notifications
+                                <span className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-1.5 py-0.5 rounded">Recommended</span>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-0.5">Messages, attendance, homework updates.</p>
+                        </div>
+                    </label>
+
+                    <label className="flex gap-3 p-3 rounded-xl cursor-pointer bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                        <input
+                            type="checkbox"
+                            className="mt-0.5 w-5 h-5 rounded border-slate-300 dark:border-slate-600 text-slate-600 focus:ring-slate-600/20 transition cursor-pointer"
+                            checked={optional.email}
+                            onChange={(e) => setOptional({ ...optional, email: e.target.checked })}
+                        />
+                        <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-foreground/80">
+                                Email updates when needed
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-0.5">Receipts, letters, and important notices.</p>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            {/* Action Buttons - Sticky on mobile */}
+            <div className="sticky bottom-0 left-0 right-0 bg-[#f6f7f8] dark:bg-[#101922] py-4 -mx-4 px-4 sm:relative sm:mx-0 sm:px-0 sm:bg-transparent sm:py-0">
+                <div className="space-y-3 max-w-lg mx-auto">
+                    {!allRequiredChecked && (
+                        <p className="text-xs text-center text-amber-600 dark:text-amber-400 mb-2">
+                            Please accept all required items to continue
+                        </p>
+                    )}
+                    <button
+                        onClick={handleContinue}
+                        disabled={!allRequiredChecked || loading}
+                        className="w-full h-12 bg-primary text-primary-foreground font-semibold rounded-xl active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:shadow-primary/30"
+                    >
+                        {loading ? (
+                            <>
+                                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                Processing...
+                            </>
+                        ) : (
+                            <>
+                                Continue
+                                <span className="material-symbols-outlined text-lg">arrow_forward</span>
+                            </>
+                        )}
+                    </button>
+
+                    <button
+                        onClick={onCancel}
+                        className="w-full h-10 text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
+                    >
+                        Cancel and sign out
+                    </button>
+                </div>
             </div>
         </div>
     );

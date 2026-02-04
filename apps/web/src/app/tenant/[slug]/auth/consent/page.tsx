@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import { AuthFooter } from '@/components/layout/AuthFooter';
 import ConsentGate from '@/components/auth/ConsentGate';
-import { ThemeToggle } from '@/components/discovery/theme-toggle';
+import Image from 'next/image';
 
 export default function TenantConsentPage() {
     const router = useRouter();
@@ -61,11 +61,9 @@ export default function TenantConsentPage() {
             });
 
             if (res.ok) {
-                // Determine destination based on role
                 const slug = params.slug as string;
                 let dest = `/tenant/${slug}/dashboard`;
                 if (role === 'learner') dest = `/tenant/${slug}/dashboard/learner`;
-
                 router.push(dest);
             } else {
                 alert('Failed to save consent. Please try again.');
@@ -84,18 +82,39 @@ export default function TenantConsentPage() {
 
     return (
         <div className="bg-[#f6f7f8] dark:bg-[#101922] text-[#0d141b] dark:text-slate-100 min-h-screen min-h-[100dvh] flex flex-col font-display transition-colors duration-300">
-            <header className="flex items-center justify-between p-4 sticky top-0 bg-[#f6f7f8]/95 dark:bg-[#101922]/95 backdrop-blur-md z-20">
-                <div className="w-10"></div> {/* Spacer */}
-                <ThemeToggle />
+            {/* Header with tenant name */}
+            <header className="flex items-center justify-between px-4 py-3 sticky top-0 bg-[#f6f7f8]/95 dark:bg-[#101922]/95 backdrop-blur-md z-20 border-b border-slate-200 dark:border-slate-800">
+                <button
+                    onClick={handleCancel}
+                    className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors -ml-2 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+                >
+                    <span className="material-symbols-outlined text-xl">chevron_left</span>
+                </button>
+                <div className="flex items-center gap-2">
+                    <Image
+                        src="/edapp-logo.svg"
+                        alt="EdApp"
+                        width={24}
+                        height={24}
+                        className="dark:invert"
+                    />
+                    <span className="text-sm font-medium text-foreground truncate max-w-[180px]">
+                        {tenantName}
+                    </span>
+                </div>
+                <div className="w-10" /> {/* Spacer for balance */}
             </header>
 
-            <main className="flex-1 flex flex-col items-center justify-center px-6 py-8 w-full">
-                <ConsentGate
-                    tenantName={tenantName}
-                    onContinue={handleContinue}
-                    onCancel={handleCancel}
-                    loading={loading}
-                />
+            {/* Scrollable content area */}
+            <main className="flex-1 overflow-y-auto">
+                <div className="flex flex-col items-center justify-start px-4 sm:px-6 py-6 sm:py-10 w-full min-h-full">
+                    <ConsentGate
+                        tenantName={tenantName}
+                        onContinue={handleContinue}
+                        onCancel={handleCancel}
+                        loading={loading}
+                    />
+                </div>
             </main>
 
             <AuthFooter />
