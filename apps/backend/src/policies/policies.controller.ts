@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Query, Headers, Ip, Req, BadRequestExcepti
 import { PoliciesService } from './policies.service';
 import { UserIntent } from './user-policy-acceptance.entity';
 
-@Controller('v1/policies')
+@Controller('policies')
 export class PoliciesController {
     constructor(private readonly policiesService: PoliciesService) { }
 

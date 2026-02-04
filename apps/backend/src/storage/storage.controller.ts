@@ -22,7 +22,7 @@ interface SignedUrlResponseDto {
     objectKey: string;
 }
 
-@Controller('v1/storage')
+@Controller('storage')
 export class StorageController {
     constructor(private readonly storageService: StorageService) { }
 
