@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Headers, BadRequestException } from '@nestjs/common';
 import { HandoffService } from './handoff.service';
 
-@Controller('v1/auth/handoff')
+@Controller('auth/handoff')
 export class HandoffController {
     constructor(private readonly handoffService: HandoffService) { }
 
