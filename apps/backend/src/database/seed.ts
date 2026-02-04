@@ -312,10 +312,10 @@ async function seed() {
 
     await roleRepo.save([
         // Umar -> Also LIA Admin (for testing)
-        { user_id: superAdmin1.id, tenant_id: liaTenant.id, role: UserRole.TENANT_MAIN_ADMIN, is_active: true },
+        { user_id: superAdmin1.id, tenant_id: liaTenant.id, role: UserRole.MAIN_BRANCH_ADMIN, is_active: true },
 
         // Demo Users
-        { user_id: liaAdmin.id, tenant_id: liaTenant.id, role: UserRole.TENANT_MAIN_ADMIN, is_active: true },
+        { user_id: liaAdmin.id, tenant_id: liaTenant.id, role: UserRole.MAIN_BRANCH_ADMIN, is_active: true },
         { user_id: liaTeacher.id, tenant_id: liaTenant.id, role: UserRole.TEACHER, is_active: true },
         { user_id: liaParent.id, tenant_id: liaTenant.id, role: UserRole.PARENT, is_active: true },
         { user_id: liaStudent.id, tenant_id: liaTenant.id, role: UserRole.LEARNER, is_active: true },
