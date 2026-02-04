@@ -1,6 +1,5 @@
 "use client"
 
-import { ThemeToggle } from "@/components/discovery/theme-toggle"
 import { useState, useEffect } from "react"
 import { ChevronLeft, CircleHelp } from 'lucide-react'
 import Image from "next/image"
@@ -8,7 +7,7 @@ import Image from "next/image"
 interface AuthHeaderProps {
     onBack?: () => void
     onHelp?: () => void
-    variant?: 'discovery' | 'tenant'
+    variant?: 'discovery' | 'tenant' | 'platform-admin'
     tenantName?: string
     tenantLogo?: string
     tenantSlug?: string
@@ -92,26 +91,26 @@ export function AuthHeader({
                 )}
 
                 {/* Discovery Mode (EdApp Only) */}
-                {variant === 'discovery' && (
-                    <div className="flex items-center gap-2.5">
+                {(variant === 'discovery' || variant === 'platform-admin') && (
+                    <div className="flex items-center gap-2">
                         <Image
                             src="/logo.png"
                             alt="edAPP"
-                            width={32}
-                            height={32}
+                            width={28}
+                            height={28}
                             className="object-contain"
                         />
-                        <div className="flex flex-col">
-                            <span className="font-bold text-base tracking-tight leading-none">edAPP</span>
-                            <span className="text-[10px] text-muted-foreground font-medium leading-tight mt-0.5">School & Home Sync</span>
+                        <div className="flex flex-col justify-center min-w-0">
+                            <span className="font-bold text-sm tracking-tight leading-none text-foreground">edAPP</span>
+                            <span className="text-[9px] text-muted-foreground font-medium leading-tight mt-0.5 whitespace-nowrap">School & Home Sync</span>
                         </div>
                     </div>
                 )}
             </div>
 
-            {/* Right: Help & Theme */}
+            {/* Right: Help only (no theme toggle - users switch in profile settings) */}
             <div className="flex items-center justify-end gap-1 shrink-0">
-                {onHelp && (
+                {onHelp && variant !== 'platform-admin' && (
                     <button
                         onClick={onHelp}
                         className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-secondary/80 text-muted-foreground transition-colors"
@@ -120,9 +119,6 @@ export function AuthHeader({
                         <CircleHelp size={20} />
                     </button>
                 )}
-                <div className="scale-90">
-                    <ThemeToggle />
-                </div>
             </div>
         </header>
     )
