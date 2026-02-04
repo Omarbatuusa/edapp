@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { ChevronLeft, CircleHelp } from 'lucide-react'
 import Image from "next/image"
+import { useTheme } from "next-themes"
 
 interface AuthHeaderProps {
     onBack?: () => void
@@ -24,6 +25,12 @@ export function AuthHeader({
     transparent = false
 }: AuthHeaderProps) {
     const [scrolled, setScrolled] = useState(false)
+    const { resolvedTheme } = useTheme()
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => {
+        setMounted(true)
+    }, [])
 
     useEffect(() => {
         // Listen for scroll on app-content instead of window
@@ -41,6 +48,9 @@ export function AuthHeader({
         // Navigate to main app domain
         window.location.href = 'https://app.edapp.co.za'
     }
+
+    // Determine which logo to use based on theme
+    const edAppLogo = mounted && resolvedTheme === 'dark' ? '/edapp-logo-white.png' : '/edapp-logo.png'
 
     return (
         <header
@@ -90,27 +100,24 @@ export function AuthHeader({
                     </div>
                 )}
 
-                {/* Discovery Mode (EdApp Only) */}
+                {/* Discovery / Platform Admin Mode - edAPP Logo Only */}
                 {(variant === 'discovery' || variant === 'platform-admin') && (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center">
                         <Image
-                            src="/logo.png"
+                            src={edAppLogo}
                             alt="edAPP"
-                            width={28}
-                            height={28}
-                            className="object-contain"
+                            width={120}
+                            height={32}
+                            className="object-contain h-8 w-auto"
+                            priority
                         />
-                        <div className="flex flex-col justify-center min-w-0">
-                            <span className="font-bold text-sm tracking-tight leading-none text-foreground">edAPP</span>
-                            <span className="text-[9px] text-muted-foreground font-medium leading-tight mt-0.5 whitespace-nowrap">School & Home Sync</span>
-                        </div>
                     </div>
                 )}
             </div>
 
-            {/* Right: Help only (no theme toggle - users switch in profile settings) */}
+            {/* Right: Help icon */}
             <div className="flex items-center justify-end gap-1 shrink-0">
-                {onHelp && variant !== 'platform-admin' && (
+                {onHelp && (
                     <button
                         onClick={onHelp}
                         className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-secondary/80 text-muted-foreground transition-colors"

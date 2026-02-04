@@ -58,6 +58,10 @@ function BrokerLoginContent() {
     const [pin, setPin] = useState('');
     const [showPin, setShowPin] = useState(false);
 
+    // Remember device
+    const [rememberDevice, setRememberDevice] = useState(true);
+    const [rememberDuration, setRememberDuration] = useState('30');
+
     const tenantSlug = searchParams.get('tenant');
     const role = searchParams.get('role');
     const returnUrl = searchParams.get('return');
@@ -233,7 +237,16 @@ function BrokerLoginContent() {
             setAuthStep('choose');
             setError(null);
         } else {
-            window.history.back();
+            // Navigate back to tenant role selection page
+            const protocol = window.location.protocol;
+            const host = window.location.host;
+            const correctSlug = tenant?.tenant_slug || tenantSlug;
+
+            if (host.includes('localhost')) {
+                window.location.href = `${protocol}//localhost:3000/tenant/${correctSlug}/login`;
+            } else {
+                window.location.href = `${protocol}//app.edapp.co.za/tenant/${correctSlug}/login`;
+            }
         }
     };
 
@@ -485,6 +498,41 @@ function BrokerLoginContent() {
                                     >
                                         Forgot password?
                                     </Link>
+                                </div>
+
+                                {/* Remember Device */}
+                                <div className="space-y-3 pt-2">
+                                    <label className="flex items-center gap-3 cursor-pointer">
+                                        <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors ${rememberDevice ? 'bg-indigo-600 border-indigo-600' : 'border-slate-300 dark:border-slate-600'
+                                            }`}>
+                                            {rememberDevice && <span className="material-symbols-outlined text-white text-sm">check</span>}
+                                        </div>
+                                        <input
+                                            type="checkbox"
+                                            className="hidden"
+                                            checked={rememberDevice}
+                                            onChange={() => setRememberDevice(!rememberDevice)}
+                                        />
+                                        <span className="text-sm text-slate-600 dark:text-slate-300">Remember this device</span>
+                                    </label>
+
+                                    {rememberDevice && (
+                                        <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
+                                            {['7', '30', '90'].map((d) => (
+                                                <button
+                                                    key={d}
+                                                    type="button"
+                                                    onClick={() => setRememberDuration(d)}
+                                                    className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-all ${rememberDuration === d
+                                                        ? 'bg-white dark:bg-slate-700 text-indigo-600 shadow-sm'
+                                                        : 'text-slate-500 hover:text-slate-700'
+                                                        }`}
+                                                >
+                                                    {d} days
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
 
                                 {error && (
