@@ -102,7 +102,11 @@ export function AuthHeader({
 
                 {/* Discovery / Platform Admin Mode - edAPP Logo Only */}
                 {(variant === 'discovery' || variant === 'platform-admin') && (
-                    <div className="flex items-center">
+                    <a
+                        href="https://edapp.co.za"
+                        className="flex items-center hover:opacity-80 transition-opacity"
+                        title="Go to EdApp"
+                    >
                         <Image
                             src={edAppLogo}
                             alt="edAPP"
@@ -111,7 +115,7 @@ export function AuthHeader({
                             className="object-contain h-8 w-auto"
                             priority
                         />
-                    </div>
+                    </a>
                 )}
             </div>
 
