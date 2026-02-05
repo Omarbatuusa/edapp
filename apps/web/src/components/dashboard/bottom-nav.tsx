@@ -7,33 +7,39 @@ import { useRole, UserRole } from '@/contexts/RoleContext'
 interface NavItem {
     label: string
     icon: string
+    iconFilled?: string
     href: string
+    badge?: number
 }
 
 const NAV_ITEMS: Record<UserRole, NavItem[]> = {
     admin: [
-        { label: 'Home', icon: 'home', href: '' },
+        { label: 'Home', icon: 'home', iconFilled: 'home', href: '' },
         { label: 'People', icon: 'groups', href: '/people' },
         { label: 'Classes', icon: 'school', href: '/classes' },
-        { label: 'Settings', icon: 'settings', href: '/settings' },
+        { label: 'Reports', icon: 'bar_chart', href: '/reports' },
+        { label: 'Menu', icon: 'menu', href: '/menu' },
     ],
     staff: [
-        { label: 'Home', icon: 'home', href: '' },
+        { label: 'Home', icon: 'home', iconFilled: 'home', href: '' },
         { label: 'Classes', icon: 'school', href: '/classes' },
+        { label: 'Chat', icon: 'chat_bubble_outline', iconFilled: 'chat_bubble', href: '/messages' },
         { label: 'Reports', icon: 'bar_chart', href: '/reports' },
-        { label: 'Messages', icon: 'chat', href: '/messages' },
+        { label: 'Menu', icon: 'menu', href: '/menu' },
     ],
     parent: [
-        { label: 'Home', icon: 'home', href: '' },
+        { label: 'Home', icon: 'home', iconFilled: 'home', href: '' },
         { label: 'Children', icon: 'child_care', href: '/children' },
-        { label: 'Payments', icon: 'payments', href: '/payments' },
-        { label: 'Messages', icon: 'chat', href: '/messages' },
+        { label: 'Chat', icon: 'chat_bubble_outline', iconFilled: 'chat_bubble', href: '/chat', badge: 3 },
+        { label: 'Pay', icon: 'payments', href: '/pay', badge: 1 },
+        { label: 'Menu', icon: 'menu', href: '/menu' },
     ],
     learner: [
-        { label: 'Home', icon: 'home', href: '' },
+        { label: 'Home', icon: 'home', iconFilled: 'home', href: '' },
         { label: 'Courses', icon: 'menu_book', href: '/courses' },
         { label: 'Grades', icon: 'grade', href: '/grades' },
-        { label: 'Profile', icon: 'person', href: '/profile' },
+        { label: 'Chat', icon: 'chat_bubble_outline', iconFilled: 'chat_bubble', href: '/messages' },
+        { label: 'Menu', icon: 'menu', href: '/menu' },
     ],
 }
 
@@ -62,13 +68,20 @@ export function BottomNav({ tenantSlug }: BottomNavProps) {
                             key={item.label}
                             href={fullHref}
                             className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${isActive
-                                    ? 'text-primary'
-                                    : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
+                                ? 'text-primary'
+                                : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
                                 }`}
                         >
-                            <span className={`material-symbols-outlined text-2xl ${isActive ? 'font-medium' : ''}`}>
-                                {item.icon}
-                            </span>
+                            <div className="relative">
+                                <span className={`material-symbols-outlined text-2xl ${isActive ? 'font-medium' : ''}`}>
+                                    {isActive && item.iconFilled ? item.iconFilled : item.icon}
+                                </span>
+                                {item.badge && item.badge > 0 && (
+                                    <span className="absolute -top-1 -right-2 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                                        {item.badge > 9 ? '9+' : item.badge}
+                                    </span>
+                                )}
+                            </div>
                             <span className={`text-[10px] mt-0.5 ${isActive ? 'font-semibold' : 'font-medium'}`}>
                                 {item.label}
                             </span>
