@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ShellHeader } from './ShellHeader';
+import { AvatarPanel } from '@/components/dashboard/AvatarPanel';
 import { EmergencyProvider } from '@/contexts/EmergencyContext';
 import { EmergencyBanner } from '@/components/safety/EmergencyBanner';
 import {
@@ -24,14 +25,19 @@ import {
 interface ShellProps {
     children: React.ReactNode;
     tenantName: string;
+    tenantSlug?: string;
     tenantLogo?: string;
     user?: any;
     role?: string;
 }
 
-export function Shell({ children, tenantName, tenantLogo, user, role = 'admin' }: ShellProps) {
+export function Shell({ children, tenantName, tenantSlug, tenantLogo, user, role = 'admin' }: ShellProps) {
     const pathname = usePathname();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [avatarPanelOpen, setAvatarPanelOpen] = useState(false);
+
+    // Derive tenant slug from name if not provided
+    const slug = tenantSlug || tenantName.toLowerCase();
 
     // Navigation items based on role
     // simplified for now - in full RBAC this would be dynamic
@@ -119,18 +125,27 @@ export function Shell({ children, tenantName, tenantLogo, user, role = 'admin' }
                     </div>
                 </aside>
 
-                {/* Main Content */}
                 <div className="lg:pl-64 flex flex-col min-h-screen">
                     <ShellHeader
                         tenantName={tenantName}
                         user={user}
                         onMenuClick={() => setSidebarOpen(true)}
+                        onAvatarClick={() => setAvatarPanelOpen(true)}
                     />
 
                     <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-[1600px] mx-auto w-full animate-in fade-in slide-in-from-bottom-2 duration-500">
                         {children}
                     </main>
                 </div>
+
+                {/* Avatar Panel */}
+                <AvatarPanel
+                    isOpen={avatarPanelOpen}
+                    onClose={() => setAvatarPanelOpen(false)}
+                    user={user}
+                    tenantName={tenantName}
+                    tenantSlug={slug}
+                />
             </div>
         </EmergencyProvider>
     );

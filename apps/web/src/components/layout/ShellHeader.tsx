@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { RoleSwitcher, type UserRoleAssignment } from "@/components/dashboard/RoleSwitcher"
@@ -13,6 +12,7 @@ interface ShellHeaderProps {
     onEmergency?: () => void
     notificationsCount?: number
     onMenuClick?: () => void
+    onAvatarClick?: () => void
     // Role Switcher props
     currentRole?: UserRoleAssignment
     allRoles?: UserRoleAssignment[]
@@ -27,11 +27,11 @@ export function ShellHeader({
     onEmergency,
     notificationsCount = 0,
     onMenuClick,
+    onAvatarClick,
     currentRole,
     allRoles = [],
     onRoleSwitch
 }: ShellHeaderProps) {
-    const [isMenuOpen, setIsMenuOpen] = useState(false)
 
     // Derive display values safely
     const displayName = user?.display_name || user?.first_name || "User"
@@ -110,8 +110,9 @@ export function ShellHeader({
 
                     {/* User Avatar / Profile */}
                     <button
-                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        onClick={onAvatarClick}
                         className="ml-1 w-9 h-9 rounded-full bg-secondary overflow-hidden border border-black/5 hover:ring-2 hover:ring-primary/20 transition-all flex items-center justify-center"
+                        aria-label="Open account menu"
                     >
                         {user?.photoURL ? (
                             <img src={user.photoURL} alt={displayName} className="w-full h-full object-cover" />
