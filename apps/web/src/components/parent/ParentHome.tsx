@@ -9,7 +9,6 @@ import {
     SchoolPost,
     QuickAction,
     getStatusColor,
-    getStatusLabel,
     getDueBadgeStyle,
     MOCK_CHILDREN,
     MOCK_HOMEWORK,
@@ -23,51 +22,77 @@ interface ParentHomeProps {
 }
 
 // ============================================================
-// CHILD CAROUSEL CARD
+// CHILD CARD - Professional Design
 // ============================================================
 function ChildCard({ child, tenantSlug }: { child: Child; tenantSlug: string }) {
+    const isPresent = child.status === 'present';
+    const isAbsent = child.status === 'absent';
+
     return (
-        <div className="min-w-[280px] max-w-[320px] bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-800 dark:to-slate-950 rounded-2xl p-4 text-white flex-shrink-0 snap-start">
+        <div className="min-w-[260px] max-w-[300px] bg-card border border-border rounded-2xl p-4 flex-shrink-0 snap-start shadow-sm">
+            {/* Header: Avatar + Info */}
             <div className="flex items-start gap-3">
-                {/* Avatar with status indicator */}
-                <div className="relative">
+                {/* Avatar */}
+                <div className="relative shrink-0">
                     <img
-                        src={child.avatar || `https://ui-avatars.com/api/?name=${child.name}&size=64`}
+                        src={child.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(child.name)}&size=64&background=6366f1&color=fff`}
                         alt={child.name}
-                        className="w-16 h-16 rounded-xl object-cover"
+                        className="w-14 h-14 rounded-xl object-cover border border-border/50"
                     />
-                    <span className={`absolute -top-1 -right-1 px-2 py-0.5 text-[10px] font-bold rounded-full ${getStatusColor(child.status)} text-white shadow-lg`}>
-                        {child.status === 'present' ? '✓ Present' : getStatusLabel(child.status)}
-                    </span>
                 </div>
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-lg truncate">{child.name}</h3>
-                    <p className="text-sm text-white/70">{child.grade} • {child.class}</p>
-                    {child.lastSeen && (
-                        <p className="text-xs text-white/50 mt-1">
-                            Last seen: {child.lastSeen.time} at {child.lastSeen.location}
-                        </p>
-                    )}
+                    <h3 className="font-semibold text-base truncate">{child.name}</h3>
+                    <p className="text-xs text-muted-foreground">{child.grade} • {child.class}</p>
+
+                    {/* Status Badge - Clean design */}
+                    <div className="mt-1.5 flex items-center gap-1.5">
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium rounded-full ${isPresent
+                                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                                : isAbsent
+                                    ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                                    : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+                            }`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${isPresent ? 'bg-emerald-500' : isAbsent ? 'bg-red-500' : 'bg-amber-500'
+                                }`} />
+                            {isPresent ? 'At School' : isAbsent ? 'Absent' : 'Late'}
+                        </span>
+                    </div>
                 </div>
             </div>
 
-            {/* Verification strip for absent */}
-            {child.needsVerification && (
-                <div className="mt-3 bg-red-500/20 border border-red-500/30 rounded-lg p-2 flex items-center justify-between">
-                    <span className="text-xs text-red-300">Please verify absence</span>
-                    <button className="text-xs font-medium text-red-400 hover:text-red-300">Verify →</button>
-                </div>
+            {/* Last Seen */}
+            {child.lastSeen && (
+                <p className="text-xs text-muted-foreground mt-3 flex items-center gap-1">
+                    <span className="material-symbols-outlined text-sm">schedule</span>
+                    {child.lastSeen.time} at {child.lastSeen.location}
+                </p>
             )}
 
-            {/* View Profile CTA */}
-            <Link
-                href={`/tenant/${tenantSlug}/parent/children/${child.id}`}
-                className="mt-3 block text-center text-sm text-primary-foreground/80 hover:text-primary-foreground border border-white/20 rounded-lg py-2 hover:bg-white/10 transition-colors"
-            >
-                View Profile
-            </Link>
+            {/* Action Buttons */}
+            <div className="mt-3 flex gap-2">
+                <Link
+                    href={`/tenant/${tenantSlug}/parent/children/${child.id}`}
+                    className="flex-1 text-center text-sm font-medium py-2 px-3 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors"
+                >
+                    View Profile
+                </Link>
+                <button
+                    className="text-sm font-medium py-2 px-3 rounded-lg border border-border hover:bg-secondary/50 transition-colors text-muted-foreground"
+                    title="Log Absence"
+                >
+                    <span className="material-symbols-outlined text-lg">event_busy</span>
+                </button>
+            </div>
+
+            {/* Verification Alert for Absent */}
+            {child.needsVerification && (
+                <div className="mt-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-2.5 flex items-center justify-between">
+                    <span className="text-xs font-medium text-red-700 dark:text-red-400">Please verify absence</span>
+                    <button className="text-xs font-semibold text-red-600 dark:text-red-400 hover:underline">Verify →</button>
+                </div>
+            )}
         </div>
     );
 }
@@ -83,8 +108,8 @@ function QuickActionsGrid({ actions, tenantSlug }: { actions: QuickAction[]; ten
                     key={action.id}
                     href={`/tenant/${tenantSlug}/parent${action.href}`}
                     className={`flex flex-col items-center justify-center p-4 rounded-xl transition-all ${action.primary
-                        ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-md'
-                        : 'bg-secondary/50 hover:bg-secondary text-foreground border border-border/50'
+                        ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm'
+                        : 'bg-card hover:bg-secondary/80 text-foreground border border-border'
                         }`}
                 >
                     <span className="material-symbols-outlined text-2xl mb-1">{action.icon}</span>
@@ -96,12 +121,12 @@ function QuickActionsGrid({ actions, tenantSlug }: { actions: QuickAction[]; ten
 }
 
 // ============================================================
-// HOMEWORK CARD
+// HOMEWORK ITEM
 // ============================================================
 function HomeworkItem({ hw }: { hw: Homework }) {
     const badge = getDueBadgeStyle(hw.dueBadge);
     return (
-        <div className="flex items-center gap-3 p-3 bg-secondary/30 rounded-xl hover:bg-secondary/50 transition-colors">
+        <div className="flex items-center gap-3 p-3 bg-card border border-border rounded-xl hover:bg-secondary/30 transition-colors">
             <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                 <span className="material-symbols-outlined text-primary">{hw.icon}</span>
             </div>
@@ -109,7 +134,7 @@ function HomeworkItem({ hw }: { hw: Homework }) {
                 <h4 className="font-medium text-sm truncate">{hw.title}</h4>
                 <p className="text-xs text-muted-foreground truncate">{hw.childName} • {hw.subject}</p>
             </div>
-            <span className={`px-2 py-1 text-[10px] font-bold rounded-md ${badge.bg} ${badge.text}`}>
+            <span className={`px-2 py-1 text-[10px] font-bold rounded-md shrink-0 ${badge.bg} ${badge.text}`}>
                 {badge.label}
             </span>
         </div>
@@ -120,26 +145,27 @@ function HomeworkItem({ hw }: { hw: Homework }) {
 // ANNOUNCEMENT CARD
 // ============================================================
 function AnnouncementCard({ announcement }: { announcement: Announcement }) {
+    const isHigh = announcement.priority === 'high';
     return (
-        <div className={`p-4 rounded-xl ${announcement.priority === 'high' ? 'bg-primary text-primary-foreground' : 'bg-secondary/50'}`}>
+        <div className={`p-4 rounded-xl border ${isHigh ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border'}`}>
             <div className="flex items-start gap-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${announcement.priority === 'high' ? 'bg-white/20' : 'bg-primary/10'}`}>
-                    <span className={`material-symbols-outlined ${announcement.priority === 'high' ? 'text-white' : 'text-primary'}`}>
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isHigh ? 'bg-white/20' : 'bg-primary/10'}`}>
+                    <span className={`material-symbols-outlined ${isHigh ? 'text-white' : 'text-primary'}`}>
                         campaign
                     </span>
                 </div>
                 <div className="flex-1 min-w-0">
                     <h4 className="font-semibold text-sm">{announcement.title}</h4>
-                    <p className={`text-xs mt-1 line-clamp-2 ${announcement.priority === 'high' ? 'text-white/80' : 'text-muted-foreground'}`}>
+                    <p className={`text-xs mt-1 line-clamp-2 ${isHigh ? 'text-white/80' : 'text-muted-foreground'}`}>
                         {announcement.preview}
                     </p>
-                    <p className={`text-xs mt-2 ${announcement.priority === 'high' ? 'text-white/60' : 'text-muted-foreground/60'}`}>
+                    <p className={`text-xs mt-2 ${isHigh ? 'text-white/60' : 'text-muted-foreground/60'}`}>
                         Posted {announcement.postedAt}
                     </p>
                 </div>
             </div>
             {announcement.requiresAcknowledge && !announcement.acknowledged && (
-                <button className={`mt-3 w-full py-2 text-xs font-medium rounded-lg ${announcement.priority === 'high'
+                <button className={`mt-3 w-full py-2 text-xs font-medium rounded-lg ${isHigh
                     ? 'bg-white/20 hover:bg-white/30 text-white'
                     : 'bg-primary text-primary-foreground hover:bg-primary/90'
                     }`}>
@@ -155,7 +181,7 @@ function AnnouncementCard({ announcement }: { announcement: Announcement }) {
 // ============================================================
 function SchoolLifeCard({ post }: { post: SchoolPost }) {
     return (
-        <div className="bg-card rounded-2xl overflow-hidden shadow-sm border border-border/30">
+        <div className="bg-card rounded-2xl overflow-hidden shadow-sm border border-border">
             {/* Author header */}
             <div className="flex items-center justify-between p-4">
                 <div className="flex items-center gap-3">
@@ -208,7 +234,7 @@ function SchoolLifeCard({ post }: { post: SchoolPost }) {
 function SectionHeader({ title, href, tenantSlug }: { title: string; href?: string; tenantSlug: string }) {
     return (
         <div className="flex items-center justify-between mb-3">
-            <h2 className="font-bold text-lg">{title}</h2>
+            <h2 className="font-semibold text-base">{title}</h2>
             {href && (
                 <Link
                     href={`/tenant/${tenantSlug}/parent${href}`}
@@ -226,11 +252,12 @@ function SectionHeader({ title, href, tenantSlug }: { title: string; href?: stri
 // ============================================================
 export function ParentHome({ tenantSlug }: ParentHomeProps) {
     return (
-        <div className="space-y-6 pb-20">
-            {/* My Children Carousel */}
+        <div className="space-y-6 pb-8">
+            {/* My Children Carousel - Touch scroll, no scrollbar */}
             <section>
-                <SectionHeader title="MY CHILDREN" tenantSlug={tenantSlug} />
-                <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide">
+                <SectionHeader title="My Children" tenantSlug={tenantSlug} />
+                <div className="flex gap-3 overflow-x-auto pb-1 -mx-4 px-4 snap-x snap-mandatory" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                    <style jsx>{`div::-webkit-scrollbar { display: none; }`}</style>
                     {MOCK_CHILDREN.map((child) => (
                         <ChildCard key={child.id} child={child} tenantSlug={tenantSlug} />
                     ))}
@@ -265,7 +292,7 @@ export function ParentHome({ tenantSlug }: ParentHomeProps) {
             {/* School Life */}
             <section>
                 <SectionHeader title="School Life" href="/feed" tenantSlug={tenantSlug} />
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {MOCK_SCHOOL_POSTS.map((post) => (
                         <SchoolLifeCard key={post.id} post={post} />
                     ))}

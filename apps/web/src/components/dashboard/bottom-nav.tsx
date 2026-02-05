@@ -55,8 +55,9 @@ export function BottomNav({ tenantSlug }: BottomNavProps) {
     const navItems = NAV_ITEMS[currentRole] || NAV_ITEMS.parent
 
     return (
-        <nav className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-[#101922]/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 z-30 md:hidden">
-            <div className="flex items-center justify-around h-16 max-w-md mx-auto px-2">
+        <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-30">
+            {/* Centered container matching main content width */}
+            <div className="flex items-center justify-around h-16 max-w-2xl lg:max-w-4xl mx-auto px-2">
                 {navItems.map((item) => {
                     const fullHref = `${basePath}${item.href}`
                     const isActive = item.href === ''
@@ -69,7 +70,7 @@ export function BottomNav({ tenantSlug }: BottomNavProps) {
                             href={fullHref}
                             className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${isActive
                                 ? 'text-primary'
-                                : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
+                                : 'text-muted-foreground hover:text-foreground'
                                 }`}
                         >
                             <div className="relative">
@@ -77,12 +78,12 @@ export function BottomNav({ tenantSlug }: BottomNavProps) {
                                     {isActive && item.iconFilled ? item.iconFilled : item.icon}
                                 </span>
                                 {item.badge && item.badge > 0 && (
-                                    <span className="absolute -top-1 -right-2 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                                    <span className="absolute -top-1 -right-2.5 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-background">
                                         {item.badge > 9 ? '9+' : item.badge}
                                     </span>
                                 )}
                             </div>
-                            <span className={`text-[10px] mt-0.5 ${isActive ? 'font-semibold' : 'font-medium'}`}>
+                            <span className={`text-[11px] mt-0.5 ${isActive ? 'font-semibold' : 'font-medium'}`}>
                                 {item.label}
                             </span>
                         </Link>
