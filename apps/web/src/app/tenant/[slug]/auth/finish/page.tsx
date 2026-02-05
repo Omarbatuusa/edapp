@@ -65,12 +65,32 @@ function AuthFinishContent() {
                     return;
                 }
 
-                // 5. Redirect to Dashboard
+                // 5. Redirect to Role-Specific Dashboard
                 setStatus('Redirecting to dashboard...');
                 setTimeout(() => {
-                    const dashboardUrl = role === 'learner'
-                        ? `/tenant/${tenantSlug}/dashboard/learner` // Example path
-                        : `/tenant/${tenantSlug}/dashboard`;
+                    let dashboardUrl = `/tenant/${tenantSlug}`;
+
+                    switch (role) {
+                        case 'learner':
+                        case 'student':
+                            dashboardUrl = `/tenant/${tenantSlug}/learner`;
+                            break;
+                        case 'parent':
+                        case 'guardian':
+                            dashboardUrl = `/tenant/${tenantSlug}/parent`;
+                            break;
+                        case 'staff':
+                        case 'teacher':
+                            dashboardUrl = `/tenant/${tenantSlug}/staff`;
+                            break;
+                        case 'admin':
+                        case 'principal':
+                        case 'deputy_principal':
+                            dashboardUrl = `/tenant/${tenantSlug}/admin`;
+                            break;
+                        default:
+                            dashboardUrl = `/tenant/${tenantSlug}`;
+                    }
 
                     router.replace(dashboardUrl);
                 }, 500);
