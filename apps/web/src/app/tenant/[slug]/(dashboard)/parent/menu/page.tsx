@@ -2,7 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { SubPageHeader } from '@/components/parent/SubPageHeader';
+import { SubPageHeader, SubPageWrapper } from '@/components/parent/SubPageHeader';
 
 const MENU_ITEMS = [
     {
@@ -46,7 +46,7 @@ export default function MenuPage() {
     const tenantSlug = params.slug as string;
 
     return (
-        <div>
+        <SubPageWrapper>
             <SubPageHeader
                 title="Menu"
                 backHref={`/tenant/${tenantSlug}/parent`}
@@ -77,6 +77,6 @@ export default function MenuPage() {
                     </div>
                 ))}
             </div>
-        </div>
+        </SubPageWrapper>
     );
 }

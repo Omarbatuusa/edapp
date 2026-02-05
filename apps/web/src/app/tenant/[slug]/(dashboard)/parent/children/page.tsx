@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { SubPageHeader } from '@/components/parent/SubPageHeader';
+import { SubPageHeader, SubPageWrapper } from '@/components/parent/SubPageHeader';
 import { MOCK_CHILDREN } from '@/lib/parent';
 
 export default function ChildrenPage() {
@@ -9,7 +9,7 @@ export default function ChildrenPage() {
     const tenantSlug = params.slug as string;
 
     return (
-        <div>
+        <SubPageWrapper>
             <SubPageHeader
                 title="My Children"
                 backHref={`/tenant/${tenantSlug}/parent`}
@@ -43,10 +43,17 @@ export default function ChildrenPage() {
                                     </span>
                                 </div>
                             </div>
+                            {/* Live View Button */}
+                            <button
+                                className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors"
+                                title="Live View"
+                            >
+                                <span className="material-symbols-outlined text-xl">videocam</span>
+                            </button>
                         </div>
                     </div>
                 ))}
             </div>
-        </div>
+        </SubPageWrapper>
     );
 }

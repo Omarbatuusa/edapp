@@ -83,6 +83,12 @@ function ChildCard({ child, tenantSlug }: { child: Child; tenantSlug: string }) 
                     View Profile
                 </Link>
                 <button
+                    className="flex items-center justify-center w-10 h-10 rounded-lg border border-primary/30 bg-primary/5 hover:bg-primary/10 transition-colors text-primary"
+                    title="Live View"
+                >
+                    <span className="material-symbols-outlined text-lg">videocam</span>
+                </button>
+                <button
                     className="flex items-center justify-center w-10 h-10 rounded-lg border border-border hover:bg-secondary/50 transition-colors text-muted-foreground"
                     title="Log Absence"
                 >
@@ -111,12 +117,12 @@ function FeesBalanceCard({ tenantSlug }: { tenantSlug: string }) {
     return (
         <div className="bg-card border border-border rounded-2xl overflow-hidden">
             {/* Balance Header */}
-            <div className="p-4 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground">
+            <div className="p-4 bg-gradient-to-r from-primary to-primary/80 text-white">
                 <div className="flex items-start justify-between">
                     <div>
-                        <p className="text-xs font-medium opacity-80">School Fees Balance</p>
-                        <p className="text-2xl font-bold mt-1">{formatCurrency(fees.totalDue, fees.currency)}</p>
-                        <p className="text-xs opacity-70 mt-1.5">Payment due by {fees.dueDate}</p>
+                        <p className="text-xs font-medium text-white/80">School Fees Balance</p>
+                        <p className="text-2xl font-bold mt-1 text-white">{formatCurrency(fees.totalDue, fees.currency)}</p>
+                        <p className="text-xs text-white/70 mt-1.5">Payment due by {fees.dueDate}</p>
                     </div>
                     <Link
                         href={`/tenant/${tenantSlug}/parent/accounts`}

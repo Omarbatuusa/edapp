@@ -2,7 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { SubPageHeader } from '@/components/parent/SubPageHeader';
+import { SubPageHeader, SubPageWrapper } from '@/components/parent/SubPageHeader';
 import { MOCK_FEES_BALANCE, MOCK_PAYMENTS, formatCurrency } from '@/lib/parent';
 
 export default function PayPage() {
@@ -11,17 +11,17 @@ export default function PayPage() {
     const fees = MOCK_FEES_BALANCE;
 
     return (
-        <div>
+        <SubPageWrapper>
             <SubPageHeader
                 title="Pay Fees"
                 backHref={`/tenant/${tenantSlug}/parent`}
             />
 
             {/* Balance Summary */}
-            <div className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground rounded-2xl p-5 mb-6">
-                <p className="text-sm opacity-80">Total Outstanding</p>
+            <div className="bg-gradient-to-r from-primary to-primary/80 text-white rounded-2xl p-5 mb-6">
+                <p className="text-sm text-white/80">Total Outstanding</p>
                 <p className="text-3xl font-bold mt-1">{formatCurrency(fees.totalDue, fees.currency)}</p>
-                <p className="text-xs opacity-70 mt-2">Payment due by {fees.dueDate}</p>
+                <p className="text-xs text-white/70 mt-2">Payment due by {fees.dueDate}</p>
             </div>
 
             {/* Payment Methods */}
@@ -77,6 +77,6 @@ export default function PayPage() {
                     </div>
                 ))}
             </div>
-        </div>
+        </SubPageWrapper>
     );
 }

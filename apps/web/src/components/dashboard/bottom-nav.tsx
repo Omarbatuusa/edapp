@@ -12,6 +12,9 @@ interface NavItem {
     badge?: number
 }
 
+// Role-based navigation items
+// For parent role, links go to /tenant/[slug]/parent/[page]
+// For other roles, links go to /tenant/[slug]/[role]/[page]
 const NAV_ITEMS: Record<UserRole, NavItem[]> = {
     admin: [
         { label: 'Home', icon: 'home', iconFilled: 'home', href: '' },
@@ -50,7 +53,9 @@ interface BottomNavProps {
 export function BottomNav({ tenantSlug }: BottomNavProps) {
     const { currentRole } = useRole()
     const pathname = usePathname()
-    const basePath = `/tenant/${tenantSlug}/dashboard`
+
+    // Base path depends on role
+    const basePath = `/tenant/${tenantSlug}/${currentRole}`
 
     const navItems = NAV_ITEMS[currentRole] || NAV_ITEMS.parent
 
