@@ -68,8 +68,32 @@ export default function TenantConsentPage() {
             });
 
             if (res.ok) {
-                let dest = `/tenant/${slug}/dashboard`;
-                if (role === 'learner') dest = `/tenant/${slug}/learner`;
+                // Route to role-specific dashboard
+                let dest = `/tenant/${slug}`;
+
+                switch (role) {
+                    case 'learner':
+                    case 'student':
+                        dest = `/tenant/${slug}/learner`;
+                        break;
+                    case 'parent':
+                    case 'guardian':
+                        dest = `/tenant/${slug}/parent`;
+                        break;
+                    case 'staff':
+                    case 'teacher':
+                        dest = `/tenant/${slug}/staff`;
+                        break;
+                    case 'admin':
+                    case 'principal':
+                    case 'deputy_principal':
+                        dest = `/tenant/${slug}/admin`;
+                        break;
+                    default:
+                        // Default to main dashboard
+                        dest = `/tenant/${slug}`;
+                }
+
                 router.push(dest);
             } else {
                 alert('Failed to save consent. Please try again.');
