@@ -112,18 +112,18 @@ function FeesBalanceCard({ tenantSlug }: { tenantSlug: string }) {
         <div className="bg-card border border-border rounded-2xl overflow-hidden">
             {/* Balance Header */}
             <div className="p-4 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground">
-                <div className="flex items-center justify-between">
+                <div className="flex items-start justify-between">
                     <div>
-                        <p className="text-xs font-medium opacity-80">Outstanding Balance</p>
-                        <p className="text-2xl font-bold">{formatCurrency(fees.totalDue, fees.currency)}</p>
-                        <p className="text-xs opacity-70 mt-1">Due: {fees.dueDate}</p>
+                        <p className="text-xs font-medium opacity-80">School Fees Balance</p>
+                        <p className="text-2xl font-bold mt-1">{formatCurrency(fees.totalDue, fees.currency)}</p>
+                        <p className="text-xs opacity-70 mt-1.5">Payment due by {fees.dueDate}</p>
                     </div>
                     <Link
-                        href={`/tenant/${tenantSlug}/parent/pay`}
-                        className="flex items-center gap-1 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                        href={`/tenant/${tenantSlug}/parent/accounts`}
+                        className="flex items-center gap-1 bg-white/20 hover:bg-white/30 px-3 py-2 rounded-lg text-xs font-medium transition-colors"
                     >
-                        Pay Now
-                        <ChevronRight size={16} />
+                        View Account
+                        <ChevronRight size={14} />
                     </Link>
                 </div>
             </div>
@@ -133,8 +133,8 @@ function FeesBalanceCard({ tenantSlug }: { tenantSlug: string }) {
                 <div className="p-4 border-t border-border">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                                <span className="material-symbols-outlined text-emerald-600 dark:text-emerald-400">check_circle</span>
+                            <div className="w-9 h-9 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                                <span className="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-lg">check_circle</span>
                             </div>
                             <div>
                                 <p className="text-sm font-medium">Last Payment</p>
@@ -145,12 +145,6 @@ function FeesBalanceCard({ tenantSlug }: { tenantSlug: string }) {
                             {formatCurrency(latestPayment.amount, latestPayment.currency)}
                         </p>
                     </div>
-                    <Link
-                        href={`/tenant/${tenantSlug}/parent/pay/history`}
-                        className="mt-3 block text-center text-sm text-primary font-medium hover:underline"
-                    >
-                        View Payment History
-                    </Link>
                 </div>
             )}
         </div>
