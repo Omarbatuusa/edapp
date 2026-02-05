@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ShellHeader } from './ShellHeader';
 import { AvatarPanel } from '@/components/dashboard/AvatarPanel';
 import { NotificationPanel } from '@/components/dashboard/NotificationPanel';
+import { SearchSheet } from '@/components/dashboard/SearchSheet';
 import { MOCK_NOTIFICATIONS, countUnread } from '@/lib/notifications';
 import { EmergencyProvider } from '@/contexts/EmergencyContext';
 import { EmergencyBanner } from '@/components/safety/EmergencyBanner';
@@ -38,6 +39,19 @@ export function Shell({ children, tenantName, tenantSlug, tenantLogo, user, role
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [avatarPanelOpen, setAvatarPanelOpen] = useState(false);
     const [notificationPanelOpen, setNotificationPanelOpen] = useState(false);
+    const [searchSheetOpen, setSearchSheetOpen] = useState(false);
+
+    // Global keyboard shortcut for search (Cmd+K / Ctrl+K)
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                setSearchSheetOpen(true);
+            }
+        };
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     // Notification count for badge
     const notificationsCount = countUnread(MOCK_NOTIFICATIONS);
@@ -138,6 +152,7 @@ export function Shell({ children, tenantName, tenantSlug, tenantLogo, user, role
                         onMenuClick={() => setSidebarOpen(true)}
                         onAvatarClick={() => setAvatarPanelOpen(true)}
                         onNotificationClick={() => setNotificationPanelOpen(true)}
+                        onSearch={() => setSearchSheetOpen(true)}
                         notificationsCount={notificationsCount}
                     />
 
@@ -160,6 +175,14 @@ export function Shell({ children, tenantName, tenantSlug, tenantLogo, user, role
                     isOpen={notificationPanelOpen}
                     onClose={() => setNotificationPanelOpen(false)}
                     tenantSlug={slug}
+                />
+
+                {/* Search Sheet */}
+                <SearchSheet
+                    isOpen={searchSheetOpen}
+                    onClose={() => setSearchSheetOpen(false)}
+                    tenantSlug={slug}
+                    currentRole={role}
                 />
             </div>
         </EmergencyProvider>
