@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ShellHeader } from './ShellHeader';
 import { AvatarPanel } from '@/components/dashboard/AvatarPanel';
+import { NotificationPanel } from '@/components/dashboard/NotificationPanel';
+import { MOCK_NOTIFICATIONS, countUnread } from '@/lib/notifications';
 import { EmergencyProvider } from '@/contexts/EmergencyContext';
 import { EmergencyBanner } from '@/components/safety/EmergencyBanner';
 import {
@@ -35,6 +37,10 @@ export function Shell({ children, tenantName, tenantSlug, tenantLogo, user, role
     const pathname = usePathname();
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [avatarPanelOpen, setAvatarPanelOpen] = useState(false);
+    const [notificationPanelOpen, setNotificationPanelOpen] = useState(false);
+
+    // Notification count for badge
+    const notificationsCount = countUnread(MOCK_NOTIFICATIONS);
 
     // Derive tenant slug from name if not provided
     const slug = tenantSlug || tenantName.toLowerCase();
@@ -131,6 +137,8 @@ export function Shell({ children, tenantName, tenantSlug, tenantLogo, user, role
                         user={user}
                         onMenuClick={() => setSidebarOpen(true)}
                         onAvatarClick={() => setAvatarPanelOpen(true)}
+                        onNotificationClick={() => setNotificationPanelOpen(true)}
+                        notificationsCount={notificationsCount}
                     />
 
                     <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-[1600px] mx-auto w-full animate-in fade-in slide-in-from-bottom-2 duration-500">
@@ -144,6 +152,13 @@ export function Shell({ children, tenantName, tenantSlug, tenantLogo, user, role
                     onClose={() => setAvatarPanelOpen(false)}
                     user={user}
                     tenantName={tenantName}
+                    tenantSlug={slug}
+                />
+
+                {/* Notification Panel */}
+                <NotificationPanel
+                    isOpen={notificationPanelOpen}
+                    onClose={() => setNotificationPanelOpen(false)}
                     tenantSlug={slug}
                 />
             </div>
