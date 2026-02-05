@@ -13,6 +13,7 @@ interface ShellHeaderProps {
     notificationsCount?: number
     onMenuClick?: () => void
     onAvatarClick?: () => void
+    onNotificationClick?: () => void
     // Role Switcher props
     currentRole?: UserRoleAssignment
     allRoles?: UserRoleAssignment[]
@@ -28,6 +29,7 @@ export function ShellHeader({
     notificationsCount = 0,
     onMenuClick,
     onAvatarClick,
+    onNotificationClick,
     currentRole,
     allRoles = [],
     onRoleSwitch
@@ -101,7 +103,11 @@ export function ShellHeader({
                     </button>
 
                     {/* Notifications */}
-                    <button className="relative w-9 h-9 flex items-center justify-center rounded-full hover:bg-secondary/50 transition-colors text-muted-foreground">
+                    <button
+                        onClick={onNotificationClick}
+                        className="relative w-9 h-9 flex items-center justify-center rounded-full hover:bg-secondary/50 transition-colors text-muted-foreground"
+                        aria-label="Notifications"
+                    >
                         <span className="material-symbols-outlined text-[22px]">notifications</span>
                         {notificationsCount > 0 && (
                             <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-500 ring-1 ring-white"></span>
