@@ -2,7 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { SubPageHeader } from '@/components/parent/SubPageHeader';
+import { SubPageHeader, SubPageWrapper } from '@/components/parent/SubPageHeader';
 import { MOCK_FEES_BALANCE, MOCK_PAYMENTS, MOCK_CHILDREN, formatCurrency } from '@/lib/parent';
 
 export default function AccountsPage() {
@@ -11,7 +11,7 @@ export default function AccountsPage() {
     const fees = MOCK_FEES_BALANCE;
 
     return (
-        <div>
+        <SubPageWrapper>
             <SubPageHeader
                 title="Account Statement"
                 backHref={`/tenant/${tenantSlug}/parent`}
@@ -89,6 +89,6 @@ export default function AccountsPage() {
                     </div>
                 ))}
             </div>
-        </div>
+        </SubPageWrapper>
     );
 }

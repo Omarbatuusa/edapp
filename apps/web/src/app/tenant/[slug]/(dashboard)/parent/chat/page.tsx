@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { SubPageHeader } from '@/components/parent/SubPageHeader';
+import { SubPageHeader, SubPageWrapper } from '@/components/parent/SubPageHeader';
 
 const MOCK_CHATS = [
     { id: '1', name: 'Mrs. Smith (Class Teacher)', avatar: 'MS', lastMessage: 'Thank you for the update!', time: '10:30 AM', unread: 2 },
@@ -14,7 +14,7 @@ export default function ChatPage() {
     const tenantSlug = params.slug as string;
 
     return (
-        <div>
+        <SubPageWrapper>
             <SubPageHeader
                 title="Messages"
                 backHref={`/tenant/${tenantSlug}/parent`}
@@ -54,6 +54,6 @@ export default function ChatPage() {
                     <p className="text-sm mt-1">Start a conversation with a teacher or staff</p>
                 </div>
             )}
-        </div>
+        </SubPageWrapper>
     );
 }
