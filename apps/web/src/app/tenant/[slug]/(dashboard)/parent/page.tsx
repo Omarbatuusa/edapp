@@ -13,7 +13,7 @@ export default function ParentDashboard() {
             <div className="flex items-center justify-between">
                 <div>
                     <p className="text-muted-foreground text-sm">Welcome back</p>
-                    <h1 className="text-xl font-bold">Thabo M.</h1>
+                    <h1 className="text-xl font-bold">Marge Simpson</h1>
                 </div>
             </div>
 
