@@ -73,6 +73,28 @@ export interface QuickAction {
     badge?: number;
 }
 
+// Fees Types
+export interface FeesBalance {
+    totalDue: number;
+    dueDate: string;
+    currency: string;
+    children: {
+        childId: string;
+        childName: string;
+        amount: number;
+    }[];
+}
+
+export interface Payment {
+    id: string;
+    amount: number;
+    currency: string;
+    date: string;
+    method: string;
+    reference: string;
+    status: 'completed' | 'pending' | 'failed';
+}
+
 // ============================================================
 // MOCK DATA
 // ============================================================
@@ -228,3 +250,47 @@ export function getDueBadgeStyle(badge: Homework['dueBadge']): { bg: string; tex
         case 'overdue': return { bg: 'bg-red-500', text: 'text-white', label: 'OVERDUE' };
     }
 }
+
+// ============================================================
+// FEES MOCK DATA
+// ============================================================
+
+export const MOCK_FEES_BALANCE: FeesBalance = {
+    totalDue: 12500,
+    dueDate: '10 February 2026',
+    currency: 'ZAR',
+    children: [
+        { childId: 'child-1', childName: 'Bart Simpson', amount: 6500 },
+        { childId: 'child-2', childName: 'Lisa Simpson', amount: 6000 },
+    ],
+};
+
+export const MOCK_PAYMENTS: Payment[] = [
+    {
+        id: 'pay-1',
+        amount: 5000,
+        currency: 'ZAR',
+        date: '2026-01-15',
+        method: 'Card',
+        reference: 'PAY-2026-0001',
+        status: 'completed',
+    },
+    {
+        id: 'pay-2',
+        amount: 3500,
+        currency: 'ZAR',
+        date: '2025-12-20',
+        method: 'EFT',
+        reference: 'PAY-2025-0089',
+        status: 'completed',
+    },
+];
+
+export function formatCurrency(amount: number, currency: string = 'ZAR'): string {
+    return new Intl.NumberFormat('en-ZA', {
+        style: 'currency',
+        currency: currency,
+        minimumFractionDigits: 0,
+    }).format(amount);
+}
+

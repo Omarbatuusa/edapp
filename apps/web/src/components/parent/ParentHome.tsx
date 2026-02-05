@@ -1,24 +1,28 @@
 'use client';
 
 import Link from 'next/link';
-import { Heart, MessageCircle, Share2, MoreHorizontal } from 'lucide-react';
+import { Heart, MessageCircle, Share2, MoreHorizontal, ChevronRight } from 'lucide-react';
 import {
     Child,
     Homework,
     Announcement,
     SchoolPost,
     QuickAction,
-    getStatusColor,
     getDueBadgeStyle,
+    formatCurrency,
     MOCK_CHILDREN,
     MOCK_HOMEWORK,
     MOCK_ANNOUNCEMENTS,
     MOCK_SCHOOL_POSTS,
     PARENT_QUICK_ACTIONS,
+    MOCK_FEES_BALANCE,
+    MOCK_PAYMENTS,
 } from '@/lib/parent';
 
 interface ParentHomeProps {
     tenantSlug: string;
+    tenantName?: string;
+    tenantLogo?: string;
 }
 
 // ============================================================
@@ -49,10 +53,10 @@ function ChildCard({ child, tenantSlug }: { child: Child; tenantSlug: string }) 
                     {/* Status Badge - Clean design */}
                     <div className="mt-1.5 flex items-center gap-1.5">
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium rounded-full ${isPresent
-                                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
-                                : isAbsent
-                                    ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                                    : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                            : isAbsent
+                                ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                                : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
                             }`}>
                             <span className={`w-1.5 h-1.5 rounded-full ${isPresent ? 'bg-emerald-500' : isAbsent ? 'bg-red-500' : 'bg-amber-500'
                                 }`} />
@@ -74,12 +78,12 @@ function ChildCard({ child, tenantSlug }: { child: Child; tenantSlug: string }) 
             <div className="mt-3 flex gap-2">
                 <Link
                     href={`/tenant/${tenantSlug}/parent/children/${child.id}`}
-                    className="flex-1 text-center text-sm font-medium py-2 px-3 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors"
+                    className="flex-1 text-center text-sm font-medium py-2.5 px-3 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors"
                 >
                     View Profile
                 </Link>
                 <button
-                    className="text-sm font-medium py-2 px-3 rounded-lg border border-border hover:bg-secondary/50 transition-colors text-muted-foreground"
+                    className="flex items-center justify-center w-10 h-10 rounded-lg border border-border hover:bg-secondary/50 transition-colors text-muted-foreground"
                     title="Log Absence"
                 >
                     <span className="material-symbols-outlined text-lg">event_busy</span>
@@ -91,6 +95,62 @@ function ChildCard({ child, tenantSlug }: { child: Child; tenantSlug: string }) 
                 <div className="mt-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-2.5 flex items-center justify-between">
                     <span className="text-xs font-medium text-red-700 dark:text-red-400">Please verify absence</span>
                     <button className="text-xs font-semibold text-red-600 dark:text-red-400 hover:underline">Verify →</button>
+                </div>
+            )}
+        </div>
+    );
+}
+
+// ============================================================
+// FEES BALANCE CARD
+// ============================================================
+function FeesBalanceCard({ tenantSlug }: { tenantSlug: string }) {
+    const fees = MOCK_FEES_BALANCE;
+    const latestPayment = MOCK_PAYMENTS[0];
+
+    return (
+        <div className="bg-card border border-border rounded-2xl overflow-hidden">
+            {/* Balance Header */}
+            <div className="p-4 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <p className="text-xs font-medium opacity-80">Outstanding Balance</p>
+                        <p className="text-2xl font-bold">{formatCurrency(fees.totalDue, fees.currency)}</p>
+                        <p className="text-xs opacity-70 mt-1">Due: {fees.dueDate}</p>
+                    </div>
+                    <Link
+                        href={`/tenant/${tenantSlug}/parent/pay`}
+                        className="flex items-center gap-1 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                    >
+                        Pay Now
+                        <ChevronRight size={16} />
+                    </Link>
+                </div>
+            </div>
+
+            {/* Latest Payment */}
+            {latestPayment && (
+                <div className="p-4 border-t border-border">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                                <span className="material-symbols-outlined text-emerald-600 dark:text-emerald-400">check_circle</span>
+                            </div>
+                            <div>
+                                <p className="text-sm font-medium">Last Payment</p>
+                                <p className="text-xs text-muted-foreground">{latestPayment.date} • {latestPayment.method}</p>
+                            </div>
+                        </div>
+                        <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                            {formatCurrency(latestPayment.amount, latestPayment.currency)}
+                        </p>
+                    </div>
+                    <Link
+                        href={`/tenant/${tenantSlug}/parent/pay/history`}
+                        className="mt-3 block text-center text-sm text-primary font-medium hover:underline"
+                    >
+                        View Payment History
+                    </Link>
                 </div>
             )}
         </div>
@@ -179,23 +239,32 @@ function AnnouncementCard({ announcement }: { announcement: Announcement }) {
 // ============================================================
 // SCHOOL LIFE POST CARD
 // ============================================================
-function SchoolLifeCard({ post }: { post: SchoolPost }) {
+function SchoolLifeCard({ post, tenantName, tenantLogo }: { post: SchoolPost; tenantName?: string; tenantLogo?: string }) {
+    // Use tenant info if author is the school
+    const isSchoolPost = post.author.name.toLowerCase().includes('academy') || post.author.name.toLowerCase().includes('school');
+
     return (
         <div className="bg-card rounded-2xl overflow-hidden shadow-sm border border-border">
             {/* Author header */}
             <div className="flex items-center justify-between p-4">
                 <div className="flex items-center gap-3">
-                    <img
-                        src={post.author.avatar}
-                        alt={post.author.name}
-                        className="w-10 h-10 rounded-full"
-                    />
-                    <div>
-                        <h4 className="font-semibold text-sm">{post.author.name}</h4>
+                    <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden border border-border/50">
+                        {isSchoolPost && tenantLogo ? (
+                            <img src={tenantLogo} alt={tenantName} className="w-full h-full object-cover" />
+                        ) : post.author.avatar ? (
+                            <img src={post.author.avatar} alt={post.author.name} className="w-full h-full object-cover" />
+                        ) : (
+                            <span className="text-primary font-bold text-sm">{post.author.name.substring(0, 2).toUpperCase()}</span>
+                        )}
+                    </div>
+                    <div className="min-w-0">
+                        <h4 className="font-semibold text-sm truncate max-w-[150px] sm:max-w-[200px]">
+                            {isSchoolPost && tenantName ? tenantName : post.author.name}
+                        </h4>
                         <p className="text-xs text-muted-foreground">{post.author.department} • {post.postedAt}</p>
                     </div>
                 </div>
-                <button className="p-2 hover:bg-secondary rounded-full">
+                <button className="p-2 hover:bg-secondary rounded-full shrink-0">
                     <MoreHorizontal size={18} className="text-muted-foreground" />
                 </button>
             </div>
@@ -248,20 +317,42 @@ function SectionHeader({ title, href, tenantSlug }: { title: string; href?: stri
 }
 
 // ============================================================
+// SCROLL END INDICATOR
+// ============================================================
+function ScrollEndIndicator() {
+    return (
+        <div className="flex flex-col items-center py-8 text-muted-foreground">
+            <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center mb-2">
+                <span className="material-symbols-outlined text-lg">check</span>
+            </div>
+            <p className="text-sm font-medium">You're all caught up!</p>
+            <p className="text-xs mt-0.5">Check back later for new updates</p>
+        </div>
+    );
+}
+
+// ============================================================
 // MAIN PARENT HOME COMPONENT
 // ============================================================
-export function ParentHome({ tenantSlug }: ParentHomeProps) {
+export function ParentHome({ tenantSlug, tenantName, tenantLogo }: ParentHomeProps) {
     return (
-        <div className="space-y-6 pb-8">
-            {/* My Children Carousel - Touch scroll, no scrollbar */}
+        <div className="space-y-6 pb-20">
+            {/* My Children Carousel - Touch scroll, no scrollbar, with left padding */}
             <section>
                 <SectionHeader title="My Children" tenantSlug={tenantSlug} />
-                <div className="flex gap-3 overflow-x-auto pb-1 -mx-4 px-4 snap-x snap-mandatory" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                    <style jsx>{`div::-webkit-scrollbar { display: none; }`}</style>
+                <div
+                    className="flex gap-3 overflow-x-auto pb-1 -mr-4 pr-4 snap-x snap-mandatory"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
                     {MOCK_CHILDREN.map((child) => (
                         <ChildCard key={child.id} child={child} tenantSlug={tenantSlug} />
                     ))}
                 </div>
+            </section>
+
+            {/* Fees Balance Card */}
+            <section>
+                <FeesBalanceCard tenantSlug={tenantSlug} />
             </section>
 
             {/* Quick Actions */}
@@ -294,10 +385,13 @@ export function ParentHome({ tenantSlug }: ParentHomeProps) {
                 <SectionHeader title="School Life" href="/feed" tenantSlug={tenantSlug} />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {MOCK_SCHOOL_POSTS.map((post) => (
-                        <SchoolLifeCard key={post.id} post={post} />
+                        <SchoolLifeCard key={post.id} post={post} tenantName={tenantName} tenantLogo={tenantLogo} />
                     ))}
                 </div>
             </section>
+
+            {/* Scroll End Indicator */}
+            <ScrollEndIndicator />
         </div>
     );
 }
