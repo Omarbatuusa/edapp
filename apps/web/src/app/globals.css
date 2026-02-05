@@ -116,11 +116,11 @@
 
 @layer base {
 
-  /* Mobile App Shell - Prevent UI movement from browser bar show/hide */
+  /* Mobile App Shell - Use auto overflow to allow scrolling */
   html,
   body {
     height: 100%;
-    overflow: hidden;
+    /* Allow scrolling - Shell component manages its own scroll */
   }
 
   /* Stable viewport height using JS-updated CSS variable */
