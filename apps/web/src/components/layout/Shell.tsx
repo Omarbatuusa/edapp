@@ -145,7 +145,7 @@ export function Shell({ children, tenantName, tenantSlug, tenantLogo, user, role
                     </div>
                 </aside>
 
-                <div className="lg:pl-64 flex flex-col min-h-screen">
+                <div className="lg:pl-64 flex flex-col min-h-screen overflow-y-auto">
                     <ShellHeader
                         tenantName={tenantName}
                         user={user}
@@ -156,7 +156,7 @@ export function Shell({ children, tenantName, tenantSlug, tenantLogo, user, role
                         notificationsCount={notificationsCount}
                     />
 
-                    <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-[1600px] mx-auto w-full animate-in fade-in slide-in-from-bottom-2 duration-500">
+                    <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-[1600px] mx-auto w-full animate-in fade-in slide-in-from-bottom-2 duration-500 overflow-y-auto">
                         {children}
                     </main>
                 </div>
