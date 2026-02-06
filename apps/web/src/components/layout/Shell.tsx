@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { ShellHeader } from './ShellHeader';
 import { BottomNav } from '@/components/dashboard/bottom-nav';
 import { AvatarPanel } from '@/components/dashboard/AvatarPanel';
@@ -20,6 +21,7 @@ interface ShellProps {
 }
 
 export function Shell({ children, tenantName, tenantSlug, tenantLogo, user, role = 'parent' }: ShellProps) {
+    const router = useRouter();
     const [avatarPanelOpen, setAvatarPanelOpen] = useState(false);
     const [notificationPanelOpen, setNotificationPanelOpen] = useState(false);
     const [searchSheetOpen, setSearchSheetOpen] = useState(false);
@@ -42,6 +44,11 @@ export function Shell({ children, tenantName, tenantSlug, tenantLogo, user, role
     // Derive tenant slug from name if not provided
     const slug = tenantSlug || tenantName.toLowerCase();
 
+    // Emergency hub navigation
+    const handleEmergency = () => {
+        router.push(`/tenant/${slug}/${role}/emergency`);
+    };
+
     return (
         <EmergencyProvider>
             <div className="min-h-screen bg-slate-50 dark:bg-[#0B1120] flex flex-col font-display">
@@ -57,6 +64,7 @@ export function Shell({ children, tenantName, tenantSlug, tenantLogo, user, role
                         onAvatarClick={() => setAvatarPanelOpen(true)}
                         onNotificationClick={() => setNotificationPanelOpen(true)}
                         onSearch={() => setSearchSheetOpen(true)}
+                        onEmergency={handleEmergency}
                         notificationsCount={notificationsCount}
                         showChangeSchool={true}
                     />

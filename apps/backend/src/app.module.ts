@@ -15,6 +15,12 @@ import { TenantSettings } from './tenants/tenant-settings.entity';
 import { PolicyDocument } from './policies/policy-document.entity';
 import { PolicyVersion } from './policies/policy-version.entity';
 import { UserPolicyAcceptance } from './policies/user-policy-acceptance.entity';
+import { Thread } from './communication/thread.entity';
+import { Message } from './communication/message.entity';
+import { ThreadMember } from './communication/thread-member.entity';
+import { MessageReceipt } from './communication/message-receipt.entity';
+import { Notification } from './communication/notification.entity';
+import { DeviceToken } from './notifications/device-token.entity';
 
 // Modules
 import { BrandsModule } from './brands/brands.module';
@@ -27,6 +33,8 @@ import { DiscoveryModule } from './discovery/discovery.module';
 import { AuditModule } from './audit/audit.module';
 import { StorageModule } from './storage/storage.module';
 import { PoliciesModule } from './policies/policies.module';
+import { CommunicationModule } from './communication/communication.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 import { BullModule } from '@nestjs/bullmq';
 
@@ -60,6 +68,12 @@ import { BullModule } from '@nestjs/bullmq';
           PolicyDocument,
           PolicyVersion,
           UserPolicyAcceptance,
+          Thread,
+          Message,
+          ThreadMember,
+          MessageReceipt,
+          Notification,
+          DeviceToken,
         ],
         autoLoadEntities: true,
         synchronize: true, // DEV only, set to false in prod
@@ -76,6 +90,8 @@ import { BullModule } from '@nestjs/bullmq';
     AuditModule,
     StorageModule,
     PoliciesModule,
+    CommunicationModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
