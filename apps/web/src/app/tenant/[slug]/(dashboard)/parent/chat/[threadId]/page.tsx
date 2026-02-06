@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ChevronLeft, Paperclip, Send, Smile, Image, Camera, Mic, X } from 'lucide-react';
+import { ChevronLeft, Paperclip, Send, Smile, Image, Camera, X } from 'lucide-react';
 
 // Mock messages for demo
 const MOCK_MESSAGES = [
@@ -212,20 +212,24 @@ export default function ThreadPage() {
             )}
 
             {/* Composer */}
-            <div className="border-t border-border bg-background px-2 sm:px-4 py-2 sticky bottom-14 sm:bottom-16 z-10">
+            <div className="border-t border-border bg-background px-3 sm:px-4 py-3 sticky bottom-14 sm:bottom-16 z-10">
                 <div className="flex items-end gap-2 max-w-3xl mx-auto">
                     <button
                         onClick={() => { setShowAttach(!showAttach); setShowTemplates(false); }}
                         className={`w-10 h-10 flex items-center justify-center rounded-full shrink-0 transition-all ${showAttach ? 'bg-primary rotate-45' : 'hover:bg-secondary text-muted-foreground'
                             }`}
                         style={showAttach ? { color: '#fff' } : {}}
+                        aria-label="Attach file"
                     >
                         <Paperclip size={20} />
                     </button>
 
-                    <div className="flex-1 flex items-end bg-secondary rounded-3xl px-4 py-2 min-h-[44px]">
-                        <button className="w-8 h-8 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shrink-0 -ml-1">
-                            <Smile size={22} />
+                    <div className="flex-1 flex items-end bg-secondary/50 border border-border/60 rounded-2xl px-3 py-2 min-h-[48px] shadow-sm">
+                        <button
+                            className="w-8 h-8 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors shrink-0 -ml-0.5"
+                            aria-label="Insert emoji"
+                        >
+                            <Smile size={20} />
                         </button>
 
                         <textarea
@@ -243,35 +247,32 @@ export default function ThreadPage() {
                             }}
                             placeholder="Type a message..."
                             rows={1}
-                            className="flex-1 bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none resize-none py-1.5 max-h-[120px]"
-                            style={{ lineHeight: 1.4 }}
+                            className="flex-1 bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none resize-none py-1.5 px-2 max-h-[120px]"
+                            style={{ lineHeight: 1.5 }}
                         />
 
                         <button
                             onClick={() => { setShowTemplates(!showTemplates); setShowAttach(false); }}
-                            className={`w-8 h-8 flex items-center justify-center transition-colors shrink-0 -mr-1 ${showTemplates ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+                            className={`w-8 h-8 flex items-center justify-center transition-colors shrink-0 -mr-0.5 ${showTemplates ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
                                 }`}
+                            aria-label="Quick templates"
                         >
                             <span className="material-symbols-outlined text-xl">bolt</span>
                         </button>
                     </div>
 
-                    {message.trim() ? (
-                        <button
-                            onClick={handleSend}
-                            className="w-10 h-10 flex items-center justify-center rounded-full bg-primary shrink-0 hover:bg-primary/90 transition-colors"
-                            style={{ color: '#fff' }}
-                        >
-                            <Send size={18} />
-                        </button>
-                    ) : (
-                        <button
-                            className="w-10 h-10 flex items-center justify-center rounded-full bg-primary shrink-0 hover:bg-primary/90 transition-colors"
-                            style={{ color: '#fff' }}
-                        >
-                            <Mic size={20} />
-                        </button>
-                    )}
+                    <button
+                        onClick={handleSend}
+                        disabled={!message.trim()}
+                        className={`w-10 h-10 flex items-center justify-center rounded-full shrink-0 transition-all ${message.trim()
+                                ? 'bg-primary hover:bg-primary/90 shadow-sm'
+                                : 'bg-muted text-muted-foreground cursor-not-allowed'
+                            }`}
+                        style={message.trim() ? { color: '#fff' } : {}}
+                        aria-label="Send message"
+                    >
+                        <Send size={18} />
+                    </button>
                 </div>
             </div>
         </div>
