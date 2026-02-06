@@ -18,9 +18,9 @@ export function ChatLane({ title, badge, viewAllHref, rightAction, children }: C
     return (
         <section className="mb-6">
             {/* Lane Header */}
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-3 px-1">
                 <div className="flex items-center gap-2">
-                    <h2 className="font-semibold text-base">{title}</h2>
+                    <h2 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">{title}</h2>
                     {badge !== undefined && (
                         <span className="min-w-[20px] h-5 px-1.5 bg-primary text-primary-foreground text-xs font-bold rounded-full flex items-center justify-center">
                             {badge}
@@ -43,7 +43,7 @@ export function ChatLane({ title, badge, viewAllHref, rightAction, children }: C
 }
 
 // ============================================================
-// THREAD ROW CARD - For messages/DMs
+// THREAD ROW CARD - WhatsApp-style thread row
 // ============================================================
 interface ThreadRowCardProps {
     avatar: string | React.ReactNode;
@@ -53,49 +53,49 @@ interface ThreadRowCardProps {
     time: string;
     unread?: number;
     urgent?: boolean;
+    online?: boolean;
     href: string;
 }
 
-export function ThreadRowCard({ avatar, name, context, lastMessage, time, unread, urgent, href }: ThreadRowCardProps) {
+export function ThreadRowCard({ avatar, name, context, lastMessage, time, unread, urgent, online, href }: ThreadRowCardProps) {
     return (
         <Link
             href={href}
-            className={`flex items-center gap-3 p-4 bg-card border border-border rounded-xl hover:bg-secondary/30 transition-colors ${unread ? 'bg-primary/5' : ''
+            className={`flex items-center gap-3 p-3 rounded-xl transition-all active:scale-[0.98] ${unread ? 'bg-primary/5 dark:bg-primary/10' : 'hover:bg-secondary/50'
                 }`}
         >
-            {/* Avatar */}
+            {/* Avatar with online/urgent indicator */}
             <div className="relative shrink-0">
                 {typeof avatar === 'string' ? (
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                        <span className="text-primary font-semibold text-sm">{avatar}</span>
+                    <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-sm">
+                        {avatar}
                     </div>
                 ) : avatar}
-                {urgent && (
+                {online && (
+                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-background" />
+                )}
+                {urgent && !online && (
                     <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full border-2 border-background" />
                 )}
             </div>
 
             {/* Content */}
             <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                    <span className={`text-sm truncate ${unread ? 'font-semibold' : 'font-medium'}`}>{name}</span>
-                    {context && (
-                        <span className="text-xs text-muted-foreground bg-secondary px-1.5 py-0.5 rounded shrink-0">{context}</span>
+                <div className="flex items-center justify-between">
+                    <span className={`text-[15px] truncate ${unread ? 'font-semibold' : 'font-medium'}`}>{name}</span>
+                    <span className={`text-xs shrink-0 ml-2 ${unread ? 'text-primary font-medium' : 'text-muted-foreground'}`}>{time}</span>
+                </div>
+                <div className="flex items-center justify-between mt-0.5">
+                    <p className={`text-sm truncate ${unread ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>
+                        {context && <span className="text-xs text-muted-foreground mr-1.5">{context} •</span>}
+                        {lastMessage}
+                    </p>
+                    {unread && unread > 0 && (
+                        <span className="ml-2 min-w-[20px] h-5 px-1.5 bg-primary text-primary-foreground text-xs font-bold rounded-full flex items-center justify-center shrink-0">
+                            {unread > 9 ? '9+' : unread}
+                        </span>
                     )}
                 </div>
-                <p className={`text-sm truncate mt-0.5 ${unread ? 'text-foreground' : 'text-muted-foreground'}`}>
-                    {lastMessage}
-                </p>
-            </div>
-
-            {/* Right side */}
-            <div className="flex flex-col items-end gap-1 shrink-0">
-                <span className="text-xs text-muted-foreground">{time}</span>
-                {unread && unread > 0 && (
-                    <span className="min-w-[20px] h-5 px-1.5 bg-primary text-primary-foreground text-xs font-bold rounded-full flex items-center justify-center">
-                        {unread > 9 ? '9+' : unread}
-                    </span>
-                )}
             </div>
         </Link>
     );
@@ -127,44 +127,52 @@ export function AnnouncementCompactCard({
 }: AnnouncementCompactCardProps) {
     const badgeConfig: Record<string, { icon: string; color: string }> = {
         urgent: { icon: 'priority_high', color: 'text-red-500' },
-        ack: { icon: 'check_circle', color: 'text-amber-500' },
+        ack: { icon: 'task_alt', color: 'text-amber-500' },
         doc: { icon: 'attach_file', color: 'text-blue-500' },
         event: { icon: 'event', color: 'text-emerald-500' },
     };
 
     return (
-        <div className="flex items-center gap-3 p-4 bg-card border border-border rounded-xl">
+        <div className="flex items-center gap-3 p-3 bg-card border border-border rounded-xl hover:bg-secondary/30 transition-colors">
             {/* Icon */}
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-primary">campaign</span>
+            <div className="w-11 h-11 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-amber-600 dark:text-amber-400">campaign</span>
             </div>
 
             {/* Content */}
-            <Link href={href} className="flex-1 min-w-0 hover:underline">
-                <h4 className="font-medium text-sm truncate">{title}</h4>
-                <p className="text-xs text-muted-foreground truncate">{preview}</p>
+            <Link href={href} className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5">
+                    {badges.includes('urgent') && (
+                        <span className="material-symbols-outlined text-red-500 text-sm">priority_high</span>
+                    )}
+                    <h4 className="font-medium text-sm truncate">{title}</h4>
+                </div>
+                <p className="text-xs text-muted-foreground truncate mt-0.5">{preview}</p>
             </Link>
 
             {/* Right side */}
-            <div className="flex flex-col items-end gap-1 shrink-0">
+            <div className="flex flex-col items-end gap-1.5 shrink-0">
+                <span className="text-[10px] text-muted-foreground">{time}</span>
                 <div className="flex items-center gap-1">
-                    {badges.map((badge) => (
+                    {badges.filter(b => b !== 'urgent').map((badge) => (
                         <span key={badge} className={`material-symbols-outlined text-sm ${badgeConfig[badge]?.color}`}>
                             {badgeConfig[badge]?.icon}
                         </span>
                     ))}
                 </div>
-                <span className="text-xs text-muted-foreground">{time}</span>
             </div>
 
             {/* Acknowledge button */}
             {requiresAck && !acknowledged && (
                 <button
                     onClick={(e) => { e.preventDefault(); onAcknowledge?.(); }}
-                    className="px-3 py-1.5 text-xs font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors shrink-0"
+                    className="px-3 py-1.5 text-xs font-medium bg-primary text-white rounded-full hover:bg-primary/90 transition-colors shrink-0"
                 >
-                    Acknowledge
+                    ACK
                 </button>
+            )}
+            {acknowledged && (
+                <span className="material-symbols-outlined text-emerald-500 text-lg shrink-0">check_circle</span>
             )}
         </div>
     );
@@ -183,12 +191,12 @@ interface TicketRowCardProps {
 }
 
 export function TicketRowCard({ category, title, status, statusText, time, href }: TicketRowCardProps) {
-    const categoryIcons: Record<string, string> = {
-        fees: 'payments',
-        admissions: 'how_to_reg',
-        transport: 'directions_bus',
-        it: 'computer',
-        general: 'help',
+    const categoryConfig: Record<string, { icon: string; color: string }> = {
+        fees: { icon: 'payments', color: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400' },
+        admissions: { icon: 'how_to_reg', color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' },
+        transport: { icon: 'directions_bus', color: 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400' },
+        it: { icon: 'computer', color: 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400' },
+        general: { icon: 'help', color: 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400' },
     };
 
     const statusColors: Record<string, string> = {
@@ -197,28 +205,33 @@ export function TicketRowCard({ category, title, status, statusText, time, href 
         closed: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
     };
 
+    const config = categoryConfig[category] || categoryConfig.general;
+
     return (
         <Link
             href={href}
-            className="flex items-center gap-3 p-4 bg-card border border-border rounded-xl hover:bg-secondary/30 transition-colors"
+            className="flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/50 transition-all active:scale-[0.98]"
         >
             {/* Icon */}
-            <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-muted-foreground">{categoryIcons[category]}</span>
+            <div className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${config.color}`}>
+                <span className="material-symbols-outlined">{config.icon}</span>
             </div>
 
             {/* Content */}
             <div className="flex-1 min-w-0">
-                <h4 className="font-medium text-sm truncate">{title}</h4>
-                <p className="text-xs text-muted-foreground">{statusText}</p>
+                <div className="flex items-center gap-2">
+                    <h4 className="font-medium text-sm truncate">{title}</h4>
+                    <span className={`px-2 py-0.5 text-[10px] font-medium rounded-full shrink-0 ${statusColors[status]}`}>
+                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                    </span>
+                </div>
+                <p className="text-xs text-muted-foreground truncate mt-0.5">{statusText}</p>
             </div>
 
-            {/* Status + Time */}
-            <div className="flex flex-col items-end gap-1 shrink-0">
-                <span className={`px-2 py-0.5 text-[10px] font-medium rounded-full ${statusColors[status]}`}>
-                    {status.charAt(0).toUpperCase() + status.slice(1)}
-                </span>
+            {/* Time + Chevron */}
+            <div className="flex items-center gap-1 shrink-0">
                 <span className="text-xs text-muted-foreground">{time}</span>
+                <ChevronRight size={16} className="text-muted-foreground" />
             </div>
         </Link>
     );
@@ -228,7 +241,7 @@ export function TicketRowCard({ category, title, status, statusText, time, href 
 // FILTER CHIPS - For chat filtering
 // ============================================================
 interface FilterChipsProps {
-    filters: { id: string; label: string }[];
+    filters: { id: string; label: string; count?: number }[];
     activeFilter: string;
     onFilterChange: (id: string) => void;
 }
@@ -236,19 +249,32 @@ interface FilterChipsProps {
 export function FilterChips({ filters, activeFilter, onFilterChange }: FilterChipsProps) {
     return (
         <div
-            className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4"
+            className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
+            <style jsx>{`
+                .scrollbar-hide::-webkit-scrollbar {
+                    display: none;
+                }
+            `}</style>
             {filters.map((filter) => (
                 <button
                     key={filter.id}
                     onClick={() => onFilterChange(filter.id)}
-                    className={`px-4 py-2 text-sm font-medium rounded-full shrink-0 transition-colors ${activeFilter === filter.id
-                            ? 'bg-primary text-primary-foreground'
+                    className={`flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-full shrink-0 transition-all active:scale-95 ${activeFilter === filter.id
+                            ? 'bg-primary text-white shadow-sm'
                             : 'bg-secondary text-foreground hover:bg-secondary/80'
                         }`}
                 >
                     {filter.label}
+                    {filter.count !== undefined && filter.count > 0 && (
+                        <span className={`min-w-[18px] h-[18px] px-1 text-[10px] font-bold rounded-full flex items-center justify-center ${activeFilter === filter.id
+                                ? 'bg-white/20 text-white'
+                                : 'bg-primary/10 text-primary'
+                            }`}>
+                            {filter.count}
+                        </span>
+                    )}
                 </button>
             ))}
         </div>
@@ -268,9 +294,9 @@ export function UrgentBanner({ icon = 'warning', title, href }: UrgentBannerProp
     return (
         <Link
             href={href}
-            className="flex items-center gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl mb-4"
+            className="flex items-center gap-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-xl mb-4 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
         >
-            <div className="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/50 flex items-center justify-center shrink-0 animate-pulse">
                 <span className="material-symbols-outlined text-red-600 dark:text-red-400">{icon}</span>
             </div>
             <div className="flex-1 min-w-0">
@@ -278,5 +304,39 @@ export function UrgentBanner({ icon = 'warning', title, href }: UrgentBannerProp
             </div>
             <ChevronRight className="w-5 h-5 text-red-500 shrink-0" />
         </Link>
+    );
+}
+
+// ============================================================
+// EMPTY STATE - For empty lanes
+// ============================================================
+interface EmptyStateProps {
+    icon: string;
+    title: string;
+    description?: string;
+    action?: {
+        label: string;
+        href: string;
+    };
+}
+
+export function EmptyState({ icon, title, description, action }: EmptyStateProps) {
+    return (
+        <div className="text-center py-8 px-4">
+            <div className="w-16 h-16 rounded-full bg-secondary mx-auto flex items-center justify-center mb-3">
+                <span className="material-symbols-outlined text-3xl text-muted-foreground">{icon}</span>
+            </div>
+            <p className="font-medium text-sm">{title}</p>
+            {description && <p className="text-xs text-muted-foreground mt-1">{description}</p>}
+            {action && (
+                <Link
+                    href={action.href}
+                    className="inline-flex items-center gap-1 text-primary text-sm font-medium hover:underline mt-3"
+                >
+                    {action.label}
+                    <ChevronRight size={16} />
+                </Link>
+            )}
+        </div>
     );
 }
