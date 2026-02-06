@@ -95,6 +95,44 @@ export interface Payment {
     status: 'completed' | 'pending' | 'failed';
 }
 
+// Chat/Thread Types
+export interface ChatThread {
+    id: string;
+    type: 'dm' | 'channel' | 'support' | 'safeguarding';
+    name: string;
+    avatar?: string;
+    context?: string;
+    lastMessage: string;
+    lastMessageTime: string;
+    unreadCount: number;
+    urgent?: boolean;
+    category?: 'fees' | 'admissions' | 'transport' | 'it' | 'general';
+    status?: 'open' | 'pending' | 'closed';
+}
+
+export interface ChatMessage {
+    id: string;
+    threadId: string;
+    senderId: string;
+    senderName: string;
+    senderAvatar?: string;
+    content: string;
+    attachments?: { name: string; url: string; type: string }[];
+    isOwn: boolean;
+    timestamp: string;
+    status: 'sending' | 'sent' | 'delivered' | 'read';
+}
+
+export interface ChatAnnouncement {
+    id: string;
+    title: string;
+    preview: string;
+    time: string;
+    badges: ('urgent' | 'ack' | 'doc' | 'event')[];
+    requiresAck: boolean;
+    acknowledged: boolean;
+}
+
 // ============================================================
 // MOCK DATA
 // ============================================================
@@ -293,4 +331,107 @@ export function formatCurrency(amount: number, currency: string = 'ZAR'): string
         minimumFractionDigits: 0,
     }).format(amount);
 }
+
+// ============================================================
+// CHAT MOCK DATA
+// ============================================================
+
+export const MOCK_CHAT_THREADS: ChatThread[] = [
+    {
+        id: 'thread-1',
+        type: 'dm',
+        name: 'Mrs. Smith',
+        avatar: 'MS',
+        context: 'Class Teacher',
+        lastMessage: 'Thank you for the update! Bart is doing much better in class now.',
+        lastMessageTime: '10:30 AM',
+        unreadCount: 2,
+        urgent: false,
+    },
+    {
+        id: 'thread-2',
+        type: 'dm',
+        name: 'Admin Office',
+        avatar: 'AO',
+        context: 'Administration',
+        lastMessage: 'Your payment of R5,000 has been received and processed.',
+        lastMessageTime: 'Yesterday',
+        unreadCount: 0,
+    },
+    {
+        id: 'thread-3',
+        type: 'dm',
+        name: 'Sports Department',
+        avatar: 'SD',
+        context: 'Extra-murals',
+        lastMessage: 'Soccer practice moved to 3pm this Friday due to weather.',
+        lastMessageTime: 'Mon',
+        unreadCount: 0,
+    },
+    {
+        id: 'thread-4',
+        type: 'dm',
+        name: 'Mr. Johnson',
+        avatar: 'MJ',
+        context: 'Grade Head',
+        lastMessage: 'Please contact me regarding Lisa\'s science project.',
+        lastMessageTime: 'Tue',
+        unreadCount: 1,
+        urgent: true,
+    },
+];
+
+export const MOCK_CHAT_ANNOUNCEMENTS: ChatAnnouncement[] = [
+    {
+        id: 'ann-1',
+        title: 'Early Closure on Friday',
+        preview: 'School closes at 12:00 PM this Friday for staff development.',
+        time: '2h ago',
+        badges: ['urgent', 'ack'],
+        requiresAck: true,
+        acknowledged: false,
+    },
+    {
+        id: 'ann-2',
+        title: 'Term 1 Calendar Published',
+        preview: 'Please review the updated Term 1 calendar with all important dates.',
+        time: 'Yesterday',
+        badges: ['doc'],
+        requiresAck: false,
+        acknowledged: false,
+    },
+    {
+        id: 'ann-3',
+        title: 'Parent-Teacher Meetings',
+        preview: 'Book your slot for parent-teacher meetings next week.',
+        time: '3d ago',
+        badges: ['event', 'ack'],
+        requiresAck: true,
+        acknowledged: true,
+    },
+];
+
+export const MOCK_SUPPORT_TICKETS: ChatThread[] = [
+    {
+        id: 'ticket-1',
+        type: 'support',
+        name: 'Fees Query',
+        category: 'fees',
+        lastMessage: 'I have a question about the payment plan options.',
+        lastMessageTime: '1d ago',
+        unreadCount: 0,
+        status: 'pending',
+    },
+    {
+        id: 'ticket-2',
+        type: 'support',
+        name: 'Transport Route Change',
+        category: 'transport',
+        lastMessage: 'We need to update our pickup address.',
+        lastMessageTime: '3d ago',
+        unreadCount: 1,
+        status: 'open',
+    },
+];
+
 
