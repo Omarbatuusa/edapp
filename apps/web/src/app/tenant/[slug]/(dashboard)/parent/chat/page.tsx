@@ -11,6 +11,7 @@ import {
     TicketRowCard,
     FilterChips,
     UrgentBanner,
+    EmptyState,
 } from '@/components/parent/ChatComponents';
 import {
     MOCK_CHAT_THREADS,
@@ -20,8 +21,8 @@ import {
 
 const FILTERS = [
     { id: 'all', label: 'All' },
-    { id: 'unread', label: 'Unread' },
-    { id: 'urgent', label: 'Urgent' },
+    { id: 'unread', label: 'Unread', count: 3 },
+    { id: 'urgent', label: 'Urgent', count: 1 },
     { id: 'staff', label: 'Staff' },
     { id: 'support', label: 'Support' },
 ];
@@ -47,12 +48,12 @@ export default function ChatPage() {
         }
     });
 
-    // Check for urgent items (emergency or overdue acknowledgements)
+    // Check for urgent items
     const hasUrgentAnnouncement = MOCK_CHAT_ANNOUNCEMENTS.some(
         (a) => a.badges.includes('urgent') && a.requiresAck && !a.acknowledged
     );
 
-    // Calculate total unread
+    // Calculate totals
     const totalUnread = MOCK_CHAT_THREADS.reduce((sum, t) => sum + t.unreadCount, 0);
     const openTickets = MOCK_SUPPORT_TICKETS.filter((t) => t.status !== 'closed').length;
 
@@ -60,13 +61,21 @@ export default function ChatPage() {
         <SubPageWrapper>
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
-                <h1 className="text-xl font-bold">Chat</h1>
-                <button
-                    className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-secondary transition-colors"
-                    aria-label="Search"
-                >
-                    <span className="material-symbols-outlined text-[22px] text-muted-foreground">search</span>
-                </button>
+                <h1 className="text-2xl font-bold">Chat</h1>
+                <div className="flex items-center gap-1">
+                    <button
+                        className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-secondary transition-colors"
+                        aria-label="New message"
+                    >
+                        <span className="material-symbols-outlined text-[22px] text-muted-foreground">edit_square</span>
+                    </button>
+                    <button
+                        className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-secondary transition-colors"
+                        aria-label="Search"
+                    >
+                        <span className="material-symbols-outlined text-[22px] text-muted-foreground">search</span>
+                    </button>
+                </div>
             </div>
 
             {/* Filter Chips */}
@@ -116,24 +125,27 @@ export default function ChatPage() {
                     badge={totalUnread > 0 ? totalUnread : undefined}
                     viewAllHref={`/tenant/${tenantSlug}/parent/chat/messages`}
                 >
-                    {filteredThreads.slice(0, 4).map((thread) => (
-                        <ThreadRowCard
-                            key={thread.id}
-                            avatar={thread.avatar || thread.name.charAt(0)}
-                            name={thread.name}
-                            context={thread.context}
-                            lastMessage={thread.lastMessage}
-                            time={thread.lastMessageTime}
-                            unread={thread.unreadCount}
-                            urgent={thread.urgent}
-                            href={`/tenant/${tenantSlug}/parent/chat/${thread.id}`}
+                    {filteredThreads.length > 0 ? (
+                        filteredThreads.slice(0, 4).map((thread) => (
+                            <ThreadRowCard
+                                key={thread.id}
+                                avatar={thread.avatar || thread.name.charAt(0)}
+                                name={thread.name}
+                                context={thread.context}
+                                lastMessage={thread.lastMessage}
+                                time={thread.lastMessageTime}
+                                unread={thread.unreadCount}
+                                urgent={thread.urgent}
+                                online={thread.id === 'thread-1'}
+                                href={`/tenant/${tenantSlug}/parent/chat/${thread.id}`}
+                            />
+                        ))
+                    ) : (
+                        <EmptyState
+                            icon="chat"
+                            title="No messages found"
+                            description={activeFilter !== 'all' ? 'Try changing your filter' : undefined}
                         />
-                    ))}
-                    {filteredThreads.length === 0 && (
-                        <div className="text-center py-8 text-muted-foreground">
-                            <span className="material-symbols-outlined text-3xl mb-2">chat</span>
-                            <p className="text-sm">No messages found</p>
-                        </div>
                     )}
                 </ChatLane>
 
@@ -144,34 +156,35 @@ export default function ChatPage() {
                     rightAction={
                         <Link
                             href={`/tenant/${tenantSlug}/parent/chat/support/new`}
-                            className="px-3 py-1.5 text-xs font-medium bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors"
+                            className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-primary text-white rounded-full hover:bg-primary/90 transition-colors"
                         >
+                            <span className="material-symbols-outlined text-sm">add</span>
                             New
                         </Link>
                     }
                 >
-                    {MOCK_SUPPORT_TICKETS.slice(0, 3).map((ticket) => (
-                        <TicketRowCard
-                            key={ticket.id}
-                            category={ticket.category || 'general'}
-                            title={ticket.name}
-                            status={ticket.status || 'open'}
-                            statusText={ticket.lastMessage}
-                            time={ticket.lastMessageTime}
-                            href={`/tenant/${tenantSlug}/parent/chat/${ticket.id}`}
+                    {MOCK_SUPPORT_TICKETS.length > 0 ? (
+                        MOCK_SUPPORT_TICKETS.slice(0, 3).map((ticket) => (
+                            <TicketRowCard
+                                key={ticket.id}
+                                category={ticket.category || 'general'}
+                                title={ticket.name}
+                                status={ticket.status || 'open'}
+                                statusText={ticket.lastMessage}
+                                time={ticket.lastMessageTime}
+                                href={`/tenant/${tenantSlug}/parent/chat/${ticket.id}`}
+                            />
+                        ))
+                    ) : (
+                        <EmptyState
+                            icon="support_agent"
+                            title="No support tickets"
+                            description="Need help with fees, transport, or admissions?"
+                            action={{
+                                label: 'Create a ticket',
+                                href: `/tenant/${tenantSlug}/parent/chat/support/new`,
+                            }}
                         />
-                    ))}
-                    {MOCK_SUPPORT_TICKETS.length === 0 && (
-                        <div className="text-center py-8 text-muted-foreground">
-                            <span className="material-symbols-outlined text-3xl mb-2">support_agent</span>
-                            <p className="text-sm">No support tickets</p>
-                            <Link
-                                href={`/tenant/${tenantSlug}/parent/chat/support/new`}
-                                className="text-primary text-sm font-medium hover:underline mt-2 inline-block"
-                            >
-                                Create a ticket
-                            </Link>
-                        </div>
                     )}
                 </ChatLane>
             </div>
