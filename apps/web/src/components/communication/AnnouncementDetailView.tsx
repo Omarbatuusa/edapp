@@ -1,0 +1,68 @@
+import React from 'react';
+import { DetailViewProps } from './types';
+import { TRANSLATIONS } from './mockData';
+
+export function AnnouncementDetailView({ item, isTranslated }: DetailViewProps) {
+    if (!item) return null;
+    const title = isTranslated && item.title ? (TRANSLATIONS[item.title] || item.title) : item.title;
+
+    const [acknowledged, setAcknowledged] = React.useState(false);
+
+    return (
+        <div className="space-y-6">
+            {item.image && (
+                <div className="w-full h-48 rounded-xl overflow-hidden bg-secondary">
+                    <img src={item.image} alt="" className="w-full h-full object-cover" />
+                </div>
+            )}
+
+            <div>
+                <div className="flex items-center gap-2 mb-2">
+                    <span className="px-2 py-0.5 bg-secondary rounded text-[10px] font-bold tracking-wider">{item.category}</span>
+                    <span className="text-xs text-muted-foreground">{item.timestamp}</span>
+                </div>
+                <h1 className="text-2xl font-bold leading-tight">{title}</h1>
+                <p className="text-lg text-muted-foreground mt-2">{item.subtitle}</p>
+            </div>
+
+            {/* Acknowledge Button */}
+            {!acknowledged ? (
+                <button
+                    onClick={() => setAcknowledged(true)}
+                    className="w-full py-3 bg-primary text-primary-foreground font-bold rounded-xl shadow-md active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
+                >
+                    <span className="material-symbols-outlined">check_circle</span>
+                    Acknowledge Read
+                </button>
+            ) : (
+                <div className="w-full py-3 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 font-bold rounded-xl text-sm flex items-center justify-center gap-2 border border-green-200 dark:border-green-800">
+                    <span className="material-symbols-outlined">done_all</span>
+                    Acknowledged
+                </div>
+            )}
+
+            <div className="prose dark:prose-invert text-sm">
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            </div>
+
+            {item.hasDownload && (
+                <button className="w-full flex items-center justify-center gap-2 py-3 bg-primary/10 text-primary font-bold rounded-xl hover:bg-primary/20 transition-colors">
+                    <span className="material-symbols-outlined">download</span>
+                    Download Attachment
+                </button>
+            )}
+
+            <div className="pt-8 border-t border-border">
+                <h4 className="text-xs font-bold text-muted-foreground uppercase mb-3">Reactions</h4>
+                <div className="flex gap-2">
+                    {['👍', '✅', '❤️', '🙏'].map(emoji => (
+                        <button key={emoji} className="w-10 h-10 flex items-center justify-center rounded-full bg-secondary hover:bg-secondary/80 transition-colors text-xl">
+                            {emoji}
+                        </button>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
