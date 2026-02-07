@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { ShellHeader } from './ShellHeader';
 import { BottomNav } from '@/components/dashboard/bottom-nav';
 import { AvatarPanel } from '@/components/dashboard/AvatarPanel';
@@ -22,6 +22,7 @@ interface ShellProps {
 
 export function Shell({ children, tenantName, tenantSlug, tenantLogo, user, role = 'parent' }: ShellProps) {
     const router = useRouter();
+    const pathname = usePathname(); // Add usePathname hook
     const [avatarPanelOpen, setAvatarPanelOpen] = useState(false);
     const [notificationPanelOpen, setNotificationPanelOpen] = useState(false);
     const [searchSheetOpen, setSearchSheetOpen] = useState(false);
@@ -49,34 +50,45 @@ export function Shell({ children, tenantName, tenantSlug, tenantLogo, user, role
         router.push(`/tenant/${slug}/${role}/emergency`);
     };
 
+    // Check if we are in a fullscreen route (e.g. Communication Hub / Chat)
+    // We hide the shell header and bottom nav for these routes to allow "screen takeover"
+    const isFullScreen = pathname?.includes('/chat');
+
     return (
         <EmergencyProvider>
             <div className="min-h-screen bg-slate-50 dark:bg-[#0B1120] flex flex-col font-display">
-                <EmergencyBanner />
+                {!isFullScreen && <EmergencyBanner />}
 
                 {/* Main Content Area - No Sidebar, centered container */}
                 <div className="flex flex-col min-h-screen">
-                    <ShellHeader
-                        tenantName={tenantName}
-                        tenantLogo={tenantLogo}
-                        user={user}
-                        role={role}
-                        onAvatarClick={() => setAvatarPanelOpen(true)}
-                        onNotificationClick={() => setNotificationPanelOpen(true)}
-                        onSearch={() => setSearchSheetOpen(true)}
-                        onEmergency={handleEmergency}
-                        notificationsCount={notificationsCount}
-                        showChangeSchool={true}
-                    />
+                    {!isFullScreen && (
+                        <ShellHeader
+                            tenantName={tenantName}
+                            tenantLogo={tenantLogo}
+                            user={user}
+                            role={role}
+                            onAvatarClick={() => setAvatarPanelOpen(true)}
+                            onNotificationClick={() => setNotificationPanelOpen(true)}
+                            onSearch={() => setSearchSheetOpen(true)}
+                            onEmergency={handleEmergency}
+                            notificationsCount={notificationsCount}
+                            showChangeSchool={true}
+                        />
+                    )}
 
-                    {/* Main content with bottom padding for nav */}
-                    <main className="flex-1 p-4 md:p-6 max-w-2xl lg:max-w-4xl mx-auto w-full animate-in fade-in slide-in-from-bottom-2 duration-500 pb-24">
+                    {/* Main content with bottom padding for nav if not fullscreen */}
+                    <main
+                        className={`flex-1 w-full mx-auto duration-500 ${isFullScreen
+                            ? 'p-0 max-w-full pb-0 animate-in-right'
+                            : 'p-4 md:p-6 max-w-2xl lg:max-w-4xl pb-24 animate-in fade-in slide-in-from-bottom-2'
+                            }`}
+                    >
                         {children}
                     </main>
                 </div>
 
-                {/* Bottom Navigation - Always visible */}
-                <BottomNav tenantSlug={slug} />
+                {/* Bottom Navigation - Always visible unless fullscreen */}
+                {!isFullScreen && <BottomNav tenantSlug={slug} />}
 
                 {/* Avatar Panel */}
                 <AvatarPanel

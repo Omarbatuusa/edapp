@@ -1,389 +1,407 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import React, { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ChevronLeft, Search, Plus } from 'lucide-react';
 
 // ============================================================
-// COMMUNICATION HUB - Redesigned with tabs and rich cards
+// TYPES & MOCK DATA
 // ============================================================
 
-type TabType = 'announcements' | 'messages' | 'support';
+type FeedItemType = 'urgent' | 'action' | 'announcement' | 'message' | 'support';
+type AnnouncementCategory = 'ACADEMIC' | 'EVENT' | 'EMERGENCY' | 'FEES';
+type SupportStatus = 'OPEN' | 'PENDING' | 'RESOLVED';
+
+interface FeedItem {
+    id: string;
+    type: FeedItemType;
+    timestamp: string; // ISO string or relative time for mock
+    isUnread?: boolean;
+    // Common fields
+    title?: string;
+    subtitle?: string;
+    // Announcement specific
+    category?: AnnouncementCategory;
+    image?: string;
+    source?: string;
+    hasDownload?: boolean;
+    // Message specific
+    senderAvatar?: string;
+    messagePreview?: string;
+    // Support specific
+    ticketId?: string;
+    status?: SupportStatus;
+}
+
+const MOCK_FEED: FeedItem[] = [
+    {
+        id: 'act-1',
+        type: 'action',
+        title: 'Permission Slip: Zoo Trip',
+        subtitle: 'Please sign by tomorrow',
+        timestamp: '1 hour ago',
+        isUnread: true,
+    },
+    {
+        id: 'ann-1',
+        type: 'urgent',
+        category: 'EMERGENCY',
+        title: 'School Closed on Monday',
+        subtitle: 'Due to severe weather conditions',
+        source: "Principal's Office",
+        timestamp: '2 hours ago',
+        image: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&q=80',
+    },
+    {
+        id: 'msg-1',
+        type: 'message',
+        title: 'Mrs. Anderson',
+        subtitle: 'Regarding John\'s math progress...',
+        messagePreview: 'Hi! I wanted to share some great news about John\'s recent test scores. He showed remarkable improvement in...',
+        timestamp: '10 min ago',
+        isUnread: true,
+        senderAvatar: 'https://i.pravatar.cc/150?u=mrs_anderson',
+    },
+    {
+        id: 'ann-2',
+        type: 'announcement',
+        category: 'EVENT',
+        title: 'Annual Sports Day',
+        subtitle: 'Registration is now open for all grades',
+        source: 'Coach Sithole',
+        timestamp: 'Yesterday',
+        image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&q=80',
+    },
+    {
+        id: 'sup-1',
+        type: 'support',
+        ticketId: '#4209',
+        title: 'Bus Route Change Request',
+        status: 'PENDING',
+        timestamp: '2 days ago',
+    },
+    {
+        id: 'ann-3',
+        type: 'announcement',
+        category: 'ACADEMIC',
+        title: 'Term 2 Report Cards',
+        subtitle: 'Available for download',
+        source: 'Admin',
+        timestamp: '3 days ago',
+        hasDownload: true,
+        image: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=400&q=80',
+    },
+];
+
+// ============================================================
+// COMMUNICATION HUB COMPONENT
+// ============================================================
 
 interface CommunicationHubProps {
     officeHours?: string;
 }
 
-// Mock data for announcements
-const MOCK_ANNOUNCEMENTS = [
-    {
-        id: 'ann-1',
-        type: 'urgent',
-        category: 'Alert',
-        title: 'School Closed on Monday due to Weather',
-        source: "Principal's Office",
-        timestamp: '2 hours ago',
-        image: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&q=80',
-        likes: 42,
-        hearts: 18,
-    },
-    {
-        id: 'ann-2',
-        type: 'event',
-        category: 'EVENT',
-        title: 'Annual Sports Day Registration Open',
-        preview: 'Please register your child for the upcoming inter-house athletics competition...',
-        source: 'Coach Sithole',
-        sourceIcon: 'sports_soccer',
-        timestamp: 'Yesterday',
-        image: 'https://images.unsplash.com/photo-1461896836934- voices-in-the-wind-0?w=400&q=80',
-    },
-    {
-        id: 'ann-3',
-        type: 'academic',
-        category: 'ACADEMIC',
-        title: 'Term 2 Report Cards Available',
-        preview: 'Report cards for the second term have been finalized and are now available for download.',
-        source: 'Admin',
-        sourceIcon: 'assignment',
-        timestamp: '2 days ago',
-        image: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=400&q=80',
-        hasDownload: true,
-    },
-];
-
-export function CommunicationHub({
-    officeHours = 'Mon-Fri, 8 AM - 3 PM',
-}: CommunicationHubProps) {
-    const params = useParams();
+export function CommunicationHub({ officeHours }: CommunicationHubProps) {
     const router = useRouter();
-    const tenantSlug = params.slug as string;
-
-    const [activeTab, setActiveTab] = useState<TabType>('announcements');
+    const [filter, setFilter] = useState<'all' | 'unread' | 'urgent' | 'announcements' | 'messages' | 'support'>('all');
     const [searchQuery, setSearchQuery] = useState('');
 
-    const unreadMessages = 3; // Mock unread count
+    // Filter Logic
+    const filteredFeed = useMemo(() => {
+        let items = MOCK_FEED;
+
+        if (filter === 'unread') items = items.filter(i => i.isUnread);
+        if (filter === 'urgent') items = items.filter(i => i.type === 'urgent');
+        if (filter === 'announcements') items = items.filter(i => i.type === 'announcement' || i.type === 'urgent');
+        if (filter === 'messages') items = items.filter(i => i.type === 'message');
+        if (filter === 'support') items = items.filter(i => i.type === 'support');
+
+        if (searchQuery) {
+            const q = searchQuery.toLowerCase();
+            items = items.filter(i =>
+                i.title?.toLowerCase().includes(q) ||
+                i.subtitle?.toLowerCase().includes(q) ||
+                i.source?.toLowerCase().includes(q)
+            );
+        }
+
+        return items;
+    }, [filter, searchQuery]);
+
+    const activeActions = MOCK_FEED.filter(i => i.type === 'action');
 
     return (
-        <div className="relative flex flex-col min-h-full bg-background">
-            {/* ============================================ */}
-            {/* TOP APP BAR */}
-            {/* ============================================ */}
-            <header className="flex items-center bg-background px-4 py-3 justify-between sticky top-0 z-20 border-b border-border">
-                {/* Back button */}
-                <button
-                    onClick={() => router.back()}
-                    className="flex size-10 shrink-0 items-center justify-center text-foreground hover:opacity-70 transition-opacity"
-                >
-                    <ChevronLeft size={24} />
-                </button>
+        <div className="flex flex-col h-[100dvh] bg-background">
+            {/* 1. Header (Sticky) */}
+            <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
+                <div className="flex items-center px-4 h-14 gap-3">
+                    <button
+                        onClick={() => router.back()}
+                        className="w-10 h-10 flex items-center justify-center -ml-2 rounded-full hover:bg-secondary/80 transition-colors"
+                    >
+                        <span className="material-symbols-outlined text-foreground">arrow_back</span>
+                    </button>
+                    <h1 className="text-lg font-bold flex-1 text-center pr-8">Inbox</h1>
 
-                {/* Title */}
-                <h2 className="text-foreground text-lg font-bold leading-tight tracking-tight flex-1 text-center">
-                    Communication Hub
-                </h2>
-
-                {/* Translate button */}
-                <button className="flex items-center gap-1 text-primary hover:opacity-80 transition-opacity">
-                    <span className="material-symbols-outlined text-xl">translate</span>
-                    <span className="text-sm font-bold hidden sm:block">Translate</span>
-                </button>
+                    {/* Multi-child selector placeholder */}
+                    <button className="w-8 h-8 rounded-full bg-secondary/50 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-sm">group</span>
+                    </button>
+                </div>
             </header>
 
-            {/* ============================================ */}
-            {/* OFFICE HOURS BANNER */}
-            {/* ============================================ */}
-            <div className="bg-primary/5 border-b border-primary/10 px-4 py-2 flex items-center justify-center gap-2">
-                <span className="material-symbols-outlined text-primary text-lg">schedule</span>
-                <p className="text-muted-foreground text-xs font-medium text-center">
-                    Office Hours: {officeHours}. Responses may be delayed.
-                </p>
-            </div>
-
-            {/* ============================================ */}
-            {/* TABS */}
-            {/* ============================================ */}
-            <div className="bg-background sticky top-[57px] z-10">
-                <div className="flex border-b border-border px-4">
-                    <button
-                        onClick={() => setActiveTab('announcements')}
-                        className={`flex-1 py-3 text-sm font-bold border-b-[3px] transition-colors ${activeTab === 'announcements'
-                                ? 'border-primary text-primary'
-                                : 'border-transparent text-muted-foreground hover:text-foreground'
-                            }`}
-                    >
-                        Announcements
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('messages')}
-                        className={`flex-1 py-3 text-sm font-bold border-b-[3px] transition-colors relative ${activeTab === 'messages'
-                                ? 'border-primary text-primary'
-                                : 'border-transparent text-muted-foreground hover:text-foreground'
-                            }`}
-                    >
-                        Messages
-                        {unreadMessages > 0 && (
-                            <span className="absolute top-2 right-1/4 flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
-                            </span>
-                        )}
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('support')}
-                        className={`flex-1 py-3 text-sm font-bold border-b-[3px] transition-colors ${activeTab === 'support'
-                                ? 'border-primary text-primary'
-                                : 'border-transparent text-muted-foreground hover:text-foreground'
-                            }`}
-                    >
-                        Support
-                    </button>
-                </div>
-            </div>
-
-            {/* ============================================ */}
-            {/* SEARCH BAR */}
-            {/* ============================================ */}
-            <div className="px-4 py-4 bg-background">
-                <div className="flex items-center h-12 rounded-xl bg-muted ring-1 ring-border focus-within:ring-2 focus-within:ring-primary transition-shadow">
-                    <div className="flex items-center justify-center pl-4 text-muted-foreground">
-                        <Search size={20} />
+            {/* 2. Controls Row (Sticky) */}
+            <div className="sticky top-14 z-40 bg-background py-2 px-4 shadow-sm space-y-3">
+                {/* Search & Sort */}
+                <div className="flex gap-2">
+                    <div className="relative flex-1">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-muted-foreground text-[20px]">search</span>
+                        <input
+                            type="text"
+                            placeholder="Search..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full h-10 pl-10 pr-4 rounded-xl bg-secondary/50 border-none focus:ring-2 focus:ring-primary/20 text-sm"
+                        />
                     </div>
-                    <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder={`Search ${activeTab}...`}
-                        className="flex-1 h-full bg-transparent px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
-                    />
-                    <button className="flex items-center justify-center pr-4 text-muted-foreground hover:text-primary transition-colors">
-                        <span className="material-symbols-outlined">filter_list</span>
+                    <button className="h-10 w-10 flex items-center justify-center rounded-xl bg-secondary/50 hover:bg-secondary transition-colors">
+                        <span className="material-symbols-outlined text-muted-foreground">sort</span>
                     </button>
+                    <button className="h-10 w-10 flex items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm hover:opacity-90 transition-opacity">
+                        <span className="material-symbols-outlined">add</span>
+                    </button>
+                </div>
+
+                {/* Filter Chips */}
+                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 mask-fade-right">
+                    <FilterChip label="All" active={filter === 'all'} onClick={() => setFilter('all')} />
+                    <FilterChip label="Unread" active={filter === 'unread'} onClick={() => setFilter('unread')} />
+                    <FilterChip label="Urgent" active={filter === 'urgent'} onClick={() => setFilter('urgent')} />
+                    <FilterChip label="Announcements" active={filter === 'announcements'} onClick={() => setFilter('announcements')} />
+                    <FilterChip label="Messages" active={filter === 'messages'} onClick={() => setFilter('messages')} />
+                    <FilterChip label="Support" active={filter === 'support'} onClick={() => setFilter('support')} />
                 </div>
             </div>
 
-            {/* ============================================ */}
-            {/* CONTENT AREA */}
-            {/* ============================================ */}
-            <div className="flex-1 overflow-y-auto pb-24 px-4 space-y-4">
-                {activeTab === 'announcements' && (
-                    <>
-                        {/* Urgent Hero Card */}
-                        <Link
-                            href={`/tenant/${tenantSlug}/parent/announcements/ann-1`}
-                            className="block relative group cursor-pointer"
-                        >
-                            <div
-                                className="bg-cover bg-center flex flex-col items-stretch justify-end rounded-2xl pt-40 shadow-lg overflow-hidden relative transition-transform duration-300 hover:scale-[1.01]"
-                                style={{
-                                    backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0.8) 100%), url("https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&q=80")`,
-                                }}
-                            >
-                                {/* Urgent badge */}
-                                <div className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm animate-pulse">
-                                    URGENT
-                                </div>
+            {/* 3. Feed Content (Scrollable) */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
 
-                                <div className="flex w-full flex-col gap-2 p-5 z-10">
-                                    <div className="flex flex-col gap-1">
-                                        <p className="text-white/90 text-xs font-medium uppercase tracking-wider">Alert</p>
-                                        <h3 className="text-white text-2xl font-bold leading-tight drop-shadow-sm">
-                                            School Closed on Monday due to Weather
-                                        </h3>
-                                        <div className="flex items-center gap-2 mt-2">
-                                            <div className="bg-white/20 backdrop-blur-sm p-1 rounded-full">
-                                                <span className="material-symbols-outlined text-white text-sm">school</span>
-                                            </div>
-                                            <p className="text-white/90 text-xs font-medium">Principal&apos;s Office • 2 hours ago</p>
-                                        </div>
-                                    </div>
+                {/* Action Required Module (Pinned) */}
+                {activeActions.length > 0 && filter === 'all' && (
+                    <div className="space-y-2 mb-6">
+                        <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">Action Required</h3>
+                        {activeActions.map(item => (
+                            <ActionRequiredCard key={item.id} item={item} />
+                        ))}
+                    </div>
+                )}
 
-                                    {/* Reactions */}
-                                    <div className="flex items-center gap-3 mt-3 pt-3 border-t border-white/20">
-                                        <button className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-full px-3 py-1.5 transition-colors">
-                                            <span className="material-symbols-outlined text-white text-sm">thumb_up</span>
-                                            <span className="text-white text-xs font-medium">42</span>
-                                        </button>
-                                        <button className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-full px-3 py-1.5 transition-colors">
-                                            <span className="material-symbols-filled text-red-400 text-sm">favorite</span>
-                                            <span className="text-white text-xs font-medium">18</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </Link>
-
-                        {/* Standard Cards */}
-                        <StandardCard
-                            href={`/tenant/${tenantSlug}/parent/announcements/ann-2`}
-                            category="EVENT"
-                            categoryColor="green"
-                            title="Annual Sports Day Registration Open"
-                            preview="Please register your child for the upcoming inter-house athletics competition..."
-                            source="Coach Sithole"
-                            sourceIcon="sports_soccer"
-                            sourceIconBg="bg-indigo-100 text-indigo-600"
-                            timestamp="Yesterday"
-                            image="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&q=80"
-                        />
-
-                        <StandardCard
-                            href={`/tenant/${tenantSlug}/parent/announcements/ann-3`}
-                            category="ACADEMIC"
-                            categoryColor="blue"
-                            title="Term 2 Report Cards Available"
-                            preview="Report cards for the second term have been finalized and are now available for download."
-                            source="Admin"
-                            sourceIcon="assignment"
-                            sourceIconBg="bg-purple-100 text-purple-600"
-                            timestamp="2 days ago"
-                            image="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=400&q=80"
-                            hasDownload
-                        />
-
-                        {/* End of list */}
-                        <div className="flex flex-col items-center justify-center py-8">
-                            <span className="material-symbols-outlined text-4xl text-muted-foreground/30 mb-2">check_circle</span>
-                            <p className="text-muted-foreground/60 text-sm">You&apos;re all caught up!</p>
+                {/* Main Feed */}
+                <div className="space-y-3 pb-24">
+                    {filteredFeed.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+                            <span className="material-symbols-outlined text-4xl mb-2 opacity-50">inbox</span>
+                            <p className="text-sm">No items found</p>
                         </div>
-                    </>
-                )}
+                    ) : (
+                        filteredFeed.filter(i => i.type !== 'action').map(item => (
+                            <FeedItemRow key={item.id} item={item} />
+                        ))
+                    )}
 
-                {activeTab === 'messages' && (
-                    <div className="flex flex-col items-center justify-center py-16 text-center">
-                        <span className="material-symbols-outlined text-5xl text-muted-foreground/30 mb-3">chat</span>
-                        <h3 className="text-base font-medium text-foreground mb-1">Messages</h3>
-                        <p className="text-sm text-muted-foreground">Your direct messages will appear here</p>
+                    <div className="flex flex-col items-center justify-center py-8 opacity-60">
+                        <span className="material-symbols-outlined text-4xl text-muted-foreground/30 mb-2">check_circle</span>
+                        <p className="text-muted-foreground/60 text-sm">You're all caught up!</p>
                     </div>
-                )}
-
-                {activeTab === 'support' && (
-                    <div className="flex flex-col items-center justify-center py-16 text-center">
-                        <span className="material-symbols-outlined text-5xl text-muted-foreground/30 mb-3">support_agent</span>
-                        <h3 className="text-base font-medium text-foreground mb-1">Support Tickets</h3>
-                        <p className="text-sm text-muted-foreground">Your support tickets will appear here</p>
-                    </div>
-                )}
+                </div>
             </div>
-
-            {/* ============================================ */}
-            {/* FLOATING ACTION BUTTON */}
-            {/* ============================================ */}
-            <button
-                className="absolute bottom-6 right-6 z-30 flex items-center justify-center h-14 w-14 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-lg shadow-primary/40 transition-all hover:scale-105 active:scale-95"
-                onClick={() => console.log('Create new')}
-            >
-                <span className="material-symbols-outlined text-2xl">edit_square</span>
-            </button>
         </div>
     );
 }
 
 // ============================================================
-// STANDARD CARD COMPONENT
+// SUB-COMPONENTS
 // ============================================================
 
-interface StandardCardProps {
-    href: string;
-    category: string;
-    categoryColor: 'green' | 'blue' | 'amber' | 'purple';
-    title: string;
-    preview: string;
-    source: string;
-    sourceIcon: string;
-    sourceIconBg: string;
-    timestamp: string;
-    image: string;
-    hasDownload?: boolean;
+function FilterChip({ label, active, onClick }: { label: string, active: boolean, onClick: () => void }) {
+    return (
+        <button
+            onClick={onClick}
+            className={`
+                whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-bold transition-all
+                ${active
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'bg-secondary/50 text-muted-foreground hover:bg-secondary'
+                }
+            `}
+        >
+            {label}
+        </button>
+    );
 }
 
-const CATEGORY_COLORS = {
-    green: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
-    blue: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
-    amber: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
-    purple: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300',
-};
 
-function StandardCard({
-    href,
-    category,
-    categoryColor,
-    title,
-    preview,
-    source,
-    sourceIcon,
-    sourceIconBg,
-    timestamp,
-    image,
-    hasDownload,
-}: StandardCardProps) {
+function ActionRequiredCard({ item }: { item: FeedItem }) {
     return (
-        <Link
-            href={href}
-            className="block bg-muted rounded-2xl p-4 shadow-sm border border-border hover:shadow-md transition-shadow"
-        >
-            <div className="flex gap-4">
-                {/* Thumbnail */}
-                <div className="w-24 h-24 shrink-0 rounded-xl overflow-hidden bg-secondary">
-                    <img
-                        src={image}
-                        alt={title}
-                        className="w-full h-full object-cover"
-                    />
+        <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/30 rounded-xl p-4 flex gap-3 shadow-sm">
+            <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center text-amber-700 dark:text-amber-400 shrink-0">
+                <span className="material-symbols-outlined">priority_high</span>
+            </div>
+            <div className="flex-1">
+                <h4 className="font-bold text-amber-900 dark:text-amber-200 text-sm leading-tight">{item.title}</h4>
+                <p className="text-amber-700 dark:text-amber-400/80 text-xs mt-0.5">{item.subtitle}</p>
+                <div className="flex gap-2 mt-3">
+                    <button className="flex-1 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-2 rounded-lg transition-colors">
+                        Review & Sign
+                    </button>
+                    <button className="px-3 text-amber-700 dark:text-amber-300 text-xs font-medium hover:underline">
+                        Later
+                    </button>
                 </div>
+            </div>
+        </div>
+    );
+}
 
-                {/* Content */}
-                <div className="flex flex-col flex-1 justify-between py-0.5">
-                    <div>
-                        <div className="flex justify-between items-start">
-                            <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold ${CATEGORY_COLORS[categoryColor]} mb-1`}>
-                                {category}
-                            </span>
-                            <span className="text-xs text-muted-foreground">{timestamp}</span>
-                        </div>
-                        <h3 className="text-foreground font-bold text-base leading-snug">{title}</h3>
-                        <p className="text-muted-foreground text-sm line-clamp-2 mt-1">{preview}</p>
+function FeedItemRow({ item }: { item: FeedItem }) {
+    if (item.type === 'urgent') {
+        return <UrgentCard item={item} />;
+    }
+    if (item.type === 'message') {
+        return <MessageRow item={item} />;
+    }
+    if (item.type === 'support') {
+        return <SupportRow item={item} />;
+    }
+    return <StandardAnnouncementRow item={item} />;
+}
+
+
+function UrgentCard({ item }: { item: FeedItem }) {
+    return (
+        <div className="bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/30 rounded-2xl p-4 flex gap-4 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-2 opacity-5 group-hover:opacity-10 transition-opacity">
+                <span className="material-symbols-outlined text-8xl text-red-500">warning</span>
+            </div>
+
+            <div className="flex flex-col gap-1 z-10">
+                <div className="flex items-center gap-2">
+                    <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse">URGENT</span>
+                    <span className="text-xs text-red-600 dark:text-red-300 font-medium">{item.timestamp}</span>
+                </div>
+                <h3 className="font-bold text-red-900 dark:text-red-100 text-lg leading-tight mt-1">{item.title}</h3>
+                <p className="text-red-800 dark:text-red-200/80 text-sm">{item.subtitle}</p>
+                <div className="flex items-center gap-2 mt-3 text-red-700 dark:text-red-300 text-xs font-medium">
+                    <span className="material-symbols-outlined text-sm">school</span>
+                    <span>{item.source}</span>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function StandardAnnouncementRow({ item }: { item: FeedItem }) {
+    return (
+        <div className="bg-card dark:bg-slate-900 border border-border rounded-2xl p-3 flex gap-3 hover:shadow-md transition-shadow cursor-pointer">
+            {/* Image/Icon */}
+            <div className="w-20 h-20 rounded-xl bg-secondary overflow-hidden shrink-0 relative">
+                {item.image ? (
+                    <img src={item.image} alt="" className="w-full h-full object-cover" />
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-blue-50 dark:bg-blue-900/20 text-blue-500">
+                        <span className="material-symbols-outlined">campaign</span>
                     </div>
+                )}
+                {/* Category Badge Over Image */}
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-1 pt-4">
+                    <p className="text-[9px] font-bold text-white text-center uppercase tracking-wider">{item.category}</p>
                 </div>
             </div>
 
-            {/* Footer */}
-            <div className="flex items-center justify-between border-t border-border pt-3 mt-3">
-                <div className="flex items-center gap-2">
-                    <div className={`h-6 w-6 rounded-full flex items-center justify-center ${sourceIconBg}`}>
-                        <span className="material-symbols-outlined text-[14px]">{sourceIcon}</span>
+            <div className="flex-1 flex flex-col justify-between py-0.5">
+                <div>
+                    <div className="flex justify-between items-start">
+                        <h3 className="font-bold text-sm text-foreground leading-tight line-clamp-2">{item.title}</h3>
+                        <span className="text-[10px] text-muted-foreground whitespace-nowrap ml-2">{item.timestamp}</span>
                     </div>
-                    <span className="text-xs font-medium text-muted-foreground">{source}</span>
+                    <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{item.subtitle}</p>
                 </div>
-                <div className="flex gap-3 text-muted-foreground">
-                    {hasDownload ? (
-                        <button
-                            onClick={(e) => { e.preventDefault(); }}
-                            className="flex items-center gap-1 hover:text-primary transition-colors"
-                        >
-                            <span className="material-symbols-outlined text-[18px]">download</span>
-                            <span className="text-xs font-bold uppercase">PDF</span>
+
+                <div className="flex items-center justify-between mt-2">
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <div className="w-4 h-4 rounded-full bg-secondary flex items-center justify-center">
+                            <span className="material-symbols-outlined text-[10px]">person</span>
+                        </div>
+                        <span className="truncate max-w-[80px]">{item.source}</span>
+                    </div>
+
+                    {item.hasDownload ? (
+                        <button className="flex items-center gap-1 text-primary text-[10px] font-bold bg-primary/10 px-2 py-1 rounded-md">
+                            <span className="material-symbols-outlined text-[14px]">download</span>
+                            PDF
                         </button>
                     ) : (
-                        <>
-                            <button
-                                onClick={(e) => { e.preventDefault(); }}
-                                className="hover:text-primary transition-colors"
-                            >
-                                <span className="material-symbols-outlined text-[18px]">add_reaction</span>
-                            </button>
-                            <button
-                                onClick={(e) => { e.preventDefault(); }}
-                                className="hover:text-primary transition-colors"
-                            >
-                                <span className="material-symbols-outlined text-[18px]">share</span>
-                            </button>
-                        </>
+                        <div className="flex gap-2">
+                            <button className="text-muted-foreground hover:text-primary"><span className="material-symbols-outlined text-[16px]">thumb_up</span></button>
+                            <button className="text-muted-foreground hover:text-primary"><span className="material-symbols-outlined text-[16px]">bookmark</span></button>
+                        </div>
                     )}
                 </div>
             </div>
-        </Link>
+        </div>
+    );
+}
+
+function MessageRow({ item }: { item: FeedItem }) {
+    return (
+        <div className={`
+            p-3 rounded-2xl flex gap-3 cursor-pointer transition-colors
+            ${item.isUnread ? 'bg-primary/5 border border-primary/20' : 'bg-card border border-border hover:bg-secondary/30'}
+        `}>
+            <div className="relative w-10 h-10 shrink-0">
+                <img src={item.senderAvatar || `https://ui-avatars.com/api/?name=${item.title}`} alt="" className="w-full h-full rounded-full object-cover" />
+                {item.isUnread && (
+                    <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-primary rounded-full border-2 border-background" />
+                )}
+            </div>
+
+            <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-center mb-0.5">
+                    <h4 className={`text-sm truncate ${item.isUnread ? 'font-bold text-foreground' : 'font-medium text-foreground/80'}`}>
+                        {item.title}
+                    </h4>
+                    <span className="text-[10px] text-muted-foreground">{item.timestamp}</span>
+                </div>
+                <p className={`text-xs truncate ${item.isUnread ? 'text-foreground' : 'text-muted-foreground'}`}>
+                    {item.messagePreview}
+                </p>
+            </div>
+        </div>
+    );
+}
+
+function SupportRow({ item }: { item: FeedItem }) {
+    const statusColor = {
+        'OPEN': 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
+        'PENDING': 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
+        'RESOLVED': 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+    }[item.status || 'OPEN'];
+
+    return (
+        <div className="bg-card border border-border rounded-xl p-3 flex items-center gap-3 cursor-pointer hover:shadow-sm">
+            <div className="w-10 h-10 rounded-full bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600 dark:text-purple-300 border border-purple-100 dark:border-purple-900/30 shrink-0">
+                <span className="material-symbols-outlined text-[20px]">confirmation_number</span>
+            </div>
+            <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-0.5">
+                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${statusColor}`}>{item.status}</span>
+                    <span className="text-[10px] text-muted-foreground">{item.ticketId}</span>
+                </div>
+                <h4 className="text-sm font-medium text-foreground truncate">{item.title}</h4>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Last updated {item.timestamp}</p>
+            </div>
+            <span className="material-symbols-outlined text-muted-foreground/50 text-xl">chevron_right</span>
+        </div>
     );
 }
 
