@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Plus, X, Search, Globe } from 'lucide-react';
+import { Plus, X, ChevronLeft } from 'lucide-react';
 import { FeedCard } from './FeedCard';
 import { FeedFilters } from './FeedFilters';
 import { PriorityQueue } from './PriorityQueue';
@@ -29,11 +29,11 @@ const FAB_OPTIONS = [
 ];
 
 export function CommunicationHub({
-    tenantName = 'School',
     officeHours = 'Mon–Fri 08:00–15:00',
     isAfterHours = false,
 }: CommunicationHubProps) {
     const params = useParams();
+    const router = useRouter();
     const tenantSlug = params.slug as string;
 
     // Store state
@@ -75,106 +75,80 @@ export function CommunicationHub({
     ], [unreadCount, urgentCount]);
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="flex flex-col min-h-full bg-background">
             {/* ============================================ */}
-            {/* STICKY TOP APP BAR */}
+            {/* STICKY CONTROLS - Below existing shell header */}
             {/* ============================================ */}
-            <header className="sticky top-0 z-20 bg-background border-b border-border">
-                <div className="max-w-3xl mx-auto px-4">
-                    <div className="flex items-center justify-between h-14">
-                        {/* Left: Tenant info */}
-                        <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm">
-                                {tenantName.charAt(0)}
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-sm font-semibold text-foreground">{tenantName}</span>
-                                <Link
-                                    href="/auth-broker/start"
-                                    className="text-[10px] text-muted-foreground hover:text-primary transition-colors"
-                                >
-                                    Change school
-                                </Link>
-                            </div>
-                        </div>
-
-                        {/* Center: Title (hidden on mobile) */}
-                        <h1 className="hidden sm:block text-base font-semibold text-foreground">
-                            Communication Hub
-                        </h1>
-
-                        {/* Right: Icons */}
-                        <div className="flex items-center gap-1">
+            <div className="sticky top-0 z-10 bg-background">
+                {/* Title bar with back button */}
+                <div className="border-b border-border">
+                    <div className="max-w-3xl mx-auto px-4">
+                        <div className="flex items-center h-12">
+                            {/* Back button + Title */}
                             <button
-                                onClick={() => setShowSearch(!showSearch)}
-                                className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-secondary transition-colors"
-                                aria-label="Search"
+                                onClick={() => router.back()}
+                                className="flex items-center gap-1 -ml-2 px-2 py-1 rounded-md hover:bg-secondary transition-colors"
                             >
-                                <Search size={18} className="text-muted-foreground" />
-                            </button>
-                            <button
-                                className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-secondary transition-colors"
-                                aria-label="Translate"
-                            >
-                                <Globe size={18} className="text-muted-foreground" />
-                            </button>
-                            <button
-                                className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-secondary transition-colors"
-                                aria-label="Settings"
-                            >
-                                <span className="material-symbols-outlined text-lg text-muted-foreground">settings</span>
+                                <ChevronLeft size={20} className="text-muted-foreground" />
+                                <h1 className="text-base font-semibold text-foreground">
+                                    Communication Hub
+                                </h1>
                             </button>
                         </div>
                     </div>
+                </div>
 
-                    {/* Search input (collapsible) */}
-                    {showSearch && (
-                        <div className="pb-3">
+                {/* Office hours strip */}
+                <div className="border-b border-border bg-muted/30">
+                    <div className="max-w-3xl mx-auto px-4 py-1.5">
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            {isAfterHours && (
+                                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                            )}
+                            <span>
+                                {isAfterHours ? 'After-hours • ' : ''}Office Hours: {officeHours} • Responses may be delayed.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Filter controls - no horizontal scroll */}
+                <div className="border-b border-border bg-background">
+                    <div className="max-w-3xl mx-auto px-4">
+                        <FeedFilters
+                            filters={filterChips}
+                            activeFilter={filter}
+                            sort={sort}
+                            density={density}
+                            onFilterChange={setFilter}
+                            onSortChange={setSort}
+                            onDensityChange={setDensity}
+                            showDensityToggle
+                        />
+                    </div>
+                </div>
+
+                {/* Search input (collapsible) */}
+                {showSearch && (
+                    <div className="border-b border-border bg-background">
+                        <div className="max-w-3xl mx-auto px-4 py-3">
                             <input
                                 type="text"
                                 placeholder="Search messages, announcements, tickets..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full h-10 px-4 rounded-lg bg-secondary border-none text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                className="w-full h-10 px-4 rounded-xl bg-muted border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30"
                                 autoFocus
                             />
                         </div>
-                    )}
-                </div>
-            </header>
-
-            {/* ============================================ */}
-            {/* OFFICE HOURS STATUS STRIP */}
-            {/* ============================================ */}
-            <div className="bg-secondary/50 border-b border-border">
-                <div className="max-w-3xl mx-auto px-4 py-1.5">
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        {isAfterHours && (
-                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                        )}
-                        <span>
-                            {isAfterHours ? 'After-hours • ' : ''}Office Hours: {officeHours} • Responses may be delayed.
-                        </span>
                     </div>
-                </div>
+                )}
             </div>
 
             {/* ============================================ */}
             {/* MAIN CONTENT */}
             {/* ============================================ */}
-            <main className="max-w-3xl mx-auto px-4 pb-24">
-                {/* Filter controls */}
-                <FeedFilters
-                    filters={filterChips}
-                    activeFilter={filter}
-                    sort={sort}
-                    density={density}
-                    onFilterChange={setFilter}
-                    onSortChange={setSort}
-                    onDensityChange={setDensity}
-                    showDensityToggle
-                />
-
+            <main className="flex-1 max-w-3xl mx-auto w-full px-4 pb-24">
                 {/* Priority Queue */}
                 <div className="mt-4">
                     <PriorityQueue
@@ -234,7 +208,7 @@ export function CommunicationHub({
                         <Link
                             key={option.id}
                             href={`/tenant/${tenantSlug}/parent${option.href}`}
-                            className="flex items-center gap-3 pl-4 pr-5 py-3 bg-card rounded-full shadow-lg border border-border hover:bg-secondary transition-colors"
+                            className="flex items-center gap-3 pl-4 pr-5 py-3 bg-card rounded-xl shadow-lg border border-border hover:bg-secondary transition-colors"
                             onClick={() => setShowFabMenu(false)}
                         >
                             <span className="material-symbols-outlined text-primary">{option.icon}</span>
@@ -244,33 +218,24 @@ export function CommunicationHub({
                 </div>
             )}
 
-            {/* Floating Action Button */}
+            {/* Floating Action Button - Professional minimal style */}
             <button
                 onClick={() => setShowFabMenu(!showFabMenu)}
-                className={`fixed bottom-20 right-4 z-50 w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 md:hidden ${showFabMenu
-                        ? 'bg-card border border-border rotate-45'
-                        : 'bg-primary hover:bg-primary/90'
+                className={`fixed bottom-20 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg transition-all duration-200 ${showFabMenu
+                        ? 'bg-card border border-border'
+                        : 'bg-primary text-primary-foreground hover:bg-primary/90'
                     }`}
-                style={showFabMenu ? {} : { color: '#fff' }}
                 aria-label={showFabMenu ? 'Close menu' : 'New'}
             >
                 {showFabMenu ? (
-                    <X size={24} className="text-foreground" />
+                    <X size={18} className="text-foreground" />
                 ) : (
-                    <Plus size={24} />
+                    <>
+                        <Plus size={18} />
+                        <span className="text-sm font-medium">New</span>
+                    </>
                 )}
             </button>
-
-            {/* Desktop New Button (in place of FAB) */}
-            <div className="hidden md:block fixed bottom-8 right-8 z-50">
-                <button
-                    onClick={() => setShowFabMenu(!showFabMenu)}
-                    className="flex items-center gap-2 px-5 py-3 bg-primary text-primary-foreground rounded-lg shadow-lg hover:bg-primary/90 transition-colors font-medium"
-                >
-                    <Plus size={18} />
-                    New
-                </button>
-            </div>
         </div>
     );
 }
