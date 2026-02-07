@@ -87,27 +87,22 @@ export function FeedCard({ item, tenantSlug, density = 'comfortable', onAcknowle
             className={`block bg-card border border-border/60 rounded-xl shadow-sm transition-all hover:shadow-md hover:border-border ${isCompact ? 'p-3' : 'p-4'
                 } ${item.unread ? 'border-l-[3px] border-l-primary' : ''}`}
         >
-            {/* Row 1: Type badge + Title + Timestamp */}
-            <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center gap-2 min-w-0 flex-1">
+            {/* Row 1: Badges + Timestamp */}
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+                <div className="flex items-center gap-2 flex-wrap">
                     {/* Type badge */}
-                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide ${typeStyle.bg} ${typeStyle.text}`}>
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide flex-shrink-0 ${typeStyle.bg} ${typeStyle.text}`}>
                         <span className="material-symbols-outlined text-xs">{typeStyle.icon}</span>
-                        {!isCompact && typeStyle.label}
+                        {typeStyle.label}
                     </span>
 
                     {/* Urgency indicator */}
                     {item.urgency === 'urgent' && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide bg-red-100 text-red-700">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide bg-red-100 text-red-700 flex-shrink-0">
                             <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
                             URGENT
                         </span>
                     )}
-
-                    {/* Title */}
-                    <h3 className={`font-medium text-foreground truncate ${isCompact ? 'text-sm' : 'text-base'}`}>
-                        {item.title}
-                    </h3>
                 </div>
 
                 {/* Timestamp */}
@@ -115,6 +110,11 @@ export function FeedCard({ item, tenantSlug, density = 'comfortable', onAcknowle
                     {item.timestamp}
                 </span>
             </div>
+
+            {/* Row 2: Title */}
+            <h3 className={`font-medium text-foreground ${isCompact ? 'text-sm mt-1' : 'text-base mt-2'}`}>
+                {item.title}
+            </h3>
 
             {/* Row 2: Source + Learner context */}
             <div className={`flex items-center gap-2 text-xs text-muted-foreground ${isCompact ? 'mt-1' : 'mt-2'}`}>
