@@ -131,7 +131,7 @@ export function CommunicationHub({ officeHours }: CommunicationHubProps) {
     const activeActions = MOCK_FEED.filter(i => i.type === 'action');
 
     return (
-        <div className="flex flex-col h-[100dvh] bg-background">
+        <div className="flex flex-col h-[100dvh] bg-background md:max-w-4xl md:mx-auto md:border-x md:border-border/50 md:shadow-sm">
             {/* 1. Header (Sticky) */}
             <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
                 <div className="flex items-center px-4 h-14 gap-3">
@@ -139,7 +139,7 @@ export function CommunicationHub({ officeHours }: CommunicationHubProps) {
                         onClick={() => router.back()}
                         className="w-10 h-10 flex items-center justify-center -ml-2 rounded-full hover:bg-secondary/80 transition-colors"
                     >
-                        <span className="material-symbols-outlined text-foreground">arrow_back</span>
+                        <span className="material-symbols-outlined text-foreground">chevron_left</span>
                     </button>
                     <h1 className="text-lg font-bold flex-1 text-center pr-8">Inbox</h1>
 
