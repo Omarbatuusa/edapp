@@ -84,8 +84,8 @@ export function FeedCard({ item, tenantSlug, density = 'comfortable', onAcknowle
         <Link
             href={getHref()}
             onClick={handleClick}
-            className={`block bg-card border border-border rounded-lg transition-colors hover:bg-secondary/30 ${isCompact ? 'p-3' : 'p-4'
-                } ${item.unread ? 'border-l-2 border-l-primary' : ''}`}
+            className={`block bg-card border border-border/60 rounded-xl shadow-sm transition-all hover:shadow-md hover:border-border ${isCompact ? 'p-3' : 'p-4'
+                } ${item.unread ? 'border-l-[3px] border-l-primary' : ''}`}
         >
             {/* Row 1: Type badge + Title + Timestamp */}
             <div className="flex items-start justify-between gap-3">

@@ -18,12 +18,12 @@ export function PriorityQueue({ items, tenantSlug, onAcknowledge }: PriorityQueu
     if (items.length === 0) return null;
 
     return (
-        <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+        <div className="mb-4 p-4 bg-amber-50/80 border border-amber-200/60 rounded-xl">
             {/* Header */}
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-3">
                 <span className="material-symbols-outlined text-amber-600 text-lg">priority_high</span>
                 <h3 className="text-sm font-semibold text-amber-800">Action Required</h3>
-                <span className="px-1.5 py-0.5 rounded-full bg-amber-200 text-amber-800 text-xs font-semibold">
+                <span className="px-1.5 py-0.5 rounded-lg bg-amber-200 text-amber-800 text-xs font-semibold">
                     {items.length}
                 </span>
             </div>
@@ -33,7 +33,7 @@ export function PriorityQueue({ items, tenantSlug, onAcknowledge }: PriorityQueu
                 {items.map((item) => (
                     <div
                         key={item.id}
-                        className="flex items-center justify-between gap-3 p-2 bg-white rounded border border-amber-100"
+                        className="flex items-center justify-between gap-3 p-3 bg-white rounded-lg border border-amber-100/60 shadow-sm"
                     >
                         <div className="flex items-center gap-2 min-w-0 flex-1">
                             {/* Type icon */}
