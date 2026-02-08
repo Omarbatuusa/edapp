@@ -57,6 +57,7 @@ export function useChatSocket(options: ChatSocketOptions) {
         onPresenceUpdate?: (update: PresenceUpdate) => void;
         onReadReceipt?: (receipt: ReadReceipt) => void;
         onThreadUpdated?: (update: { thread_id: string; last_message_content: string; last_message_at: string }) => void;
+        onActionUpdated?: (update: { thread_id: string; message_id: string; status: 'approved' | 'rejected' | 'acknowledged' }) => void;
     }>({});
 
     // Initialize socket connection
@@ -112,6 +113,10 @@ export function useChatSocket(options: ChatSocketOptions) {
 
         socket.on('thread:updated', (update) => {
             messageHandlersRef.current.onThreadUpdated?.(update);
+        });
+
+        socket.on('action:updated', (update: { thread_id: string; message_id: string; status: 'approved' | 'rejected' | 'acknowledged' }) => {
+            messageHandlersRef.current.onActionUpdated?.(update);
         });
 
         return () => {

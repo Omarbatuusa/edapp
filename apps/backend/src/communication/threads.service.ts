@@ -87,6 +87,8 @@ export class ThreadsService {
             type?: ThreadType;
             unread_only?: boolean;
             search?: string;
+            ticket_category?: TicketCategory;
+            student_id?: string;
         }
     ): Promise<ThreadWithMeta[]> {
         // Get user's memberships
@@ -110,6 +112,16 @@ export class ThreadsService {
 
         if (filters?.type) {
             query.andWhere('thread.type = :type', { type: filters.type });
+        }
+
+        if (filters?.ticket_category) {
+            query.andWhere('thread.ticket_category = :ticket_category', { ticket_category: filters.ticket_category });
+        }
+
+        if (filters?.student_id) {
+            // JSONB query for context.student_id
+            // Note: Postgres JSONB operator ->> returns text
+            query.andWhere("thread.context ->> 'student_id' = :student_id", { student_id: filters.student_id });
         }
 
         if (filters?.search) {

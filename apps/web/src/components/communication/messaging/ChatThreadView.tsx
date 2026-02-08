@@ -25,10 +25,27 @@ interface Message {
     date: string;
 }
 
+import { useChatStore } from '../../../lib/chat-store';
+
 export function ChatThreadView({ item, onBack, onAction }: ChatThreadViewProps) {
-    const [messages, setMessages] = useState<Message[]>(MOCK_MESSAGES);
+    const messagesByThread = useChatStore(state => state.messagesByThread);
+    const fetchMessages = useChatStore(state => state.fetchMessages);
+    const sendMessage = useChatStore(state => state.sendMessage);
+    const handleActionStore = useChatStore(state => state.handleAction);
+
+    // TODO: Get real current user ID
+    const currentUserId = 'user-1';
+    const threadId = item.threadId || 'thread-1'; // Fallback
+    const messages = messagesByThread[threadId] || [];
+
     const [inputValue, setInputValue] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (threadId) {
+            fetchMessages(threadId, currentUserId);
+        }
+    }, [threadId, fetchMessages]);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -38,47 +55,16 @@ export function ChatThreadView({ item, onBack, onAction }: ChatThreadViewProps) 
         scrollToBottom();
     }, [messages]);
 
-    const handleSend = () => {
+    const handleSend = async () => {
         if (!inputValue.trim()) return;
-        const newMsg: Message = {
-            id: Date.now().toString(),
-            text: inputValue,
-            contentType: 'text',
-            isMe: true,
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            status: 'sent',
-            date: 'Today'
-        };
-        setMessages([...messages, newMsg]);
-        setInputValue('');
 
-        // Simulate reply
-        setTimeout(() => {
-            setMessages(prev => [...prev, {
-                id: Date.now().toString(),
-                text: "Thanks for the message! I'll get back to you shortly.",
-                contentType: 'text',
-                isMe: false,
-                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                status: 'read',
-                date: 'Today'
-            }]);
-        }, 1500);
+        await sendMessage(threadId, inputValue, currentUserId);
+        setInputValue('');
     };
 
-    const handleAction = (msgId: string, action: 'approve' | 'reject' | 'acknowledge') => {
-        setMessages(prev => prev.map(msg => {
-            if (msg.id === msgId && msg.actionData) {
-                return {
-                    ...msg,
-                    actionData: {
-                        ...msg.actionData,
-                        status: action === 'approve' ? 'approved' : action === 'reject' ? 'rejected' : 'acknowledged'
-                    }
-                };
-            }
-            return msg;
-        }));
+    const handleAction = async (msgId: string, action: 'approve' | 'reject' | 'acknowledge') => {
+        const status = action === 'approve' ? 'approved' : action === 'reject' ? 'rejected' : 'acknowledged';
+        await handleActionStore(threadId, msgId, status, currentUserId);
     };
 
     return (
@@ -92,7 +78,7 @@ export function ChatThreadView({ item, onBack, onAction }: ChatThreadViewProps) 
 
                     <div className="relative">
                         <img
-                            src={item.avatar || `https://ui-avatars.com/api/?name=${item.title}&background=random`}
+                            src={(typeof item.source === 'object' ? item.source?.avatar : undefined) || `https://ui-avatars.com/api/?name=${item.title}&background=random`}
                             alt={item.title}
                             className="w-10 h-10 rounded-full object-cover border border-border"
                         />
@@ -102,7 +88,7 @@ export function ChatThreadView({ item, onBack, onAction }: ChatThreadViewProps) 
                     <div className="flex-1 min-w-0">
                         <h2 className="font-bold text-base truncate">{item.title}</h2>
                         <p className="text-xs text-muted-foreground truncate">
-                            {item.role} • {item.childName}
+                            {(typeof item.source === 'object' ? (item.source?.role || item.source?.name) : item.source) || 'Unknown'} • {item.childName || 'General'}
                         </p>
                     </div>
 
@@ -204,7 +190,7 @@ export function ChatThreadView({ item, onBack, onAction }: ChatThreadViewProps) 
                                     : 'bg-card border border-border rounded-bl-none text-foreground'
                                     }`}
                             >
-                                {msg.text}
+                                {msg.content}
                             </div>
                         )}
 
@@ -224,21 +210,4 @@ export function ChatThreadView({ item, onBack, onAction }: ChatThreadViewProps) 
     );
 }
 
-const MOCK_MESSAGES: Message[] = [
-    { id: '1', text: "Hello! How can I help you today?", contentType: 'text', isMe: false, time: '09:41', status: 'read', date: 'Today' },
-    { id: '2', text: "I have a question about the upcoming field trip.", contentType: 'text', isMe: true, time: '09:42', status: 'read', date: 'Today' },
-    {
-        id: '3',
-        contentType: 'action_card',
-        actionType: 'approval',
-        actionData: {
-            title: 'Excursion Consent Form',
-            subtitle: 'Please review and approve the permission slip for the Zoo Visit on Feb 20th.',
-            status: 'pending'
-        },
-        isMe: false,
-        time: '09:43',
-        status: 'read',
-        date: 'Today'
-    },
-];
+// MOCK DATA REMOVED

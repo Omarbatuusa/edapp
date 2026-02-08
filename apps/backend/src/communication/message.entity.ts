@@ -11,6 +11,7 @@ export enum MessageType {
     IMAGE = 'image',
     DOCUMENT = 'document',
     VOICE = 'voice',
+    ACTION_CARD = 'action_card',
     SYSTEM = 'system' // For system messages like "User joined"
 }
 
@@ -54,6 +55,16 @@ export class Message {
         mime_type?: string;
         duration_seconds?: number; // For voice notes
     }[];
+
+    // Action Card Data
+    @Column({ type: 'jsonb', nullable: true })
+    action_data: {
+        type: 'approval' | 'acknowledgement';
+        title: string;
+        subtitle: string;
+        status: 'pending' | 'approved' | 'rejected' | 'acknowledged';
+        metadata?: any; // Extra data like form ID or event ID
+    };
 
     // Reply threading
     @ManyToOne(() => Message, { nullable: true })

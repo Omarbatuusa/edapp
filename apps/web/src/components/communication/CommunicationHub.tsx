@@ -15,6 +15,7 @@ import { LanguageSheet } from './LanguageSheet';
 import { ScreenStackDetail } from './ScreenStack';
 import { ChatThreadView } from './messaging/ChatThreadView';
 import { MessagesLayout } from './messaging/MessagesLayout';
+import { ChatSocketManager } from './ChatSocketManager';
 
 // ============================================================
 // COMMUNICATION HUB COMPONENT (CONTROLLER)
@@ -63,10 +64,16 @@ export function CommunicationHub({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Commu
 
 
 
+    // ...
+    const currentUserId = 'user-1'; // Mock user ID
+    const tenantId = 'tenant-1'; // Mock tenant ID
+
     return (
         <MessagesLayout
             className="md:border-x md:border-border/50 md:shadow-sm md:max-w-4xl md:mx-auto"
         >
+            <ChatSocketManager tenantId={tenantId} userId={currentUserId} />
+
             <AnimatePresence mode="popLayout">
                 {activeView === 'feed' ? (
                     <FeedView
