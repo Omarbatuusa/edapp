@@ -20,7 +20,7 @@ export default function PayPage() {
             {/* Balance Summary */}
             <div className="bg-gradient-to-r from-primary to-primary/80 text-white rounded-2xl p-5 mb-6">
                 <p className="text-sm text-white/80">Total Outstanding</p>
-                <p className="text-3xl font-bold mt-1">{formatCurrency(fees.totalDue, fees.currency)}</p>
+                <p className="text-3xl font-bold mt-1 text-white">{formatCurrency(fees.totalDue, fees.currency)}</p>
                 <p className="text-xs text-white/70 mt-2">Payment due by {fees.dueDate}</p>
             </div>
 

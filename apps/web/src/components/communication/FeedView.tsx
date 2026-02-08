@@ -1,7 +1,6 @@
 import { useCommunicationStore } from '../../lib/communication-store';
 import { MOCK_CHILDREN, TRANSLATIONS } from './mockData';
-import React, { useState, useMemo, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { ScreenStackBase } from './ScreenStack';
 import { FeedItem } from './types';
@@ -96,19 +95,12 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
             <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/50 transition-all duration-200 shadow-sm">
 
                 {/* Offline Indicator */}
-                <AnimatePresence>
-                    {isOffline && (
-                        <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="bg-zinc-800 text-zinc-300 px-4 py-1 text-xs font-medium text-center flex items-center justify-center gap-2"
-                        >
-                            <span className="material-symbols-outlined text-[14px] animate-pulse">wifi_off</span>
-                            <span>Offline — messages will send when connected</span>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                {isOffline && (
+                    <div className="bg-zinc-800 text-zinc-300 px-4 py-1 text-xs font-medium text-center flex items-center justify-center gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                        <span className="material-symbols-outlined text-[14px] animate-pulse">wifi_off</span>
+                        <span>Offline — messages will send when connected</span>
+                    </div>
+                )}
 
                 {/* Office Hours Banner */}
                 {showOfficeHours && (
@@ -161,36 +153,29 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                     </div>
 
                     {/* Child Selector Dropdown */}
-                    <AnimatePresence>
-                        {showChildSelector && (
-                            <>
-                                <div className="fixed inset-0 z-40 bg-black/20" onClick={() => setShowChildSelector(false)} />
-                                <motion.div
-                                    initial={{ opacity: 0, y: -10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -10 }}
-                                    className="absolute top-14 left-0 right-0 mx-4 mt-2 bg-popover border border-border rounded-xl shadow-lg z-50 overflow-hidden flex flex-col p-1"
-                                >
-                                    {MOCK_CHILDREN.map(child => (
-                                        <button
-                                            key={child.id}
-                                            onClick={() => { setSelectedChildId(child.id); setShowChildSelector(false); }}
-                                            className={`flex items-center gap-3 w-full p-2.5 rounded-lg transition-colors ${selectedChildId === child.id ? 'bg-secondary' : 'hover:bg-secondary/50'}`}
-                                        >
-                                            <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
-                                                {child.avatar ? <img src={child.avatar} alt="" /> : <span className="material-symbols-outlined text-muted-foreground text-sm">group</span>}
-                                            </div>
-                                            <div className="text-left flex-1">
-                                                <p className="text-sm font-bold leading-none">{child.name}</p>
-                                                {child.grade && <p className="text-[10px] text-muted-foreground mt-0.5">{child.grade}</p>}
-                                            </div>
-                                            {selectedChildId === child.id && <span className="material-symbols-outlined text-primary text-sm">check</span>}
-                                        </button>
-                                    ))}
-                                </motion.div>
-                            </>
-                        )}
-                    </AnimatePresence>
+                    {showChildSelector && (
+                        <>
+                            <div className="fixed inset-0 z-40 bg-black/20" onClick={() => setShowChildSelector(false)} />
+                            <div className="absolute top-14 left-0 right-0 mx-4 mt-2 bg-popover border border-border rounded-xl shadow-lg z-50 overflow-hidden flex flex-col p-1 animate-in fade-in slide-in-from-top-2 duration-200">
+                                {MOCK_CHILDREN.map(child => (
+                                    <button
+                                        key={child.id}
+                                        onClick={() => { setSelectedChildId(child.id); setShowChildSelector(false); }}
+                                        className={`flex items-center gap-3 w-full p-2.5 rounded-lg transition-colors ${selectedChildId === child.id ? 'bg-secondary' : 'hover:bg-secondary/50'}`}
+                                    >
+                                        <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
+                                            {child.avatar ? <img src={child.avatar} alt="" /> : <span className="material-symbols-outlined text-muted-foreground text-sm">group</span>}
+                                        </div>
+                                        <div className="text-left flex-1">
+                                            <p className="text-sm font-bold leading-none">{child.name}</p>
+                                            {child.grade && <p className="text-[10px] text-muted-foreground mt-0.5">{child.grade}</p>}
+                                        </div>
+                                        {selectedChildId === child.id && <span className="material-symbols-outlined text-primary text-sm">check</span>}
+                                    </button>
+                                ))}
+                            </div>
+                        </>
+                    )}
                 </div>
 
                 {/* TABS */}
@@ -272,10 +257,7 @@ function TabButton({ label, active, onClick }: { label: string, active: boolean,
         >
             {label}
             {active && (
-                <motion.div
-                    layoutId="activeTab"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
-                />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary transition-all duration-300" />
             )}
         </button>
     );

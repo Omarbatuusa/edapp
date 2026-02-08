@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import React, { useState, Suspense } from 'react';
 import { FeedItem } from './types';
 import { FeedView } from './FeedView';
 import { MessageThreadView } from './MessageThreadView';
@@ -74,10 +73,11 @@ export function CommunicationHub({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Commu
         >
             <ChatSocketManager tenantId={tenantId} userId={currentUserId} />
 
-            <AnimatePresence mode="popLayout">
-                {activeView === 'feed' ? (
+            {/* Main Content - CSS Transitions */}
+            <div className="relative w-full h-full">
+                {/* Feed View - Always rendered, hidden when not active */}
+                <div className={`w-full h-full transition-opacity duration-300 ${activeView === 'feed' ? 'opacity-100' : 'opacity-0 pointer-events-none absolute inset-0'}`}>
                     <FeedView
-                        key="feed"
                         onItemClick={handleOpenItem}
                         officeHours={officeHours}
                         selectedChildId={selectedChildId}
@@ -88,79 +88,65 @@ export function CommunicationHub({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Commu
                         onOpenActionCenter={() => setActiveView('action-center')}
                         onOpenLanguage={() => setShowLanguageSheet(true)}
                     />
-                ) : activeView === 'thread' ? (
-                    <motion.div
-                        key="thread"
-                        initial={{ x: '100%' }}
-                        animate={{ x: 0 }}
-                        exit={{ x: '100%' }}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                        className="absolute inset-0 z-[60] bg-background"
-                    >
+                </div>
+
+                {/* Thread View - Slide in from right */}
+                <div className={`absolute inset-0 z-[60] bg-background transform transition-transform duration-300 ease-out ${activeView === 'thread' ? 'translate-x-0' : 'translate-x-full'}`}>
+                    {selectedItem && activeView === 'thread' && (
                         <ChatThreadView
-                            item={selectedItem!}
+                            item={selectedItem}
                             onBack={handleBack}
                             onAction={() => setActiveView('channel-info')}
                         />
-                    </motion.div>
-                ) : activeView === 'channel-info' ? (
-                    <motion.div
-                        key="channel-info"
-                        initial={{ x: '100%' }}
-                        animate={{ x: 0 }}
-                        exit={{ x: '100%' }}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                        className="absolute inset-0 z-[70] bg-background"
-                    >
+                    )}
+                </div>
+
+                {/* Channel Info View */}
+                <div className={`absolute inset-0 z-[70] bg-background transform transition-transform duration-300 ease-out ${activeView === 'channel-info' ? 'translate-x-0' : 'translate-x-full'}`}>
+                    {selectedItem && activeView === 'channel-info' && (
                         <ChannelInfoView item={selectedItem} onClose={() => setActiveView('thread')} />
-                    </motion.div>
-                ) : activeView === 'action-center' ? (
-                    <motion.div
-                        key="action-center"
-                        initial={{ x: '100%' }}
-                        animate={{ x: 0 }}
-                        exit={{ x: '100%' }}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                        className="absolute inset-0 z-[60] bg-background"
-                    >
+                    )}
+                </div>
+
+                {/* Action Center View */}
+                <div className={`absolute inset-0 z-[60] bg-background transform transition-transform duration-300 ease-out ${activeView === 'action-center' ? 'translate-x-0' : 'translate-x-full'}`}>
+                    {activeView === 'action-center' && (
                         <ActionRequiredView onClose={() => setActiveView('feed')} />
-                    </motion.div>
-                ) : activeView === 'create-channel' ? (
-                    <motion.div
-                        key="create-channel"
-                        initial={{ x: '100%' }}
-                        animate={{ x: 0 }}
-                        exit={{ x: '100%' }}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                        className="absolute inset-0 z-[60] bg-background"
-                    >
+                    )}
+                </div>
+
+                {/* Create Channel View */}
+                <div className={`absolute inset-0 z-[60] bg-background transform transition-transform duration-300 ease-out ${activeView === 'create-channel' ? 'translate-x-0' : 'translate-x-full'}`}>
+                    {activeView === 'create-channel' && (
                         <CreateChannelView onClose={() => setActiveView('feed')} />
-                    </motion.div>
-                ) : (
-                    <ScreenStackDetail
-                        key="detail"
-                        onBack={handleBack}
-                        actionIcon={activeView === 'new-chat' ? 'group_add' : undefined}
-                        onAction={activeView === 'new-chat' ? () => setActiveView('create-channel') : undefined}
-                    >
-                        {activeView === 'ticket' && <TicketDetailView item={selectedItem} isTranslated={isTranslated} />}
-                        {activeView === 'announcement' && <AnnouncementDetailView item={selectedItem} isTranslated={isTranslated} />}
-                        {activeView === 'new-chat' && <NewChatView onStart={() => setActiveView('feed')} onCreateChannel={() => setActiveView('create-channel')} />}
-                    </ScreenStackDetail>
-                )}
-            </AnimatePresence>
+                    )}
+                </div>
+
+                {/* Other Detail Views (ticket, announcement, new-chat) */}
+                <div className={`absolute inset-0 z-[55] bg-background transform transition-transform duration-300 ease-out ${['ticket', 'announcement', 'new-chat'].includes(activeView) ? 'translate-x-0' : 'translate-x-full'}`}>
+                    {['ticket', 'announcement', 'new-chat'].includes(activeView) && (
+                        <ScreenStackDetail
+                            onBack={handleBack}
+                            actionIcon={activeView === 'new-chat' ? 'group_add' : undefined}
+                            onAction={activeView === 'new-chat' ? () => setActiveView('create-channel') : undefined}
+                        >
+                            {activeView === 'ticket' && <TicketDetailView item={selectedItem} isTranslated={isTranslated} />}
+                            {activeView === 'announcement' && <AnnouncementDetailView item={selectedItem} isTranslated={isTranslated} />}
+                            {activeView === 'new-chat' && <NewChatView onStart={() => setActiveView('feed')} onCreateChannel={() => setActiveView('create-channel')} />}
+                        </ScreenStackDetail>
+                    )}
+                </div>
+            </div>
 
             {/* Language Sheet */}
-            <AnimatePresence>
-                {showLanguageSheet && (
-                    <LanguageSheet
-                        isOpen={showLanguageSheet}
-                        onClose={() => setShowLanguageSheet(false)}
-                        currentLanguage={currentLanguage}
-                        onSelectLanguage={handleLanguageSelect}
-                    />
-                )}
-            </AnimatePresence>
+            {showLanguageSheet && (
+                <LanguageSheet
+                    isOpen={showLanguageSheet}
+                    onClose={() => setShowLanguageSheet(false)}
+                    currentLanguage={currentLanguage}
+                    onSelectLanguage={handleLanguageSelect}
+                />
+            )}
         </MessagesLayout >
     );
 }
