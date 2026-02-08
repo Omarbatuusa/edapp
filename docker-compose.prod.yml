@@ -63,6 +63,8 @@ services:
         NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${NEXT_PUBLIC_TURNSTILE_SITE_KEY}
     restart: always
     env_file: .env.production
+    environment:
+      - PORT=3000 # Override to ensure Next.js runs on 3000, not 3333
     depends_on:
       - api
     networks:
