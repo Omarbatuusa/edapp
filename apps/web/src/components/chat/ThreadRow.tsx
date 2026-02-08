@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Shield, Megaphone, HeadphonesIcon } from 'lucide-react';
+import { Shield, Megaphone } from 'lucide-react';
 
 // ============================================================
 // THREAD ROW - Unified component for all thread types

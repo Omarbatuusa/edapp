@@ -109,7 +109,7 @@ export default function ChatInboxPage() {
 
     // Filter threads
     const filteredThreads = useMemo(() => {
-        let result = threads;
+        let result = threads || [];
 
         // Apply filter
         switch (activeFilter) {
