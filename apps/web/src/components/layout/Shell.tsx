@@ -56,11 +56,11 @@ export function Shell({ children, tenantName, tenantSlug, tenantLogo, user, role
 
     return (
         <EmergencyProvider>
-            <div className="min-h-screen bg-slate-50 dark:bg-[#0B1120] flex flex-col font-display">
+            <div className={`min-h-screen flex flex-col font-display ${isFullScreen ? 'bg-transparent' : 'bg-slate-50 dark:bg-[#0B1120]'}`}>
                 {!isFullScreen && <EmergencyBanner />}
 
                 {/* Main Content Area - No Sidebar, centered container */}
-                <div className="flex flex-col min-h-screen">
+                <div className={`flex flex-col ${isFullScreen ? 'min-h-0 flex-1' : 'min-h-screen'}`}>
                     {!isFullScreen && (
                         <ShellHeader
                             tenantName={tenantName}
