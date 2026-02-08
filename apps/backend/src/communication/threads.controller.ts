@@ -114,30 +114,34 @@ export class ThreadsController {
     // ============================================
     // FIND OR CREATE DM
     // ============================================
+    // ============================================
+    // FIND OR CREATE DM
+    // ============================================
     @Post('dm')
     async findOrCreateDM(
-        @Body() body: { tenant_id: string; user1_id: string; user2_id: string     // ============================================
+        @Body() body: { tenant_id: string; user1_id: string; user2_id: string }
+    ) {
+        return this.threadsService.findOrCreateDM(body.tenant_id, body.user1_id, body.user2_id);
+    }
+
+    // ============================================
     // FIND THREAD BY CONTEXT (Smart Routing)
     // ============================================
     @Post('find-context')
-        async findByContext(
-            @Body() body: {
-                tenant_id: string;
-                user_id: string;
-                student_id ?: string;
-                ticket_category ?: TicketCategory;
-                type ?: ThreadType;
-            },
+    async findByContext(
+        @Body() body: {
+            tenant_id: string;
+            user_id: string;
+            student_id?: string;
+            ticket_category?: TicketCategory;
+            type?: ThreadType;
+        },
     ) {
-    const thread = await this.threadsService.findThreadByContext(body.tenant_id, body.user_id, {
-        student_id: body.student_id,
-        ticket_category: body.ticket_category,
-        type: body.type,
-    });
-    return { thread }; // Returns null if not found, frontend handles redirection to Create
-}
-},
-    ) {
-    return this.threadsService.findOrCreateDM(body.tenant_id, body.user1_id, body.user2_id);
-}
+        const thread = await this.threadsService.findThreadByContext(body.tenant_id, body.user_id, {
+            student_id: body.student_id,
+            ticket_category: body.ticket_category,
+            type: body.type,
+        });
+        return { thread }; // Returns null if not found, frontend handles redirection to Create
+    }
 }
