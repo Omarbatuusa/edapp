@@ -79,7 +79,7 @@ export function Shell({ children, tenantName, tenantSlug, tenantLogo, user, role
                     {/* Main content with bottom padding for nav if not fullscreen */}
                     <main
                         className={`flex-1 w-full mx-auto duration-500 ${isFullScreen
-                            ? 'p-0 max-w-full pb-0 animate-in-right'
+                            ? 'p-0 max-w-full pb-0 min-h-0 relative z-0'
                             : 'p-4 md:p-6 max-w-2xl lg:max-w-4xl pb-24 animate-in fade-in slide-in-from-bottom-2'
                             }`}
                     >
