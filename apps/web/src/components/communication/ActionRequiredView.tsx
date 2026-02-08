@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ScreenStackBase } from './ScreenStack';
 import { MOCK_ACTIONS } from './mockData';
 import { ApprovalModal } from './ApprovalModal';
@@ -41,7 +40,7 @@ export function ActionRequiredView({ onClose }: { onClose: () => void }) {
                     <h1 className="text-lg font-bold flex-1">Action Center</h1>
                 </div>
 
-                {/* Tabs */}
+                {/* Tabs - CSS instead of framer-motion layoutId */}
                 <div className="flex overflow-x-auto no-scrollbar px-4 pb-0 mask-fade-right gap-6 border-b border-border/50">
                     {TABS.map(tab => (
                         <button
@@ -52,10 +51,7 @@ export function ActionRequiredView({ onClose }: { onClose: () => void }) {
                         >
                             {tab.label}
                             {activeTab === tab.id && (
-                                <motion.div
-                                    layoutId="activeTab"
-                                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"
-                                />
+                                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full transition-all duration-300" />
                             )}
                         </button>
                     ))}
@@ -130,7 +126,7 @@ function ActionCard({ action, onClick }: { action: any, onClick: () => void }) {
                 <p className="text-sm text-muted-foreground line-clamp-1">{action.subtitle}</p>
 
                 <div className="mt-3 flex gap-2">
-                    <button className="flex-1 bg-primary text-primary-foreground text-xs font-bold py-2 rounded-lg hover:bg-primary/90 transition-colors">
+                    <button className="flex-1 bg-primary text-white text-xs font-bold py-2 rounded-lg hover:bg-primary/90 transition-colors">
                         {getActionLabel(action.type)}
                     </button>
                     <button

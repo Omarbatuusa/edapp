@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { MOCK_CHILDREN } from './mockData';
 
 export function NewChatView({ onStart, onCreateChannel }: { onStart: () => void; onCreateChannel: () => void }) {
@@ -52,7 +51,7 @@ export function NewChatView({ onStart, onCreateChannel }: { onStart: () => void;
                                 className={`
                                     group flex h-12 shrink-0 items-center justify-center gap-x-3 rounded-2xl pl-2 pr-5 transition-all active:scale-95
                                     ${isActive
-                                        ? 'bg-primary text-primary-foreground shadow-md'
+                                        ? 'bg-primary text-white shadow-md'
                                         : 'bg-secondary/50 border border-border hover:bg-secondary'
                                     }
                                 `}
@@ -66,7 +65,7 @@ export function NewChatView({ onStart, onCreateChannel }: { onStart: () => void;
                                 </div>
                                 <div className="text-left">
                                     <p className="text-sm font-bold leading-none">{child.name}</p>
-                                    <p className={`text-[10px] mt-0.5 ${isActive ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>{child.grade}</p>
+                                    <p className={`text-[10px] mt-0.5 ${isActive ? 'text-white/80' : 'text-muted-foreground'}`}>{child.grade}</p>
                                 </div>
                             </button>
                         );
@@ -102,82 +101,66 @@ export function NewChatView({ onStart, onCreateChannel }: { onStart: () => void;
                 </div>
             </div>
 
-            {/* Step 3: Conditional Sub-Items */}
-            <AnimatePresence mode="wait">
-                {selectedTopic === 'Academics' && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="px-4 space-y-3"
-                    >
-                        <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Select Teacher</h3>
-                        <div className="space-y-2">
-                            {ACADEMIC_CONTACTS.map(contact => (
-                                <button
-                                    key={contact.id}
-                                    onClick={() => setSelectedSubItem(contact.id)}
-                                    className={`w-full flex items-center gap-3 p-3 rounded-2xl border transition-all ${selectedSubItem === contact.id ? 'bg-primary/10 border-primary' : 'bg-card border-border hover:bg-secondary/50'}`}
-                                >
-                                    <img src={contact.avatar} className="w-10 h-10 rounded-full" alt="" />
-                                    <div className="text-left flex-1">
-                                        <h4 className="font-bold text-sm">{contact.name}</h4>
-                                        <p className="text-xs text-muted-foreground">{contact.role}</p>
-                                    </div>
-                                    {selectedSubItem === contact.id && (
-                                        <span className="material-symbols-outlined text-primary">check_circle</span>
-                                    )}
-                                </button>
-                            ))}
-                        </div>
-                    </motion.div>
-                )}
+            {/* Step 3: Conditional Sub-Items (CSS transitions instead of framer-motion) */}
+            {selectedTopic === 'Academics' && (
+                <div className="px-4 space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-200">
+                    <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Select Teacher</h3>
+                    <div className="space-y-2">
+                        {ACADEMIC_CONTACTS.map(contact => (
+                            <button
+                                key={contact.id}
+                                onClick={() => setSelectedSubItem(contact.id)}
+                                className={`w-full flex items-center gap-3 p-3 rounded-2xl border transition-all ${selectedSubItem === contact.id ? 'bg-primary/10 border-primary' : 'bg-card border-border hover:bg-secondary/50'}`}
+                            >
+                                <img src={contact.avatar} className="w-10 h-10 rounded-full" alt="" />
+                                <div className="text-left flex-1">
+                                    <h4 className="font-bold text-sm">{contact.name}</h4>
+                                    <p className="text-xs text-muted-foreground">{contact.role}</p>
+                                </div>
+                                {selectedSubItem === contact.id && (
+                                    <span className="material-symbols-outlined text-primary">check_circle</span>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
 
-                {(selectedTopic === 'Transport' || selectedTopic === 'Fees' || selectedTopic === 'Support') && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="px-4 space-y-3"
-                    >
-                        <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Recommended Action</h3>
-                        <div className="space-y-2">
-                            {SUPPORT_ACTIONS.map(action => (
-                                <button
-                                    key={action.id}
-                                    onClick={() => setSelectedSubItem(action.id)}
-                                    className={`w-full flex items-start gap-4 p-4 rounded-2xl border transition-all text-left ${selectedSubItem === action.id ? 'bg-primary/5 border-primary' : 'bg-card border-border hover:bg-secondary/50'}`}
-                                >
-                                    <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shrink-0">
-                                        <span className="material-symbols-outlined">{action.icon}</span>
-                                    </div>
-                                    <div className="flex-1">
-                                        <h4 className="font-bold text-sm">{action.title}</h4>
-                                        <p className="text-xs text-muted-foreground mt-0.5">{action.subtitle}</p>
-                                    </div>
-                                    <span className="material-symbols-outlined text-muted-foreground/50 text-[20px]">chevron_right</span>
-                                </button>
-                            ))}
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            {(selectedTopic === 'Transport' || selectedTopic === 'Fees' || selectedTopic === 'Support') && (
+                <div className="px-4 space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-200">
+                    <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Recommended Action</h3>
+                    <div className="space-y-2">
+                        {SUPPORT_ACTIONS.map(action => (
+                            <button
+                                key={action.id}
+                                onClick={() => setSelectedSubItem(action.id)}
+                                className={`w-full flex items-start gap-4 p-4 rounded-2xl border transition-all text-left ${selectedSubItem === action.id ? 'bg-primary/5 border-primary' : 'bg-card border-border hover:bg-secondary/50'}`}
+                            >
+                                <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shrink-0">
+                                    <span className="material-symbols-outlined">{action.icon}</span>
+                                </div>
+                                <div className="flex-1">
+                                    <h4 className="font-bold text-sm">{action.title}</h4>
+                                    <p className="text-xs text-muted-foreground mt-0.5">{action.subtitle}</p>
+                                </div>
+                                <span className="material-symbols-outlined text-muted-foreground/50 text-[20px]">chevron_right</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Start Button */}
             {selectedTopic && selectedSubItem && (
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="fixed bottom-6 left-4 right-4 z-50"
-                >
+                <div className="fixed bottom-6 left-4 right-4 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
                     <button
                         onClick={onStart}
-                        className="w-full bg-primary text-primary-foreground h-14 rounded-2xl font-bold text-lg shadow-xl shadow-primary/30 flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                        className="w-full bg-primary text-white h-14 rounded-2xl font-bold text-lg shadow-xl shadow-primary/30 flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all"
                     >
                         <span>{selectedTopic === 'Academics' ? 'Start Chat' : 'Create Request'}</span>
                         <span className="material-symbols-outlined">arrow_forward</span>
                     </button>
-                </motion.div>
+                </div>
             )}
         </div>
     );

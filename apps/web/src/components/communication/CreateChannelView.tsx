@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ScreenStackBase } from './ScreenStack';
 
 export function CreateChannelView({ onClose }: { onClose: () => void }) {
@@ -45,35 +44,31 @@ export function CreateChannelView({ onClose }: { onClose: () => void }) {
                 </div>
             </div>
 
-            {/* Content */}
+            {/* Content - CSS transitions instead of AnimatePresence */}
             <div className="p-6">
-                <AnimatePresence mode="wait">
-                    {step === 1 && (
-                        <StepType
-                            key="step1"
-                            type={type}
-                            setType={setType}
-                        />
-                    )}
-                    {step === 2 && (
-                        <StepDetails
-                            key="step2"
-                            name={name}
-                            setName={setName}
-                            description={description}
-                            setDescription={setDescription}
-                        />
-                    )}
-                    {step === 3 && <StepAudience key="step3" />}
-                    {step === 4 && <StepReview key="step4" type={type} name={name} />}
-                </AnimatePresence>
+                {step === 1 && (
+                    <StepType
+                        type={type}
+                        setType={setType}
+                    />
+                )}
+                {step === 2 && (
+                    <StepDetails
+                        name={name}
+                        setName={setName}
+                        description={description}
+                        setDescription={setDescription}
+                    />
+                )}
+                {step === 3 && <StepAudience />}
+                {step === 4 && <StepReview type={type} name={name} />}
             </div>
 
             {/* Footer */}
             <div className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t border-border">
                 <button
                     onClick={handleNext}
-                    className="w-full bg-primary text-primary-foreground font-bold py-3.5 rounded-xl shadow-lg active:scale-[0.98] transition-transform flex items-center justify-center gap-2"
+                    className="w-full bg-primary text-white font-bold py-3.5 rounded-xl shadow-lg active:scale-[0.98] transition-transform flex items-center justify-center gap-2"
                 >
                     {step === totalSteps ? 'Create Channel' : 'Continue'}
                     <span className="material-symbols-outlined">{step === totalSteps ? 'check' : 'arrow_forward'}</span>
@@ -85,10 +80,7 @@ export function CreateChannelView({ onClose }: { onClose: () => void }) {
 
 function StepType({ type, setType }: any) {
     return (
-        <motion.div
-            initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
-            className="space-y-6"
-        >
+        <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-200">
             <div className="text-center mb-8">
                 <div className="w-16 h-16 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
                     <span className="material-symbols-outlined text-3xl">hub</span>
@@ -122,16 +114,13 @@ function StepType({ type, setType }: any) {
                     <p className="text-xs text-muted-foreground pl-9">Everyone can post. Good for class discussions, projects, and social groups.</p>
                 </button>
             </div>
-        </motion.div>
+        </div>
     );
 }
 
 function StepDetails({ name, setName, description, setDescription }: any) {
     return (
-        <motion.div
-            initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
-            className="space-y-6"
-        >
+        <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-200">
             <div>
                 <label className="block text-sm font-bold mb-2">Channel Name</label>
                 <input
@@ -150,16 +139,13 @@ function StepDetails({ name, setName, description, setDescription }: any) {
                     className="w-full bg-secondary/50 border-0 rounded-xl p-4 text-foreground focus:ring-2 focus:ring-primary outline-none resize-none h-32"
                 />
             </div>
-        </motion.div>
+        </div>
     );
 }
 
 function StepAudience() {
     return (
-        <motion.div
-            initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
-            className="space-y-4"
-        >
+        <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-200">
             <h2 className="text-xl font-bold mb-4">Add Members</h2>
             {[1, 2, 3].map(i => (
                 <div key={i} className="flex items-center gap-3 p-3 bg-card border border-border rounded-xl">
@@ -176,16 +162,13 @@ function StepAudience() {
             <button className="w-full py-3 text-sm font-bold text-primary border border-dashed border-primary/30 rounded-xl hover:bg-primary/5 mt-2">
                 + Add by Role / Grade
             </button>
-        </motion.div>
+        </div>
     );
 }
 
 function StepReview({ type, name }: any) {
     return (
-        <motion.div
-            initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
-            className="text-center py-8"
-        >
+        <div className="text-center py-8 animate-in fade-in slide-in-from-right-4 duration-200">
             <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 animate-in zoom-in spin-in-12">
                 <span className="material-symbols-outlined text-4xl">check_circle</span>
             </div>
@@ -209,6 +192,6 @@ function StepReview({ type, name }: any) {
                     <span className="font-bold">Strict</span>
                 </div>
             </div>
-        </motion.div>
+        </div>
     );
 }
