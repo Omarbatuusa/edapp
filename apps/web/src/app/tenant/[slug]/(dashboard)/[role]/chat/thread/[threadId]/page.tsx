@@ -164,7 +164,7 @@ export default function ThreadPage() {
     const isDM = threadData.type === 'dm';
 
     return (
-        <div className="flex h-[calc(100vh-56px)] sm:h-[calc(100vh-64px)]">
+        <div className="flex h-full">
             {/* Main Thread View */}
             <div className="flex-1 flex flex-col min-w-0">
                 {/* Thread Header */}
