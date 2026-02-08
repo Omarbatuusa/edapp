@@ -24,7 +24,8 @@ docker compose --env-file .env.production -f docker-compose.prod.yml down --remo
 # Pull latest code from GitHub
 echo "📥 Pulling latest code..."
 if [ -d ".git" ]; then
-    git pull origin main
+    git fetch origin main
+    git reset --hard origin/main
 else
     git clone https://github.com/Omarbatuusa/edapp.git .
 fi
