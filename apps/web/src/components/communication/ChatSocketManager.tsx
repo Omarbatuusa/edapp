@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
-import { useChatSocket, SocketMessage } from '../../hooks/useChatSocket';
+'use client';
+
+import { useEffect, useState } from 'react';
 import { useChatStore, Message } from '../../lib/chat-store';
 
 interface ChatSocketManagerProps {
@@ -7,59 +8,137 @@ interface ChatSocketManagerProps {
     userId: string;
 }
 
+// This component manages WebSocket connections for chat
+// It is designed to be resilient - socket failures should NOT crash the UI
 export function ChatSocketManager({ tenantId, userId }: ChatSocketManagerProps) {
+    const [connectionError, setConnectionError] = useState<string | null>(null);
+    const [isConnecting, setIsConnecting] = useState(false);
+
     const receiveMessage = useChatStore(state => state.receiveMessage);
     const receiveActionUpdate = useChatStore(state => state.receiveActionUpdate);
-
-    const {
-        isConnected,
-        setMessageHandlers,
-        joinThread,
-        leaveThread
-    } = useChatSocket({
-        tenant_id: tenantId,
-        user_id: userId,
-        onConnect: () => console.log('Connected to Chat Socket'),
-        onError: (err) => console.error('Chat Socket Error:', err),
-    });
-
     const activeThreadId = useChatStore(state => state.activeThreadId);
 
-    // Sync active thread with socket room
     useEffect(() => {
-        if (activeThreadId) {
-            joinThread(activeThreadId);
-        } else {
-            // leaveThread?
+        // Don't try to connect if we don't have required params
+        if (!tenantId || !userId) {
+            console.log('[ChatSocket] Skipping - no tenant/user ID');
+            return;
         }
-    }, [activeThreadId, joinThread]);
 
-    // Register handlers
-    useEffect(() => {
-        setMessageHandlers({
-            onNewMessage: (socketMsg: SocketMessage) => {
-                // Map socket message to store message
-                const message: Message = {
-                    id: socketMsg.id,
-                    threadId: socketMsg.thread_id,
-                    content: socketMsg.content,
-                    contentType: 'text', // TODO: Map type from socket if available
-                    senderId: socketMsg.sender_id,
-                    senderName: socketMsg.sender_name,
-                    isMe: socketMsg.sender_id === userId,
-                    time: new Date(socketMsg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                    date: new Date(socketMsg.created_at).toLocaleDateString(),
-                    status: 'sent', // Received messages are at least sent
-                    attachments: socketMsg.attachments,
-                    // TODO: Action data in socket message?
-                };
-                receiveMessage(message);
-            },
-            onActionUpdated: (update: { thread_id: string; message_id: string; status: 'approved' | 'rejected' | 'acknowledged' }) => {
-                receiveActionUpdate(update.thread_id, update.message_id, update.status);
+        // Don't run on server
+        if (typeof window === 'undefined') {
+            return;
+        }
+
+        let socket: any = null;
+        let mounted = true;
+
+        const connectSocket = async () => {
+            try {
+                setIsConnecting(true);
+                setConnectionError(null);
+
+                // Dynamically import socket.io-client to prevent SSR issues
+                const { io } = await import('socket.io-client');
+
+                if (!mounted) return;
+
+                const backendUrl = window.location.origin;
+
+                socket = io(`${backendUrl}/chat`, {
+                    query: { tenant_id: tenantId, user_id: userId },
+                    transports: ['websocket', 'polling'],
+                    reconnection: true,
+                    reconnectionAttempts: 3, // Reduced from 5
+                    reconnectionDelay: 2000,
+                    timeout: 15000, // Increased timeout
+                    autoConnect: true,
+                });
+
+                socket.on('connect', () => {
+                    console.log('[ChatSocket] Connected successfully');
+                    if (mounted) {
+                        setConnectionError(null);
+                        setIsConnecting(false);
+                    }
+                });
+
+                socket.on('disconnect', (reason: string) => {
+                    console.log('[ChatSocket] Disconnected:', reason);
+                });
+
+                socket.on('connect_error', (error: Error) => {
+                    console.warn('[ChatSocket] Connection error (non-fatal):', error.message);
+                    if (mounted) {
+                        setConnectionError(error.message);
+                        setIsConnecting(false);
+                    }
+                    // Don't throw - let the UI continue without realtime
+                });
+
+                // Message handlers
+                socket.on('message:new', (socketMsg: any) => {
+                    if (!mounted) return;
+                    try {
+                        const message: Message = {
+                            id: socketMsg.id,
+                            threadId: socketMsg.thread_id,
+                            content: socketMsg.content,
+                            contentType: 'text',
+                            senderId: socketMsg.sender_id,
+                            senderName: socketMsg.sender_name,
+                            isMe: socketMsg.sender_id === userId,
+                            time: new Date(socketMsg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                            date: new Date(socketMsg.created_at).toLocaleDateString(),
+                            status: 'sent',
+                            attachments: socketMsg.attachments,
+                        };
+                        receiveMessage(message);
+                    } catch (e) {
+                        console.warn('[ChatSocket] Error processing message:', e);
+                    }
+                });
+
+                socket.on('action:updated', (update: { thread_id: string; message_id: string; status: 'approved' | 'rejected' | 'acknowledged' }) => {
+                    if (!mounted) return;
+                    try {
+                        receiveActionUpdate(update.thread_id, update.message_id, update.status);
+                    } catch (e) {
+                        console.warn('[ChatSocket] Error processing action:', e);
+                    }
+                });
+
+                // Join active thread if any
+                if (activeThreadId && socket.connected) {
+                    socket.emit('thread:join', { thread_id: activeThreadId });
+                }
+
+            } catch (error) {
+                console.warn('[ChatSocket] Failed to initialize (non-fatal):', error);
+                if (mounted) {
+                    setConnectionError(error instanceof Error ? error.message : 'Connection failed');
+                    setIsConnecting(false);
+                }
+                // Don't throw - let the UI continue without realtime
             }
-        });
-    }, [setMessageHandlers, receiveMessage, receiveActionUpdate, userId]);
+        };
 
-    return null; // Logic only component
+        connectSocket();
+
+        return () => {
+            mounted = false;
+            if (socket) {
+                try {
+                    socket.disconnect();
+                } catch (e) {
+                    // Ignore cleanup errors
+                }
+            }
+        };
+    }, [tenantId, userId, activeThreadId, receiveMessage, receiveActionUpdate]);
+
+    // This component renders nothing - it's just for managing the socket
+    // If there's an error, we could optionally show a small indicator
+    // but we should NOT crash the app
+    return null;
 }
