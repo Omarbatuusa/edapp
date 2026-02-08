@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, Suspense, Component, ErrorInfo, ReactNode } from 'react';
 import { FeedItem } from './types';
 import { FeedView } from './FeedView';
 import { MessageThreadView } from './MessageThreadView';
@@ -17,6 +17,54 @@ import { MessagesLayout } from './messaging/MessagesLayout';
 import { ChatSocketManager } from './ChatSocketManager';
 
 // ============================================================
+// ERROR BOUNDARY COMPONENT
+// ============================================================
+
+interface ErrorBoundaryState {
+    hasError: boolean;
+    error?: Error;
+}
+
+interface ErrorBoundaryProps {
+    children: ReactNode;
+}
+
+class CommunicationErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+    constructor(props: ErrorBoundaryProps) {
+        super(props);
+        this.state = { hasError: false };
+    }
+
+    static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+        return { hasError: true, error };
+    }
+
+    componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+        console.error('CommunicationHub Error:', error, errorInfo);
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return (
+                <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+                    <span className="material-symbols-outlined text-5xl text-muted-foreground mb-4">error_outline</span>
+                    <h2 className="text-lg font-bold mb-2">Something went wrong</h2>
+                    <p className="text-sm text-muted-foreground mb-4">Please try refreshing the page.</p>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="px-4 py-2 bg-primary text-white rounded-lg font-medium"
+                    >
+                        Refresh Page
+                    </button>
+                </div>
+            );
+        }
+
+        return this.props.children;
+    }
+}
+
+// ============================================================
 // COMMUNICATION HUB COMPONENT (CONTROLLER)
 // ============================================================
 
@@ -24,7 +72,7 @@ interface CommunicationHubProps {
     officeHours?: string;
 }
 
-export function CommunicationHub({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: CommunicationHubProps) {
+function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: CommunicationHubProps) {
     // Internal Navigation State
     const [activeView, setActiveView] = useState<'feed' | 'thread' | 'ticket' | 'announcement' | 'new-chat' | 'channel-info' | 'action-center' | 'create-channel'>('feed');
     const [selectedItem, setSelectedItem] = useState<FeedItem | null>(null);
@@ -151,4 +199,14 @@ export function CommunicationHub({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Commu
     );
 }
 
+// Wrapper with Error Boundary
+export function CommunicationHub(props: CommunicationHubProps) {
+    return (
+        <CommunicationErrorBoundary>
+            <CommunicationHubInner {...props} />
+        </CommunicationErrorBoundary>
+    );
+}
+
 export default CommunicationHub;
+

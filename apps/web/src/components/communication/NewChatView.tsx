@@ -35,8 +35,16 @@ export function NewChatView({ onStart, onCreateChannel }: { onStart: () => void;
         }
     };
 
+    // Handle direct start when a topic is selected (for Transport, Fees, Support)
+    const handleDirectStart = () => {
+        onStart();
+    };
+
+    // Check if we can show the start button - either we have a sub-item selected, or it's a topic that doesn't need one
+    const canStart = selectedTopic && (selectedSubItem || ['Transport', 'Fees', 'Support'].includes(selectedTopic));
+
     return (
-        <div className="flex flex-col h-full animate-fade-in space-y-6 pb-24">
+        <div className="flex flex-col h-full space-y-6 pb-24 overflow-y-auto">
 
             {/* Step 1: Child Context */}
             <div className="flex flex-col pt-4">
@@ -101,9 +109,9 @@ export function NewChatView({ onStart, onCreateChannel }: { onStart: () => void;
                 </div>
             </div>
 
-            {/* Step 3: Conditional Sub-Items (CSS transitions instead of framer-motion) */}
+            {/* Step 3: Conditional Sub-Items - Only show for Academics where teacher selection is required */}
             {selectedTopic === 'Academics' && (
-                <div className="px-4 space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-200">
+                <div className="px-4 space-y-3">
                     <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Select Teacher</h3>
                     <div className="space-y-2">
                         {ACADEMIC_CONTACTS.map(contact => (
@@ -126,9 +134,10 @@ export function NewChatView({ onStart, onCreateChannel }: { onStart: () => void;
                 </div>
             )}
 
+            {/* For Transport, Fees, Support - Show quick action options but button appears immediately */}
             {(selectedTopic === 'Transport' || selectedTopic === 'Fees' || selectedTopic === 'Support') && (
-                <div className="px-4 space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-200">
-                    <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Recommended Action</h3>
+                <div className="px-4 space-y-3">
+                    <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Quick Actions (Optional)</h3>
                     <div className="space-y-2">
                         {SUPPORT_ACTIONS.map(action => (
                             <button
@@ -150,11 +159,11 @@ export function NewChatView({ onStart, onCreateChannel }: { onStart: () => void;
                 </div>
             )}
 
-            {/* Start Button */}
-            {selectedTopic && selectedSubItem && (
-                <div className="fixed bottom-6 left-4 right-4 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
+            {/* Start Button - Now shows when topic is selected (sub-item required only for Academics) */}
+            {canStart && (
+                <div className="fixed bottom-6 left-4 right-4 z-50">
                     <button
-                        onClick={onStart}
+                        onClick={handleDirectStart}
                         className="w-full bg-primary text-white h-14 rounded-2xl font-bold text-lg shadow-xl shadow-primary/30 flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all"
                     >
                         <span>{selectedTopic === 'Academics' ? 'Start Chat' : 'Create Request'}</span>
