@@ -73,6 +73,13 @@ interface CommunicationHubProps {
 }
 
 function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: CommunicationHubProps) {
+    // Client-side only check to prevent SSR hydration issues
+    const [isMounted, setIsMounted] = useState(false);
+
+    React.useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
     // Internal Navigation State
     const [activeView, setActiveView] = useState<'feed' | 'thread' | 'ticket' | 'announcement' | 'new-chat' | 'channel-info' | 'action-center' | 'create-channel'>('feed');
     const [selectedItem, setSelectedItem] = useState<FeedItem | null>(null);
@@ -82,6 +89,20 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
     const [isTranslated, setIsTranslated] = useState(false);
     const [showLanguageSheet, setShowLanguageSheet] = useState(false);
     const [currentLanguage, setCurrentLanguage] = useState('English');
+
+    // Show loading skeleton during SSR and initial mount
+    if (!isMounted) {
+        return (
+            <div className="fixed inset-0 z-50 flex flex-col bg-background text-foreground md:relative md:h-full md:z-0">
+                <div className="animate-pulse p-4 space-y-4">
+                    <div className="h-14 bg-secondary/50 rounded-xl" />
+                    <div className="h-24 bg-secondary/30 rounded-2xl" />
+                    <div className="h-32 bg-secondary/30 rounded-2xl" />
+                    <div className="h-32 bg-secondary/30 rounded-2xl" />
+                </div>
+            </div>
+        );
+    }
 
     // Navigation Handlers
     const handleOpenItem = (item: FeedItem) => {
