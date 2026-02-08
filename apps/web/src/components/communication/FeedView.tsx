@@ -1,7 +1,7 @@
 import { useCommunicationStore } from '../../lib/communication-store';
 import { MOCK_CHILDREN, TRANSLATIONS, MOCK_FEED } from './mockData';
 import React, { useState, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { ScreenStackBase } from './ScreenStack';
 import { FeedItem } from './types';
 
@@ -23,12 +23,24 @@ export interface FeedViewProps {
 
 export function FeedView({ onItemClick, officeHours, selectedChildId, setSelectedChildId, isTranslated, setIsTranslated, onNewChat, onOpenActionCenter, onOpenLanguage }: FeedViewProps) {
     const router = useRouter();
+    const pathname = usePathname();
     const [activeTab, setActiveTab] = useState<'all' | 'announcements' | 'classes' | 'direct' | 'support'>('all');
     const [isOffline, setIsOffline] = useState(false); // Mock offline state
     const [searchQuery, setSearchQuery] = useState('');
     const [sort, setSort] = useState<'newest' | 'priority' | 'oldest'>('newest');
     const [showOfficeHours, setShowOfficeHours] = useState(true);
     const [showChildSelector, setShowChildSelector] = useState(false);
+
+    // Close handler - navigate to parent dashboard
+    const handleClose = () => {
+        if (pathname) {
+            // Replace /chat with empty to go back to role dashboard
+            const dashboardPath = pathname.replace('/chat', '');
+            router.push(dashboardPath);
+        } else {
+            router.back();
+        }
+    };
 
     // Store hooks
     const storeItems = useCommunicationStore(state => state.items);
@@ -121,10 +133,10 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
 
                 <div className="flex items-center px-4 h-14 gap-3 relative">
                     <button
-                        onClick={() => router.back()}
+                        onClick={handleClose}
                         className="w-10 h-10 flex items-center justify-center -ml-2 rounded-full hover:bg-secondary/80 transition-colors"
                     >
-                        <span className="material-symbols-outlined text-foreground">chevron_left</span>
+                        <span className="material-symbols-outlined text-foreground">close</span>
                     </button>
 
                     {/* Title / Child Selector */}
