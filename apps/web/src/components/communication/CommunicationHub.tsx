@@ -13,6 +13,8 @@ import { ActionRequiredView } from './ActionRequiredView';
 import { CreateChannelView } from './CreateChannelView';
 import { LanguageSheet } from './LanguageSheet';
 import { ScreenStackDetail } from './ScreenStack';
+import { ChatThreadView } from './messaging/ChatThreadView';
+import { MessagesLayout } from './messaging/MessagesLayout';
 
 // ============================================================
 // COMMUNICATION HUB COMPONENT (CONTROLLER)
@@ -59,8 +61,12 @@ export function CommunicationHub({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Commu
         setIsTranslated(lang !== 'English');
     };
 
+
+
     return (
-        <div className="relative w-full h-[100dvh] overflow-hidden bg-background md:max-w-4xl md:mx-auto md:border-x md:border-border/50 md:shadow-sm text-foreground">
+        <MessagesLayout
+            className="md:border-x md:border-border/50 md:shadow-sm md:max-w-4xl md:mx-auto"
+        >
             <AnimatePresence mode="popLayout">
                 {activeView === 'feed' ? (
                     <FeedView
@@ -75,6 +81,21 @@ export function CommunicationHub({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Commu
                         onOpenActionCenter={() => setActiveView('action-center')}
                         onOpenLanguage={() => setShowLanguageSheet(true)}
                     />
+                ) : activeView === 'thread' ? (
+                    <motion.div
+                        key="thread"
+                        initial={{ x: '100%' }}
+                        animate={{ x: 0 }}
+                        exit={{ x: '100%' }}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        className="absolute inset-0 z-[60] bg-background"
+                    >
+                        <ChatThreadView
+                            item={selectedItem!}
+                            onBack={handleBack}
+                            onAction={() => setActiveView('channel-info')}
+                        />
+                    </motion.div>
                 ) : activeView === 'channel-info' ? (
                     <motion.div
                         key="channel-info"
@@ -82,7 +103,7 @@ export function CommunicationHub({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Commu
                         animate={{ x: 0 }}
                         exit={{ x: '100%' }}
                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                        className="absolute inset-0 z-[60]"
+                        className="absolute inset-0 z-[70] bg-background"
                     >
                         <ChannelInfoView item={selectedItem} onClose={() => setActiveView('thread')} />
                     </motion.div>
@@ -93,7 +114,7 @@ export function CommunicationHub({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Commu
                         animate={{ x: 0 }}
                         exit={{ x: '100%' }}
                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                        className="absolute inset-0 z-[60]"
+                        className="absolute inset-0 z-[60] bg-background"
                     >
                         <ActionRequiredView onClose={() => setActiveView('feed')} />
                     </motion.div>
@@ -104,7 +125,7 @@ export function CommunicationHub({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Commu
                         animate={{ x: 0 }}
                         exit={{ x: '100%' }}
                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                        className="absolute inset-0 z-[60]"
+                        className="absolute inset-0 z-[60] bg-background"
                     >
                         <CreateChannelView onClose={() => setActiveView('feed')} />
                     </motion.div>
@@ -112,11 +133,9 @@ export function CommunicationHub({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Commu
                     <ScreenStackDetail
                         key="detail"
                         onBack={handleBack}
-                        title={activeView === 'new-chat' ? 'New Message' : undefined}
-                        actionIcon={activeView === 'thread' ? 'info' : undefined}
-                        onAction={activeView === 'thread' ? () => setActiveView('channel-info') : undefined}
+                        actionIcon={activeView === 'new-chat' ? 'group_add' : undefined}
+                        onAction={activeView === 'new-chat' ? () => setActiveView('create-channel') : undefined}
                     >
-                        {activeView === 'thread' && <MessageThreadView item={selectedItem} isTranslated={isTranslated} />}
                         {activeView === 'ticket' && <TicketDetailView item={selectedItem} isTranslated={isTranslated} />}
                         {activeView === 'announcement' && <AnnouncementDetailView item={selectedItem} isTranslated={isTranslated} />}
                         {activeView === 'new-chat' && <NewChatView onStart={() => setActiveView('feed')} onCreateChannel={() => setActiveView('create-channel')} />}
@@ -135,7 +154,7 @@ export function CommunicationHub({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Commu
                     />
                 )}
             </AnimatePresence>
-        </div>
+        </MessagesLayout >
     );
 }
 
