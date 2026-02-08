@@ -1,7 +1,6 @@
 'use client';
 
 import React, { ReactNode } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 // ============================================================
 // CHAT LAYOUT - Messenger-like 2-3 pane layout for desktop
@@ -42,23 +41,12 @@ export function ChatLayout({
             </div>
 
             {/* Center Pane - Conversation */}
-            <AnimatePresence mode="wait">
-                {showConversation && (
-                    <motion.div
-                        key="conversation"
-                        initial={{ x: '100%', opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        exit={{ x: '100%', opacity: 0 }}
-                        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                        className="flex-1 min-w-0 flex flex-col overflow-hidden"
-                    >
-                        {conversation}
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* Empty state for desktop when no conversation selected */}
-            {!showConversation && (
+            {showConversation ? (
+                <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
+                    {conversation}
+                </div>
+            ) : (
+                /* Empty state for desktop when no conversation selected */
                 <div className="hidden lg:flex flex-1 items-center justify-center text-center p-8 bg-secondary/20">
                     <div>
                         <span className="material-symbols-outlined text-6xl text-muted-foreground/40 mb-4 block">
@@ -75,26 +63,17 @@ export function ChatLayout({
             )}
 
             {/* Right Pane - Details (optional, desktop only) */}
-            <AnimatePresence>
-                {showDetails && details && (
-                    <motion.div
-                        key="details"
-                        initial={{ x: '100%', opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        exit={{ x: '100%', opacity: 0 }}
-                        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                        className="hidden xl:block w-[360px] shrink-0 border-l border-border overflow-hidden"
-                    >
-                        {details}
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            {showDetails && details && (
+                <div className="hidden xl:block w-[360px] shrink-0 border-l border-border overflow-hidden">
+                    {details}
+                </div>
+            )}
         </div>
     );
 }
 
 // ============================================================
-// MOBILE PUSH TRANSITION WRAPPER - iOS-like transitions
+// MOBILE PUSH TRANSITION WRAPPER
 // ============================================================
 
 export interface PushTransitionProps {
@@ -104,21 +83,10 @@ export interface PushTransitionProps {
 }
 
 export function PushTransition({ children, show, direction = 'right' }: PushTransitionProps) {
-    const xOffset = direction === 'right' ? '100%' : '-100%';
-
+    if (!show) return null;
     return (
-        <AnimatePresence mode="wait">
-            {show && (
-                <motion.div
-                    initial={{ x: xOffset, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    exit={{ x: xOffset, opacity: 0 }}
-                    transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                    className="absolute inset-0 bg-background z-10"
-                >
-                    {children}
-                </motion.div>
-            )}
-        </AnimatePresence>
+        <div className="absolute inset-0 bg-background z-10 animate-in slide-in-from-right duration-300">
+            {children}
+        </div>
     );
 }

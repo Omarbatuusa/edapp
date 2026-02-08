@@ -107,7 +107,7 @@ export function ChatInbox() {
 
     // Filter threads
     const filteredThreads = useMemo(() => {
-        let result = threads || [];
+        let result = Array.isArray(threads) ? threads : [];
 
         // Apply filter
         switch (activeFilter) {
@@ -145,7 +145,7 @@ export function ChatInbox() {
 
     // Pinned threads
     const pinnedThreads = useMemo(() =>
-        (threads || []).filter(t =>
+        (Array.isArray(threads) ? threads : []).filter(t =>
             t.pinned ||
             (t.type === 'announcement' && t.requiresAck && !t.acknowledged)
         ),
@@ -154,7 +154,7 @@ export function ChatInbox() {
 
     // Unread count
     const unreadCount = useMemo(() =>
-        (threads || []).reduce((sum, t) => sum + t.unreadCount, 0),
+        (Array.isArray(threads) ? threads : []).reduce((sum, t) => sum + t.unreadCount, 0),
         [threads]
     );
 
