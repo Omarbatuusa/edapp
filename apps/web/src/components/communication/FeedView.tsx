@@ -1,5 +1,5 @@
 import { useCommunicationStore } from '../../lib/communication-store';
-import { MOCK_CHILDREN, TRANSLATIONS } from './mockData';
+import { MOCK_CHILDREN, TRANSLATIONS, MOCK_FEED } from './mockData';
 import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { ScreenStackBase } from './ScreenStack';
@@ -34,14 +34,18 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
     const storeItems = useCommunicationStore(state => state.items);
     const fetchFeed = useCommunicationStore(state => state.fetchFeed);
     const isLoading = useCommunicationStore(state => state.isLoading);
+    const error = useCommunicationStore(state => state.error);
 
     React.useEffect(() => {
         fetchFeed();
     }, [fetchFeed]);
 
+    // Use mock data as fallback when store is empty (API failure or loading)
+    const feedItems = storeItems.length > 0 ? storeItems : MOCK_FEED;
+
     // Filter Logic
     const filteredFeed = useMemo(() => {
-        let items = [...storeItems];
+        let items = [...feedItems] as FeedItem[];
 
         // 0. Child Filter (TODO: Backend filtering)
         if (selectedChildId !== 'all') {
@@ -76,9 +80,9 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
         });
 
         return items;
-    }, [activeTab, searchQuery, sort, selectedChildId, storeItems]);
+    }, [activeTab, searchQuery, sort, selectedChildId, feedItems]);
 
-    const activeActions = useMemo(() => storeItems.filter(i => i.requiresAck && i.ackStatus === 'pending'), [storeItems]);
+    const activeActions = useMemo(() => feedItems.filter((i: any) => i.requiresAck && i.ackStatus === 'pending'), [feedItems]);
     const displayFeed = filteredFeed;
     const selectedChild = MOCK_CHILDREN.find(c => c.id === selectedChildId);
 
