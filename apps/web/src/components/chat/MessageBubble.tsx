@@ -37,12 +37,13 @@ export function MessageBubble({
         <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'} ${isGrouped ? 'mt-0.5' : 'mt-3'}`}>
             <div
                 className={`relative max-w-[72%] px-3 py-2 shadow-sm ${isOwn
-                        ? 'rounded-2xl rounded-br-md'
-                        : 'rounded-2xl rounded-bl-md bg-card border border-border/50'
+                    ? 'rounded-2xl rounded-br-md'
+                    : 'rounded-2xl rounded-bl-md bg-card border border-border/50'
                     }`}
                 style={isOwn ? {
-                    backgroundColor: 'hsl(var(--primary))',
-                    color: '#FFFFFF',
+                    backgroundColor: '#FFFFFF',
+                    color: 'hsl(var(--primary))',
+                    border: '1px solid hsl(var(--primary) / 0.2)',
                     lineHeight: 1.4
                 } : { lineHeight: 1.4 }}
             >
@@ -90,7 +91,7 @@ export function MessageBubble({
                     className="break-words"
                     style={{
                         fontSize: '15px',
-                        color: isOwn ? '#FFFFFF' : 'inherit'
+                        color: isOwn ? 'inherit' : 'inherit'
                     }}
                 >
                     {content}
@@ -99,7 +100,7 @@ export function MessageBubble({
                 {/* Timestamp and status */}
                 <div
                     className="flex items-center justify-end gap-1 mt-1"
-                    style={{ color: isOwn ? 'rgba(255,255,255,0.75)' : 'var(--muted-foreground)' }}
+                    style={{ color: isOwn ? 'hsl(var(--primary) / 0.7)' : 'var(--muted-foreground)' }}
                 >
                     <span style={{ fontSize: '10px' }}>{timestamp}</span>
                     {isOwn && status && (
