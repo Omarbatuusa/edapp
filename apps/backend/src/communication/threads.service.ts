@@ -315,4 +315,39 @@ export class ThreadsService {
             ],
         });
     }
+    // ============================================
+    // FIND THREAD BY CONTEXT
+    // ============================================
+
+    async findThreadByContext(
+        tenant_id: string,
+        user_id: string,
+        context: {
+            student_id?: string;
+            ticket_category?: TicketCategory;
+            type?: ThreadType;
+        }
+    ): Promise<Thread | null> {
+        const query = this.threadRepo.createQueryBuilder('thread')
+            .innerJoin('thread.members', 'member', 'member.user_id = :user_id', { user_id })
+            .where('thread.tenant_id = :tenant_id', { tenant_id })
+            .andWhere('thread.is_archived = false');
+
+        if (context.type) {
+            query.andWhere('thread.type = :type', { type: context.type });
+        }
+
+        if (context.ticket_category) {
+            query.andWhere('thread.ticket_category = :ticket_category', { ticket_category: context.ticket_category });
+        }
+
+        if (context.student_id) {
+            query.andWhere("thread.context ->> 'student_id' = :student_id", { student_id: context.student_id });
+        }
+
+        // Return the most recently active thread matching context
+        query.orderBy('thread.last_message_at', 'DESC', 'NULLS LAST');
+
+        return query.getOne();
+    }
 }
