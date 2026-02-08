@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 interface ReportModalProps {
     isOpen: boolean;
@@ -30,19 +29,11 @@ export function ReportModal({ isOpen, onClose, onSubmit }: ReportModalProps) {
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            <div
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
                 onClick={onClose}
             />
-            <motion.div
-                initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                className="bg-card border border-border w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden relative z-10"
-            >
+            <div className="bg-card border border-border w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden relative z-10 animate-in zoom-in-95 fade-in duration-200">
                 <div className="p-6 pb-0">
                     <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4">
                         <span className="material-symbols-outlined text-2xl">flag</span>
@@ -58,7 +49,7 @@ export function ReportModal({ isOpen, onClose, onSubmit }: ReportModalProps) {
                         <button
                             key={r}
                             onClick={() => setReason(r)}
-                            className={`w-full p-3 text-left rounded-xl transition-colors font-medium text-sm flex justify-between items-center ${reason === r ? 'bg-primary text-primary-foreground' : 'bg-secondary/50 hover:bg-secondary'
+                            className={`w-full p-3 text-left rounded-xl transition-colors font-medium text-sm flex justify-between items-center ${reason === r ? 'bg-primary text-white' : 'bg-secondary/50 hover:bg-secondary'
                                 }`}
                         >
                             {r}
@@ -90,7 +81,7 @@ export function ReportModal({ isOpen, onClose, onSubmit }: ReportModalProps) {
                         Submit Report
                     </button>
                 </div>
-            </motion.div>
+            </div>
         </div>
     );
 }

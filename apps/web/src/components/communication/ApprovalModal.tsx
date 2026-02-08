@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 interface ApprovalModalProps {
     isOpen: boolean;
@@ -26,19 +25,11 @@ export function ApprovalModal({ isOpen, onClose, item, onApprove, onReject }: Ap
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            <div
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
                 onClick={onClose}
             />
-            <motion.div
-                initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                className="bg-card border border-border w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden relative z-10"
-            >
+            <div className="bg-card border border-border w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden relative z-10 animate-in zoom-in-95 fade-in duration-200">
                 {/* Header */}
                 <div className="p-6 pb-0">
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 ${item.type === 'approval' ? 'bg-amber-100 text-amber-600' : 'bg-primary/10 text-primary'
@@ -114,7 +105,7 @@ export function ApprovalModal({ isOpen, onClose, item, onApprove, onReject }: Ap
                         </div>
                     )}
                 </div>
-            </motion.div>
+            </div>
         </div>
     );
 }

@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { motion } from 'framer-motion';
 
 export const SCREEN_TRANSITION = {
     type: "spring",
@@ -10,15 +9,9 @@ export const SCREEN_TRANSITION = {
 
 export function ScreenStackBase({ children }: { children: React.ReactNode }) {
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: '-20%', scale: 0.95 }}
-            transition={SCREEN_TRANSITION}
-            className="absolute inset-0 flex flex-col bg-background z-0"
-        >
+        <div className="absolute inset-0 flex flex-col bg-background z-0 animate-in fade-in duration-300">
             {children}
-        </motion.div>
+        </div>
     );
 }
 
@@ -38,13 +31,7 @@ export function ScreenStackDetail({ children, onBack, title = "Details", actionI
     }, []);
 
     return (
-        <motion.div
-            initial={{ x: '100%', boxShadow: '-20px 0 50px rgba(0,0,0,0.1)' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%', zIndex: 100 }}
-            transition={SCREEN_TRANSITION}
-            className="absolute inset-0 flex flex-col bg-background z-50 h-[100dvh]"
-        >
+        <div className="absolute inset-0 flex flex-col bg-background z-50 h-[100dvh] animate-in slide-in-from-right duration-300">
             <div className="flex-1 flex flex-col h-full overflow-hidden">
                 {/* Header */}
                 <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50 h-14 flex items-center px-4 shrink-0 justify-between">
@@ -78,6 +65,6 @@ export function ScreenStackDetail({ children, onBack, title = "Details", actionI
                     {children}
                 </div>
             </div>
-        </motion.div>
+        </div>
     );
 }

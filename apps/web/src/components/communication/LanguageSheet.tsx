@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 interface LanguageSheetProps {
     isOpen: boolean;
@@ -27,20 +26,11 @@ export function LanguageSheet({ isOpen, onClose, currentLanguage, onSelectLangua
 
     return (
         <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center">
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            <div
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
                 onClick={onClose}
             />
-            <motion.div
-                initial={{ y: '100%' }}
-                animate={{ y: 0 }}
-                exit={{ y: '100%' }}
-                transition={{ type: "spring", damping: 30, stiffness: 300 }}
-                className="bg-background border-t border-border w-full max-w-md rounded-t-3xl sm:rounded-2xl sm:border max-h-[85vh] flex flex-col relative z-10 shadow-xl"
-            >
+            <div className="bg-background border-t border-border w-full max-w-md rounded-t-3xl sm:rounded-2xl sm:border max-h-[85vh] flex flex-col relative z-10 shadow-xl animate-in slide-in-from-bottom duration-300">
                 <div className="w-12 h-1.5 bg-secondary rounded-full mx-auto mt-3 mb-2 flex-shrink-0" />
 
                 <div className="px-6 pb-2 border-b border-border/50">
@@ -59,8 +49,8 @@ export function LanguageSheet({ isOpen, onClose, currentLanguage, onSelectLangua
                                     onClose();
                                 }}
                                 className={`w-full p-4 rounded-xl border flex items-center justify-between transition-all ${isSelected
-                                        ? 'bg-primary/5 border-primary shadow-sm'
-                                        : 'bg-card border-border hover:bg-secondary/50'
+                                    ? 'bg-primary/5 border-primary shadow-sm'
+                                    : 'bg-card border-border hover:bg-secondary/50'
                                     }`}
                             >
                                 <div className="flex flex-col items-start">
@@ -83,7 +73,7 @@ export function LanguageSheet({ isOpen, onClose, currentLanguage, onSelectLangua
                         Close
                     </button>
                 </div>
-            </motion.div>
+            </div>
         </div>
     );
 }
