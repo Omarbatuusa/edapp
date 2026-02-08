@@ -71,6 +71,7 @@ interface ChatState {
     // Actions
     setThreads: (threads: Thread[]) => void;
     setActiveThread: (threadId: string | null) => void;
+    markThreadRead: (threadId: string) => void;
 
     // Async Actions
     fetchMessages: (threadId: string, userId: string) => Promise<void>;
@@ -116,6 +117,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
     setThreads: (threads) => set({ threads }),
     setActiveThread: (threadId) => set({ activeThreadId: threadId }),
+    markThreadRead: (threadId) => set(state => ({
+        threads: state.threads.map(t =>
+            t.id === threadId ? { ...t, unreadCount: 0 } : t
+        )
+    })),
 
     fetchMessages: async (threadId, userId) => {
         set({ isLoadingMessages: true });
