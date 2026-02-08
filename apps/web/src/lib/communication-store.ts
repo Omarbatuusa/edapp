@@ -34,6 +34,8 @@ export interface FeedItem {
     id: string;
     type: FeedItemType;
     title: string;
+    subtitle: string; // Added to match UI types
+    time: string;     // Added to match UI types
     preview: string;
     timestamp: string;
     urgency: FeedItemUrgency;
@@ -95,6 +97,8 @@ const mapThreadToFeedItem = (thread: ThreadDto): FeedItem => {
         id: thread.id,
         type,
         title: thread.title || 'Untitled',
+        subtitle: thread.last_message_content || 'No messages yet',
+        time: thread.last_message_at || '',
         preview: thread.last_message_content || 'No messages yet',
         timestamp: thread.last_message_at || '', // Needs formatting
         urgency,
