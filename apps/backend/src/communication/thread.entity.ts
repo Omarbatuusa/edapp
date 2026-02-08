@@ -19,6 +19,8 @@ export enum TicketCategory {
     ADMISSIONS = 'admissions',
     TRANSPORT = 'transport',
     IT = 'it',
+    HEALTH = 'health',
+    ACADEMICS = 'academics',
     GENERAL = 'general'
 }
 
@@ -85,12 +87,14 @@ export class Thread {
 
     // For groups - context binding
     @Column({ type: 'jsonb', nullable: true })
+    @Column({ type: 'jsonb', nullable: true })
     context: {
         grade_id?: string;
         class_id?: string;
         subject_id?: string;
         club_id?: string;
         transport_route_id?: string;
+        student_id?: string; // Links thread to a specific child
     };
 
     // Last message cache for inbox display

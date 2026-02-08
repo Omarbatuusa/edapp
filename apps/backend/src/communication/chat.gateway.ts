@@ -160,6 +160,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             thread_id: string;
             content: string;
             attachments?: any[];
+            action_data?: any;
             reply_to_id?: string;
         },
     ) {
@@ -175,6 +176,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 sender_id: user_id,
                 content: data.content,
                 attachments: data.attachments,
+                action_data: data.action_data,
                 reply_to_id: data.reply_to_id,
             });
 
@@ -189,6 +191,46 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 thread_id: data.thread_id,
                 last_message_content: data.content?.substring(0, 100),
                 last_message_at: new Date().toISOString(),
+            });
+
+            return { success: true, message };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+
+    // ============================================
+    // UPDATE ACTION STATUS
+    // ============================================
+
+    @SubscribeMessage('action:update')
+    async handleActionUpdate(
+        @ConnectedSocket() client: AuthenticatedSocket,
+        @MessageBody() data: {
+            thread_id: string;
+            message_id: string;
+            status: 'approved' | 'rejected' | 'acknowledged';
+        },
+    ) {
+        const user_id = client.user_id;
+
+        if (!user_id) {
+            return { success: false, error: 'Not authenticated' };
+        }
+
+        try {
+            const message = await this.messagesService.updateActionStatus(
+                data.message_id,
+                user_id,
+                data.status,
+            );
+
+            // Broadcast update to thread room
+            this.server.to(`thread:${data.thread_id}`).emit('action:updated', {
+                thread_id: data.thread_id,
+                message_id: data.message_id,
+                status: data.status,
+                updated_by: user_id,
             });
 
             return { success: true, message };

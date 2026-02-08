@@ -1,15 +1,22 @@
+export interface FeedItemSource {
+    name: string;
+    role?: string;
+    department?: string;
+    avatar?: string;
+}
+
 export interface FeedItem {
     id: string;
-    type: 'message' | 'announcement' | 'urgent' | 'assignment' | 'support' | 'action'; // Added 'action'
+    type: 'message' | 'announcement' | 'urgent' | 'assignment' | 'support' | 'action';
     title: string;
     subtitle: string;
     time: string;
     unread: boolean;
-    isUnread?: boolean; // Compatibility
-    priority?: 'HIGH' | 'MEDIUM' | 'LOW'; // Added priority
-    childName?: string; // Added childName
-    childGrade?: string; // Added childGrade
-    source?: string;
+    isUnread?: boolean;
+    priority?: 'HIGH' | 'MEDIUM' | 'LOW';
+    childName?: string;
+    childGrade?: string;
+    source?: FeedItemSource | string;
     messagePreview?: string;
     avatar?: string;
     senderAvatar?: string;
@@ -22,7 +29,8 @@ export interface FeedItem {
     category?: string;
     hasDownload?: boolean;
     role?: string;
-    timestamp?: string; // For compatibility with different usage
+    timestamp?: string;
+    threadId?: string;
 }
 
 export interface DetailViewProps {

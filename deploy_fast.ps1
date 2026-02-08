@@ -5,7 +5,7 @@ Write-Host ">>> Starting Fast Frontend Deploy (Fixed Line Endings)..."
 # 1. Zip the web folder (EXCLUDING node_modules)
 Write-Host "1. Zipping web folder (Skipping node_modules)..."
 if (Test-Path "web_deploy.zip") { Remove-Item "web_deploy.zip" }
-Get-ChildItem -Path "web" -Exclude "node_modules" | Compress-Archive -DestinationPath "web_deploy.zip" -CompressionLevel Fastest
+Get-ChildItem -Path "apps\web" -Exclude "node_modules" | Compress-Archive -DestinationPath "web_deploy.zip" -CompressionLevel Fastest
 
 # 2. Upload to Server
 Write-Host "2. Uploading to Vultr..."
@@ -19,4 +19,4 @@ Write-Host "3. Triggering Remote Rebuild..."
 ssh root@139.84.243.230 $remoteCmd
 
 Write-Host ">>> Deploy Complete!"
-Pause
+Write-Host ">>> Deploy Complete!"

@@ -23,6 +23,13 @@ export interface SendMessageDto {
         mime_type?: string;
         duration_seconds?: number;
     }[];
+    action_data?: {
+        type: 'approval' | 'acknowledgement';
+        title: string;
+        subtitle: string;
+        status: 'pending' | 'approved' | 'rejected' | 'acknowledged';
+        metadata?: any;
+    };
     reply_to_id?: string;
 }
 
@@ -65,6 +72,7 @@ export class MessagesService {
             content: dto.content,
             type: dto.type || MessageType.TEXT,
             attachments: dto.attachments || [],
+            action_data: dto.action_data,
             reply_to_id: dto.reply_to_id,
         });
 
@@ -317,6 +325,43 @@ export class MessagesService {
         }
 
         message.reactions = reactions;
+        return this.messageRepo.save(message);
+    }
+    // ============================================
+    // UPDATE ACTION STATUS (Approve/Reject)
+    // ============================================
+
+    async updateActionStatus(
+        message_id: string,
+        user_id: string,
+        status: 'approved' | 'rejected' | 'acknowledged'
+    ): Promise<Message> {
+        const message = await this.messageRepo.findOne({
+            where: { id: message_id },
+        });
+
+        if (!message) {
+            throw new NotFoundException('Message not found');
+        }
+
+        if (message.type !== MessageType.ACTION_CARD || !message.action_data) {
+            throw new NotFoundException('This message is not an action card');
+        }
+
+        // Verify user is a member of the thread
+        const membership = await this.memberRepo.findOne({
+            where: { thread_id: message.thread_id, user_id, has_left: false },
+        });
+
+        if (!membership) {
+            throw new ForbiddenException('Not a member of this thread');
+        }
+
+        message.action_data = {
+            ...message.action_data,
+            status,
+        };
+
         return this.messageRepo.save(message);
     }
 }

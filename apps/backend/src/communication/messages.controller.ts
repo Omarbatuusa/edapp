@@ -115,4 +115,15 @@ export class MessagesController {
     ) {
         return this.messagesService.removeReaction(id, user_id, emoji);
     }
+
+    // ============================================
+    // UPDATE ACTION STATUS
+    // ============================================
+    @Put(':id/action')
+    async updateActionStatus(
+        @Param('id') id: string,
+        @Body() body: { user_id: string; status: 'approved' | 'rejected' | 'acknowledged' },
+    ) {
+        return this.messagesService.updateActionStatus(id, body.user_id, body.status);
+    }
 }

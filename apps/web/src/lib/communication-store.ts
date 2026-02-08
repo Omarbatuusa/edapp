@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import chatApi, { ThreadDto } from './chat-api';
 
 // ============================================================
 // COMMUNICATION STORE - Unified feed state management
@@ -55,6 +56,8 @@ export type DensityType = 'comfortable' | 'compact';
 interface CommunicationState {
     // Feed items
     items: FeedItem[];
+    isLoading: boolean;
+    error: string | null;
 
     // UI state
     filter: FilterType;
@@ -63,12 +66,13 @@ interface CommunicationState {
     searchQuery: string;
 
     // Actions
+    fetchFeed: () => Promise<void>;
     setFilter: (filter: FilterType) => void;
     setSort: (sort: SortType) => void;
     setDensity: (density: DensityType) => void;
     setSearchQuery: (query: string) => void;
-    acknowledgeItem: (id: string) => void;
-    markAsRead: (id: string) => void;
+    acknowledgeItem: (id: string) => Promise<void>;
+    markAsRead: (id: string) => Promise<void>;
 
     // Selectors
     getFilteredItems: () => FeedItem[];
@@ -77,134 +81,88 @@ interface CommunicationState {
     getUrgentCount: () => number;
 }
 
-// ============================================================
-// MOCK DATA
-// ============================================================
+// Helper to map API Thread to FeedItem
+const mapThreadToFeedItem = (thread: ThreadDto): FeedItem => {
+    let type: FeedItemType = 'message';
+    if (thread.type === 'announcement') type = 'announcement';
+    if (thread.type === 'ticket') type = 'support';
 
-const MOCK_FEED_ITEMS: FeedItem[] = [
-    {
-        id: 'ann-1',
-        type: 'announcement',
-        title: 'School Closed Monday - Weather Alert',
-        preview: 'Due to severe weather conditions expected on Monday, all classes will be suspended. Remote learning will continue as scheduled.',
-        timestamp: '2 hours ago',
-        urgency: 'urgent',
-        unread: true,
-        requiresAck: true,
-        ackStatus: 'pending',
-        source: { name: "Principal's Office", department: 'Administration' },
-        attachments: [{ type: 'pdf', name: 'Weather Notice.pdf', url: '#' }],
-    },
-    {
-        id: 'msg-1',
-        type: 'message',
-        title: 'Mrs Smith • Class Teacher',
-        preview: 'Hi! Just wanted to let you know that Lisa did very well in today\'s math test. She scored 92%!',
-        timestamp: '3 hours ago',
-        urgency: 'normal',
-        unread: true,
-        requiresAck: false,
-        ackStatus: null,
-        source: { name: 'Mrs Smith', role: 'Class Teacher', avatar: 'S' },
-        learnerContext: [{ name: 'Lisa Johnson', grade: 'Gr 6A' }],
-        threadId: 'thread-1',
-        unreadCount: 2,
-    },
-    {
-        id: 'sup-1',
-        type: 'support',
-        title: 'Fee Statement Query',
-        preview: 'Regarding the additional charges on the March statement, I would like clarification on the sports equipment fee.',
-        timestamp: 'Yesterday',
-        urgency: 'normal',
-        unread: false,
-        requiresAck: false,
-        ackStatus: null,
-        source: { name: 'Finance Office', department: 'Finance' },
-        status: 'pending',
-    },
-    {
-        id: 'ann-2',
-        type: 'announcement',
-        title: 'Annual Sports Day Registration',
-        preview: 'Please register your child for the upcoming Annual Sports Day. Deadline: 15 March.',
-        timestamp: 'Yesterday',
-        urgency: 'normal',
-        unread: false,
-        requiresAck: true,
-        ackStatus: 'acknowledged',
-        source: { name: 'Coach Sithole', department: 'Sports' },
-    },
-    {
-        id: 'msg-2',
-        type: 'message',
-        title: 'Mr Dlamini • HOD Science',
-        preview: 'The science project materials list has been updated. Please see the attached document.',
-        timestamp: '2 days ago',
-        urgency: 'normal',
-        unread: false,
-        requiresAck: false,
-        ackStatus: null,
-        source: { name: 'Mr Dlamini', role: 'HOD Science', avatar: 'D' },
-        learnerContext: [{ name: 'James Johnson', grade: 'Gr 9B' }],
-        threadId: 'thread-2',
-        attachments: [{ type: 'document', name: 'Materials List.docx', url: '#' }],
-    },
-    {
-        id: 'sup-2',
-        type: 'support',
-        title: 'Transport Route Change Request',
-        preview: 'Request to change pickup point from Main Street to Oak Avenue from next term.',
-        timestamp: '3 days ago',
-        urgency: 'normal',
-        unread: false,
-        requiresAck: false,
-        ackStatus: null,
-        source: { name: 'Transport Office', department: 'Operations' },
-        status: 'resolved',
-    },
-    {
-        id: 'ann-3',
-        type: 'announcement',
-        title: 'Term 2 Report Cards Available',
-        preview: 'Report cards for Term 2 are now available for download in the Academics section.',
-        timestamp: '3 days ago',
-        urgency: 'normal',
-        unread: false,
-        requiresAck: false,
-        ackStatus: null,
-        source: { name: 'Admin Office', department: 'Administration' },
-        attachments: [{ type: 'pdf', name: 'Report Card.pdf', url: '#' }],
-    },
-];
+    let urgency: FeedItemUrgency = 'normal';
+    if (thread.ticket_status === 'resolved') urgency = 'normal'; // Resolved isn't urgent
+    // TODO: Map urgency from backend priority or status
+
+    return {
+        id: thread.id,
+        type,
+        title: thread.title || 'Untitled',
+        preview: thread.last_message_content || 'No messages yet',
+        timestamp: thread.last_message_at || '', // Needs formatting
+        urgency,
+        unread: !!thread.unread_count && thread.unread_count > 0,
+        unreadCount: thread.unread_count,
+        requiresAck: !!thread.requires_ack,
+        ackStatus: thread.has_acknowledged ? 'acknowledged' : 'pending',
+        source: {
+            name: 'Unknown', // Need sender info in ThreadDto or fetch separately?
+            // For now, use title or generic
+        },
+        threadId: thread.id,
+        status: thread.ticket_status as TicketStatus,
+        // learnerContext: thread.context ? ... : undefined,
+    };
+};
 
 // ============================================================
 // STORE
 // ============================================================
 
 export const useCommunicationStore = create<CommunicationState>((set, get) => ({
-    items: MOCK_FEED_ITEMS,
+    items: [],
+    isLoading: false,
+    error: null,
     filter: 'all',
     sort: 'newest',
     density: 'comfortable',
     searchQuery: '',
+
+    fetchFeed: async () => {
+        set({ isLoading: true, error: null });
+        try {
+            const threads = await chatApi.getThreads();
+            const items = threads.map(mapThreadToFeedItem);
+            set({ items, isLoading: false });
+        } catch (error: any) {
+            set({ error: error.message, isLoading: false });
+        }
+    },
 
     setFilter: (filter) => set({ filter }),
     setSort: (sort) => set({ sort }),
     setDensity: (density) => set({ density }),
     setSearchQuery: (query) => set({ searchQuery: query }),
 
-    acknowledgeItem: (id) => set((state) => ({
-        items: state.items.map((item) =>
-            item.id === id ? { ...item, ackStatus: 'acknowledged' as AckStatus } : item
-        ),
-    })),
+    acknowledgeItem: async (id) => {
+        // Optimistic update
+        set((state) => ({
+            items: state.items.map((item) =>
+                item.id === id ? { ...item, ackStatus: 'acknowledged' as AckStatus } : item
+            ),
+        }));
+        try {
+            await chatApi.acknowledgeThread(id);
+        } catch (error) {
+            // Revert on error?
+        }
+    },
 
-    markAsRead: (id) => set((state) => ({
-        items: state.items.map((item) =>
-            item.id === id ? { ...item, unread: false } : item
-        ),
-    })),
+    markAsRead: async (id) => {
+        set((state) => ({
+            items: state.items.map((item) =>
+                item.id === id ? { ...item, unread: false, unreadCount: 0 } : item
+            ),
+        }));
+        // API call to mark read? Usually done when opening thread
+    },
 
     getFilteredItems: () => {
         const { items, filter, sort, searchQuery } = get();
@@ -241,8 +199,9 @@ export const useCommunicationStore = create<CommunicationState>((set, get) => ({
                     if (a.urgency !== b.urgency) return a.urgency === 'urgent' ? -1 : 1;
                     break;
             }
-            // Default: newest first (assuming timestamp order)
-            return 0;
+            // Default: newest first (assuming timestamp order string comparison works for ISO)
+            // Ideally convert to Date
+            return (b.timestamp || '').localeCompare(a.timestamp || '');
         });
 
         return filtered;

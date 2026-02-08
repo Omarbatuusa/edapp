@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import chatApi, { MessageDto } from './chat-api';
 
 // ============================================================
 // CHAT STORE - Zustand store for chat state management
@@ -27,33 +28,25 @@ export interface Thread {
 export interface Message {
     id: string;
     threadId: string;
-    content: string;
+    contentType: 'text' | 'image' | 'document' | 'voice' | 'system' | 'action_card';
+    content: string; // Text or fallback
     senderId: string;
     senderName?: string;
-    isOwn: boolean;
-    timestamp: string;
+    isMe: boolean;
+    time: string;
     date: string;
-    status?: 'sending' | 'sent' | 'delivered' | 'read';
+    status: 'sending' | 'sent' | 'delivered' | 'read';
     attachments?: {
         type: 'image' | 'document' | 'voice';
         url: string;
         name?: string;
         duration?: number;
     }[];
-}
-
-interface TypingState {
-    [threadId: string]: {
-        userId: string;
-        userName: string;
-        timestamp: number;
-    }[];
-}
-
-interface PresenceState {
-    [userId: string]: {
-        online: boolean;
-        lastSeen?: string;
+    actionType?: 'approval' | 'acknowledgement';
+    actionData?: {
+        title: string;
+        subtitle: string;
+        status: 'pending' | 'approved' | 'rejected' | 'acknowledged';
     };
 }
 
@@ -65,148 +58,170 @@ interface ChatState {
 
     // Messages (by thread)
     messagesByThread: { [threadId: string]: Message[] };
+    isLoadingMessages: boolean;
 
     // Realtime state
-    typing: TypingState;
-    presence: PresenceState;
-
-    // Filter
-    activeFilter: string;
+    typing: Record<string, any[]>;
+    presence: Record<string, any>;
 
     // Actions
-    setThreads: (threads: Thread[]) => void;
     setActiveThread: (threadId: string | null) => void;
-    addMessage: (message: Message) => void;
-    updateMessage: (messageId: string, updates: Partial<Message>) => void;
-    setMessages: (threadId: string, messages: Message[]) => void;
-    markThreadRead: (threadId: string) => void;
-    setTyping: (threadId: string, users: TypingState[string]) => void;
-    setPresence: (userId: string, presence: PresenceState[string]) => void;
-    setFilter: (filter: string) => void;
-    toggleMute: (threadId: string) => void;
-    togglePin: (threadId: string) => void;
-    acknowledgeAnnouncement: (threadId: string) => void;
+
+    // Async Actions
+    fetchMessages: (threadId: string, userId: string) => Promise<void>;
+    sendMessage: (threadId: string, content: string, userId: string) => Promise<void>;
+    handleAction: (threadId: string, messageId: string, action: 'approved' | 'rejected' | 'acknowledged', userId: string) => Promise<void>;
+
+    // Socket Actions
+    receiveMessage: (message: Message) => void;
+    receiveActionUpdate: (threadId: string, messageId: string, status: 'approved' | 'rejected' | 'acknowledged') => void;
 }
 
+// Mapper helper
+const mapDtoToMessage = (dto: MessageDto, currentUserId: string): Message => {
+    const date = new Date(dto.created_at);
+    return {
+        id: dto.id,
+        threadId: dto.thread_id,
+        contentType: dto.type,
+        content: dto.content,
+        senderId: dto.sender_id,
+        senderName: dto.sender_name,
+        isMe: dto.sender_id === currentUserId,
+        time: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        date: date.toLocaleDateString(), // simplified
+        status: 'read', // simplified
+        attachments: dto.attachments,
+        actionType: dto.action_data?.type,
+        actionData: dto.action_data,
+    };
+};
+
 export const useChatStore = create<ChatState>((set, get) => ({
-    // Initial state
     threads: [],
     activeThreadId: null,
     activeThread: null,
     messagesByThread: {},
+    isLoadingMessages: false,
     typing: {},
     presence: {},
-    activeFilter: 'all',
 
-    // Actions
-    setThreads: (threads) => set({ threads }),
+    setActiveThread: (threadId) => set({ activeThreadId: threadId }),
 
-    setActiveThread: (threadId) => set((state) => ({
-        activeThreadId: threadId,
-        activeThread: threadId ? state.threads.find(t => t.id === threadId) || null : null
-    })),
+    fetchMessages: async (threadId, userId) => {
+        set({ isLoadingMessages: true });
+        try {
+            const dtos = await chatApi.getMessages(threadId);
+            const messages = dtos.map(dto => mapDtoToMessage(dto, userId)).reverse(); // Reverse for chat order?
 
-    addMessage: (message) => set((state) => {
+            set(state => ({
+                messagesByThread: {
+                    ...state.messagesByThread,
+                    [threadId]: messages
+                },
+                isLoadingMessages: false
+            }));
+        } catch (error) {
+            console.error(error);
+            set({ isLoadingMessages: false });
+        }
+    },
+
+    sendMessage: async (threadId, content, userId) => {
+        // Optimistic add
+        const tempId = Date.now().toString();
+        const optimisticMsg: Message = {
+            id: tempId,
+            threadId,
+            contentType: 'text',
+            content,
+            senderId: userId,
+            isMe: true,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            date: 'Today',
+            status: 'sending'
+        };
+
+        set(state => ({
+            messagesByThread: {
+                ...state.messagesByThread,
+                [threadId]: [...(state.messagesByThread[threadId] || []), optimisticMsg]
+            }
+        }));
+
+        try {
+            const dto = await chatApi.sendMessage({ thread_id: threadId, content });
+            const realMsg = mapDtoToMessage(dto, userId);
+
+            set(state => ({
+                messagesByThread: {
+                    ...state.messagesByThread,
+                    [threadId]: state.messagesByThread[threadId].map(m => m.id === tempId ? realMsg : m)
+                }
+            }));
+        } catch (error) {
+            console.error(error);
+            // Remove optimistic message or mark error?
+        }
+    },
+
+    // Socket Event Actions
+    receiveMessage: (message: Message) => set((state) => {
         const threadMessages = state.messagesByThread[message.threadId] || [];
+        // Dedup check
+        if (threadMessages.some(m => m.id === message.id)) return {};
+
         return {
             messagesByThread: {
                 ...state.messagesByThread,
                 [message.threadId]: [...threadMessages, message]
             },
-            // Update thread's last message
             threads: state.threads.map(t =>
                 t.id === message.threadId
-                    ? { ...t, lastMessage: message.content, lastMessageTime: message.timestamp }
+                    ? {
+                        ...t,
+                        lastMessage: message.content,
+                        lastMessageTime: message.time, // or timestamp
+                        unreadCount: t.id === state.activeThreadId ? t.unreadCount : t.unreadCount + 1
+                    }
                     : t
             )
         };
     }),
 
-    updateMessage: (messageId, updates) => set((state) => {
-        const newMessagesByThread = { ...state.messagesByThread };
-        for (const threadId in newMessagesByThread) {
-            newMessagesByThread[threadId] = newMessagesByThread[threadId].map(m =>
-                m.id === messageId ? { ...m, ...updates } : m
-            );
-        }
-        return { messagesByThread: newMessagesByThread };
-    }),
-
-    setMessages: (threadId, messages) => set((state) => ({
+    receiveActionUpdate: (threadId, messageId, status) => set((state) => ({
         messagesByThread: {
             ...state.messagesByThread,
-            [threadId]: messages
+            [threadId]: state.messagesByThread[threadId]?.map(m =>
+                m.id === messageId && m.actionData
+                    ? { ...m, actionData: { ...m.actionData, status } }
+                    : m
+            ) || []
         }
     })),
 
-    markThreadRead: (threadId) => set((state) => ({
-        threads: state.threads.map(t =>
-            t.id === threadId ? { ...t, unreadCount: 0 } : t
-        )
-    })),
+    handleAction: async (threadId, messageId, action, userId) => {
+        // Optimistic update
+        set(state => ({
+            messagesByThread: {
+                ...state.messagesByThread,
+                [threadId]: state.messagesByThread[threadId]?.map(m => {
+                    if (m.id === messageId && m.actionData) {
+                        return {
+                            ...m,
+                            actionData: { ...m.actionData, status: action }
+                        };
+                    }
+                    return m;
+                }) || []
+            }
+        }));
 
-    setTyping: (threadId, users) => set((state) => ({
-        typing: {
-            ...state.typing,
-            [threadId]: users
+        try {
+            await chatApi.updateActionStatus(messageId, action, userId);
+        } catch (error) {
+            console.error(error);
+            // Revert?
         }
-    })),
-
-    setPresence: (userId, presence) => set((state) => ({
-        presence: {
-            ...state.presence,
-            [userId]: presence
-        }
-    })),
-
-    setFilter: (filter) => set({ activeFilter: filter }),
-
-    toggleMute: (threadId) => set((state) => ({
-        threads: state.threads.map(t =>
-            t.id === threadId ? { ...t, muted: !t.muted } : t
-        )
-    })),
-
-    togglePin: (threadId) => set((state) => ({
-        threads: state.threads.map(t =>
-            t.id === threadId ? { ...t, pinned: !t.pinned } : t
-        )
-    })),
-
-    acknowledgeAnnouncement: (threadId) => set((state) => ({
-        threads: state.threads.map(t =>
-            t.id === threadId ? { ...t, acknowledged: true } : t
-        )
-    }))
-}));
-
-// ============================================================
-// SELECTORS - For derived state
-// ============================================================
-
-export const selectFilteredThreads = (state: ChatState) => {
-    const { threads, activeFilter } = state;
-
-    switch (activeFilter) {
-        case 'unread':
-            return threads.filter(t => t.unreadCount > 0);
-        case 'groups':
-            return threads.filter(t => t.type === 'group');
-        case 'staff':
-            return threads.filter(t => t.type === 'dm');
-        case 'grades':
-            return threads.filter(t => t.type === 'group' && t.name.includes('Grade'));
-        case 'support':
-            return threads.filter(t => t.type === 'ticket');
-        case 'announcements':
-            return threads.filter(t => t.type === 'announcement');
-        default:
-            return threads;
     }
-};
-
-export const selectUnreadCount = (state: ChatState) =>
-    state.threads.reduce((sum, t) => sum + t.unreadCount, 0);
-
-export const selectPinnedThreads = (state: ChatState) =>
-    state.threads.filter(t => t.pinned || (t.type === 'announcement' && t.requiresAck && !t.acknowledged));
+}));

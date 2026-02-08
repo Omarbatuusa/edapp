@@ -1,24 +1,9 @@
-import React, { useState, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FeedItem } from './types';
-import { MOCK_FEED, MOCK_CHILDREN, TRANSLATIONS } from './mockData';
-import { ScreenStackBase } from './ScreenStack';
-
-interface FeedViewProps {
-    onItemClick: (item: FeedItem) => void;
-    officeHours: string;
-    selectedChildId: string;
-    setSelectedChildId: (id: string) => void;
-    isTranslated: boolean;
-    setIsTranslated: (val: boolean) => void;
-    onNewChat: () => void;
-    onOpenActionCenter: () => void;
-    onOpenLanguage: () => void;
-}
+import { useCommunicationStore } from '../../lib/communication-store';
+import { MOCK_CHILDREN, TRANSLATIONS } from './mockData';
+// ... other imports
 
 export function FeedView({ onItemClick, officeHours, selectedChildId, setSelectedChildId, isTranslated, setIsTranslated, onNewChat, onOpenActionCenter, onOpenLanguage }: FeedViewProps) {
-    const router = useRouter();
+    // Removed unused useRouter
     const [activeTab, setActiveTab] = useState<'all' | 'announcements' | 'classes' | 'direct' | 'support'>('all');
     const [isOffline, setIsOffline] = useState(false); // Mock offline state
     const [searchQuery, setSearchQuery] = useState('');
@@ -26,20 +11,30 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
     const [showOfficeHours, setShowOfficeHours] = useState(true);
     const [showChildSelector, setShowChildSelector] = useState(false);
 
+    // Store hooks
+    const storeItems = useCommunicationStore(state => state.items);
+    const fetchFeed = useCommunicationStore(state => state.fetchFeed);
+    const isLoading = useCommunicationStore(state => state.isLoading);
+
+    React.useEffect(() => {
+        fetchFeed();
+    }, [fetchFeed]);
+
     // Filter Logic
     const filteredFeed = useMemo(() => {
-        let items = [...MOCK_FEED];
+        let items = [...storeItems];
 
-        // 0. Child Filter
+        // 0. Child Filter (TODO: Backend filtering)
         if (selectedChildId !== 'all') {
             const childName = MOCK_CHILDREN.find(c => c.id === selectedChildId)?.name;
-            items = items.filter(i => !i.childName || i.childName === childName);
+            // items = items.filter(i => !i.childName || i.childName === childName);
+            // Need child info in FeedItem from API
         }
 
         // 1. Tab Filter
-        if (activeTab === 'announcements') items = items.filter(i => i.type === 'announcement' || i.type === 'urgent');
-        if (activeTab === 'classes') items = items.filter(i => i.type === 'message' && i.subtitle?.includes('Class')); // Mock logic for now
-        if (activeTab === 'direct') items = items.filter(i => i.type === 'message' && !i.subtitle?.includes('Class'));
+        if (activeTab === 'announcements') items = items.filter(i => i.type === 'announcement' || i.urgency === 'urgent');
+        if (activeTab === 'classes') items = items.filter(i => i.type === 'message'); // TODO: Class distinction
+        if (activeTab === 'direct') items = items.filter(i => i.type === 'message');
         if (activeTab === 'support') items = items.filter(i => i.type === 'support');
 
         // 2. Search
@@ -47,25 +42,25 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
             const q = searchQuery.toLowerCase();
             items = items.filter(i =>
                 i.title?.toLowerCase().includes(q) ||
-                i.subtitle?.toLowerCase().includes(q) ||
-                i.source?.toLowerCase().includes(q) ||
-                i.childName?.toLowerCase().includes(q)
+                i.preview?.toLowerCase().includes(q)
             );
         }
 
         // 3. Sort
         items.sort((a, b) => {
             // Urgent always on top
-            if (a.type === 'urgent' && b.type !== 'urgent') return -1;
-            if (a.type !== 'urgent' && b.type === 'urgent') return 1;
+            if (a.urgency === 'urgent' && b.urgency !== 'urgent') return -1;
+            if (a.urgency !== 'urgent' && b.urgency === 'urgent') return 1;
+
+            if (sort === 'newest') return (b.timestamp || '').localeCompare(a.timestamp || '');
             return 0;
         });
 
         return items;
-    }, [activeTab, searchQuery, sort, selectedChildId]);
+    }, [activeTab, searchQuery, sort, selectedChildId, storeItems]);
 
-    const activeActions = useMemo(() => MOCK_FEED.filter(i => i.type === 'action'), []);
-    const displayFeed = filteredFeed.filter(i => i.type !== 'action');
+    const activeActions = useMemo(() => storeItems.filter(i => i.requiresAck && i.ackStatus === 'pending'), [storeItems]);
+    const displayFeed = filteredFeed;
     const selectedChild = MOCK_CHILDREN.find(c => c.id === selectedChildId);
 
     // Mock Offline Toggle for Demo

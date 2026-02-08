@@ -17,12 +17,14 @@ export interface ThreadDto {
     unread_count?: number;
     is_pinned?: boolean;
     is_muted?: boolean;
-    ticket_status?: 'open' | 'pending' | 'resolved' | 'escalated';
+    ticket_category?: 'fees' | 'admissions' | 'transport' | 'it' | 'health' | 'academics' | 'general';
+    ticket_status?: 'open' | 'pending' | 'resolved' | 'closed';
     requires_ack?: boolean;
     has_acknowledged?: boolean;
     context?: {
         grade_id?: string;
         class_id?: string;
+        student_id?: string;
     };
 }
 
@@ -32,7 +34,7 @@ export interface MessageDto {
     sender_id: string;
     sender_name?: string;
     sender_avatar?: string;
-    type: 'text' | 'image' | 'document' | 'voice' | 'system';
+    type: 'text' | 'image' | 'document' | 'voice' | 'system' | 'action_card';
     content: string;
     attachments?: {
         type: 'image' | 'document' | 'voice';
@@ -40,6 +42,13 @@ export interface MessageDto {
         name?: string;
         size_bytes?: number;
     }[];
+    action_data?: {
+        type: 'approval' | 'acknowledgement';
+        title: string;
+        subtitle: string;
+        status: 'pending' | 'approved' | 'rejected' | 'acknowledged';
+        metadata?: any;
+    };
     reply_to?: {
         id: string;
         sender_name: string;
@@ -56,7 +65,12 @@ export interface CreateThreadRequest {
     title?: string;
     description?: string;
     member_ids: string[];
-    ticket_category?: 'general' | 'academic' | 'medical' | 'behavioral' | 'safeguarding';
+    ticket_category?: 'fees' | 'admissions' | 'transport' | 'it' | 'health' | 'academics' | 'general';
+    context?: {
+        grade_id?: string;
+        class_id?: string;
+        student_id?: string;
+    };
     requires_ack?: boolean;
     ack_deadline?: string;
 }
@@ -65,6 +79,13 @@ export interface SendMessageRequest {
     thread_id: string;
     content: string;
     attachments?: any[];
+    action_data?: {
+        type: 'approval' | 'acknowledgement';
+        title: string;
+        subtitle: string;
+        status: 'pending' | 'approved' | 'rejected' | 'acknowledged';
+        metadata?: any;
+    };
     reply_to_id?: string;
 }
 
@@ -76,11 +97,15 @@ export const chatApi = {
 
     async getThreads(params?: {
         type?: string;
+        ticket_category?: string;
+        student_id?: string;
         unread_only?: boolean;
         search?: string;
     }): Promise<ThreadDto[]> {
         const queryParams = new URLSearchParams();
         if (params?.type) queryParams.append('type', params.type);
+        if (params?.ticket_category) queryParams.append('ticket_category', params.ticket_category);
+        if (params?.student_id) queryParams.append('student_id', params.student_id);
         if (params?.unread_only) queryParams.append('unread_only', 'true');
         if (params?.search) queryParams.append('search', params.search);
 
@@ -95,6 +120,17 @@ export const chatApi = {
 
     async createThread(data: CreateThreadRequest): Promise<ThreadDto> {
         const response = await apiClient.post('/threads', data);
+        return response.data;
+    },
+
+    async findThreadByContext(data: {
+        tenant_id: string;
+        user_id: string;
+        student_id?: string;
+        ticket_category?: string;
+        type?: string;
+    }): Promise<{ thread: ThreadDto | null }> {
+        const response = await apiClient.post('/threads/find-context', data);
         return response.data;
     },
 
@@ -149,6 +185,11 @@ export const chatApi = {
 
     async deleteMessage(messageId: string): Promise<void> {
         await apiClient.delete(`/messages/${messageId}`);
+    },
+
+    async updateActionStatus(messageId: string, status: 'approved' | 'rejected' | 'acknowledged', userId: string): Promise<MessageDto> {
+        const response = await apiClient.put(`/messages/${messageId}/action`, { status, user_id: userId });
+        return response.data;
     },
 
     async addReaction(messageId: string, emoji: string): Promise<void> {
