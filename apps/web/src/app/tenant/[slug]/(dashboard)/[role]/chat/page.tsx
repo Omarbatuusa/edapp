@@ -4,7 +4,8 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Plus, X, Search } from 'lucide-react';
-import { ThreadRow, FilterChips, DEFAULT_CHAT_FILTERS } from '@/components/chat';
+import { ThreadRow } from '@/components/chat/ThreadRow';
+import { FilterChips, DEFAULT_CHAT_FILTERS } from '@/components/chat/FilterChips';
 import { useChatStore, Thread } from '@/lib/chat-store';
 
 // ============================================================
