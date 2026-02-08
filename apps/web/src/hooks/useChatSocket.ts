@@ -64,7 +64,16 @@ export function useChatSocket(options: ChatSocketOptions) {
     useEffect(() => {
         if (!tenant_id || !user_id) return;
 
-        const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+        // Use current origin for WebSocket to avoid CORS issues with subdomains
+        // Falls back to env variable for SSR or localhost dev
+        let backendUrl: string;
+        if (typeof window !== 'undefined') {
+            // Client-side: use current origin (e.g., https://lia.edapp.co.za)
+            backendUrl = window.location.origin;
+        } else {
+            // Server-side: use env variable
+            backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+        }
 
         const socket = io(`${backendUrl}/chat`, {
             query: { tenant_id, user_id },
@@ -72,6 +81,7 @@ export function useChatSocket(options: ChatSocketOptions) {
             reconnection: true,
             reconnectionAttempts: 5,
             reconnectionDelay: 1000,
+            timeout: 10000, // 10 second timeout
         });
 
         socketRef.current = socket;

@@ -1,17 +1,27 @@
 import axios from 'axios';
 
+// Get API URL that works with multi-tenant subdomains
+// If env variable is set and matches current origin pattern, use it
+// Otherwise, use relative URL to current origin
+const getApiBaseUrl = () => {
+    // Server-side: use env variable or default
+    if (typeof window === 'undefined') {
+        return process.env.NEXT_PUBLIC_API_URL || '/v1';
+    }
+
+    // Client-side: use relative URL to avoid CORS issues with subdomains
+    // This assumes nginx proxies /v1/* to the API backend
+    return '/v1';
+};
+
 const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost/v1',
+    baseURL: getApiBaseUrl(),
     headers: {
         'Content-Type': 'application/json',
     },
 });
 
 api.interceptors.request.use(async (config) => {
-    // Pass Host header if doing server-side fetching, or let browser handle it
-    // But for multi-tenant, we might need to explicit send a header if proxy doesn't forward it?
-    // Nginx forwards Host header.
-
     // Attach Firebase token if user is authenticated
     if (typeof window !== 'undefined') {
         try {
