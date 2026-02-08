@@ -212,7 +212,7 @@ export default function ChatInboxPage() {
                 <FilterChips
                     filters={filtersWithCounts}
                     activeFilter={activeFilter}
-                    onFilterChange={setFilter}
+                    onFilterChange={(id) => setFilter(id as any)}
                 />
             </div>
 
