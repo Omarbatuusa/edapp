@@ -1,6 +1,10 @@
 import { useCommunicationStore } from '../../lib/communication-store';
 import { MOCK_CHILDREN, TRANSLATIONS } from './mockData';
-// ... other imports
+import React, { useState, useMemo, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { ScreenStackBase } from './ScreenStack';
+import { FeedItem } from './types';
 
 // ===========================================
 // PROPS INTERFACE
@@ -19,7 +23,7 @@ export interface FeedViewProps {
 }
 
 export function FeedView({ onItemClick, officeHours, selectedChildId, setSelectedChildId, isTranslated, setIsTranslated, onNewChat, onOpenActionCenter, onOpenLanguage }: FeedViewProps) {
-    // Removed unused useRouter
+    const router = useRouter();
     const [activeTab, setActiveTab] = useState<'all' | 'announcements' | 'classes' | 'direct' | 'support'>('all');
     const [isOffline, setIsOffline] = useState(false); // Mock offline state
     const [searchQuery, setSearchQuery] = useState('');
@@ -337,7 +341,7 @@ function UrgentCard({ item, isTranslated, viewMode }: { item: FeedItem, isTransl
                 {viewMode !== 'compact' && (
                     <div className="flex items-center gap-2 mt-3 text-red-700 dark:text-red-300 text-xs font-medium">
                         <span className="material-symbols-outlined text-sm">school</span>
-                        <span>{item.source}</span>
+                        <span>{typeof item.source === 'string' ? item.source : item.source?.name}</span>
                     </div>
                 )}
             </div>
@@ -383,7 +387,7 @@ function StandardAnnouncementRow({ item, isTranslated, viewMode }: { item: FeedI
                             <div className="w-4 h-4 rounded-full bg-secondary flex items-center justify-center">
                                 <span className="material-symbols-outlined text-[10px]">person</span>
                             </div>
-                            <span className="truncate max-w-[80px]">{item.source}</span>
+                            <span className="truncate max-w-[80px]">{typeof item.source === 'string' ? item.source : item.source?.name}</span>
                             {item.childName && (
                                 <>
                                     <span className="w-0.5 h-3 bg-border"></span>
