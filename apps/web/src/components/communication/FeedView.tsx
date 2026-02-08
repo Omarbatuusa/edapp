@@ -19,13 +19,12 @@ interface FeedViewProps {
 
 export function FeedView({ onItemClick, officeHours, selectedChildId, setSelectedChildId, isTranslated, setIsTranslated, onNewChat, onOpenActionCenter, onOpenLanguage }: FeedViewProps) {
     const router = useRouter();
-    const [filter, setFilter] = useState<'all' | 'unread' | 'urgent' | 'announcements' | 'messages' | 'support' | 'action'>('all');
-    const [sort, setSort] = useState<'newest' | 'priority' | 'oldest'>('newest');
+    const [activeTab, setActiveTab] = useState<'all' | 'announcements' | 'classes' | 'direct' | 'support'>('all');
+    const [isOffline, setIsOffline] = useState(false); // Mock offline state
     const [searchQuery, setSearchQuery] = useState('');
+    const [sort, setSort] = useState<'newest' | 'priority' | 'oldest'>('newest');
     const [showOfficeHours, setShowOfficeHours] = useState(true);
     const [showChildSelector, setShowChildSelector] = useState(false);
-
-    const [viewMode, setViewMode] = useState<'list' | 'compact'>('list');
 
     // Filter Logic
     const filteredFeed = useMemo(() => {
@@ -37,13 +36,11 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
             items = items.filter(i => !i.childName || i.childName === childName);
         }
 
-        // 1. Type Filter
-        if (filter === 'unread') items = items.filter(i => i.unread || i.isUnread);
-        if (filter === 'urgent') items = items.filter(i => i.type === 'urgent');
-        if (filter === 'action') items = items.filter(i => i.type === 'action'); // Added Action filter
-        if (filter === 'announcements') items = items.filter(i => i.type === 'announcement' || i.type === 'urgent');
-        if (filter === 'messages') items = items.filter(i => i.type === 'message');
-        if (filter === 'support') items = items.filter(i => i.type === 'support');
+        // 1. Tab Filter
+        if (activeTab === 'announcements') items = items.filter(i => i.type === 'announcement' || i.type === 'urgent');
+        if (activeTab === 'classes') items = items.filter(i => i.type === 'message' && i.subtitle?.includes('Class')); // Mock logic for now
+        if (activeTab === 'direct') items = items.filter(i => i.type === 'message' && !i.subtitle?.includes('Class'));
+        if (activeTab === 'support') items = items.filter(i => i.type === 'support');
 
         // 2. Search
         if (searchQuery) {
@@ -58,21 +55,45 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
 
         // 3. Sort
         items.sort((a, b) => {
+            // Urgent always on top
+            if (a.type === 'urgent' && b.type !== 'urgent') return -1;
+            if (a.type !== 'urgent' && b.type === 'urgent') return 1;
             return 0;
         });
 
         return items;
-    }, [filter, searchQuery, sort, selectedChildId]);
+    }, [activeTab, searchQuery, sort, selectedChildId]);
 
-    const activeActions = filteredFeed.filter(i => i.type === 'action');
+    const activeActions = useMemo(() => MOCK_FEED.filter(i => i.type === 'action'), []);
     const displayFeed = filteredFeed.filter(i => i.type !== 'action');
-
     const selectedChild = MOCK_CHILDREN.find(c => c.id === selectedChildId);
+
+    // Mock Offline Toggle for Demo
+    // useEffect(() => {
+    //     const timer = setTimeout(() => setIsOffline(true), 5000);
+    //     return () => clearTimeout(timer);
+    // }, []);
+
 
     return (
         <ScreenStackBase>
             {/* 1. Header (Sticky) */}
-            <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50 transition-all duration-200">
+            <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/50 transition-all duration-200 shadow-sm">
+
+                {/* Offline Indicator */}
+                <AnimatePresence>
+                    {isOffline && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="bg-zinc-800 text-zinc-300 px-4 py-1 text-xs font-medium text-center flex items-center justify-center gap-2"
+                        >
+                            <span className="material-symbols-outlined text-[14px] animate-pulse">wifi_off</span>
+                            <span>Offline — messages will send when connected</span>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
                 {/* Office Hours Banner */}
                 {showOfficeHours && (
@@ -109,13 +130,20 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                         </button>
                     </div>
 
-                    {/* View Toggle */}
-                    <button
-                        onClick={() => setViewMode(prev => prev === 'list' ? 'compact' : 'list')}
-                        className="w-9 h-9 rounded-full flex items-center justify-center transition-colors bg-secondary/50 text-muted-foreground hover:bg-secondary"
-                    >
-                        <span className="material-symbols-outlined text-[20px]">{viewMode === 'list' ? 'view_list' : 'view_agenda'}</span>
-                    </button>
+                    <div className="flex items-center gap-1">
+                        <button
+                            onClick={onOpenLanguage}
+                            className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors ${isTranslated ? 'bg-primary text-primary-foreground' : 'bg-secondary/50 text-muted-foreground hover:bg-secondary'}`}
+                        >
+                            <span className="material-symbols-outlined text-[18px]">translate</span>
+                        </button>
+                        <button
+                            onClick={onNewChat}
+                            className="w-9 h-9 rounded-full flex items-center justify-center bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">edit_square</span>
+                        </button>
+                    </div>
 
                     {/* Child Selector Dropdown */}
                     <AnimatePresence>
@@ -148,69 +176,29 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                             </>
                         )}
                     </AnimatePresence>
+                </div>
 
-                    <button
-                        onClick={() => setIsTranslated(!isTranslated)}
-                        className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors ${isTranslated ? 'bg-primary text-primary-foreground' : 'bg-secondary/50 text-muted-foreground hover:bg-secondary'}`}
-                    >
-                        <span className="material-symbols-outlined text-[18px]">translate</span>
-                    </button>
+                {/* TABS */}
+                <div className="flex px-2 overflow-x-auto no-scrollbar border-t border-border/50">
+                    <TabButton label="All" active={activeTab === 'all'} onClick={() => setActiveTab('all')} />
+                    <TabButton label="Announcements" active={activeTab === 'announcements'} onClick={() => setActiveTab('announcements')} />
+                    <TabButton label="Classes" active={activeTab === 'classes'} onClick={() => setActiveTab('classes')} />
+                    <TabButton label="Direct" active={activeTab === 'direct'} onClick={() => setActiveTab('direct')} />
+                    <TabButton label="Support" active={activeTab === 'support'} onClick={() => setActiveTab('support')} />
                 </div>
             </header>
 
-            {/* 2. Controls Row */}
-            <div className="sticky top-[calc(3.5rem)] z-40 bg-background py-2 px-4 shadow-sm space-y-3 border-b border-border/30">
-                {/* Search & Sort */}
-                <div className="flex gap-2">
-                    <div className="relative flex-1">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-muted-foreground text-[20px]">search</span>
-                        <input
-                            type="text"
-                            placeholder="Search updates..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full h-10 pl-10 pr-4 rounded-xl bg-secondary/50 border-none focus:ring-2 focus:ring-primary/20 text-sm transition-all text-foreground"
-                        />
-                    </div>
-                    <button
-                        onClick={() => setSort(s => s === 'newest' ? 'priority' : s === 'priority' ? 'oldest' : 'newest')}
-                        className="h-10 w-10 flex items-center justify-center rounded-xl bg-secondary/50 hover:bg-secondary transition-colors relative"
-                    >
-                        <span className="material-symbols-outlined text-muted-foreground">sort</span>
-                        {sort !== 'newest' && <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-primary rounded-full"></span>}
-                    </button>
-                    <button
-                        onClick={onOpenLanguage}
-                        className="h-10 w-10 flex items-center justify-center rounded-xl bg-secondary text-muted-foreground shadow-sm hover:bg-secondary/80 transition-colors"
-                    >
-                        <span className="material-symbols-outlined">translate</span>
-                    </button>
-                    <button
-                        onClick={onNewChat}
-                        className="h-10 w-10 flex items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
-                    >
-                        <span className="material-symbols-outlined">edit_square</span>
-                    </button>
-                </div>
-
-                {/* Filter Chips */}
-                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 mask-fade-right">
-                    <FilterChip label="All" active={filter === 'all'} onClick={() => setFilter('all')} />
-                    <FilterChip label="Action Required" active={filter === 'action'} count={MOCK_FEED.filter(i => i.type === 'action').length} onClick={() => setFilter('action')} />
-                    {filter === 'action' && (
-                        <button
-                            onClick={onOpenActionCenter}
-                            className="h-7 px-3 flex items-center gap-1 bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300 rounded-full text-xs font-bold animate-in fade-in zoom-in"
-                        >
-                            <span>Open Center</span>
-                            <span className="material-symbols-outlined text-[14px]">open_in_new</span>
-                        </button>
-                    )}
-                    <FilterChip label="Unread" active={filter === 'unread'} count={MOCK_FEED.filter(i => i.unread || i.isUnread).length} onClick={() => setFilter('unread')} />
-                    <FilterChip label="Urgent" active={filter === 'urgent'} onClick={() => setFilter('urgent')} />
-                    <FilterChip label="Announcements" active={filter === 'announcements'} onClick={() => setFilter('announcements')} />
-                    <FilterChip label="Messages" active={filter === 'messages'} onClick={() => setFilter('messages')} />
-                    <FilterChip label="Support" active={filter === 'support'} onClick={() => setFilter('support')} />
+            {/* 2. Controls - Search Only (Sort simplified) */}
+            <div className="bg-background py-2 px-4 shadow-sm border-b border-border/30">
+                <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-muted-foreground text-[20px]">search</span>
+                    <input
+                        type="text"
+                        placeholder="Search messages..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full h-9 pl-10 pr-4 rounded-lg bg-secondary/50 border-none focus:ring-2 focus:ring-primary/20 text-sm transition-all text-foreground"
+                    />
                 </div>
             </div>
 
@@ -218,7 +206,7 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
             <div className="flex-1 overflow-y-auto p-4 space-y-4 overscroll-contain">
 
                 {/* Action Required */}
-                {activeActions.length > 0 && filter === 'all' && (
+                {activeActions.length > 0 && activeTab === 'all' && (
                     <div className="space-y-2 mb-6">
                         <div className="flex items-center justify-between px-1">
                             <h3 className="text-xs font-bold text-amber-600 dark:text-amber-500 uppercase tracking-wider">Action Required ({activeActions.length})</h3>
@@ -235,12 +223,12 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                         <div className="flex flex-col items-center justify-center py-20 text-muted-foreground animate-in fade-in duration-500">
                             <span className="material-symbols-outlined text-5xl mb-3 opacity-20">inbox</span>
                             <p className="text-sm font-medium">No items found for {selectedChild?.name}</p>
-                            <button onClick={() => setFilter('all')} className="mt-4 text-primary text-xs font-bold hover:underline">Clear Filters</button>
+                            <button onClick={() => setActiveTab('all')} className="mt-4 text-primary text-xs font-bold hover:underline">Clear Filters</button>
                         </div>
                     ) : (
                         displayFeed.map(item => (
                             <div key={item.id} onClick={() => onItemClick(item)}>
-                                <FeedItemRow item={item} isTranslated={isTranslated} viewMode={viewMode} />
+                                <FeedItemRow item={item} isTranslated={isTranslated} viewMode={'list'} />
                             </div>
                         ))
                     )}
@@ -257,24 +245,22 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
     );
 }
 
-function FilterChip({ label, active, count, onClick }: { label: string, active: boolean, count?: number, onClick: () => void }) {
+// Tab Button Component
+function TabButton({ label, active, onClick }: { label: string, active: boolean, onClick: () => void }) {
     return (
         <button
             onClick={onClick}
             className={`
-                whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5
-                ${active
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'bg-secondary/50 text-muted-foreground hover:bg-secondary'
-                }
+                relative px-3 py-3 text-sm font-medium transition-colors whitespace-nowrap outline-none
+                ${active ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}
             `}
         >
             {label}
-            {count !== undefined && count > 0 && (
-                <span className={`
-                    flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full text-[9px]
-                    ${active ? 'bg-white/20' : 'bg-primary/10 text-primary'}
-                `}>{count}</span>
+            {active && (
+                <motion.div
+                    layoutId="activeTab"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
+                />
             )}
         </button>
     );
