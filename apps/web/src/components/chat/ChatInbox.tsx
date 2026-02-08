@@ -174,7 +174,10 @@ export function ChatInbox() {
             {/* Header */}
             <div className="px-4 pt-4 pb-2">
                 <div className="flex items-center justify-between mb-3">
-                    <h1 className="text-2xl font-bold">Messages</h1>
+                    <h1 className="text-2xl font-bold flex items-center gap-2">
+                        Messages
+                        <span className="text-xs font-normal text-muted-foreground bg-secondary px-1.5 py-0.5 rounded">v2</span>
+                    </h1>
                     <button
                         onClick={() => setShowSearch(!showSearch)}
                         className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-secondary transition-colors"
