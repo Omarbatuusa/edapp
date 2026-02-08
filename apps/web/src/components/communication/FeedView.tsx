@@ -2,6 +2,22 @@ import { useCommunicationStore } from '../../lib/communication-store';
 import { MOCK_CHILDREN, TRANSLATIONS } from './mockData';
 // ... other imports
 
+// ===========================================
+// PROPS INTERFACE
+// ===========================================
+
+export interface FeedViewProps {
+    onItemClick: (item: any) => void;
+    officeHours: string;
+    selectedChildId: string;
+    setSelectedChildId: (id: string) => void;
+    isTranslated: boolean;
+    setIsTranslated: (value: boolean) => void;
+    onNewChat: () => void;
+    onOpenActionCenter: () => void;
+    onOpenLanguage: () => void;
+}
+
 export function FeedView({ onItemClick, officeHours, selectedChildId, setSelectedChildId, isTranslated, setIsTranslated, onNewChat, onOpenActionCenter, onOpenLanguage }: FeedViewProps) {
     // Removed unused useRouter
     const [activeTab, setActiveTab] = useState<'all' | 'announcements' | 'classes' | 'direct' | 'support'>('all');
