@@ -10,19 +10,16 @@ echo "================================="
 # Navigate to project directory
 cd /opt/edapp || mkdir -p /opt/edapp && cd /opt/edapp
 
-# Load environment variables for Docker Compose substitution
-if [ -f .env.production ]; then
-    echo "P Loading environment variables from .env.production..."
-    set -a
-    source .env.production
-    set +a
-else
+# Verify environment file exists
+if [ ! -f .env.production ]; then
     echo "⚠️ .env.production file not found!"
+    exit 1
 fi
+echo "✓ Found .env.production"
 
 # Stop existing containers
 echo "📦 Stopping existing containers..."
-docker compose -f docker-compose.prod.yml down --remove-orphans 2>/dev/null || true
+docker compose --env-file .env.production -f docker-compose.prod.yml down --remove-orphans 2>/dev/null || true
 
 # Pull latest code from GitHub
 echo "📥 Pulling latest code..."
@@ -34,10 +31,10 @@ fi
 
 # Build and start containers
 echo "🔨 Building containers..."
-docker compose -f docker-compose.prod.yml build --no-cache
+docker compose --env-file .env.production -f docker-compose.prod.yml build --no-cache
 
 echo "🚀 Starting containers..."
-docker compose -f docker-compose.prod.yml up -d
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d
 
 # Wait for database to be ready
 echo "⏳ Waiting for database..."
@@ -45,7 +42,7 @@ sleep 10
 
 # Run database seed
 echo "🌱 Running database seed..."
-docker compose -f docker-compose.prod.yml exec api npm run seed:prod || docker compose -f docker-compose.prod.yml exec api npx ts-node src/database/seed.ts
+docker compose --env-file .env.production -f docker-compose.prod.yml exec api npm run seed:prod || docker compose --env-file .env.production -f docker-compose.prod.yml exec api npx ts-node src/database/seed.ts
 
 echo ""
 echo "✅ Deployment complete!"
