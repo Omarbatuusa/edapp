@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Plus, X, Search } from 'lucide-react';
 import { ThreadRow, FilterChips, DEFAULT_CHAT_FILTERS } from '@/components/chat';
-import { useChatStore, selectFilteredThreads, selectUnreadCount, selectPinnedThreads, Thread } from '@/lib/chat-store';
+import { useChatStore, Thread } from '@/lib/chat-store';
 
 // ============================================================
 // MOCK DATA - Will be replaced with API calls
@@ -319,8 +319,8 @@ export default function ChatInboxPage() {
             <button
                 onClick={() => setShowFabMenu(!showFabMenu)}
                 className={`fixed bottom-20 right-4 sm:right-8 z-50 w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 ${showFabMenu
-                        ? 'bg-card border border-border rotate-45'
-                        : 'bg-primary hover:bg-primary/90'
+                    ? 'bg-card border border-border rotate-45'
+                    : 'bg-primary hover:bg-primary/90'
                     }`}
                 style={showFabMenu ? {} : { color: '#fff' }}
                 aria-label={showFabMenu ? 'Close menu' : 'New chat'}

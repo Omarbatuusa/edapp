@@ -64,7 +64,12 @@ interface ChatState {
     typing: Record<string, any[]>;
     presence: Record<string, any>;
 
+    // UI State
+    activeFilter: 'all' | 'unread' | 'groups' | 'staff' | 'grades' | 'support' | 'announcements';
+    setFilter: (filter: 'all' | 'unread' | 'groups' | 'staff' | 'grades' | 'support' | 'announcements') => void;
+
     // Actions
+    setThreads: (threads: Thread[]) => void;
     setActiveThread: (threadId: string | null) => void;
 
     // Async Actions
@@ -106,6 +111,10 @@ export const useChatStore = create<ChatState>((set, get) => ({
     typing: {},
     presence: {},
 
+    activeFilter: 'all',
+    setFilter: (filter) => set({ activeFilter: filter }),
+
+    setThreads: (threads) => set({ threads }),
     setActiveThread: (threadId) => set({ activeThreadId: threadId }),
 
     fetchMessages: async (threadId, userId) => {
