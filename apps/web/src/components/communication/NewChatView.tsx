@@ -237,9 +237,9 @@ export function NewChatView({ onStart, onStartChat, onCreateChannel }: NewChatVi
                 </div>
             )}
 
-            {/* Start Button */}
+            {/* Start Button - Sticky at bottom */}
             {canStart && (
-                <div className="fixed bottom-6 left-4 right-4 z-50">
+                <div className="sticky bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background to-transparent pt-6 z-50">
                     <button
                         onClick={handleDirectStart}
                         disabled={isLoading}
