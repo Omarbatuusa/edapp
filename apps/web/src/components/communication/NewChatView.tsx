@@ -1,10 +1,20 @@
+'use client';
+
 import React, { useState } from 'react';
 import { MOCK_CHILDREN } from './mockData';
+import { FeedItem } from './types';
 
-export function NewChatView({ onStart, onCreateChannel }: { onStart: () => void; onCreateChannel: () => void }) {
+interface NewChatViewProps {
+    onStart: () => void;
+    onStartChat: (item: FeedItem) => void;
+    onCreateChannel: () => void;
+}
+
+export function NewChatView({ onStart, onStartChat, onCreateChannel }: NewChatViewProps) {
     const [selectedChildId, setSelectedChildId] = useState<string>(MOCK_CHILDREN[1]?.id || 'lisa');
     const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
     const [selectedSubItem, setSelectedSubItem] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const TOPICS = [
         { id: 'Academics', icon: 'school', color: 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400' },
@@ -35,12 +45,80 @@ export function NewChatView({ onStart, onCreateChannel }: { onStart: () => void;
         }
     };
 
-    // Handle direct start when a topic is selected (for Transport, Fees, Support)
-    const handleDirectStart = () => {
-        onStart();
+    // Handle starting the chat - create thread and navigate
+    const handleDirectStart = async () => {
+        if (!selectedTopic) return;
+
+        setIsLoading(true);
+
+        try {
+            // Get selected child info
+            const selectedChild = MOCK_CHILDREN.find(c => c.id === selectedChildId);
+
+            // Build thread title based on selection
+            let title = '';
+            let subtitle = '';
+            let threadType: 'message' | 'support' = 'message';
+
+            if (selectedTopic === 'Academics' && selectedSubItem) {
+                const contact = ACADEMIC_CONTACTS.find(c => c.id === selectedSubItem);
+                title = contact?.name || 'Teacher';
+                subtitle = contact?.role || 'Staff';
+            } else if (selectedTopic === 'Transport') {
+                title = 'Transport Support';
+                subtitle = 'Bus Routes & Schedules';
+                threadType = 'support';
+            } else if (selectedTopic === 'Fees') {
+                title = 'Finance Office';
+                subtitle = 'Fees & Payments';
+                threadType = 'support';
+            } else if (selectedTopic === 'Support') {
+                title = 'School Support';
+                subtitle = 'General Assistance';
+                threadType = 'support';
+            }
+
+            // Create a FeedItem for the new thread
+            const newThreadItem: FeedItem = {
+                id: `thread-${Date.now()}`,
+                type: threadType,
+                title,
+                subtitle,
+                time: 'Just now',
+                preview: 'Start typing a message...',
+                timestamp: new Date().toISOString(),
+                urgency: 'normal',
+                unread: false,
+                requiresAck: false,
+                ackStatus: null,
+                source: {
+                    name: title,
+                    role: subtitle,
+                    avatar: selectedSubItem
+                        ? ACADEMIC_CONTACTS.find(c => c.id === selectedSubItem)?.avatar
+                        : `https://ui-avatars.com/api/?name=${encodeURIComponent(title)}&background=random`
+                },
+                threadId: `thread-${Date.now()}`,
+                childName: selectedChild?.name,
+            };
+
+            // TODO: Call API to create/find thread
+            // const result = await chatApi.createThread({...});
+            // Use result.id as threadId
+
+            // Navigate to the chat thread
+            onStartChat(newThreadItem);
+
+        } catch (error) {
+            console.error('Error creating thread:', error);
+            // Fallback to just going back
+            onStart();
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    // Check if we can show the start button - either we have a sub-item selected, or it's a topic that doesn't need one
+    // Check if we can show the start button
     const canStart = selectedTopic && (selectedSubItem || ['Transport', 'Fees', 'Support'].includes(selectedTopic));
 
     return (
@@ -159,15 +237,25 @@ export function NewChatView({ onStart, onCreateChannel }: { onStart: () => void;
                 </div>
             )}
 
-            {/* Start Button - Now shows when topic is selected (sub-item required only for Academics) */}
+            {/* Start Button */}
             {canStart && (
                 <div className="fixed bottom-6 left-4 right-4 z-50">
                     <button
                         onClick={handleDirectStart}
-                        className="w-full bg-primary text-white h-14 rounded-2xl font-bold text-lg shadow-xl shadow-primary/30 flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                        disabled={isLoading}
+                        className="w-full bg-primary text-white h-14 rounded-2xl font-bold text-lg shadow-xl shadow-primary/30 flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-70 disabled:scale-100"
                     >
-                        <span>{selectedTopic === 'Academics' ? 'Start Chat' : 'Create Request'}</span>
-                        <span className="material-symbols-outlined">arrow_forward</span>
+                        {isLoading ? (
+                            <>
+                                <span className="material-symbols-outlined animate-spin">progress_activity</span>
+                                <span>Starting...</span>
+                            </>
+                        ) : (
+                            <>
+                                <span>{selectedTopic === 'Academics' ? 'Start Chat' : 'Create Request'}</span>
+                                <span className="material-symbols-outlined">arrow_forward</span>
+                            </>
+                        )}
                     </button>
                 </div>
             )}

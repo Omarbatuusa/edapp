@@ -18,6 +18,7 @@ export interface FeedItem {
     childGrade?: string;
     source?: FeedItemSource | string;
     messagePreview?: string;
+    preview?: string;
     avatar?: string;
     senderAvatar?: string;
     isTyping?: boolean;
@@ -31,6 +32,9 @@ export interface FeedItem {
     role?: string;
     timestamp?: string;
     threadId?: string;
+    urgency?: 'normal' | 'urgent';
+    requiresAck?: boolean;
+    ackStatus?: 'pending' | 'acknowledged' | null;
 }
 
 export interface DetailViewProps {

@@ -108,7 +108,7 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
     const handleOpenItem = (item: FeedItem) => {
         setSelectedItem(item);
         if (item.type === 'message') setActiveView('thread');
-        else if (item.type === 'support') setActiveView('ticket');
+        else if (item.type === 'support') setActiveView('thread'); // Support also goes to thread now
         else if (item.type === 'announcement' || item.type === 'urgent') setActiveView('announcement');
         else if (item.type === 'action') {
             // Check if it's a specific action or just open action center?
@@ -201,7 +201,16 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
                         >
                             {activeView === 'ticket' && <TicketDetailView item={selectedItem} isTranslated={isTranslated} />}
                             {activeView === 'announcement' && <AnnouncementDetailView item={selectedItem} isTranslated={isTranslated} />}
-                            {activeView === 'new-chat' && <NewChatView onStart={() => setActiveView('feed')} onCreateChannel={() => setActiveView('create-channel')} />}
+                            {activeView === 'new-chat' && (
+                                <NewChatView
+                                    onStart={() => setActiveView('feed')}
+                                    onStartChat={(item) => {
+                                        setSelectedItem(item);
+                                        setActiveView('thread');
+                                    }}
+                                    onCreateChannel={() => setActiveView('create-channel')}
+                                />
+                            )}
                         </ScreenStackDetail>
                     )}
                 </div>
