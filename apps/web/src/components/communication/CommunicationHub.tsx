@@ -163,7 +163,7 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
                 </div>
 
                 {/* Thread View - Slide in from right */}
-                <div className={`absolute inset-0 z-[60] bg-background transform transition-transform duration-300 ease-out ${activeView === 'thread' ? 'translate-x-0' : 'translate-x-full'}`}>
+                <div className={`absolute inset-0 z-[60] bg-slate-50 dark:bg-[#0B1120] transform transition-transform duration-300 ease-out ${activeView === 'thread' ? 'translate-x-0' : 'translate-x-full'}`}>
                     {selectedItem && activeView === 'thread' && (
                         <ChatThreadView
                             item={selectedItem}
@@ -174,28 +174,28 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
                 </div>
 
                 {/* Channel Info View */}
-                <div className={`absolute inset-0 z-[70] bg-background transform transition-transform duration-300 ease-out ${activeView === 'channel-info' ? 'translate-x-0' : 'translate-x-full'}`}>
+                <div className={`absolute inset-0 z-[70] bg-slate-50 dark:bg-[#0B1120] transform transition-transform duration-300 ease-out ${activeView === 'channel-info' ? 'translate-x-0' : 'translate-x-full'}`}>
                     {selectedItem && activeView === 'channel-info' && (
                         <ChannelInfoView item={selectedItem} onClose={() => setActiveView('thread')} />
                     )}
                 </div>
 
                 {/* Action Center View */}
-                <div className={`absolute inset-0 z-[60] bg-background transform transition-transform duration-300 ease-out ${activeView === 'action-center' ? 'translate-x-0' : 'translate-x-full'}`}>
+                <div className={`absolute inset-0 z-[60] bg-slate-50 dark:bg-[#0B1120] transform transition-transform duration-300 ease-out ${activeView === 'action-center' ? 'translate-x-0' : 'translate-x-full'}`}>
                     {activeView === 'action-center' && (
                         <ActionRequiredView onClose={() => setActiveView('feed')} />
                     )}
                 </div>
 
                 {/* Create Channel View */}
-                <div className={`absolute inset-0 z-[60] bg-background transform transition-transform duration-300 ease-out ${activeView === 'create-channel' ? 'translate-x-0' : 'translate-x-full'}`}>
+                <div className={`absolute inset-0 z-[60] bg-slate-50 dark:bg-[#0B1120] transform transition-transform duration-300 ease-out ${activeView === 'create-channel' ? 'translate-x-0' : 'translate-x-full'}`}>
                     {activeView === 'create-channel' && (
                         <CreateChannelView onClose={() => setActiveView('feed')} />
                     )}
                 </div>
 
                 {/* Other Detail Views (ticket, announcement, new-chat) */}
-                <div className={`absolute inset-0 z-[55] bg-background transform transition-transform duration-300 ease-out ${['ticket', 'announcement', 'new-chat'].includes(activeView) ? 'translate-x-0' : 'translate-x-full'}`}>
+                <div className={`absolute inset-0 z-[55] bg-slate-50 dark:bg-[#0B1120] transform transition-transform duration-300 ease-out ${['ticket', 'announcement', 'new-chat'].includes(activeView) ? 'translate-x-0' : 'translate-x-full'}`}>
                     {['ticket', 'announcement', 'new-chat'].includes(activeView) && (
                         <ScreenStackDetail
                             onBack={handleBack}

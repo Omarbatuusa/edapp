@@ -9,7 +9,7 @@ export const SCREEN_TRANSITION = {
 
 export function ScreenStackBase({ children }: { children: React.ReactNode }) {
     return (
-        <div className="absolute inset-0 flex flex-col bg-background z-0 animate-in fade-in duration-300">
+        <div className="absolute inset-0 flex flex-col bg-slate-50 dark:bg-[#0B1120] z-0 animate-in fade-in duration-300">
             {children}
         </div>
     );
@@ -31,7 +31,7 @@ export function ScreenStackDetail({ children, onBack, title = "Details", actionI
     }, []);
 
     return (
-        <div className="absolute inset-0 flex flex-col bg-background z-50 h-[100dvh] animate-in slide-in-from-right duration-300">
+        <div className="absolute inset-0 flex flex-col bg-slate-50 dark:bg-[#0B1120] z-50 h-[100dvh] animate-in slide-in-from-right duration-300">
             {/* Header */}
             <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50 h-14 flex items-center px-4 shrink-0 justify-between">
                 <button
