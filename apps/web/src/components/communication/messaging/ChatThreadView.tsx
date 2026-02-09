@@ -70,12 +70,13 @@ export function ChatThreadView({ item, onBack, onAction }: ChatThreadViewProps) 
         <MessagesLayout
             className="md:border-l md:border-border/50"
             header={
-                <div className="flex items-center px-4 h-16 gap-3">
-                    <button onClick={onBack} className="md:hidden -ml-2 p-2 rounded-full hover:bg-secondary/80">
-                        <span className="material-symbols-outlined">arrow_back</span>
+                <div className="flex items-center px-4 h-16 gap-3 bg-background">
+                    {/* Always visible back button */}
+                    <button onClick={onBack} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-secondary/80 transition-colors shrink-0">
+                        <span className="material-symbols-outlined text-foreground">arrow_back</span>
                     </button>
 
-                    <div className="relative">
+                    <div className="relative shrink-0">
                         <img
                             src={(typeof item.source === 'object' ? item.source?.avatar : undefined) || `https://ui-avatars.com/api/?name=${item.title}&background=random`}
                             alt={item.title}
@@ -91,11 +92,11 @@ export function ChatThreadView({ item, onBack, onAction }: ChatThreadViewProps) 
                         </p>
                     </div>
 
-                    <button className="p-2 text-muted-foreground hover:bg-secondary/50 rounded-full">
-                        <span className="material-symbols-outlined">search</span>
+                    <button className="w-10 h-10 flex items-center justify-center text-muted-foreground hover:bg-secondary/50 rounded-full shrink-0">
+                        <span className="material-symbols-outlined text-xl">search</span>
                     </button>
-                    <button onClick={onAction} className="p-2 text-primary hover:bg-primary/10 rounded-full">
-                        <span className="material-symbols-outlined">info</span>
+                    <button onClick={onAction} className="w-10 h-10 flex items-center justify-center text-primary hover:bg-primary/10 rounded-full shrink-0">
+                        <span className="material-symbols-outlined text-xl">info</span>
                     </button>
                 </div>
             }
@@ -196,8 +197,8 @@ export function ChatThreadView({ item, onBack, onAction }: ChatThreadViewProps) 
                         <div className={`text-[10px] mt-1 flex items-center gap-1 ${msg.isMe ? 'text-muted-foreground justify-end' : 'text-muted-foreground justify-start'}`}>
                             {msg.time}
                             {msg.isMe && (
-                                <span className="material-symbols-outlined text-[12px]">
-                                    {msg.status === 'read' ? 'done_all' : 'check'}
+                                <span className={`material-symbols-outlined text-[14px] ${msg.status === 'read' ? 'text-blue-500' : 'text-muted-foreground/60'}`}>
+                                    {msg.status === 'read' ? 'done_all' : msg.status === 'delivered' ? 'done_all' : 'check'}
                                 </span>
                             )}
                         </div>

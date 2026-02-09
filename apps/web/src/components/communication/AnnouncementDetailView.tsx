@@ -2,11 +2,23 @@ import React from 'react';
 import { DetailViewProps } from './types';
 import { TRANSLATIONS } from './mockData';
 
+const REACTIONS = [
+    { id: 'like', icon: 'thumb_up', label: 'Like' },
+    { id: 'check', icon: 'check_circle', label: 'Agree' },
+    { id: 'heart', icon: 'favorite', label: 'Love' },
+    { id: 'celebrate', icon: 'celebration', label: 'Celebrate' },
+];
+
 export function AnnouncementDetailView({ item, isTranslated }: DetailViewProps) {
     if (!item) return null;
     const title = isTranslated && item.title ? (TRANSLATIONS[item.title] || item.title) : item.title;
 
     const [acknowledged, setAcknowledged] = React.useState(false);
+    const [activeReaction, setActiveReaction] = React.useState<string | null>(null);
+
+    const handleReaction = (reactionId: string) => {
+        setActiveReaction(activeReaction === reactionId ? null : reactionId);
+    };
 
     return (
         <div className="space-y-6">
@@ -56,9 +68,18 @@ export function AnnouncementDetailView({ item, isTranslated }: DetailViewProps) 
             <div className="pt-8 border-t border-border">
                 <h4 className="text-xs font-bold text-muted-foreground uppercase mb-3">Reactions</h4>
                 <div className="flex gap-2">
-                    {['👍', '✅', '❤️', '🙏'].map(emoji => (
-                        <button key={emoji} className="w-10 h-10 flex items-center justify-center rounded-full bg-secondary hover:bg-secondary/80 transition-colors text-xl">
-                            {emoji}
+                    {REACTIONS.map(reaction => (
+                        <button
+                            key={reaction.id}
+                            onClick={() => handleReaction(reaction.id)}
+                            className={`w-11 h-11 flex items-center justify-center rounded-full transition-all duration-200
+                                ${activeReaction === reaction.id
+                                    ? 'bg-primary/20 text-primary scale-110 shadow-sm'
+                                    : 'bg-secondary text-muted-foreground hover:bg-secondary/80 hover:scale-105'
+                                }`}
+                            title={reaction.label}
+                        >
+                            <span className="material-symbols-outlined text-xl">{reaction.icon}</span>
                         </button>
                     ))}
                 </div>
@@ -66,3 +87,4 @@ export function AnnouncementDetailView({ item, isTranslated }: DetailViewProps) 
         </div>
     );
 }
+

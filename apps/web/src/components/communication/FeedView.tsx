@@ -30,6 +30,12 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
     const [sort, setSort] = useState<'newest' | 'priority' | 'oldest'>('newest');
     const [showOfficeHours, setShowOfficeHours] = useState(true);
     const [showChildSelector, setShowChildSelector] = useState(false);
+    const [childSearchQuery, setChildSearchQuery] = useState('');
+
+    // Filter children for selector
+    const filteredChildren = MOCK_CHILDREN.filter(child =>
+        child.name.toLowerCase().includes(childSearchQuery.toLowerCase())
+    );
 
     // Close handler - navigate to parent dashboard
     const handleClose = () => {
@@ -171,24 +177,58 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                     {/* Child Selector Dropdown */}
                     {showChildSelector && (
                         <>
-                            <div className="fixed inset-0 z-40 bg-black/20" onClick={() => setShowChildSelector(false)} />
-                            <div className="absolute top-14 left-0 right-0 mx-4 mt-2 bg-popover border border-border rounded-xl shadow-lg z-50 overflow-hidden flex flex-col p-1 animate-in fade-in slide-in-from-top-2 duration-200">
-                                {MOCK_CHILDREN.map(child => (
+                            <div className="fixed inset-0 z-40 bg-black/20" onClick={() => { setShowChildSelector(false); setChildSearchQuery(''); }} />
+                            <div className="absolute top-14 left-0 right-0 mx-4 mt-2 bg-popover border border-border rounded-xl shadow-lg z-50 overflow-hidden flex flex-col animate-in fade-in slide-in-from-top-2 duration-200">
+                                {/* Header with close button */}
+                                <div className="flex items-center justify-between px-3 py-2 border-b border-border/50">
+                                    <span className="text-xs font-bold text-muted-foreground uppercase">Select Child</span>
                                     <button
-                                        key={child.id}
-                                        onClick={() => { setSelectedChildId(child.id); setShowChildSelector(false); }}
-                                        className={`flex items-center gap-3 w-full p-2.5 rounded-lg transition-colors ${selectedChildId === child.id ? 'bg-secondary' : 'hover:bg-secondary/50'}`}
+                                        onClick={() => { setShowChildSelector(false); setChildSearchQuery(''); }}
+                                        className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-secondary/80 transition-colors"
                                     >
-                                        <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
-                                            {child.avatar ? <img src={child.avatar} alt="" /> : <span className="material-symbols-outlined text-muted-foreground text-sm">group</span>}
-                                        </div>
-                                        <div className="text-left flex-1">
-                                            <p className="text-sm font-bold leading-none">{child.name}</p>
-                                            {child.grade && <p className="text-[10px] text-muted-foreground mt-0.5">{child.grade}</p>}
-                                        </div>
-                                        {selectedChildId === child.id && <span className="material-symbols-outlined text-primary text-sm">check</span>}
+                                        <span className="material-symbols-outlined text-lg text-muted-foreground">close</span>
                                     </button>
-                                ))}
+                                </div>
+
+                                {/* Search input for many children */}
+                                {MOCK_CHILDREN.length > 4 && (
+                                    <div className="p-2 border-b border-border/50">
+                                        <div className="relative">
+                                            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-muted-foreground text-lg">search</span>
+                                            <input
+                                                type="text"
+                                                placeholder="Search children..."
+                                                value={childSearchQuery}
+                                                onChange={(e) => setChildSearchQuery(e.target.value)}
+                                                className="w-full h-9 pl-9 pr-3 rounded-lg bg-secondary/50 border-none text-sm focus:ring-2 focus:ring-primary/20"
+                                                autoFocus
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Children list */}
+                                <div className="max-h-64 overflow-y-auto p-1">
+                                    {filteredChildren.map(child => (
+                                        <button
+                                            key={child.id}
+                                            onClick={() => { setSelectedChildId(child.id); setShowChildSelector(false); setChildSearchQuery(''); }}
+                                            className={`flex items-center gap-3 w-full p-2.5 rounded-lg transition-colors ${selectedChildId === child.id ? 'bg-secondary' : 'hover:bg-secondary/50'}`}
+                                        >
+                                            <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
+                                                {child.avatar ? <img src={child.avatar} alt="" /> : <span className="material-symbols-outlined text-muted-foreground text-sm">group</span>}
+                                            </div>
+                                            <div className="text-left flex-1">
+                                                <p className="text-sm font-bold leading-none">{child.name}</p>
+                                                {child.grade && <p className="text-[10px] text-muted-foreground mt-0.5">{child.grade}</p>}
+                                            </div>
+                                            {selectedChildId === child.id && <span className="material-symbols-outlined text-primary text-lg">check_circle</span>}
+                                        </button>
+                                    ))}
+                                    {filteredChildren.length === 0 && (
+                                        <p className="text-center text-sm text-muted-foreground py-4">No children found</p>
+                                    )}
+                                </div>
                             </div>
                         </>
                     )}

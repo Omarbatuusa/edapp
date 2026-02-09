@@ -137,7 +137,7 @@ export function NewChatView({ onStart, onStartChat, onCreateChannel }: NewChatVi
                                 className={`
                                     group flex h-12 shrink-0 items-center justify-center gap-x-3 rounded-2xl pl-2 pr-5 transition-all active:scale-95
                                     ${isActive
-                                        ? 'bg-primary text-white shadow-md'
+                                        ? 'bg-primary text-primary-foreground shadow-md'
                                         : 'bg-secondary/50 border border-border hover:bg-secondary'
                                     }
                                 `}
@@ -150,8 +150,8 @@ export function NewChatView({ onStart, onStartChat, onCreateChannel }: NewChatVi
                                     )}
                                 </div>
                                 <div className="text-left">
-                                    <p className="text-sm font-bold leading-none">{child.name}</p>
-                                    <p className={`text-[10px] mt-0.5 ${isActive ? 'text-white/80' : 'text-muted-foreground'}`}>{child.grade}</p>
+                                    <p className={`text-sm font-bold leading-none ${isActive ? 'text-white' : ''}`}>{child.name}</p>
+                                    <p className={`text-[10px] mt-0.5 ${isActive ? 'text-white/70' : 'text-muted-foreground'}`}>{child.grade}</p>
                                 </div>
                             </button>
                         );
