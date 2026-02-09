@@ -5,7 +5,7 @@ export function ChannelInfoView({ item, onClose }: { item: FeedItem | null, onCl
     if (!item) return null;
 
     return (
-        <div className="flex flex-col h-full bg-background animate-fade-in">
+        <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-[#0B1120] animate-fade-in">
             {/* Header */}
             <div className="sticky top-0 z-10 flex items-center justify-between px-4 h-14 bg-background/80 backdrop-blur-md border-b border-border/50">
                 <button onClick={onClose} className="w-10 h-10 flex items-center justify-center -ml-2 rounded-full hover:bg-secondary transition-colors">
