@@ -148,7 +148,7 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
             {/* Main Content - CSS Transitions */}
             <div className="relative w-full h-full">
                 {/* Feed View - Always rendered, hidden when not active */}
-                <div className={`w-full h-full transition-opacity duration-300 ${activeView === 'feed' ? 'opacity-100' : 'opacity-0 pointer-events-none absolute inset-0'}`}>
+                <div className={`w-full h-full transition-opacity duration-300 ${activeView === 'feed' ? 'opacity-100 relative' : 'opacity-0 pointer-events-none hidden'}`}>
                     <FeedView
                         onItemClick={handleOpenItem}
                         officeHours={officeHours}

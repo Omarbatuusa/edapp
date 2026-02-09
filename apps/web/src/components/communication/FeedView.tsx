@@ -2,7 +2,7 @@ import { useCommunicationStore } from '../../lib/communication-store';
 import { MOCK_CHILDREN, TRANSLATIONS, MOCK_FEED } from './mockData';
 import React, { useState, useMemo } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { ScreenStackBase } from './ScreenStack';
+// ScreenStackBase removed - using simple flex container instead
 import { FeedItem } from './types';
 
 // ===========================================
@@ -106,7 +106,7 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
 
 
     return (
-        <ScreenStackBase>
+        <div className="flex flex-col h-full w-full bg-slate-50 dark:bg-[#0B1120]">
             {/* 1. Header (Sticky) */}
             <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/50 transition-all duration-200 shadow-sm">
 
@@ -257,7 +257,7 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                     )}
                 </div>
             </div>
-        </ScreenStackBase>
+        </div>
     );
 }
 
