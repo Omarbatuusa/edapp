@@ -70,10 +70,10 @@ export function ChatThreadView({ item, onBack, onAction }: ChatThreadViewProps) 
         <MessagesLayout
             className="md:border-l md:border-border/50"
             header={
-                <div className="flex items-center px-4 h-16 gap-3 bg-background">
-                    {/* Always visible back button */}
+                <div className="flex items-center px-4 h-16 gap-3 bg-slate-50 dark:bg-[#0B1120]">
+                    {/* Always visible back button with chevron */}
                     <button onClick={onBack} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-secondary/80 transition-colors shrink-0">
-                        <span className="material-symbols-outlined text-foreground">arrow_back</span>
+                        <span className="material-symbols-outlined text-foreground">chevron_left</span>
                     </button>
 
                     <div className="relative shrink-0">

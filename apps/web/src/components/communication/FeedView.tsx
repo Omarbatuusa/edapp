@@ -174,14 +174,14 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                         </button>
                     </div>
 
-                    {/* Child Selector Dropdown */}
+                    {/* Child Selector Dropdown - Multi-select */}
                     {showChildSelector && (
                         <>
                             <div className="fixed inset-0 z-40 bg-black/20" onClick={() => { setShowChildSelector(false); setChildSearchQuery(''); }} />
                             <div className="absolute top-14 left-0 right-0 mx-4 mt-2 bg-popover border border-border rounded-xl shadow-lg z-50 overflow-hidden flex flex-col animate-in fade-in slide-in-from-top-2 duration-200">
                                 {/* Header with close button */}
                                 <div className="flex items-center justify-between px-3 py-2 border-b border-border/50">
-                                    <span className="text-xs font-bold text-muted-foreground uppercase">Select Child</span>
+                                    <span className="text-xs font-bold text-muted-foreground uppercase">Select Children</span>
                                     <button
                                         onClick={() => { setShowChildSelector(false); setChildSearchQuery(''); }}
                                         className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-secondary/80 transition-colors"
@@ -207,24 +207,30 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                                     </div>
                                 )}
 
-                                {/* Children list */}
+                                {/* Children list with checkboxes */}
                                 <div className="max-h-64 overflow-y-auto p-1">
-                                    {filteredChildren.map(child => (
-                                        <button
-                                            key={child.id}
-                                            onClick={() => { setSelectedChildId(child.id); setShowChildSelector(false); setChildSearchQuery(''); }}
-                                            className={`flex items-center gap-3 w-full p-2.5 rounded-lg transition-colors ${selectedChildId === child.id ? 'bg-secondary' : 'hover:bg-secondary/50'}`}
-                                        >
-                                            <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
-                                                {child.avatar ? <img src={child.avatar} alt="" /> : <span className="material-symbols-outlined text-muted-foreground text-sm">group</span>}
-                                            </div>
-                                            <div className="text-left flex-1">
-                                                <p className="text-sm font-bold leading-none">{child.name}</p>
-                                                {child.grade && <p className="text-[10px] text-muted-foreground mt-0.5">{child.grade}</p>}
-                                            </div>
-                                            {selectedChildId === child.id && <span className="material-symbols-outlined text-primary text-lg">check_circle</span>}
-                                        </button>
-                                    ))}
+                                    {filteredChildren.map(child => {
+                                        const isSelected = selectedChildId === child.id || selectedChildId === 'all';
+                                        return (
+                                            <button
+                                                key={child.id}
+                                                onClick={() => { setSelectedChildId(child.id); setShowChildSelector(false); setChildSearchQuery(''); }}
+                                                className={`flex items-center gap-3 w-full p-2.5 rounded-lg transition-colors ${isSelected ? 'bg-primary/10' : 'hover:bg-secondary/50'}`}
+                                            >
+                                                {/* Checkbox style indicator */}
+                                                <div className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${isSelected ? 'bg-primary border-primary' : 'border-muted-foreground/40'}`}>
+                                                    {isSelected && <span className="material-symbols-outlined text-white text-sm">check</span>}
+                                                </div>
+                                                <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center overflow-hidden shrink-0">
+                                                    {child.avatar ? <img src={child.avatar} alt="" className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-muted-foreground text-sm">group</span>}
+                                                </div>
+                                                <div className="text-left flex-1">
+                                                    <p className="text-sm font-bold leading-none">{child.name}</p>
+                                                    {child.grade && <p className="text-[10px] text-muted-foreground mt-0.5">{child.grade}</p>}
+                                                </div>
+                                            </button>
+                                        );
+                                    })}
                                     {filteredChildren.length === 0 && (
                                         <p className="text-center text-sm text-muted-foreground py-4">No children found</p>
                                     )}
@@ -283,7 +289,7 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                         </div>
                     ) : (
                         displayFeed.map(item => (
-                            <div key={item.id} onClick={() => onItemClick(item)}>
+                            <div key={item.id} onClick={() => onItemClick(item)} className="cursor-pointer touch-pan-y">
                                 <FeedItemRow item={item} isTranslated={isTranslated} viewMode={'list'} />
                             </div>
                         ))

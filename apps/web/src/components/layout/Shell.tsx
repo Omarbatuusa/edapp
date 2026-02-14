@@ -56,7 +56,7 @@ export function Shell({ children, tenantName, tenantSlug, tenantLogo, user, role
 
     return (
         <EmergencyProvider>
-            <div className={`min-h-screen flex flex-col font-display ${isFullScreen ? 'bg-transparent' : 'bg-slate-50 dark:bg-[#0B1120]'}`}>
+            <div className={`min-h-screen flex flex-col font-display bg-slate-50 dark:bg-[#0B1120] ${isFullScreen ? 'overflow-hidden' : ''}`}>
                 {!isFullScreen && <EmergencyBanner />}
 
                 {/* Main Content Area - No Sidebar, centered container */}
@@ -79,7 +79,7 @@ export function Shell({ children, tenantName, tenantSlug, tenantLogo, user, role
                     {/* Main content with bottom padding for nav if not fullscreen */}
                     <main
                         className={`flex-1 w-full mx-auto duration-500 ${isFullScreen
-                            ? 'p-0 max-w-full pb-0 min-h-0 relative z-0'
+                            ? 'p-0 max-w-full pb-0 min-h-0 relative z-0 bg-slate-50 dark:bg-[#0B1120]'
                             : 'p-4 md:p-6 max-w-2xl lg:max-w-4xl pb-24 animate-in fade-in slide-in-from-bottom-2'
                             }`}
                     >
