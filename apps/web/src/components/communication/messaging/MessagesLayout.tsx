@@ -17,10 +17,9 @@ export function MessagesLayout({ children, header, footer, className = '' }: Mes
                 </div>
             )}
 
-            {/* Main Scrollable Content Area */}
-            {/* 100dvh handling for mobile browsers to avoid address bar issues */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden relative overscroll-contain no-scrollbar">
-                <div className="min-h-full w-full">
+            {/* Main Content Area - children manage their own scroll */}
+            <div className="flex-1 overflow-hidden relative">
+                <div className="h-full w-full flex flex-col">
                     {children}
                 </div>
             </div>

@@ -146,9 +146,9 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
             <ChatSocketManager tenantId={tenantId} userId={currentUserId} />
 
             {/* Main Content - CSS Transitions */}
-            <div className="relative w-full h-full">
+            <div className="relative w-full flex-1 flex flex-col overflow-hidden">
                 {/* Feed View - Always rendered, hidden when not active */}
-                <div className={`w-full h-full transition-opacity duration-300 ${activeView === 'feed' ? 'opacity-100 relative' : 'opacity-0 pointer-events-none hidden'}`}>
+                <div className={`w-full flex-1 flex flex-col transition-opacity duration-300 ${activeView === 'feed' ? 'opacity-100 relative' : 'opacity-0 pointer-events-none hidden'}`}>
                     <FeedView
                         onItemClick={handleOpenItem}
                         officeHours={officeHours}

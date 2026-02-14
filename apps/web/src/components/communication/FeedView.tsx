@@ -112,7 +112,7 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
 
 
     return (
-        <div className="flex flex-col h-full w-full bg-slate-50 dark:bg-[#0B1120]">
+        <div className="flex flex-col flex-1 min-h-0 w-full bg-slate-50 dark:bg-[#0B1120]">
             {/* 1. Header (Sticky) */}
             <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/50 transition-all duration-200 shadow-sm">
 
@@ -154,8 +154,18 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                             {selectedChild?.id !== 'all' && selectedChild?.avatar && (
                                 <img src={selectedChild.avatar} className="w-5 h-5 rounded-full" alt="" />
                             )}
-                            <span className="text-sm font-bold">{selectedChild?.name}</span>
-                            <span className={`material-symbols-outlined text-[16px] transition-transform ${showChildSelector ? 'rotate-180' : ''}`}>expand_more</span>
+                            <span className="text-sm font-bold">{selectedChild?.name || 'All Children'}</span>
+                            {/* Show (x) to clear back to All if a specific child is selected */}
+                            {selectedChildId !== 'all' ? (
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); setSelectedChildId('all'); }}
+                                    className="w-5 h-5 rounded-full bg-muted-foreground/20 flex items-center justify-center hover:bg-muted-foreground/40 transition-colors"
+                                >
+                                    <span className="material-symbols-outlined text-[12px] text-foreground">close</span>
+                                </button>
+                            ) : (
+                                <span className={`material-symbols-outlined text-[16px] transition-transform ${showChildSelector ? 'rotate-180' : ''}`}>expand_more</span>
+                            )}
                         </button>
                     </div>
 
@@ -174,14 +184,14 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                         </button>
                     </div>
 
-                    {/* Child Selector Dropdown - Multi-select */}
+                    {/* Child Selector Dropdown */}
                     {showChildSelector && (
                         <>
-                            <div className="fixed inset-0 z-40 bg-black/20" onClick={() => { setShowChildSelector(false); setChildSearchQuery(''); }} />
-                            <div className="absolute top-14 left-0 right-0 mx-4 mt-2 bg-popover border border-border rounded-xl shadow-lg z-50 overflow-hidden flex flex-col animate-in fade-in slide-in-from-top-2 duration-200">
-                                {/* Header with close button */}
-                                <div className="flex items-center justify-between px-3 py-2 border-b border-border/50">
-                                    <span className="text-xs font-bold text-muted-foreground uppercase">Select Children</span>
+                            <div className="fixed inset-0 z-40 bg-black/30 backdrop-blur-[2px]" onClick={() => { setShowChildSelector(false); setChildSearchQuery(''); }} />
+                            <div className="absolute top-14 left-0 right-0 mx-4 mt-2 bg-popover border border-border/60 rounded-2xl shadow-xl z-50 overflow-hidden flex flex-col animate-in fade-in slide-in-from-top-2 duration-200">
+                                {/* Header */}
+                                <div className="flex items-center justify-between px-4 py-3 border-b border-border/50">
+                                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Select Child</span>
                                     <button
                                         onClick={() => { setShowChildSelector(false); setChildSearchQuery(''); }}
                                         className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-secondary/80 transition-colors"
@@ -190,49 +200,71 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                                     </button>
                                 </div>
 
-                                {/* Search input for many children */}
-                                {MOCK_CHILDREN.length > 4 && (
-                                    <div className="p-2 border-b border-border/50">
-                                        <div className="relative">
-                                            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-muted-foreground text-lg">search</span>
-                                            <input
-                                                type="text"
-                                                placeholder="Search children..."
-                                                value={childSearchQuery}
-                                                onChange={(e) => setChildSearchQuery(e.target.value)}
-                                                className="w-full h-9 pl-9 pr-3 rounded-lg bg-secondary/50 border-none text-sm focus:ring-2 focus:ring-primary/20"
-                                                autoFocus
-                                            />
+                                {/* Search field - always visible */}
+                                <div className="px-3 py-2 border-b border-border/50">
+                                    <div className="relative">
+                                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-muted-foreground text-lg">search</span>
+                                        <input
+                                            type="text"
+                                            placeholder="Search children..."
+                                            value={childSearchQuery}
+                                            onChange={(e) => setChildSearchQuery(e.target.value)}
+                                            className="w-full h-10 pl-9 pr-3 rounded-xl bg-secondary/50 border border-border/30 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all placeholder:text-muted-foreground/60"
+                                            autoFocus
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Selected child chip (if not 'all') */}
+                                {selectedChildId !== 'all' && selectedChild && (
+                                    <div className="px-3 pt-2 pb-1">
+                                        <div className="flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-lg px-2.5 py-1.5 w-fit">
+                                            <div className="w-5 h-5 rounded-full bg-secondary overflow-hidden shrink-0">
+                                                {selectedChild.avatar ? <img src={selectedChild.avatar} alt="" className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-muted-foreground text-[12px]">person</span>}
+                                            </div>
+                                            <span className="text-xs font-semibold text-primary">{selectedChild.name}</span>
+                                            <button
+                                                onClick={() => setSelectedChildId('all')}
+                                                className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center hover:bg-primary/40 transition-colors"
+                                            >
+                                                <span className="material-symbols-outlined text-[10px] text-primary">close</span>
+                                            </button>
                                         </div>
                                     </div>
                                 )}
 
-                                {/* Children list with checkboxes */}
-                                <div className="max-h-64 overflow-y-auto p-1">
+                                {/* Children list */}
+                                <div className="max-h-64 overflow-y-auto p-1.5">
                                     {filteredChildren.map(child => {
                                         const isSelected = selectedChildId === child.id || selectedChildId === 'all';
                                         return (
                                             <button
                                                 key={child.id}
                                                 onClick={() => { setSelectedChildId(child.id); setShowChildSelector(false); setChildSearchQuery(''); }}
-                                                className={`flex items-center gap-3 w-full p-2.5 rounded-lg transition-colors ${isSelected ? 'bg-primary/10' : 'hover:bg-secondary/50'}`}
+                                                className={`flex items-center gap-3 w-full p-2.5 rounded-xl transition-all ${isSelected ? 'bg-primary/8 ring-1 ring-primary/20' : 'hover:bg-secondary/60'}`}
                                             >
-                                                {/* Checkbox style indicator */}
-                                                <div className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${isSelected ? 'bg-primary border-primary' : 'border-muted-foreground/40'}`}>
-                                                    {isSelected && <span className="material-symbols-outlined text-white text-sm">check</span>}
+                                                {/* Radio style indicator */}
+                                                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${isSelected ? 'bg-primary border-primary' : 'border-muted-foreground/30'}`}>
+                                                    {isSelected && <span className="material-symbols-outlined text-white text-[12px]">check</span>}
                                                 </div>
                                                 <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center overflow-hidden shrink-0">
                                                     {child.avatar ? <img src={child.avatar} alt="" className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-muted-foreground text-sm">group</span>}
                                                 </div>
                                                 <div className="text-left flex-1">
-                                                    <p className="text-sm font-bold leading-none">{child.name}</p>
+                                                    <p className="text-sm font-semibold leading-none">{child.name}</p>
                                                     {child.grade && <p className="text-[10px] text-muted-foreground mt-0.5">{child.grade}</p>}
                                                 </div>
+                                                {isSelected && child.id !== 'all' && (
+                                                    <span className="text-[10px] font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">Selected</span>
+                                                )}
                                             </button>
                                         );
                                     })}
                                     {filteredChildren.length === 0 && (
-                                        <p className="text-center text-sm text-muted-foreground py-4">No children found</p>
+                                        <div className="flex flex-col items-center py-6 text-muted-foreground">
+                                            <span className="material-symbols-outlined text-3xl opacity-30 mb-1">search_off</span>
+                                            <p className="text-sm">No children found</p>
+                                        </div>
                                     )}
                                 </div>
                             </div>
@@ -265,7 +297,7 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
             </div>
 
             {/* 3. Feed Content */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 overscroll-contain">
+            <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4 overscroll-contain">
 
                 {/* Action Required */}
                 {activeActions.length > 0 && activeTab === 'all' && (
