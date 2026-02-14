@@ -113,8 +113,139 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
 
     return (
         <div className="flex flex-col flex-1 min-h-0 w-full bg-slate-50 dark:bg-[#0B1120]">
-            {/* 1. Header (Sticky) */}
-            <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/50 transition-all duration-200 shadow-sm">
+
+            {/* ============================================ */}
+            {/* FULL SCREEN CHILD SELECTOR OVERLAY */}
+            {/* ============================================ */}
+            {showChildSelector && (
+                <div className="fixed inset-0 z-[100] bg-white dark:bg-[#0B1120] flex flex-col h-[100dvh] animate-in fade-in duration-200">
+                    {/* Selector Header */}
+                    <div className="shrink-0 px-5 pt-5 pb-4">
+                        <div className="flex items-center justify-between mb-5">
+                            <h1 className="text-2xl font-bold text-foreground tracking-tight">Select Children</h1>
+                            <button
+                                onClick={() => { setShowChildSelector(false); setChildSearchQuery(''); }}
+                                aria-label="Close"
+                                className="p-2 rounded-full hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+                            >
+                                <span className="material-symbols-outlined text-2xl">close</span>
+                            </button>
+                        </div>
+
+                        {/* Selected Children Chips */}
+                        {selectedChildId !== 'all' && selectedChild && (
+                            <div className="flex flex-wrap gap-2 mb-4">
+                                <div className="flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full pl-1 pr-2 py-1">
+                                    <div className="w-6 h-6 rounded-full bg-secondary overflow-hidden shrink-0 ring-1 ring-white">
+                                        {selectedChild.avatar ? <img src={selectedChild.avatar} alt="" className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-muted-foreground text-xs flex items-center justify-center w-full h-full">person</span>}
+                                    </div>
+                                    <span className="text-xs font-semibold text-primary">{selectedChild.name}</span>
+                                    <button
+                                        onClick={() => setSelectedChildId('all')}
+                                        className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center hover:bg-primary/40 transition-colors"
+                                    >
+                                        <span className="material-symbols-outlined text-[12px] text-primary">close</span>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Search Bar */}
+                        <div className="relative rounded-xl transition-all duration-200 focus-within:ring-2 focus-within:ring-primary/40">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span className="material-symbols-outlined text-muted-foreground">search</span>
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="Search student name..."
+                                value={childSearchQuery}
+                                onChange={(e) => setChildSearchQuery(e.target.value)}
+                                className="block w-full pl-10 pr-3 py-3.5 border-none bg-slate-100 dark:bg-slate-800 text-foreground rounded-xl placeholder-muted-foreground focus:ring-0 text-base"
+                                autoFocus
+                            />
+                        </div>
+                    </div>
+
+                    {/* Select All Control */}
+                    <div className="shrink-0 px-5 py-3 flex items-center justify-between border-b border-border/50 bg-white/95 dark:bg-[#0B1120]/95 backdrop-blur-sm">
+                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Students</span>
+                        <button
+                            onClick={() => setSelectedChildId('all')}
+                            className="flex items-center gap-2 group"
+                        >
+                            <span className="text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors">Select All</span>
+                            <div className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${selectedChildId === 'all' ? 'bg-primary' : 'bg-slate-200 dark:bg-slate-700'}`}>
+                                <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${selectedChildId === 'all' ? 'translate-x-[22px]' : 'translate-x-0.5'}`} />
+                            </div>
+                        </button>
+                    </div>
+
+                    {/* Children List */}
+                    <div className="flex-1 overflow-y-auto px-4 pb-24 pt-2 space-y-1.5 overscroll-contain">
+                        {filteredChildren.filter(c => c.id !== 'all').map(child => {
+                            const isSelected = selectedChildId === child.id || selectedChildId === 'all';
+                            return (
+                                <button
+                                    key={child.id}
+                                    onClick={() => setSelectedChildId(child.id)}
+                                    className="flex items-center justify-between w-full p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group border border-transparent hover:border-border/50"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className="relative">
+                                            <div className={`w-12 h-12 rounded-full bg-secondary overflow-hidden ring-2 ring-white dark:ring-slate-800 shadow-sm transition-all ${isSelected ? '' : 'grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100'}`}>
+                                                {child.avatar ? (
+                                                    <img src={child.avatar} alt="" className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center bg-primary/10">
+                                                        <span className="material-symbols-outlined text-primary">person</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            {isSelected && (
+                                                <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full ring-2 ring-white dark:ring-slate-800 bg-green-400" />
+                                            )}
+                                        </div>
+                                        <div className="text-left">
+                                            <h3 className="font-bold text-foreground text-base group-hover:text-primary transition-colors">{child.name}</h3>
+                                            {child.grade && <p className="text-sm text-muted-foreground font-medium">{child.grade}</p>}
+                                        </div>
+                                    </div>
+                                    {/* Circular checkbox */}
+                                    <div className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all shrink-0 ${isSelected ? 'bg-primary border-primary' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 group-hover:border-primary'}`}>
+                                        {isSelected && (
+                                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} />
+                                            </svg>
+                                        )}
+                                    </div>
+                                </button>
+                            );
+                        })}
+                        {filteredChildren.filter(c => c.id !== 'all').length === 0 && (
+                            <div className="flex flex-col items-center py-12 text-muted-foreground">
+                                <span className="material-symbols-outlined text-5xl opacity-20 mb-2">search_off</span>
+                                <p className="text-sm font-medium">No students found</p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Sticky Apply Button */}
+                    <div className="shrink-0 p-4 bg-white dark:bg-[#0B1120] shadow-[0_-4px_20px_-2px_rgba(0,0,0,0.05)] border-t border-border/50">
+                        <button
+                            onClick={() => { setShowChildSelector(false); setChildSearchQuery(''); }}
+                            className="w-full bg-primary hover:bg-primary/90 active:scale-[0.98] transition-all text-white font-bold py-4 px-6 rounded-xl shadow-lg shadow-primary/25 flex items-center justify-center gap-2"
+                        >
+                            <span>Apply Selection</span>
+                            <span className="bg-white/20 text-white text-xs py-0.5 px-2 rounded-full font-bold">
+                                {selectedChildId === 'all' ? MOCK_CHILDREN.filter(c => c.id !== 'all').length : 1}
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* 1. Header */}
+            <header className="shrink-0 z-30 bg-background/95 backdrop-blur-md border-b border-border/50 transition-all duration-200 shadow-sm">
 
                 {/* Offline Indicator */}
                 {isOffline && (
@@ -137,7 +268,7 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                     </div>
                 )}
 
-                <div className="flex items-center px-4 h-14 gap-3 relative">
+                <div className="flex items-center px-4 h-14 gap-3">
                     <button
                         onClick={handleClose}
                         className="w-10 h-10 flex items-center justify-center -ml-2 rounded-full hover:bg-secondary/80 transition-colors"
@@ -145,17 +276,16 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                         <span className="material-symbols-outlined text-foreground">close</span>
                     </button>
 
-                    {/* Title / Child Selector */}
+                    {/* Title / Child Selector Trigger */}
                     <div className="flex-1 flex justify-center">
                         <button
-                            onClick={() => setShowChildSelector(!showChildSelector)}
+                            onClick={() => setShowChildSelector(true)}
                             className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-secondary/50 transition-colors"
                         >
                             {selectedChild?.id !== 'all' && selectedChild?.avatar && (
                                 <img src={selectedChild.avatar} className="w-5 h-5 rounded-full" alt="" />
                             )}
                             <span className="text-sm font-bold">{selectedChild?.name || 'All Children'}</span>
-                            {/* Show (x) to clear back to All if a specific child is selected */}
                             {selectedChildId !== 'all' ? (
                                 <button
                                     onClick={(e) => { e.stopPropagation(); setSelectedChildId('all'); }}
@@ -164,7 +294,7 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                                     <span className="material-symbols-outlined text-[12px] text-foreground">close</span>
                                 </button>
                             ) : (
-                                <span className={`material-symbols-outlined text-[16px] transition-transform ${showChildSelector ? 'rotate-180' : ''}`}>expand_more</span>
+                                <span className="material-symbols-outlined text-[16px]">expand_more</span>
                             )}
                         </button>
                     </div>
@@ -183,93 +313,6 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                             <span className="material-symbols-outlined text-[18px]">edit_square</span>
                         </button>
                     </div>
-
-                    {/* Child Selector Dropdown */}
-                    {showChildSelector && (
-                        <>
-                            <div className="fixed inset-0 z-40 bg-black/30 backdrop-blur-[2px]" onClick={() => { setShowChildSelector(false); setChildSearchQuery(''); }} />
-                            <div className="absolute top-14 left-0 right-0 mx-4 mt-2 bg-popover border border-border/60 rounded-2xl shadow-xl z-50 overflow-hidden flex flex-col animate-in fade-in slide-in-from-top-2 duration-200">
-                                {/* Header */}
-                                <div className="flex items-center justify-between px-4 py-3 border-b border-border/50">
-                                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Select Child</span>
-                                    <button
-                                        onClick={() => { setShowChildSelector(false); setChildSearchQuery(''); }}
-                                        className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-secondary/80 transition-colors"
-                                    >
-                                        <span className="material-symbols-outlined text-lg text-muted-foreground">close</span>
-                                    </button>
-                                </div>
-
-                                {/* Search field - always visible */}
-                                <div className="px-3 py-2 border-b border-border/50">
-                                    <div className="relative">
-                                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-muted-foreground text-lg">search</span>
-                                        <input
-                                            type="text"
-                                            placeholder="Search children..."
-                                            value={childSearchQuery}
-                                            onChange={(e) => setChildSearchQuery(e.target.value)}
-                                            className="w-full h-10 pl-9 pr-3 rounded-xl bg-secondary/50 border border-border/30 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all placeholder:text-muted-foreground/60"
-                                            autoFocus
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Selected child chip (if not 'all') */}
-                                {selectedChildId !== 'all' && selectedChild && (
-                                    <div className="px-3 pt-2 pb-1">
-                                        <div className="flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-lg px-2.5 py-1.5 w-fit">
-                                            <div className="w-5 h-5 rounded-full bg-secondary overflow-hidden shrink-0">
-                                                {selectedChild.avatar ? <img src={selectedChild.avatar} alt="" className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-muted-foreground text-[12px]">person</span>}
-                                            </div>
-                                            <span className="text-xs font-semibold text-primary">{selectedChild.name}</span>
-                                            <button
-                                                onClick={() => setSelectedChildId('all')}
-                                                className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center hover:bg-primary/40 transition-colors"
-                                            >
-                                                <span className="material-symbols-outlined text-[10px] text-primary">close</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Children list */}
-                                <div className="max-h-64 overflow-y-auto p-1.5">
-                                    {filteredChildren.map(child => {
-                                        const isSelected = selectedChildId === child.id || selectedChildId === 'all';
-                                        return (
-                                            <button
-                                                key={child.id}
-                                                onClick={() => { setSelectedChildId(child.id); setShowChildSelector(false); setChildSearchQuery(''); }}
-                                                className={`flex items-center gap-3 w-full p-2.5 rounded-xl transition-all ${isSelected ? 'bg-primary/8 ring-1 ring-primary/20' : 'hover:bg-secondary/60'}`}
-                                            >
-                                                {/* Radio style indicator */}
-                                                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${isSelected ? 'bg-primary border-primary' : 'border-muted-foreground/30'}`}>
-                                                    {isSelected && <span className="material-symbols-outlined text-white text-[12px]">check</span>}
-                                                </div>
-                                                <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center overflow-hidden shrink-0">
-                                                    {child.avatar ? <img src={child.avatar} alt="" className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-muted-foreground text-sm">group</span>}
-                                                </div>
-                                                <div className="text-left flex-1">
-                                                    <p className="text-sm font-semibold leading-none">{child.name}</p>
-                                                    {child.grade && <p className="text-[10px] text-muted-foreground mt-0.5">{child.grade}</p>}
-                                                </div>
-                                                {isSelected && child.id !== 'all' && (
-                                                    <span className="text-[10px] font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">Selected</span>
-                                                )}
-                                            </button>
-                                        );
-                                    })}
-                                    {filteredChildren.length === 0 && (
-                                        <div className="flex flex-col items-center py-6 text-muted-foreground">
-                                            <span className="material-symbols-outlined text-3xl opacity-30 mb-1">search_off</span>
-                                            <p className="text-sm">No children found</p>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </>
-                    )}
                 </div>
 
                 {/* TABS */}
@@ -282,8 +325,8 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                 </div>
             </header>
 
-            {/* 2. Controls - Search Only (Sort simplified) */}
-            <div className="bg-background py-2 px-4 shadow-sm border-b border-border/30">
+            {/* 2. Controls - Search */}
+            <div className="shrink-0 bg-background py-2 px-4 shadow-sm border-b border-border/30">
                 <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-muted-foreground text-[20px]">search</span>
                     <input
@@ -296,8 +339,8 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                 </div>
             </div>
 
-            {/* 3. Feed Content */}
-            <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4 overscroll-contain">
+            {/* 3. Feed Content - Scrollable */}
+            <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4 overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
 
                 {/* Action Required */}
                 {activeActions.length > 0 && activeTab === 'all' && (
