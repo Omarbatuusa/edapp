@@ -55,6 +55,7 @@ export function ChatThreadView({ item, onBack, onAction }: ChatThreadViewProps) 
 
     const [inputValue, setInputValue] = useState('');
     const [showSuggestions, setShowSuggestions] = useState(true);
+    const [isOtherTyping, setIsOtherTyping] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const suggestedReplies = getSuggestedReplies(item);
 
@@ -63,6 +64,13 @@ export function ChatThreadView({ item, onBack, onAction }: ChatThreadViewProps) 
             fetchMessages(threadId, currentUserId);
         }
     }, [threadId, fetchMessages]);
+
+    // Simulate typing indicator (mock - would be driven by WebSocket in production)
+    useEffect(() => {
+        const timer = setTimeout(() => setIsOtherTyping(true), 2000);
+        const hideTimer = setTimeout(() => setIsOtherTyping(false), 5000);
+        return () => { clearTimeout(timer); clearTimeout(hideTimer); };
+    }, []);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -204,9 +212,29 @@ export function ChatThreadView({ item, onBack, onAction }: ChatThreadViewProps) 
                             </div>
                         </div>
                     ))}
+
+                    {/* Typing Indicator */}
+                    {isOtherTyping && (
+                        <div className="flex items-start self-start animate-in fade-in slide-in-from-bottom-2 duration-300">
+                            <div className="px-4 py-3 rounded-2xl rounded-bl-sm bg-card border border-border shadow-sm flex items-center gap-1">
+                                <span className="w-2 h-2 rounded-full bg-muted-foreground/40" style={{ animation: 'typing-bounce 1.4s infinite 0ms' }} />
+                                <span className="w-2 h-2 rounded-full bg-muted-foreground/40" style={{ animation: 'typing-bounce 1.4s infinite 200ms' }} />
+                                <span className="w-2 h-2 rounded-full bg-muted-foreground/40" style={{ animation: 'typing-bounce 1.4s infinite 400ms' }} />
+                            </div>
+                        </div>
+                    )}
+
                     <div ref={messagesEndRef} />
                 </div>
             </div>
+
+            {/* Typing indicator keyframes */}
+            <style>{`
+                @keyframes typing-bounce {
+                    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+                    30% { transform: translateY(-4px); opacity: 1; }
+                }
+            `}</style>
 
             {/* ====== SUGGESTED REPLIES ====== */}
             {showSuggestions && messages.length > 0 && (

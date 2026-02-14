@@ -104,6 +104,16 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
     const displayFeed = filteredFeed;
     const selectedChild = MOCK_CHILDREN.find(c => c.id === selectedChildId);
 
+    // Tab badge counts
+    const tabBadges = useMemo(() => {
+        const all = feedItems.filter((i: FeedItem) => i.unread || i.isUnread).length;
+        const announcements = feedItems.filter((i: FeedItem) => (i.type === 'announcement' || i.urgency === 'urgent') && (i.unread || i.isUnread)).length;
+        const classes = feedItems.filter((i: FeedItem) => i.type === 'message' && (i.unread || i.isUnread)).length;
+        const direct = feedItems.filter((i: FeedItem) => i.type === 'message' && (i.unread || i.isUnread)).length;
+        const support = feedItems.filter((i: FeedItem) => i.type === 'support' && (i.unread || i.isUnread)).length;
+        return { all, announcements, classes, direct, support };
+    }, [feedItems]);
+
     // Mock Offline Toggle for Demo
     // useEffect(() => {
     //     const timer = setTimeout(() => setIsOffline(true), 5000);
@@ -121,7 +131,7 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                 <>
                     {/* Backdrop for desktop */}
                     <div className="fixed inset-0 z-[99] bg-black/40 backdrop-blur-sm hidden md:block" onClick={() => { setShowChildSelector(false); setChildSearchQuery(''); }} />
-                    <div className="fixed inset-0 z-[100] bg-white dark:bg-[#0B1120] flex flex-col h-[100dvh] animate-in fade-in duration-200 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:max-w-lg md:w-[95%] md:max-h-[80vh] md:h-auto md:rounded-2xl md:shadow-2xl md:border md:border-border/50">
+                    <div className="fixed inset-0 z-[100] bg-white dark:bg-[#0B1120] flex flex-col h-[100dvh] animate-in fade-in duration-200 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:max-w-lg md:w-[95%] md:max-h-[80vh] md:h-auto md:rounded-2xl md:shadow-2xl md:border md:border-border/50 overflow-hidden">
                         {/* Selector Header */}
                         <div className="shrink-0 px-5 pt-5 pb-4">
                             <div className="flex items-center justify-between mb-5">
@@ -147,7 +157,9 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                                             onClick={() => setSelectedChildId('all')}
                                             className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center hover:bg-primary/40 transition-colors"
                                         >
-                                            <span className="material-symbols-outlined text-[12px] text-primary">close</span>
+                                            <svg className="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                                                <path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
                                         </button>
                                     </div>
                                 </div>
@@ -233,7 +245,7 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                         </div>
 
                         {/* Sticky Apply Button */}
-                        <div className="shrink-0 p-4 bg-white dark:bg-[#0B1120] shadow-[0_-4px_20px_-2px_rgba(0,0,0,0.05)] border-t border-border/50">
+                        <div className="shrink-0 p-4 bg-white dark:bg-[#0B1120] shadow-[0_-4px_20px_-2px_rgba(0,0,0,0.05)] border-t border-border/50 md:rounded-b-2xl">
                             <button
                                 onClick={() => { setShowChildSelector(false); setChildSearchQuery(''); }}
                                 className="w-full bg-primary hover:bg-primary/90 active:scale-[0.98] transition-all text-white font-bold py-4 px-6 rounded-xl shadow-lg shadow-primary/25 flex items-center justify-center gap-2"
@@ -295,7 +307,9 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                                     onClick={(e) => { e.stopPropagation(); setSelectedChildId('all'); }}
                                     className="w-5 h-5 rounded-full bg-muted-foreground/20 flex items-center justify-center hover:bg-muted-foreground/40 transition-colors"
                                 >
-                                    <span className="material-symbols-outlined text-[12px] text-foreground">close</span>
+                                    <svg className="w-3 h-3 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                                        <path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
                                 </button>
                             ) : (
                                 <span className="material-symbols-outlined text-[16px]">expand_more</span>
@@ -321,11 +335,11 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
 
                 {/* TABS */}
                 <div className="flex px-2 overflow-x-auto no-scrollbar border-t border-border/50">
-                    <TabButton label="All" active={activeTab === 'all'} onClick={() => setActiveTab('all')} />
-                    <TabButton label="Announcements" active={activeTab === 'announcements'} onClick={() => setActiveTab('announcements')} />
-                    <TabButton label="Classes" active={activeTab === 'classes'} onClick={() => setActiveTab('classes')} />
-                    <TabButton label="Direct" active={activeTab === 'direct'} onClick={() => setActiveTab('direct')} />
-                    <TabButton label="Support" active={activeTab === 'support'} onClick={() => setActiveTab('support')} />
+                    <TabButton label="All" active={activeTab === 'all'} onClick={() => setActiveTab('all')} badge={tabBadges.all} />
+                    <TabButton label="Announcements" active={activeTab === 'announcements'} onClick={() => setActiveTab('announcements')} badge={tabBadges.announcements} />
+                    <TabButton label="Classes" active={activeTab === 'classes'} onClick={() => setActiveTab('classes')} badge={tabBadges.classes} />
+                    <TabButton label="Direct" active={activeTab === 'direct'} onClick={() => setActiveTab('direct')} badge={tabBadges.direct} />
+                    <TabButton label="Support" active={activeTab === 'support'} onClick={() => setActiveTab('support')} badge={tabBadges.support} />
                 </div>
             </header>
 
@@ -362,9 +376,16 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                 <div className="space-y-3 pb-24">
                     {displayFeed.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-20 text-muted-foreground animate-in fade-in duration-500">
-                            <span className="material-symbols-outlined text-5xl mb-3 opacity-20">inbox</span>
-                            <p className="text-sm font-medium">No items found for {selectedChild?.name}</p>
-                            <button onClick={() => setActiveTab('all')} className="mt-4 text-primary text-xs font-bold hover:underline">Clear Filters</button>
+                            <span className="material-symbols-outlined text-5xl mb-3 opacity-20">
+                                {activeTab === 'announcements' ? 'campaign' : activeTab === 'classes' ? 'school' : activeTab === 'direct' ? 'chat' : activeTab === 'support' ? 'support_agent' : 'inbox'}
+                            </span>
+                            <p className="text-sm font-semibold">
+                                {activeTab === 'announcements' ? 'No announcements' : activeTab === 'classes' ? 'No class messages' : activeTab === 'direct' ? 'No direct messages' : activeTab === 'support' ? 'No support tickets' : `No items found`}
+                            </p>
+                            <p className="text-xs text-muted-foreground/60 mt-1">
+                                {activeTab === 'announcements' ? 'School announcements will appear here' : activeTab === 'classes' ? 'Messages from teachers will appear here' : activeTab === 'direct' ? 'Start a conversation with the new chat button' : activeTab === 'support' ? 'Create a support ticket if you need help' : 'Your messages and updates will appear here'}
+                            </p>
+                            {activeTab !== 'all' && <button onClick={() => setActiveTab('all')} className="mt-4 text-primary text-xs font-bold hover:underline">View All</button>}
                         </div>
                     ) : (
                         displayFeed.map(item => (
@@ -387,16 +408,21 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
 }
 
 // Tab Button Component
-function TabButton({ label, active, onClick }: { label: string, active: boolean, onClick: () => void }) {
+function TabButton({ label, active, onClick, badge = 0 }: { label: string, active: boolean, onClick: () => void, badge?: number }) {
     return (
         <button
             onClick={onClick}
             className={`
-                relative px-3 py-3 text-sm font-medium transition-colors whitespace-nowrap outline-none
+                relative px-3 py-3 text-sm font-medium transition-colors whitespace-nowrap outline-none flex items-center gap-1.5
                 ${active ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}
             `}
         >
             {label}
+            {badge > 0 && (
+                <span className={`min-w-[18px] h-[18px] rounded-full text-[10px] font-bold px-1 flex items-center justify-center leading-none ${active ? 'bg-primary text-primary-foreground' : 'bg-muted-foreground/20 text-muted-foreground'}`}>
+                    {badge > 99 ? '99+' : badge}
+                </span>
+            )}
             {active && (
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary transition-all duration-300" />
             )}

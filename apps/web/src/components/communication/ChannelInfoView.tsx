@@ -24,30 +24,19 @@ export function ChannelInfoView({ item, onClose }: { item: FeedItem | null, onCl
 
                     {/* Action Grid */}
                     <div className="grid grid-cols-4 gap-4 mt-6 w-full max-w-sm">
-                        <button className="flex flex-col items-center gap-2 group">
-                            <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                                <span className="material-symbols-outlined text-[20px]">search</span>
-                            </div>
-                            <span className="text-[10px] font-medium text-muted-foreground">Search</span>
-                        </button>
-                        <button className="flex flex-col items-center gap-2 group">
-                            <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                                <span className="material-symbols-outlined text-[20px]">notifications_off</span>
-                            </div>
-                            <span className="text-[10px] font-medium text-muted-foreground">Mute</span>
-                        </button>
-                        <button className="flex flex-col items-center gap-2 group">
-                            <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                                <span className="material-symbols-outlined text-[20px]">add</span>
-                            </div>
-                            <span className="text-[10px] font-medium text-muted-foreground">Add</span>
-                        </button>
-                        <button className="flex flex-col items-center gap-2 group">
-                            <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                                <span className="material-symbols-outlined text-[20px]">share</span>
-                            </div>
-                            <span className="text-[10px] font-medium text-muted-foreground">Share</span>
-                        </button>
+                        {[
+                            { icon: 'search', label: 'Search' },
+                            { icon: 'notifications_off', label: 'Mute' },
+                            { icon: 'person_add', label: 'Add' },
+                            { icon: 'share', label: 'Share' },
+                        ].map(({ icon, label }) => (
+                            <button key={icon} className="flex flex-col items-center gap-2 group">
+                                <div className="w-11 h-11 rounded-full bg-secondary flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-all duration-200 group-active:scale-95">
+                                    <span className="material-symbols-outlined text-[20px] leading-none">{icon}</span>
+                                </div>
+                                <span className="text-[10px] font-medium text-muted-foreground group-hover:text-primary transition-colors">{label}</span>
+                            </button>
+                        ))}
                     </div>
                 </div>
 
