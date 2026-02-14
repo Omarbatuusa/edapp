@@ -9,7 +9,7 @@ interface MessagesLayoutProps {
 
 export function MessagesLayout({ children, header, footer, className = '' }: MessagesLayoutProps) {
     return (
-        <div className={`fixed inset-0 z-50 flex flex-col bg-slate-50 dark:bg-[#0B1120] text-foreground overflow-hidden h-[100dvh] md:relative md:min-h-screen md:h-auto md:z-0 ${className}`}>
+        <div className={`fixed inset-0 z-50 flex flex-col bg-slate-50 dark:bg-[#0B1120] text-foreground overflow-hidden h-[100dvh] md:relative md:h-screen md:z-0 ${className}`}>
             {/* Header Area - Stays fixed at top */}
             {header && (
                 <div className="shrink-0 z-20 bg-background/80 backdrop-blur-md border-b border-border/50">

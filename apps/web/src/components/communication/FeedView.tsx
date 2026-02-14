@@ -118,130 +118,134 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
             {/* FULL SCREEN CHILD SELECTOR OVERLAY */}
             {/* ============================================ */}
             {showChildSelector && (
-                <div className="fixed inset-0 z-[100] bg-white dark:bg-[#0B1120] flex flex-col h-[100dvh] animate-in fade-in duration-200">
-                    {/* Selector Header */}
-                    <div className="shrink-0 px-5 pt-5 pb-4">
-                        <div className="flex items-center justify-between mb-5">
-                            <h1 className="text-2xl font-bold text-foreground tracking-tight">Select Children</h1>
+                <>
+                    {/* Backdrop for desktop */}
+                    <div className="fixed inset-0 z-[99] bg-black/40 backdrop-blur-sm hidden md:block" onClick={() => { setShowChildSelector(false); setChildSearchQuery(''); }} />
+                    <div className="fixed inset-0 z-[100] bg-white dark:bg-[#0B1120] flex flex-col h-[100dvh] animate-in fade-in duration-200 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:max-w-lg md:w-[95%] md:max-h-[80vh] md:h-auto md:rounded-2xl md:shadow-2xl md:border md:border-border/50">
+                        {/* Selector Header */}
+                        <div className="shrink-0 px-5 pt-5 pb-4">
+                            <div className="flex items-center justify-between mb-5">
+                                <h1 className="text-2xl font-bold text-foreground tracking-tight">Select Child</h1>
+                                <button
+                                    onClick={() => { setShowChildSelector(false); setChildSearchQuery(''); }}
+                                    aria-label="Close"
+                                    className="p-2 rounded-full hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+                                >
+                                    <span className="material-symbols-outlined text-2xl">close</span>
+                                </button>
+                            </div>
+
+                            {/* Selected Children Chips */}
+                            {selectedChildId !== 'all' && selectedChild && (
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                    <div className="flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full pl-1 pr-2 py-1">
+                                        <div className="w-6 h-6 rounded-full bg-secondary overflow-hidden shrink-0 ring-1 ring-white">
+                                            {selectedChild.avatar ? <img src={selectedChild.avatar} alt="" className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-muted-foreground text-xs flex items-center justify-center w-full h-full">person</span>}
+                                        </div>
+                                        <span className="text-xs font-semibold text-primary">{selectedChild.name}</span>
+                                        <button
+                                            onClick={() => setSelectedChildId('all')}
+                                            className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center hover:bg-primary/40 transition-colors"
+                                        >
+                                            <span className="material-symbols-outlined text-[12px] text-primary">close</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Search Bar */}
+                            <div className="relative rounded-xl transition-all duration-200 focus-within:ring-2 focus-within:ring-primary/40">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span className="material-symbols-outlined text-muted-foreground">search</span>
+                                </div>
+                                <input
+                                    type="text"
+                                    placeholder="Search child..."
+                                    value={childSearchQuery}
+                                    onChange={(e) => setChildSearchQuery(e.target.value)}
+                                    className="block w-full pl-10 pr-3 py-3.5 border-none bg-slate-100 dark:bg-slate-800 text-foreground rounded-xl placeholder-muted-foreground focus:ring-0 text-base"
+                                    autoFocus
+                                />
+                            </div>
+                        </div>
+
+                        {/* Select All Control */}
+                        <div className="shrink-0 px-5 py-3 flex items-center justify-between border-b border-border/50 bg-white/95 dark:bg-[#0B1120]/95 backdrop-blur-sm">
+                            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Children</span>
                             <button
-                                onClick={() => { setShowChildSelector(false); setChildSearchQuery(''); }}
-                                aria-label="Close"
-                                className="p-2 rounded-full hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+                                onClick={() => setSelectedChildId('all')}
+                                className="flex items-center gap-2 group"
                             >
-                                <span className="material-symbols-outlined text-2xl">close</span>
+                                <span className="text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors">Select All</span>
+                                <div className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${selectedChildId === 'all' ? 'bg-primary' : 'bg-slate-200 dark:bg-slate-700'}`}>
+                                    <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${selectedChildId === 'all' ? 'translate-x-[22px]' : 'translate-x-0.5'}`} />
+                                </div>
                             </button>
                         </div>
 
-                        {/* Selected Children Chips */}
-                        {selectedChildId !== 'all' && selectedChild && (
-                            <div className="flex flex-wrap gap-2 mb-4">
-                                <div className="flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full pl-1 pr-2 py-1">
-                                    <div className="w-6 h-6 rounded-full bg-secondary overflow-hidden shrink-0 ring-1 ring-white">
-                                        {selectedChild.avatar ? <img src={selectedChild.avatar} alt="" className="w-full h-full object-cover" /> : <span className="material-symbols-outlined text-muted-foreground text-xs flex items-center justify-center w-full h-full">person</span>}
-                                    </div>
-                                    <span className="text-xs font-semibold text-primary">{selectedChild.name}</span>
+                        {/* Children List */}
+                        <div className="flex-1 overflow-y-auto px-4 pb-24 pt-2 space-y-1.5 overscroll-contain">
+                            {filteredChildren.filter(c => c.id !== 'all').map(child => {
+                                const isSelected = selectedChildId === child.id || selectedChildId === 'all';
+                                return (
                                     <button
-                                        onClick={() => setSelectedChildId('all')}
-                                        className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center hover:bg-primary/40 transition-colors"
+                                        key={child.id}
+                                        onClick={() => setSelectedChildId(child.id)}
+                                        className="flex items-center justify-between w-full p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group border border-transparent hover:border-border/50"
                                     >
-                                        <span className="material-symbols-outlined text-[12px] text-primary">close</span>
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Search Bar */}
-                        <div className="relative rounded-xl transition-all duration-200 focus-within:ring-2 focus-within:ring-primary/40">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <span className="material-symbols-outlined text-muted-foreground">search</span>
-                            </div>
-                            <input
-                                type="text"
-                                placeholder="Search student name..."
-                                value={childSearchQuery}
-                                onChange={(e) => setChildSearchQuery(e.target.value)}
-                                className="block w-full pl-10 pr-3 py-3.5 border-none bg-slate-100 dark:bg-slate-800 text-foreground rounded-xl placeholder-muted-foreground focus:ring-0 text-base"
-                                autoFocus
-                            />
-                        </div>
-                    </div>
-
-                    {/* Select All Control */}
-                    <div className="shrink-0 px-5 py-3 flex items-center justify-between border-b border-border/50 bg-white/95 dark:bg-[#0B1120]/95 backdrop-blur-sm">
-                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Students</span>
-                        <button
-                            onClick={() => setSelectedChildId('all')}
-                            className="flex items-center gap-2 group"
-                        >
-                            <span className="text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors">Select All</span>
-                            <div className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${selectedChildId === 'all' ? 'bg-primary' : 'bg-slate-200 dark:bg-slate-700'}`}>
-                                <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${selectedChildId === 'all' ? 'translate-x-[22px]' : 'translate-x-0.5'}`} />
-                            </div>
-                        </button>
-                    </div>
-
-                    {/* Children List */}
-                    <div className="flex-1 overflow-y-auto px-4 pb-24 pt-2 space-y-1.5 overscroll-contain">
-                        {filteredChildren.filter(c => c.id !== 'all').map(child => {
-                            const isSelected = selectedChildId === child.id || selectedChildId === 'all';
-                            return (
-                                <button
-                                    key={child.id}
-                                    onClick={() => setSelectedChildId(child.id)}
-                                    className="flex items-center justify-between w-full p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group border border-transparent hover:border-border/50"
-                                >
-                                    <div className="flex items-center gap-4">
-                                        <div className="relative">
-                                            <div className={`w-12 h-12 rounded-full bg-secondary overflow-hidden ring-2 ring-white dark:ring-slate-800 shadow-sm transition-all ${isSelected ? '' : 'grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100'}`}>
-                                                {child.avatar ? (
-                                                    <img src={child.avatar} alt="" className="w-full h-full object-cover" />
-                                                ) : (
-                                                    <div className="w-full h-full flex items-center justify-center bg-primary/10">
-                                                        <span className="material-symbols-outlined text-primary">person</span>
-                                                    </div>
+                                        <div className="flex items-center gap-4">
+                                            <div className="relative">
+                                                <div className={`w-12 h-12 rounded-full bg-secondary overflow-hidden ring-2 ring-white dark:ring-slate-800 shadow-sm transition-all ${isSelected ? '' : 'grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100'}`}>
+                                                    {child.avatar ? (
+                                                        <img src={child.avatar} alt="" className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center bg-primary/10">
+                                                            <span className="material-symbols-outlined text-primary">person</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                {isSelected && (
+                                                    <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full ring-2 ring-white dark:ring-slate-800 bg-green-400" />
                                                 )}
                                             </div>
+                                            <div className="text-left">
+                                                <h3 className="font-bold text-foreground text-base group-hover:text-primary transition-colors">{child.name}</h3>
+                                                {child.grade && <p className="text-sm text-muted-foreground font-medium">{child.grade}</p>}
+                                            </div>
+                                        </div>
+                                        {/* Circular checkbox */}
+                                        <div className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all shrink-0 ${isSelected ? 'bg-primary border-primary' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 group-hover:border-primary'}`}>
                                             {isSelected && (
-                                                <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full ring-2 ring-white dark:ring-slate-800 bg-green-400" />
+                                                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} />
+                                                </svg>
                                             )}
                                         </div>
-                                        <div className="text-left">
-                                            <h3 className="font-bold text-foreground text-base group-hover:text-primary transition-colors">{child.name}</h3>
-                                            {child.grade && <p className="text-sm text-muted-foreground font-medium">{child.grade}</p>}
-                                        </div>
-                                    </div>
-                                    {/* Circular checkbox */}
-                                    <div className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all shrink-0 ${isSelected ? 'bg-primary border-primary' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 group-hover:border-primary'}`}>
-                                        {isSelected && (
-                                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} />
-                                            </svg>
-                                        )}
-                                    </div>
-                                </button>
-                            );
-                        })}
-                        {filteredChildren.filter(c => c.id !== 'all').length === 0 && (
-                            <div className="flex flex-col items-center py-12 text-muted-foreground">
-                                <span className="material-symbols-outlined text-5xl opacity-20 mb-2">search_off</span>
-                                <p className="text-sm font-medium">No students found</p>
-                            </div>
-                        )}
-                    </div>
+                                    </button>
+                                );
+                            })}
+                            {filteredChildren.filter(c => c.id !== 'all').length === 0 && (
+                                <div className="flex flex-col items-center py-12 text-muted-foreground">
+                                    <span className="material-symbols-outlined text-5xl opacity-20 mb-2">search_off</span>
+                                    <p className="text-sm font-medium">No children found</p>
+                                </div>
+                            )}
+                        </div>
 
-                    {/* Sticky Apply Button */}
-                    <div className="shrink-0 p-4 bg-white dark:bg-[#0B1120] shadow-[0_-4px_20px_-2px_rgba(0,0,0,0.05)] border-t border-border/50">
-                        <button
-                            onClick={() => { setShowChildSelector(false); setChildSearchQuery(''); }}
-                            className="w-full bg-primary hover:bg-primary/90 active:scale-[0.98] transition-all text-white font-bold py-4 px-6 rounded-xl shadow-lg shadow-primary/25 flex items-center justify-center gap-2"
-                        >
-                            <span>Apply Selection</span>
-                            <span className="bg-white/20 text-white text-xs py-0.5 px-2 rounded-full font-bold">
-                                {selectedChildId === 'all' ? MOCK_CHILDREN.filter(c => c.id !== 'all').length : 1}
-                            </span>
-                        </button>
+                        {/* Sticky Apply Button */}
+                        <div className="shrink-0 p-4 bg-white dark:bg-[#0B1120] shadow-[0_-4px_20px_-2px_rgba(0,0,0,0.05)] border-t border-border/50">
+                            <button
+                                onClick={() => { setShowChildSelector(false); setChildSearchQuery(''); }}
+                                className="w-full bg-primary hover:bg-primary/90 active:scale-[0.98] transition-all text-white font-bold py-4 px-6 rounded-xl shadow-lg shadow-primary/25 flex items-center justify-center gap-2"
+                            >
+                                <span>Apply Selection</span>
+                                <span className="bg-white/20 text-white text-xs py-0.5 px-2 rounded-full font-bold">
+                                    {selectedChildId === 'all' ? MOCK_CHILDREN.filter(c => c.id !== 'all').length : 1}
+                                </span>
+                            </button>
+                        </div>
                     </div>
-                </div>
+                </>
             )}
 
             {/* 1. Header */}
