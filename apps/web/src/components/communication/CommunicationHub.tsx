@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, Suspense, Component, ErrorInfo, ReactNode } from 'react';
+import React, { useState, useMemo, Suspense, Component, ErrorInfo, ReactNode } from 'react';
+import { usePathname } from 'next/navigation';
 import { FeedItem } from './types';
 import { FeedView } from './FeedView';
 import { MessageThreadView } from './MessageThreadView';
@@ -136,9 +137,18 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
 
 
 
-    // ...
-    const currentUserId = 'user-1'; // Mock user ID
-    const tenantId = 'tenant-1'; // Mock tenant ID
+    // Derive tenant and user from URL path and localStorage
+    const pathname = usePathname();
+    const tenantSlug = useMemo(() => {
+        // Extract tenant slug from /tenant/[slug]/... path
+        const match = pathname?.match(/\/tenant\/([^\/]+)/);
+        return match?.[1] || '';
+    }, [pathname]);
+
+    const currentUserId = typeof window !== 'undefined'
+        ? localStorage.getItem('user_id') || ''
+        : '';
+    const tenantId = tenantSlug;
 
     return (
         <MessagesLayout

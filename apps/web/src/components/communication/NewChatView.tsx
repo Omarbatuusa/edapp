@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { MOCK_CHILDREN } from './mockData';
 import { FeedItem } from './types';
 
 interface NewChatViewProps {
@@ -11,7 +10,9 @@ interface NewChatViewProps {
 }
 
 export function NewChatView({ onStart, onStartChat, onCreateChannel }: NewChatViewProps) {
-    const [selectedChildId, setSelectedChildId] = useState<string>(MOCK_CHILDREN[1]?.id || 'lisa');
+    // Children data will come from API; for now empty
+    const availableChildren: { id: string; name: string; grade?: string; avatar?: string }[] = [];
+    const [selectedChildId, setSelectedChildId] = useState<string>('');
     const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
     const [selectedSubItem, setSelectedSubItem] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -53,7 +54,7 @@ export function NewChatView({ onStart, onStartChat, onCreateChannel }: NewChatVi
 
         try {
             // Get selected child info
-            const selectedChild = MOCK_CHILDREN.find(c => c.id === selectedChildId);
+            const selectedChild = availableChildren.find(c => c.id === selectedChildId);
 
             // Build thread title based on selection
             let title = '';
@@ -128,7 +129,7 @@ export function NewChatView({ onStart, onStartChat, onCreateChannel }: NewChatVi
             <div className="flex flex-col pt-4">
                 <h3 className="text-sm font-bold text-muted-foreground px-4 uppercase tracking-wider mb-3">Regarding</h3>
                 <div className="flex gap-3 px-4 overflow-x-auto pb-2 no-scrollbar mask-fade-right">
-                    {MOCK_CHILDREN.filter(c => c.id !== 'all').map(child => {
+                    {availableChildren.map(child => {
                         const isActive = selectedChildId === child.id;
                         return (
                             <button

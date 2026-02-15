@@ -1,7 +1,7 @@
 import { useCommunicationStore } from '../../lib/communication-store';
-import { MOCK_CHILDREN, TRANSLATIONS, MOCK_FEED } from './mockData';
 import React, { useState, useMemo } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 // ScreenStackBase removed - using simple flex container instead
 import { FeedItem } from './types';
 
@@ -24,6 +24,7 @@ export interface FeedViewProps {
 export function FeedView({ onItemClick, officeHours, selectedChildId, setSelectedChildId, isTranslated, setIsTranslated, onNewChat, onOpenActionCenter, onOpenLanguage }: FeedViewProps) {
     const router = useRouter();
     const pathname = usePathname();
+    const t = useTranslations();
     const [activeTab, setActiveTab] = useState<'all' | 'announcements' | 'classes' | 'direct' | 'support'>('all');
     const [isOffline, setIsOffline] = useState(false); // Mock offline state
     const [searchQuery, setSearchQuery] = useState('');
@@ -32,8 +33,9 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
     const [showChildSelector, setShowChildSelector] = useState(false);
     const [childSearchQuery, setChildSearchQuery] = useState('');
 
-    // Filter children for selector
-    const filteredChildren = MOCK_CHILDREN.filter(child =>
+    // Children will come from API in future; for now empty array
+    const children: { id: string; name: string; grade?: string; avatar?: string }[] = [];
+    const filteredChildren = children.filter(child =>
         child.name.toLowerCase().includes(childSearchQuery.toLowerCase())
     );
 
@@ -58,8 +60,8 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
         fetchFeed();
     }, [fetchFeed]);
 
-    // Use mock data as fallback when store is empty (API failure or loading)
-    const feedItems = storeItems.length > 0 ? storeItems : MOCK_FEED;
+    // Use real API data only — no fallback to mock
+    const feedItems = storeItems;
 
     // Filter Logic
     const filteredFeed = useMemo(() => {
@@ -67,9 +69,7 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
 
         // 0. Child Filter (TODO: Backend filtering)
         if (selectedChildId !== 'all') {
-            const childName = MOCK_CHILDREN.find(c => c.id === selectedChildId)?.name;
-            // items = items.filter(i => !i.childName || i.childName === childName);
-            // Need child info in FeedItem from API
+            // TODO: filter by child when child data is available from API
         }
 
         // 1. Tab Filter
@@ -102,7 +102,7 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
 
     const activeActions = useMemo(() => feedItems.filter((i: any) => i.requiresAck && i.ackStatus === 'pending'), [feedItems]);
     const displayFeed = filteredFeed;
-    const selectedChild = MOCK_CHILDREN.find(c => c.id === selectedChildId);
+    const selectedChild = children.find(c => c.id === selectedChildId) || { id: 'all', name: 'All Children' };
 
     // Tab badge counts
     const tabBadges = useMemo(() => {
@@ -252,7 +252,7 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                             >
                                 <span>Apply Selection</span>
                                 <span className="bg-white/20 text-white text-xs py-0.5 px-2 rounded-full font-bold">
-                                    {selectedChildId === 'all' ? MOCK_CHILDREN.filter(c => c.id !== 'all').length : 1}
+                                    {selectedChildId === 'all' ? children.length : 1}
                                 </span>
                             </button>
                         </div>
@@ -335,11 +335,11 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
 
                 {/* TABS */}
                 <div className="flex px-2 overflow-x-auto no-scrollbar border-t border-border/50">
-                    <TabButton label="All" active={activeTab === 'all'} onClick={() => setActiveTab('all')} badge={tabBadges.all} />
-                    <TabButton label="Announcements" active={activeTab === 'announcements'} onClick={() => setActiveTab('announcements')} badge={tabBadges.announcements} />
+                    <TabButton label={t('hub.tabs.all')} active={activeTab === 'all'} onClick={() => setActiveTab('all')} badge={tabBadges.all} />
+                    <TabButton label={t('hub.tabs.announcements')} active={activeTab === 'announcements'} onClick={() => setActiveTab('announcements')} badge={tabBadges.announcements} />
                     <TabButton label="Classes" active={activeTab === 'classes'} onClick={() => setActiveTab('classes')} badge={tabBadges.classes} />
                     <TabButton label="Direct" active={activeTab === 'direct'} onClick={() => setActiveTab('direct')} badge={tabBadges.direct} />
-                    <TabButton label="Support" active={activeTab === 'support'} onClick={() => setActiveTab('support')} badge={tabBadges.support} />
+                    <TabButton label={t('hub.tabs.support')} active={activeTab === 'support'} onClick={() => setActiveTab('support')} badge={tabBadges.support} />
                 </div>
             </header>
 
@@ -349,7 +349,7 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-muted-foreground text-[20px]">search</span>
                     <input
                         type="text"
-                        placeholder="Search messages..."
+                        placeholder={t('hub.search.placeholder')}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full h-9 pl-10 pr-4 rounded-lg bg-secondary/50 border-none focus:ring-2 focus:ring-primary/20 text-sm transition-all text-foreground"
@@ -431,7 +431,7 @@ function TabButton({ label, active, onClick, badge = 0 }: { label: string, activ
 }
 
 function ActionRequiredCard({ item, isTranslated }: { item: FeedItem, isTranslated?: boolean }) {
-    const title = isTranslated && item.title ? (TRANSLATIONS[item.title] || item.title) : item.title;
+    const title = item.title;
     return (
         <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/30 rounded-xl p-4 flex gap-3 shadow-sm">
             <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center text-amber-700 dark:text-amber-400 shrink-0">
@@ -466,7 +466,7 @@ function FeedItemRow({ item, isTranslated, viewMode }: { item: FeedItem, isTrans
 }
 
 function UrgentCard({ item, isTranslated, viewMode }: { item: FeedItem, isTranslated?: boolean, viewMode: 'list' | 'compact' }) {
-    const title = isTranslated && item.title ? (TRANSLATIONS[item.title] || item.title) : item.title;
+    const title = item.title;
     return (
         <div className={`
              bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/30 rounded-2xl flex gap-4 relative overflow-hidden group cursor-pointer hover:shadow-md transition-all
@@ -499,7 +499,7 @@ function UrgentCard({ item, isTranslated, viewMode }: { item: FeedItem, isTransl
 }
 
 function StandardAnnouncementRow({ item, isTranslated, viewMode }: { item: FeedItem, isTranslated?: boolean, viewMode: 'list' | 'compact' }) {
-    const title = isTranslated && item.title ? (TRANSLATIONS[item.title] || item.title) : item.title;
+    const title = item.title;
     return (
         <div className={`
             bg-card dark:bg-slate-900 border border-border rounded-2xl flex hover:shadow-md transition-shadow cursor-pointer active:scale-[0.99] duration-200
@@ -564,7 +564,7 @@ function StandardAnnouncementRow({ item, isTranslated, viewMode }: { item: FeedI
 }
 
 function MessageRow({ item, isTranslated, viewMode }: { item: FeedItem, isTranslated?: boolean, viewMode: 'list' | 'compact' }) {
-    const title = isTranslated && item.title ? (TRANSLATIONS[item.title] || item.title) : item.title;
+    const title = item.title;
     const isUnread = item.unread || item.isUnread;
     return (
         <div className={`
@@ -601,7 +601,7 @@ function MessageRow({ item, isTranslated, viewMode }: { item: FeedItem, isTransl
 }
 
 function SupportRow({ item, isTranslated, viewMode }: { item: FeedItem, isTranslated?: boolean, viewMode: 'list' | 'compact' }) {
-    const title = isTranslated && item.title ? (TRANSLATIONS[item.title] || item.title) : item.title;
+    const title = item.title;
     const statusColor = ({
         'OPEN': 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
         'PENDING': 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',

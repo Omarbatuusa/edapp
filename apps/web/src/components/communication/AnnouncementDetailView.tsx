@@ -1,6 +1,8 @@
 import React from 'react';
+import { useTranslations } from 'next-intl';
+import { usePathname } from 'next/navigation';
 import { DetailViewProps } from './types';
-import { TRANSLATIONS } from './mockData';
+import { TranslateButton } from './TranslateButton';
 
 const REACTIONS = [
     { id: 'like', icon: 'thumb_up', label: 'Like' },
@@ -11,7 +13,12 @@ const REACTIONS = [
 
 export function AnnouncementDetailView({ item, isTranslated }: DetailViewProps) {
     if (!item) return null;
-    const title = isTranslated && item.title ? (TRANSLATIONS[item.title] || item.title) : item.title;
+    const title = item.title;
+    const t = useTranslations();
+
+    // Extract tenantId from URL
+    const pathname = usePathname();
+    const tenantId = pathname?.match(/\/tenant\/([^\/]+)/)?.[1] || '';
 
     const [acknowledged, setAcknowledged] = React.useState(false);
     const [activeReaction, setActiveReaction] = React.useState<string | null>(null);
@@ -35,6 +42,15 @@ export function AnnouncementDetailView({ item, isTranslated }: DetailViewProps) 
                 </div>
                 <h1 className="text-2xl font-bold leading-tight">{title}</h1>
                 <p className="text-lg text-muted-foreground mt-2">{item.subtitle}</p>
+                {/* Translate Button */}
+                <div className="mt-3">
+                    <TranslateButton
+                        contentId={item.id}
+                        contentType="announcement"
+                        text={`${title}. ${item.subtitle}`}
+                        tenantId={tenantId}
+                    />
+                </div>
             </div>
 
             {/* Acknowledge Button */}
@@ -44,12 +60,12 @@ export function AnnouncementDetailView({ item, isTranslated }: DetailViewProps) 
                     className="w-full py-3 bg-primary text-primary-foreground font-bold rounded-xl shadow-md active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
                 >
                     <span className="material-symbols-outlined">check_circle</span>
-                    Acknowledge Read
+                    {t('actions.acknowledge')}
                 </button>
             ) : (
                 <div className="w-full py-3 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 font-bold rounded-xl text-sm flex items-center justify-center gap-2 border border-green-200 dark:border-green-800">
                     <span className="material-symbols-outlined">done_all</span>
-                    Acknowledged
+                    {t('actions.acknowledged')}
                 </div>
             )}
 
@@ -61,12 +77,12 @@ export function AnnouncementDetailView({ item, isTranslated }: DetailViewProps) 
             {item.hasDownload && (
                 <button className="w-full flex items-center justify-center gap-2 py-3 bg-primary/10 text-primary font-bold rounded-xl hover:bg-primary/20 transition-colors">
                     <span className="material-symbols-outlined">download</span>
-                    Download Attachment
+                    {t('announcement.downloadAttachment')}
                 </button>
             )}
 
             <div className="pt-8 border-t border-border">
-                <h4 className="text-xs font-bold text-muted-foreground uppercase mb-3">Reactions</h4>
+                <h4 className="text-xs font-bold text-muted-foreground uppercase mb-3">{t('announcement.reactions')}</h4>
                 <div className="flex gap-2">
                     {REACTIONS.map(reaction => (
                         <button

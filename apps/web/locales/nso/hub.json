@@ -1,0 +1,79 @@
+{
+    "hub": {
+        "title": "Messages",
+        "tabs": {
+            "all": "All",
+            "announcements": "Announcements",
+            "messages": "Messages",
+            "support": "Support"
+        },
+        "filters": {
+            "unread": "Unread",
+            "urgent": "Urgent",
+            "pinned": "Pinned"
+        },
+        "sort": {
+            "newest": "Newest First",
+            "unread": "Unread First",
+            "urgent": "Urgent First"
+        },
+        "viewMode": {
+            "list": "List",
+            "compact": "Compact"
+        },
+        "childSelector": {
+            "allChildren": "All Children",
+            "selectChild": "Select Child",
+            "applySelection": "Apply Selection",
+            "searchChildren": "Search children..."
+        },
+        "search": {
+            "placeholder": "Search messages...",
+            "noResults": "No messages match your search"
+        },
+        "empty": {
+            "title": "No messages yet",
+            "description": "Your messages and announcements will appear here"
+        },
+        "feed": {
+            "pinned": "Pinned",
+            "unread": "Unread",
+            "markRead": "Mark as read",
+            "pin": "Pin",
+            "unpin": "Unpin",
+            "mute": "Mute",
+            "unmute": "Unmute",
+            "archive": "Archive"
+        },
+        "officeHours": "Office Hours",
+        "newMessage": "New Message",
+        "actionCenter": "Action Center",
+        "createChannel": "Create Channel"
+    },
+    "actions": {
+        "acknowledge": "Read & Acknowledge",
+        "acknowledged": "Acknowledged",
+        "reviewRequest": "Review Request",
+        "payNow": "Pay Now",
+        "uploadDocument": "Upload Document",
+        "completeAction": "Complete Action",
+        "later": "Later",
+        "noPending": "No pending actions"
+    },
+    "announcement": {
+        "reactions": "Reactions",
+        "acknowledgeRead": "Acknowledge Read",
+        "downloadAttachment": "Download Attachment"
+    },
+    "ticket": {
+        "slaTarget": "SLA Target",
+        "defaultSla": "Response expected within 24h",
+        "replyPlaceholder": "Reply to ticket...",
+        "status": {
+            "open": "Open",
+            "pending": "Pending",
+            "resolved": "Resolved",
+            "closed": "Closed"
+        }
+    }
+}

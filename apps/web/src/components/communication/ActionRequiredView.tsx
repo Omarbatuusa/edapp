@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ScreenStackBase } from './ScreenStack';
-import { MOCK_ACTIONS } from './mockData';
+import { useCommunicationStore } from '../../lib/communication-store';
 import { ApprovalModal } from './ApprovalModal';
 
 export function ActionRequiredView({ onClose }: { onClose: () => void }) {
@@ -16,9 +16,21 @@ export function ActionRequiredView({ onClose }: { onClose: () => void }) {
         { id: 'upload', label: 'Upload' },
     ];
 
+    // Get action-required items from the real store
+    const actionItems = useCommunicationStore(state => state.getActionRequiredItems());
+    const actions = actionItems.map(item => ({
+        id: item.id,
+        type: item.requiresAck ? 'acknowledgement' : 'review',
+        title: item.title,
+        subtitle: item.subtitle || item.preview || '',
+        due: '',
+        status: item.ackStatus || 'PENDING',
+        priority: item.urgency === 'urgent' ? 'HIGH' : 'MEDIUM',
+    }));
+
     const filteredActions = activeTab === 'all'
-        ? MOCK_ACTIONS
-        : MOCK_ACTIONS.filter(a => a.type === activeTab);
+        ? actions
+        : actions.filter(a => a.type === activeTab);
 
     const handleActionClick = (action: any) => {
         if (action.type === 'approval') {

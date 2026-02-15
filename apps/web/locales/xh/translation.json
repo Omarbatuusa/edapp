@@ -1,0 +1,15 @@
+{
+    "translation": {
+        "translate": "Translate",
+        "translated": "Translated",
+        "viewOriginal": "View Original",
+        "translatedFrom": "Translated from {language}",
+        "autoTranslate": "Auto-translate incoming messages",
+        "contentLanguage": "Content Language",
+        "uiLanguage": "App Language",
+        "useDeviceLanguage": "Use device language",
+        "translating": "Translating...",
+        "translationFailed": "Translation failed",
+        "rateLimited": "Translation limit reached. Try again later."
+    }
+}

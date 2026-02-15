@@ -1,0 +1,59 @@
+{
+    "chat": {
+        "title": "Chat",
+        "newChat": "New Chat",
+        "composer": {
+            "placeholder": "Type a message...",
+            "send": "Send",
+            "attach": "Attach",
+            "voice": "Voice note",
+            "camera": "Camera"
+        },
+        "messageMenu": {
+            "reply": "Reply",
+            "forward": "Forward",
+            "copy": "Copy",
+            "translate": "Translate",
+            "report": "Report",
+            "delete": "Delete",
+            "edit": "Edit"
+        },
+        "typing": "{name} is typing...",
+        "online": "Online",
+        "offline": "Offline",
+        "lastSeen": "Last seen {time}",
+        "delivered": "Delivered",
+        "read": "Read",
+        "sent": "Sent",
+        "mediaPermission": {
+            "cameraTitle": "Camera Access",
+            "cameraDesc": "Allow EdApp to access your camera to take photos?",
+            "micTitle": "Microphone Access",
+            "micDesc": "Allow EdApp to access your microphone for voice notes?",
+            "allow": "Allow",
+            "deny": "Don't Allow"
+        },
+        "attachSheet": {
+            "title": "Share",
+            "camera": "Camera",
+            "gallery": "Gallery",
+            "document": "Document",
+            "location": "Location"
+        },
+        "newChat": {
+            "regarding": "Regarding",
+            "discuss": "I want to discuss",
+            "selectTeacher": "Select Teacher",
+            "quickActions": "Quick Actions (Optional)",
+            "startChat": "Start Chat",
+            "createRequest": "Create Request",
+            "starting": "Starting..."
+        },
+        "channelInfo": {
+            "title": "Contact Info",
+            "members": "Members",
+            "media": "Shared Media",
+            "search": "Search in Conversation"
+        }
+    }
+}

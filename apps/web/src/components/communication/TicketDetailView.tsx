@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { DetailViewProps } from './types';
-import { TRANSLATIONS } from './mockData';
 import { ChatComposer } from './ChatComposer';
 import { AttachmentSheet } from './AttachmentSheet';
 import { PermissionModal } from './PermissionModal';
@@ -34,7 +33,7 @@ export function TicketDetailView({ item, isTranslated }: DetailViewProps) {
     };
 
     if (!item) return null;
-    const title = isTranslated && item.title ? (TRANSLATIONS[item.title] || item.title) : item.title;
+    const title = item.title;
 
     return (
         <div className="flex flex-col h-full bg-secondary/30">
@@ -77,8 +76,8 @@ export function TicketDetailView({ item, isTranslated }: DetailViewProps) {
                                     </div>
                                 )}
                                 <div className={`px-4 py-2.5 rounded-2xl text-[15px] leading-relaxed shadow-sm ${msg.isMe
-                                        ? 'bg-primary text-primary-foreground rounded-tr-sm'
-                                        : 'bg-card text-foreground border border-border rounded-tl-sm'
+                                    ? 'bg-primary text-primary-foreground rounded-tr-sm'
+                                    : 'bg-card text-foreground border border-border rounded-tl-sm'
                                     }`}>
                                     {msg.text}
                                 </div>

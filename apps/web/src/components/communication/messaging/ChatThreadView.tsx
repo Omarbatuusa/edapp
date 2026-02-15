@@ -8,6 +8,14 @@ interface ChatThreadViewProps {
 }
 
 import { useChatStore } from '../../../lib/chat-store';
+import { InlineTranslate } from '../TranslateButton';
+import { useTranslations } from 'next-intl';
+
+// Helper to check auto-translate preference
+const getAutoTranslate = () => {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem('edapp_auto_translate') === 'true';
+};
 
 // Suggested reply chips by context
 const PARENT_TEACHER_REPLIES = [
@@ -56,8 +64,34 @@ export function ChatThreadView({ item, onBack, onAction }: ChatThreadViewProps) 
     const [inputValue, setInputValue] = useState('');
     const [showSuggestions, setShowSuggestions] = useState(true);
     const [isOtherTyping, setIsOtherTyping] = useState(false);
+    const [activeMessageId, setActiveMessageId] = useState<string | null>(null);
+    const [translatedMessages, setTranslatedMessages] = useState<Set<string>>(new Set());
+    const [autoTranslate, setAutoTranslate] = useState(false);
+
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const suggestedReplies = getSuggestedReplies(item);
+    const t = useTranslations();
+
+    // Load auto-translate preference
+    useEffect(() => {
+        setAutoTranslate(getAutoTranslate());
+    }, []);
+
+    // Close menu on click outside
+    useEffect(() => {
+        const handleClick = () => setActiveMessageId(null);
+        window.addEventListener('click', handleClick);
+        return () => window.removeEventListener('click', handleClick);
+    }, []);
+
+    const toggleTranslation = (msgId: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        const next = new Set(translatedMessages);
+        if (next.has(msgId)) next.delete(msgId);
+        else next.add(msgId);
+        setTranslatedMessages(next);
+        setActiveMessageId(null);
+    };
 
     useEffect(() => {
         if (threadId) {
@@ -152,6 +186,8 @@ export function ChatThreadView({ item, onBack, onAction }: ChatThreadViewProps) 
                         >
                             {msg.contentType === 'action_card' && msg.actionData ? (
                                 <div className="bg-card border border-border rounded-2xl p-4 shadow-sm w-full max-w-sm mb-1">
+                                    {/* ... Action Card Content ... */}
+                                    {/* Action card implementation simplified for brevity in this replace block since it is unchanged */}
                                     <div className="flex items-start gap-3 mb-3">
                                         <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
                                             <span className="material-symbols-outlined">
@@ -163,42 +199,69 @@ export function ChatThreadView({ item, onBack, onAction }: ChatThreadViewProps) 
                                             <p className="text-xs text-muted-foreground mt-1">{msg.actionData.subtitle}</p>
                                         </div>
                                     </div>
-
+                                    {/* ... actions ... */}
                                     {msg.actionData.status === 'pending' ? (
                                         <div className="grid grid-cols-2 gap-2">
-                                            <button
-                                                onClick={() => handleAction(msg.id, 'reject')}
-                                                className="py-2 px-3 rounded-lg border border-border text-xs font-bold hover:bg-secondary transition-colors"
-                                            >
-                                                Decline
-                                            </button>
-                                            <button
-                                                onClick={() => handleAction(msg.id, 'approve')}
-                                                className="py-2 px-3 rounded-lg bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 transition-colors shadow-sm"
-                                            >
-                                                Approve
-                                            </button>
+                                            <button onClick={() => handleAction(msg.id, 'reject')} className="py-2 px-3 rounded-lg border border-border text-xs font-bold hover:bg-secondary transition-colors">Decline</button>
+                                            <button onClick={() => handleAction(msg.id, 'approve')} className="py-2 px-3 rounded-lg bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 transition-colors shadow-sm">Approve</button>
                                         </div>
                                     ) : (
-                                        <div className={`
-                                            py-2 px-3 rounded-lg text-xs font-bold text-center flex items-center justify-center gap-2
-                                            ${msg.actionData.status === 'approved' ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'}
-                                        `}>
-                                            <span className="material-symbols-outlined text-[16px]">
-                                                {msg.actionData.status === 'approved' ? 'check_circle' : 'cancel'}
-                                            </span>
+                                        <div className={`py-2 px-3 rounded-lg text-xs font-bold text-center flex items-center justify-center gap-2 ${msg.actionData.status === 'approved' ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'}`}>
+                                            <span className="material-symbols-outlined text-[16px]">{msg.actionData.status === 'approved' ? 'check_circle' : 'cancel'}</span>
                                             {msg.actionData.status === 'approved' ? 'Approved' : 'Declined'}
                                         </div>
                                     )}
                                 </div>
                             ) : (
                                 <div
-                                    className={`px-4 py-2.5 rounded-2xl text-sm relative shadow-sm leading-relaxed ${msg.isMe
+                                    className={`px-4 py-2.5 rounded-2xl text-sm relative shadow-sm leading-relaxed group ${msg.isMe
                                         ? 'bg-primary text-primary-foreground rounded-br-sm'
                                         : 'bg-card border border-border rounded-bl-sm text-foreground'
                                         }`}
+                                    onContextMenu={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setActiveMessageId(msg.id);
+                                    }}
                                 >
                                     {msg.content}
+
+                                    {/* Translation Render */}
+                                    {(autoTranslate || translatedMessages.has(msg.id)) && !msg.isMe && (
+                                        <div className="mt-1 pt-1 border-t border-black/10 dark:border-white/10">
+                                            <InlineTranslate
+                                                contentId={msg.id}
+                                                text={msg.content}
+                                                tenantId="default" // In real app, get from context
+                                                targetLang={undefined} // Use user preference
+                                            />
+                                        </div>
+                                    )}
+
+                                    {/* Message Menu */}
+                                    {activeMessageId === msg.id && (
+                                        <div className="absolute top-full left-0 mt-2 z-50 bg-popover text-popover-foreground rounded-xl shadow-xl border border-border overflow-hidden min-w-[160px] animate-in fade-in zoom-in-95 duration-200">
+                                            <div className="p-1">
+                                                <button className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium hover:bg-muted rounded-lg transition-colors text-left">
+                                                    <span className="material-symbols-outlined text-[16px]">reply</span> Reply
+                                                </button>
+                                                <button className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium hover:bg-muted rounded-lg transition-colors text-left">
+                                                    <span className="material-symbols-outlined text-[16px]">content_copy</span> Copy
+                                                </button>
+                                                <button
+                                                    onClick={(e) => toggleTranslation(msg.id, e)}
+                                                    className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium hover:bg-muted rounded-lg transition-colors text-left text-primary"
+                                                >
+                                                    <span className="material-symbols-outlined text-[16px]">translate</span>
+                                                    {translatedMessages.has(msg.id) ? 'Hide Translation' : 'Translate'}
+                                                </button>
+                                                <div className="h-px bg-border/50 my-1" />
+                                                <button className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium hover:bg-muted rounded-lg transition-colors text-left text-red-500">
+                                                    <span className="material-symbols-outlined text-[16px]">flag</span> Report
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             )}
 

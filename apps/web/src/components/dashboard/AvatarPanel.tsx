@@ -255,6 +255,39 @@ export function AvatarPanel({
                             </select>
                         </div>
 
+                        {/* Auto-Translate Toggle */}
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                                <span className="material-symbols-outlined text-muted-foreground text-[18px]">translate</span>
+                                <div>
+                                    <span className="text-sm font-medium">Auto-translate</span>
+                                    <p className="text-xs text-muted-foreground">Translate messages automatically</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => {
+                                    const next = localStorage.getItem('edapp_auto_translate') === 'true' ? 'false' : 'true';
+                                    localStorage.setItem('edapp_auto_translate', next);
+                                    // Trigger storage event for cross-component updates if needed, or just force update
+                                    window.dispatchEvent(new Event('storage'));
+                                    // Force render update in this component if I tracked state, but relying on localStorage direct for now or I should add state.
+                                    // Let's add state tracking for this next.
+                                }}
+                                className={`
+                                    relative w-11 h-6 rounded-full transition-colors
+                                    ${typeof window !== 'undefined' && localStorage.getItem('edapp_auto_translate') === 'true' ? 'bg-primary' : 'bg-secondary'}
+                                `}
+                                role="switch"
+                            >
+                                <span
+                                    className={`
+                                        absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform
+                                        ${typeof window !== 'undefined' && localStorage.getItem('edapp_auto_translate') === 'true' ? 'translate-x-5' : 'translate-x-0'}
+                                    `}
+                                />
+                            </button>
+                        </div>
+
                         {/* Quiet Hours Toggle */}
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">

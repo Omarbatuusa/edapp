@@ -1,0 +1,46 @@
+{
+    "app": {
+        "name": "EdApp",
+        "loading": "Loading...",
+        "error": "Something went wrong",
+        "retry": "Try Again",
+        "cancel": "Cancel",
+        "save": "Save",
+        "delete": "Delete",
+        "edit": "Edit",
+        "close": "Close",
+        "back": "Back",
+        "next": "Next",
+        "done": "Done",
+        "search": "Search",
+        "noResults": "No results found",
+        "viewAll": "View All",
+        "seeMore": "See More",
+        "settings": "Settings",
+        "help": "Help",
+        "logout": "Sign Out",
+        "language": "Language",
+        "theme": "Theme",
+        "darkMode": "Dark Mode",
+        "lightMode": "Light Mode",
+        "notifications": "Notifications",
+        "profile": "Profile"
+    },
+    "time": {
+        "justNow": "Just now",
+        "minutesAgo": "{count} min ago",
+        "hoursAgo": "{count}h ago",
+        "yesterday": "Yesterday",
+        "today": "Today"
+    },
+    "empty": {
+        "title": "Nothing here yet",
+        "description": "Check back later for updates"
+    },
+    "errors": {
+        "network": "Connection error. Please check your internet.",
+        "unauthorized": "Session expired. Please sign in again.",
+        "notFound": "Not found",
+        "serverError": "Server error. Please try again later."
+    }
+}

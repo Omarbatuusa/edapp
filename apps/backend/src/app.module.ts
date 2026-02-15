@@ -21,6 +21,7 @@ import { ThreadMember } from './communication/thread-member.entity';
 import { MessageReceipt } from './communication/message-receipt.entity';
 import { Notification } from './communication/notification.entity';
 import { DeviceToken } from './notifications/device-token.entity';
+import { ContentTranslation } from './translation/content-translation.entity';
 
 // Modules
 import { BrandsModule } from './brands/brands.module';
@@ -35,6 +36,7 @@ import { StorageModule } from './storage/storage.module';
 import { PoliciesModule } from './policies/policies.module';
 import { CommunicationModule } from './communication/communication.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { TranslationModule } from './translation/translation.module';
 
 import { BullModule } from '@nestjs/bullmq';
 
@@ -74,6 +76,7 @@ import { BullModule } from '@nestjs/bullmq';
           MessageReceipt,
           Notification,
           DeviceToken,
+          ContentTranslation,
         ],
         autoLoadEntities: true,
         synchronize: true, // DEV only, set to false in prod
@@ -92,6 +95,7 @@ import { BullModule } from '@nestjs/bullmq';
     PoliciesModule,
     CommunicationModule,
     NotificationsModule,
+    TranslationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
