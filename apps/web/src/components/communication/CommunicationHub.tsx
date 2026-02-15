@@ -51,6 +51,18 @@ class CommunicationErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoun
                     <span className="material-symbols-outlined text-5xl text-muted-foreground mb-4">error_outline</span>
                     <h2 className="text-lg font-bold mb-2">Something went wrong</h2>
                     <p className="text-sm text-muted-foreground mb-4">Please try refreshing the page.</p>
+                    {this.state.error && (
+                        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs rounded-lg max-w-lg text-left overflow-auto">
+                            <p className="font-mono">{this.state.error.toString()}</p>
+                            <p className="font-mono mt-1">{this.state.error.message}</p>
+                        </div>
+                    )}
+                    {this.state.error && (
+                        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs rounded-lg max-w-lg text-left overflow-auto">
+                            <p className="font-mono font-bold mb-1">{this.state.error.toString()}</p>
+                            <p className="font-mono text-[10px] whitespace-pre-wrap">{this.state.error.stack}</p>
+                        </div>
+                    )}
                     <button
                         onClick={() => window.location.reload()}
                         className="px-4 py-2 bg-primary text-white rounded-lg font-medium"
