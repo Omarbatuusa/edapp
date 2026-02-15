@@ -103,23 +103,6 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
     const [showLanguageSheet, setShowLanguageSheet] = useState(false);
     const [currentLanguage, setCurrentLanguage] = useState('English');
 
-    // Show loading skeleton during SSR and initial mount
-    if (!isMounted) {
-        return (
-            <div className="min-h-screen w-full flex flex-col bg-slate-100 dark:bg-slate-900">
-                <div className="animate-pulse p-4 space-y-4">
-                    <div className="h-14 bg-slate-300 dark:bg-slate-700 rounded-xl" />
-                    <div className="h-24 bg-slate-200 dark:bg-slate-800 rounded-2xl" />
-                    <div className="h-32 bg-slate-200 dark:bg-slate-800 rounded-2xl" />
-                    <div className="h-32 bg-slate-200 dark:bg-slate-800 rounded-2xl" />
-                </div>
-                <div className="text-center text-slate-500 dark:text-slate-400 text-sm mt-4">
-                    Loading Communication Hub...
-                </div>
-            </div>
-        );
-    }
-
     // Navigation Handlers
     const handleOpenItem = (item: FeedItem) => {
         setSelectedItem(item);
@@ -147,8 +130,6 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
         setIsTranslated(lang !== 'English');
     };
 
-
-
     // Derive tenant and user from URL path and localStorage
     const pathname = usePathname();
     const tenantSlug = useMemo(() => {
@@ -161,6 +142,23 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
         ? localStorage.getItem('user_id') || ''
         : '';
     const tenantId = tenantSlug;
+
+    // Show loading skeleton during SSR and initial mount
+    if (!isMounted) {
+        return (
+            <div className="min-h-screen w-full flex flex-col bg-slate-100 dark:bg-slate-900">
+                <div className="animate-pulse p-4 space-y-4">
+                    <div className="h-14 bg-slate-300 dark:bg-slate-700 rounded-xl" />
+                    <div className="h-24 bg-slate-200 dark:bg-slate-800 rounded-2xl" />
+                    <div className="h-32 bg-slate-200 dark:bg-slate-800 rounded-2xl" />
+                    <div className="h-32 bg-slate-200 dark:bg-slate-800 rounded-2xl" />
+                </div>
+                <div className="text-center text-slate-500 dark:text-slate-400 text-sm mt-4">
+                    Loading Communication Hub...
+                </div>
+            </div>
+        );
+    }
 
     return (
         <MessagesLayout
