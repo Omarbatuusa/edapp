@@ -1,3 +1,5 @@
+'use client';
+
 import { useCommunicationStore } from '../../lib/communication-store';
 import React, { useState, useMemo } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
