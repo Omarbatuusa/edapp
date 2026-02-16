@@ -14,7 +14,7 @@ const OPTIONS = [
     { id: 'gallery', icon: 'image', label: 'Gallery', bg: 'bg-[#bf59cf]' },
     { id: 'audio', icon: 'headphones', label: 'Audio', bg: 'bg-[#ee7b30]' },
     { id: 'location', icon: 'location_on', label: 'Location', bg: 'bg-[#1fa855]' },
-    { id: 'contact', icon: 'person', label: 'Contact', bg: 'bg-[#009de2]' },
+    { id: 'contact', icon: 'person', label: 'Contact', bg: 'bg-[#2563eb]' },
 ];
 
 export function AttachmentSheet({ isOpen, onClose, onSelect }: AttachmentSheetProps) {
@@ -43,18 +43,19 @@ export function AttachmentSheet({ isOpen, onClose, onSelect }: AttachmentSheetPr
     };
 
     return (
-        <div className="fixed inset-0 z-[100] flex flex-col justify-end">
+        <div className="fixed inset-0 z-[100] flex items-end justify-center">
             <div className="absolute inset-0 bg-black/40" onClick={onClose} />
 
             <input ref={fileInputRef} type="file" accept="*/*" className="hidden" title="Select document" onChange={(e) => handleFileSelected(e, 'document')} />
             <input ref={imageInputRef} type="file" accept="image/*,video/*" className="hidden" title="Select image or video" onChange={(e) => handleFileSelected(e, 'gallery')} />
 
-            <div className="relative w-full bg-white dark:bg-[#233138] rounded-t-2xl shadow-2xl px-6 pt-5 pb-8 animate-in slide-in-from-bottom duration-200">
-                <div className="flex justify-center mb-5">
-                    <div className="w-10 h-1 rounded-full bg-[#8696a0]/40" />
+            {/* Constrained width sheet — not full-width on desktop */}
+            <div className="relative w-full max-w-md bg-white dark:bg-[#1e293b] rounded-t-2xl shadow-2xl px-6 pt-4 pb-8">
+                <div className="flex justify-center mb-4">
+                    <div className="w-10 h-1 rounded-full bg-[#cbd5e1] dark:bg-[#475569]" />
                 </div>
 
-                <div className="grid grid-cols-3 gap-y-6 gap-x-4 max-w-xs mx-auto">
+                <div className="grid grid-cols-3 gap-y-5 gap-x-4">
                     {OPTIONS.map((opt) => (
                         <button
                             key={opt.id}
@@ -62,10 +63,10 @@ export function AttachmentSheet({ isOpen, onClose, onSelect }: AttachmentSheetPr
                             onClick={() => handleOption(opt.id)}
                             className="flex flex-col items-center gap-2 active:scale-95 transition-transform"
                         >
-                            <div className={`w-[54px] h-[54px] rounded-full ${opt.bg} flex items-center justify-center shadow-sm`}>
-                                <span className="material-symbols-outlined text-[26px] text-white">{opt.icon}</span>
+                            <div className={`w-[52px] h-[52px] rounded-full ${opt.bg} flex items-center justify-center shadow-sm`}>
+                                <span className="material-symbols-outlined text-[24px] text-white">{opt.icon}</span>
                             </div>
-                            <span className="text-[12px] font-medium text-[#54656f] dark:text-[#8696a0]">{opt.label}</span>
+                            <span className="text-[12px] font-medium text-[#475569] dark:text-[#94a3b8]">{opt.label}</span>
                         </button>
                     ))}
                 </div>
