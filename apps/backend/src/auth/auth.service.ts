@@ -9,14 +9,24 @@ export class AuthService implements OnModuleInit {
     constructor(private configService: ConfigService) { }
 
     onModuleInit() {
-        // Check if already initialized to avoid hot-reload errors
         if (admin.apps.length === 0) {
             const serviceAccountPath = path.resolve(process.cwd(), 'firebase-service-account.json');
-            const serviceAccount = require(serviceAccountPath);
-            admin.initializeApp({
-                credential: admin.credential.cert(serviceAccount),
-            });
-            console.log('Firebase Admin Initialized from:', serviceAccountPath);
+            try {
+                // Try loading service account JSON file first (local dev)
+                const serviceAccount = require(serviceAccountPath);
+                admin.initializeApp({
+                    credential: admin.credential.cert(serviceAccount),
+                });
+                console.log('Firebase Admin Initialized from:', serviceAccountPath);
+            } catch {
+                // Fallback to Application Default Credentials (GCP VM)
+                const projectId = this.configService.get<string>('FIREBASE_PROJECT_ID');
+                admin.initializeApp({
+                    credential: admin.credential.applicationDefault(),
+                    projectId,
+                });
+                console.log('Firebase Admin Initialized via ADC, project:', projectId);
+            }
         }
     }
 
