@@ -90,7 +90,7 @@ export class SecurityEnforcementGuard implements CanActivate {
                 } else {
                     await this.logDecision(tenantId, user?.id, action, 'SEC_IP_WARNED', 'IP Not Allowed', { ip, source });
                 }
-            } else if (policy.ipMode !== SecurityMode.OFF && allowedIps.length > 0) {
+            } else if (allowedIps.length > 0) {
                 // Log allowed explicit check? Maybe too noisy. Only log allowed if we want full audit trail.
                 // Prompt said "Audit... SEC_IP_ALLOWED", so we will.
                 // await this.logDecision(tenantId, user?.id, action, 'SEC_IP_ALLOWED', 'IP Allowed', { ip, source });
