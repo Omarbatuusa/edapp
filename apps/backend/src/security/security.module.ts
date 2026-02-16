@@ -4,6 +4,7 @@ import { TenantSecurityPolicy } from './tenant-security-policy.entity';
 import { BranchSecurityPolicy } from './branch-security-policy.entity';
 import { IpAllowlist } from './ip-allowlist.entity';
 import { GeoZone } from './geo-zone.entity';
+import { Branch } from '../branches/branch.entity';
 import { IpExtractionService } from './ip-extraction.service';
 import { GeoService } from './geo.service';
 import { SecurityPolicyService } from './security-policy.service';
@@ -19,6 +20,7 @@ import { SecuritySettingsController } from './security-settings.controller';
             BranchSecurityPolicy,
             IpAllowlist,
             GeoZone,
+            Branch,
         ]),
         AuditModule,
     ],
