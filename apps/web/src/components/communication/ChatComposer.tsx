@@ -6,12 +6,13 @@ interface ChatComposerProps {
     onSend: (text: string) => void;
     onAttach: () => void;
     onVoice: () => void;
+    onSendVoice?: (file: File) => Promise<void> | void;
     placeholder?: string;
 }
 
 const QUICK_EMOJIS = ['😀', '😂', '❤️', '👍', '🙏', '👏', '🎉', '📚', '✅', '🔔', '⭐', '💡'];
 
-export function ChatComposer({ onSend, onAttach, onVoice, placeholder = "Type a message..." }: ChatComposerProps) {
+export function ChatComposer({ onSend, onAttach, onVoice, onSendVoice, placeholder = "Type a message..." }: ChatComposerProps) {
     const [text, setText] = useState('');
     const [showEmojis, setShowEmojis] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
