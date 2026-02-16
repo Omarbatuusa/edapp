@@ -56,7 +56,8 @@ services:
 
   database:
     # SECURITY: No ports published - internal only (not accessible from host)
-    image: postgres:15-alpine
+    image: postgres:16-alpine
+    hostname: db
     container_name: edapp_db
     restart: always
     env_file:
