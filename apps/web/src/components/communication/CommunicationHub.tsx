@@ -186,10 +186,9 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
                 remoteAudioRef={remoteAudioRef}
             />
 
-            {/* Main Content - CSS Transitions */}
-            <div className="relative w-full flex-1 flex flex-col overflow-hidden">
-                {/* Feed View - Always rendered, hidden when not active */}
-                <div className={`w-full flex-1 flex flex-col transition-opacity duration-300 ${activeView === 'feed' ? 'opacity-100 relative' : 'opacity-0 pointer-events-none hidden'}`}>
+            {/* Main Content — only the active view renders */}
+            <div className="relative w-full flex-1 flex flex-col min-h-0">
+                {activeView === 'feed' && (
                     <FeedView
                         onItemClick={handleOpenItem}
                         officeHours={officeHours}
@@ -201,66 +200,48 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
                         onOpenActionCenter={() => setActiveView('action-center')}
                         onOpenLanguage={() => setShowLanguageSheet(true)}
                     />
-                </div>
+                )}
 
-                {/* Thread View - Slide in from right */}
-                <div className={`absolute inset-0 z-[60] transform transition-transform duration-300 ease-out ${activeView === 'thread' || activeView === 'channel-info' ? 'translate-x-0' : 'translate-x-full pointer-events-none invisible'}`}>
-                    {(activeView === 'thread' || activeView === 'channel-info') && selectedItem && (
-                        <ChatThreadView
-                            item={selectedItem}
-                            onBack={handleBack}
-                            onAction={() => setActiveView('channel-info')}
-                            onCall={selectedItem.type === 'message' ? () => {
-                                startCall(selectedItem.threadId || selectedItem.id, selectedItem.title);
-                            } : undefined}
-                        />
-                    )}
-                </div>
+                {activeView === 'thread' && selectedItem && (
+                    <ChatThreadView
+                        item={selectedItem}
+                        onBack={handleBack}
+                        onAction={() => setActiveView('channel-info')}
+                        onCall={selectedItem.type === 'message' ? () => {
+                            startCall(selectedItem.threadId || selectedItem.id, selectedItem.title);
+                        } : undefined}
+                    />
+                )}
 
-                {/* Channel Info View — only rendered when explicitly active */}
-                <div className={`absolute inset-0 z-[70] transform transition-transform duration-300 ease-out ${activeView === 'channel-info' ? 'translate-x-0' : 'translate-x-full pointer-events-none invisible'}`}>
-                    {activeView === 'channel-info' && selectedItem && (
-                        <ChannelInfoView item={selectedItem} onClose={() => setActiveView('thread')} />
-                    )}
-                </div>
+                {activeView === 'channel-info' && selectedItem && (
+                    <ChannelInfoView item={selectedItem} onClose={() => setActiveView('thread')} />
+                )}
 
-                {/* Action Center View */}
-                <div className={`absolute inset-0 z-[60] bg-slate-50 dark:bg-[#0B1120] transform transition-transform duration-300 ease-out ${activeView === 'action-center' ? 'translate-x-0' : 'translate-x-full pointer-events-none'}`}>
-                    {activeView === 'action-center' && (
-                        <ActionRequiredView onClose={() => setActiveView('feed')} />
-                    )}
-                </div>
+                {activeView === 'new-chat' && (
+                    <NewChatView
+                        onBack={handleBack}
+                        onStartChat={(item) => {
+                            setSelectedItem(item);
+                            setActiveView('thread');
+                        }}
+                        onCreateChannel={() => setActiveView('create-channel')}
+                    />
+                )}
 
-                {/* Create Channel View */}
-                <div className={`absolute inset-0 z-[60] bg-slate-50 dark:bg-[#0B1120] transform transition-transform duration-300 ease-out ${activeView === 'create-channel' ? 'translate-x-0' : 'translate-x-full pointer-events-none'}`}>
-                    {activeView === 'create-channel' && (
-                        <CreateChannelView onClose={() => setActiveView('feed')} />
-                    )}
-                </div>
+                {activeView === 'action-center' && (
+                    <ActionRequiredView onClose={() => setActiveView('feed')} />
+                )}
 
-                {/* Detail Views (ticket, announcement) */}
-                <div className={`absolute inset-0 z-[55] bg-slate-50 dark:bg-[#0B1120] transform transition-transform duration-300 ease-out ${['ticket', 'announcement'].includes(activeView) ? 'translate-x-0' : 'translate-x-full pointer-events-none'}`}>
-                    {['ticket', 'announcement'].includes(activeView) && (
-                        <ScreenStackDetail onBack={handleBack}>
-                            {activeView === 'ticket' && <TicketDetailView item={selectedItem} isTranslated={isTranslated} />}
-                            {activeView === 'announcement' && <AnnouncementDetailView item={selectedItem} isTranslated={isTranslated} />}
-                        </ScreenStackDetail>
-                    )}
-                </div>
+                {activeView === 'create-channel' && (
+                    <CreateChannelView onClose={() => setActiveView('feed')} />
+                )}
 
-                {/* New Chat View — own panel with built-in header */}
-                <div className={`absolute inset-0 z-[55] transform transition-transform duration-300 ease-out ${activeView === 'new-chat' ? 'translate-x-0' : 'translate-x-full pointer-events-none'}`}>
-                    {activeView === 'new-chat' && (
-                        <NewChatView
-                            onBack={handleBack}
-                            onStartChat={(item) => {
-                                setSelectedItem(item);
-                                setActiveView('thread');
-                            }}
-                            onCreateChannel={() => setActiveView('create-channel')}
-                        />
-                    )}
-                </div>
+                {(activeView === 'ticket' || activeView === 'announcement') && (
+                    <ScreenStackDetail onBack={handleBack}>
+                        {activeView === 'ticket' && <TicketDetailView item={selectedItem} isTranslated={isTranslated} />}
+                        {activeView === 'announcement' && <AnnouncementDetailView item={selectedItem} isTranslated={isTranslated} />}
+                    </ScreenStackDetail>
+                )}
             </div>
 
             {/* Language Sheet */}

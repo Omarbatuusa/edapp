@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 export const SCREEN_TRANSITION = {
     type: "spring",
@@ -9,7 +9,7 @@ export const SCREEN_TRANSITION = {
 
 export function ScreenStackBase({ children }: { children: React.ReactNode }) {
     return (
-        <div className="absolute inset-0 flex flex-col bg-slate-50 dark:bg-[#0B1120] z-0 animate-in fade-in duration-300">
+        <div className="flex flex-col flex-1 min-h-0 w-full bg-slate-50 dark:bg-[#0B1120]">
             {children}
         </div>
     );
@@ -24,16 +24,10 @@ interface ScreenStackDetailProps {
 }
 
 export function ScreenStackDetail({ children, onBack, title = "Details", actionIcon, onAction }: ScreenStackDetailProps) {
-    // Lock body scroll when detail view is open
-    useEffect(() => {
-        document.body.style.overflow = 'hidden';
-        return () => { document.body.style.overflow = ''; };
-    }, []);
-
     return (
-        <div className="absolute inset-0 flex flex-col bg-slate-50 dark:bg-[#0B1120] z-50 h-[100dvh] animate-in slide-in-from-right duration-300">
+        <div className="flex flex-col flex-1 min-h-0 w-full bg-slate-50 dark:bg-[#0B1120]">
             {/* Header */}
-            <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50 h-14 flex items-center px-4 shrink-0 justify-between">
+            <header className="shrink-0 bg-background/80 backdrop-blur-md border-b border-border/50 h-14 flex items-center px-4 justify-between">
                 <button
                     onClick={onBack}
                     className="w-10 h-10 flex items-center justify-center -ml-2 rounded-full hover:bg-secondary/80 transition-colors"
