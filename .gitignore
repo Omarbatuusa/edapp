@@ -20,6 +20,8 @@ tmp/
 firebase-service-account.json
 oci-ssh-key.pem
 *.pem
+*.key
+deployment_config/nginx/certs/
 .env.*
 !.env.example
 *.tar.gz
