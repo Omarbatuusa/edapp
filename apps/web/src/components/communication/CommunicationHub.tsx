@@ -204,8 +204,8 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
                 </div>
 
                 {/* Thread View - Slide in from right */}
-                <div className={`absolute inset-0 z-[60] transform transition-transform duration-300 ease-out ${activeView === 'thread' ? 'translate-x-0' : 'translate-x-full pointer-events-none'}`}>
-                    {selectedItem && (
+                <div className={`absolute inset-0 z-[60] transform transition-transform duration-300 ease-out ${activeView === 'thread' || activeView === 'channel-info' ? 'translate-x-0' : 'translate-x-full pointer-events-none invisible'}`}>
+                    {(activeView === 'thread' || activeView === 'channel-info') && selectedItem && (
                         <ChatThreadView
                             item={selectedItem}
                             onBack={handleBack}
@@ -217,9 +217,9 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
                     )}
                 </div>
 
-                {/* Channel Info View */}
-                <div className={`absolute inset-0 z-[70] transform transition-transform duration-300 ease-out ${activeView === 'channel-info' ? 'translate-x-0' : 'translate-x-full pointer-events-none'}`}>
-                    {selectedItem && (
+                {/* Channel Info View — only rendered when explicitly active */}
+                <div className={`absolute inset-0 z-[70] transform transition-transform duration-300 ease-out ${activeView === 'channel-info' ? 'translate-x-0' : 'translate-x-full pointer-events-none invisible'}`}>
+                    {activeView === 'channel-info' && selectedItem && (
                         <ChannelInfoView item={selectedItem} onClose={() => setActiveView('thread')} />
                     )}
                 </div>
