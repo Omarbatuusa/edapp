@@ -35,8 +35,15 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
     const [showChildSelector, setShowChildSelector] = useState(false);
     const [childSearchQuery, setChildSearchQuery] = useState('');
 
-    // Children will come from API in future; for now empty array
-    const children: { id: string; name: string; grade?: string; avatar?: string }[] = [];
+    // Children from API via store
+    const storeChildren = useCommunicationStore(state => state.children);
+    const fetchChildren = useCommunicationStore(state => state.fetchChildren);
+
+    React.useEffect(() => {
+        fetchChildren();
+    }, [fetchChildren]);
+
+    const children = storeChildren;
     const filteredChildren = children.filter(child =>
         child.name.toLowerCase().includes(childSearchQuery.toLowerCase())
     );

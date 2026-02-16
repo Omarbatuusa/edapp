@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ScreenStackBase } from './ScreenStack';
 import { useCommunicationStore } from '../../lib/communication-store';
 import { ApprovalModal } from './ApprovalModal';
+import chatApi from '../../lib/chat-api';
 
 export function ActionRequiredView({ onClose }: { onClose: () => void }) {
     const [activeTab, setActiveTab] = useState('all');
     const [selectedAction, setSelectedAction] = useState<any>(null);
+    const [actions, setActions] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const TABS = [
         { id: 'all', label: 'All' },
@@ -16,17 +19,56 @@ export function ActionRequiredView({ onClose }: { onClose: () => void }) {
         { id: 'upload', label: 'Upload' },
     ];
 
-    // Get action-required items from the real store
-    const actionItems = useCommunicationStore(state => state.getActionRequiredItems());
-    const actions = actionItems.map(item => ({
-        id: item.id,
-        type: item.requiresAck ? 'acknowledgement' : 'review',
-        title: item.title,
-        subtitle: item.subtitle || item.preview || '',
-        due: '',
-        status: item.ackStatus || 'PENDING',
-        priority: item.urgency === 'urgent' ? 'HIGH' : 'MEDIUM',
-    }));
+    // Fetch action-required items from the API
+    useEffect(() => {
+        setIsLoading(true);
+        chatApi.getActionRequired().then(data => {
+            const mapped: any[] = [];
+
+            // Map unacked announcements
+            (data.unacked_announcements || []).forEach((thread: any) => {
+                mapped.push({
+                    id: thread.id,
+                    type: 'acknowledgement',
+                    title: thread.title || 'Announcement',
+                    subtitle: thread.description || thread.last_message_content || '',
+                    due: thread.ack_deadline ? new Date(thread.ack_deadline).toLocaleDateString() : '',
+                    status: 'PENDING',
+                    priority: 'HIGH',
+                });
+            });
+
+            // Map pending ticket actions
+            (data.pending_ticket_actions || []).forEach((action: any) => {
+                mapped.push({
+                    id: action.id,
+                    type: action.action_type || 'review',
+                    title: action.title,
+                    subtitle: action.description || '',
+                    due: action.due_at ? new Date(action.due_at).toLocaleDateString() : '',
+                    status: action.status || 'PENDING',
+                    priority: action.due_at && new Date(action.due_at) < new Date() ? 'HIGH' : 'MEDIUM',
+                    threadId: action.thread_id,
+                });
+            });
+
+            setActions(mapped);
+            setIsLoading(false);
+        }).catch(() => {
+            // Fallback: use store items
+            const storeItems = useCommunicationStore.getState().getActionRequiredItems();
+            setActions(storeItems.map(item => ({
+                id: item.id,
+                type: item.requiresAck ? 'acknowledgement' : 'review',
+                title: item.title,
+                subtitle: item.subtitle || item.preview || '',
+                due: '',
+                status: item.ackStatus || 'PENDING',
+                priority: item.urgency === 'urgent' ? 'HIGH' : 'MEDIUM',
+            })));
+            setIsLoading(false);
+        });
+    }, []);
 
     const filteredActions = activeTab === 'all'
         ? actions
@@ -72,7 +114,12 @@ export function ActionRequiredView({ onClose }: { onClose: () => void }) {
 
             {/* Content */}
             <div className="p-4 space-y-4 pb-20">
-                {filteredActions.length === 0 ? (
+                {isLoading ? (
+                    <div className="flex flex-col items-center justify-center py-20 opacity-50">
+                        <span className="material-symbols-outlined text-4xl mb-2 animate-spin">progress_activity</span>
+                        <p className="text-sm">Loading actions...</p>
+                    </div>
+                ) : filteredActions.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-20 opacity-50">
                         <span className="material-symbols-outlined text-4xl mb-2">assignment_turned_in</span>
                         <p className="text-sm">No pending actions</p>

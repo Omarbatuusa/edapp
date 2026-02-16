@@ -4,7 +4,6 @@ export { FeedCard } from './FeedCard';
 export { FeedFilters } from './FeedFilters';
 export { PriorityQueue } from './PriorityQueue';
 export { FeedView } from './FeedView';
-export { MessageThreadView } from './MessageThreadView';
 export { ChannelInfoView } from './ChannelInfoView';
 export { NewChatView } from './NewChatView';
 export { TicketDetailView } from './TicketDetailView';

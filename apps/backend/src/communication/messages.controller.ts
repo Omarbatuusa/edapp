@@ -1,12 +1,16 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, Req } from '@nestjs/common';
 import { MessagesService } from './messages.service';
 import type { SendMessageDto } from './messages.service';
+import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 
 // ============================================================
 // MESSAGES CONTROLLER - REST API for message management
+// All endpoints secured via FirebaseAuthGuard
+// tenant_id from TenantsMiddleware, user_id from Firebase JWT
 // ============================================================
 
 @Controller('api/v1/messages')
+@UseGuards(FirebaseAuthGuard)
 export class MessagesController {
     constructor(private readonly messagesService: MessagesService) { }
 
@@ -16,11 +20,11 @@ export class MessagesController {
     @Get('thread/:thread_id')
     async getMessages(
         @Param('thread_id') thread_id: string,
-        @Query('user_id') user_id: string,
+        @Req() req: any,
         @Query('limit') limit?: string,
         @Query('before') before?: string,
     ) {
-        return this.messagesService.getThreadMessages(thread_id, user_id, {
+        return this.messagesService.getThreadMessages(thread_id, req.user.uid, {
             limit: limit ? parseInt(limit, 10) : undefined,
             before,
         });
@@ -30,7 +34,10 @@ export class MessagesController {
     // SEND MESSAGE
     // ============================================
     @Post()
-    async sendMessage(@Body() dto: SendMessageDto) {
+    async sendMessage(@Body() dto: SendMessageDto, @Req() req: any) {
+        // Inject tenant_id and sender_id from auth context
+        dto.tenant_id = req.tenant_id;
+        dto.sender_id = req.user.uid;
         return this.messagesService.sendMessage(dto);
     }
 
@@ -40,9 +47,10 @@ export class MessagesController {
     @Put(':id')
     async editMessage(
         @Param('id') id: string,
-        @Body() body: { user_id: string; content: string },
+        @Body() body: { content: string },
+        @Req() req: any,
     ) {
-        return this.messagesService.editMessage(id, body.user_id, body.content);
+        return this.messagesService.editMessage(id, req.user.uid, body.content);
     }
 
     // ============================================
@@ -51,9 +59,9 @@ export class MessagesController {
     @Delete(':id')
     async deleteMessage(
         @Param('id') id: string,
-        @Query('user_id') user_id: string,
+        @Req() req: any,
     ) {
-        await this.messagesService.deleteMessage(id, user_id);
+        await this.messagesService.deleteMessage(id, req.user.uid);
         return { success: true };
     }
 
@@ -63,9 +71,9 @@ export class MessagesController {
     @Post(':id/read')
     async markRead(
         @Param('id') id: string,
-        @Body() body: { user_id: string },
+        @Req() req: any,
     ) {
-        await this.messagesService.markRead(id, body.user_id);
+        await this.messagesService.markRead(id, req.user.uid);
         return { success: true };
     }
 
@@ -75,9 +83,9 @@ export class MessagesController {
     @Post('thread/:thread_id/read-all')
     async markAllRead(
         @Param('thread_id') thread_id: string,
-        @Body() body: { user_id: string },
+        @Req() req: any,
     ) {
-        await this.messagesService.markAllRead(thread_id, body.user_id);
+        await this.messagesService.markAllRead(thread_id, req.user.uid);
         return { success: true };
     }
 
@@ -85,11 +93,8 @@ export class MessagesController {
     // GET UNREAD COUNT
     // ============================================
     @Get('unread-count')
-    async getUnreadCount(
-        @Query('user_id') user_id: string,
-        @Query('tenant_id') tenant_id: string,
-    ) {
-        const count = await this.messagesService.getUnreadCount(user_id, tenant_id);
+    async getUnreadCount(@Req() req: any) {
+        const count = await this.messagesService.getUnreadCount(req.user.uid, req.tenant_id);
         return { unread_count: count };
     }
 
@@ -99,9 +104,10 @@ export class MessagesController {
     @Post(':id/reactions')
     async addReaction(
         @Param('id') id: string,
-        @Body() body: { user_id: string; emoji: string },
+        @Body() body: { emoji: string },
+        @Req() req: any,
     ) {
-        return this.messagesService.addReaction(id, body.user_id, body.emoji);
+        return this.messagesService.addReaction(id, req.user.uid, body.emoji);
     }
 
     // ============================================
@@ -111,9 +117,9 @@ export class MessagesController {
     async removeReaction(
         @Param('id') id: string,
         @Param('emoji') emoji: string,
-        @Query('user_id') user_id: string,
+        @Req() req: any,
     ) {
-        return this.messagesService.removeReaction(id, user_id, emoji);
+        return this.messagesService.removeReaction(id, req.user.uid, emoji);
     }
 
     // ============================================
@@ -122,8 +128,9 @@ export class MessagesController {
     @Put(':id/action')
     async updateActionStatus(
         @Param('id') id: string,
-        @Body() body: { user_id: string; status: 'approved' | 'rejected' | 'acknowledged' },
+        @Body() body: { status: 'approved' | 'rejected' | 'acknowledged' },
+        @Req() req: any,
     ) {
-        return this.messagesService.updateActionStatus(id, body.user_id, body.status);
+        return this.messagesService.updateActionStatus(id, req.user.uid, body.status);
     }
 }

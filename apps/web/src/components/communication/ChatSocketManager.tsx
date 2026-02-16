@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useChatStore, Message } from '../../lib/chat-store';
+import { useCommunicationStore } from '../../lib/communication-store';
 
 interface ChatSocketManagerProps {
     tenantId: string;
@@ -60,6 +61,11 @@ export function ChatSocketManager({ tenantId, userId }: ChatSocketManagerProps) 
                     if (mounted) {
                         setConnectionError(null);
                         setIsConnecting(false);
+                        // Drain offline queue on reconnect
+                        const store = useChatStore.getState() as any;
+                        if (store.drainOfflineQueue) {
+                            store.drainOfflineQueue(userId);
+                        }
                     }
                 });
 
@@ -106,6 +112,32 @@ export function ChatSocketManager({ tenantId, userId }: ChatSocketManagerProps) 
                     } catch (e) {
                         console.warn('[ChatSocket] Error processing action:', e);
                     }
+                });
+
+                // New event listeners for broadcast events
+                socket.on('announcement:published', () => {
+                    if (!mounted) return;
+                    useCommunicationStore.getState().fetchFeed();
+                });
+
+                socket.on('ticket:status_changed', () => {
+                    if (!mounted) return;
+                    useCommunicationStore.getState().fetchFeed();
+                });
+
+                socket.on('ticket:assigned', () => {
+                    if (!mounted) return;
+                    useCommunicationStore.getState().fetchFeed();
+                });
+
+                socket.on('action:created', () => {
+                    if (!mounted) return;
+                    useCommunicationStore.getState().fetchFeed();
+                });
+
+                socket.on('feed:refresh', () => {
+                    if (!mounted) return;
+                    useCommunicationStore.getState().fetchFeed();
                 });
 
                 // Join active thread if any

@@ -1,10 +1,9 @@
 'use client';
 
-import React, { useState, useMemo, Suspense, Component, ErrorInfo, ReactNode } from 'react';
+import React, { useState, useMemo, useEffect, Component, ErrorInfo, ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import { FeedItem } from './types';
 import { FeedView } from './FeedView';
-import { MessageThreadView } from './MessageThreadView';
 import { TicketDetailView } from './TicketDetailView';
 import { AnnouncementDetailView } from './AnnouncementDetailView';
 import { NewChatView } from './NewChatView';
@@ -16,6 +15,9 @@ import { ScreenStackDetail } from './ScreenStack';
 import { ChatThreadView } from './messaging/ChatThreadView';
 import { MessagesLayout } from './messaging/MessagesLayout';
 import { ChatSocketManager } from './ChatSocketManager';
+import { CallOverlay } from './CallOverlay';
+import { useAudioCall } from '../../hooks/useAudioCall';
+import translateApi from '../../lib/translate-api';
 
 // ============================================================
 // ERROR BOUNDARY COMPONENT
@@ -53,12 +55,6 @@ class CommunicationErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoun
                     <p className="text-sm text-muted-foreground mb-4">Please try refreshing the page.</p>
                     {this.state.error && (
                         <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs rounded-lg max-w-lg text-left overflow-auto">
-                            <p className="font-mono">{this.state.error.toString()}</p>
-                            <p className="font-mono mt-1">{this.state.error.message}</p>
-                        </div>
-                    )}
-                    {this.state.error && (
-                        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs rounded-lg max-w-lg text-left overflow-auto">
                             <p className="font-mono font-bold mb-1">{this.state.error.toString()}</p>
                             <p className="font-mono text-[10px] whitespace-pre-wrap">{this.state.error.stack}</p>
                         </div>
@@ -94,9 +90,25 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
     const [selectedChildId, setSelectedChildId] = useState<string>('all');
     const [isTranslated, setIsTranslated] = useState(false);
     const [showLanguageSheet, setShowLanguageSheet] = useState(false);
-    const [currentLanguage, setCurrentLanguage] = useState('English');
+    const [currentLanguage, setCurrentLanguage] = useState<string>(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('preferred_language') || 'en';
+        }
+        return 'en';
+    });
 
-
+    // Load language preference from backend on mount
+    useEffect(() => {
+        translateApi.getPreferences().then(prefs => {
+            setCurrentLanguage(prefs.preferred_language);
+            setIsTranslated(prefs.preferred_language !== 'en');
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('preferred_language', prefs.preferred_language);
+            }
+        }).catch(() => {
+            // Not logged in yet or no preferences — use localStorage cache
+        });
+    }, []);
 
     // Navigation Handlers
     const handleOpenItem = (item: FeedItem) => {
@@ -120,9 +132,14 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
         // It gets replaced when user opens a new item via handleOpenItem
     };
 
-    const handleLanguageSelect = (lang: string) => {
-        setCurrentLanguage(lang);
-        setIsTranslated(lang !== 'English');
+    const handleLanguageSelect = (langCode: string) => {
+        setCurrentLanguage(langCode);
+        setIsTranslated(langCode !== 'en');
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('preferred_language', langCode);
+        }
+        // Persist to backend
+        translateApi.savePreferences({ preferred_language: langCode }).catch(() => {});
     };
 
     // Derive tenant and user from URL path and localStorage
@@ -138,11 +155,36 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
         : '';
     const tenantId = tenantSlug;
 
+    // Audio calls
+    const {
+        state: callState,
+        startCall,
+        answerCall,
+        rejectCall,
+        endCall,
+        toggleMute,
+        toggleSpeaker,
+        resetState: resetCallState,
+        remoteAudioRef,
+    } = useAudioCall({ tenant_id: tenantId, user_id: currentUserId });
+
     return (
         <MessagesLayout
             className="md:border-x md:border-border/50 md:shadow-sm md:max-w-4xl md:mx-auto"
         >
             <ChatSocketManager tenantId={tenantId} userId={currentUserId} />
+
+            {/* Audio Call Overlay */}
+            <CallOverlay
+                state={callState}
+                onAnswer={answerCall}
+                onReject={rejectCall}
+                onEnd={endCall}
+                onToggleMute={toggleMute}
+                onToggleSpeaker={toggleSpeaker}
+                onReset={resetCallState}
+                remoteAudioRef={remoteAudioRef}
+            />
 
             {/* Main Content - CSS Transitions */}
             <div className="relative w-full flex-1 flex flex-col overflow-hidden">
@@ -168,6 +210,9 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
                             item={selectedItem}
                             onBack={handleBack}
                             onAction={() => setActiveView('channel-info')}
+                            onCall={selectedItem.type === 'message' ? () => {
+                                startCall(selectedItem.threadId || selectedItem.id, selectedItem.title);
+                            } : undefined}
                         />
                     )}
                 </div>

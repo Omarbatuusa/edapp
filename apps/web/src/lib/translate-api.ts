@@ -61,6 +61,17 @@ export const translateApi = {
         const response = await apiClient.get('/i18n/languages');
         return response.data;
     },
+
+    // Get user language preferences
+    async getPreferences(): Promise<{ preferred_language: string; auto_translate: boolean }> {
+        const response = await apiClient.get('/i18n/preferences');
+        return response.data;
+    },
+
+    // Save user language preferences
+    async savePreferences(data: { preferred_language: string; auto_translate?: boolean }): Promise<void> {
+        await apiClient.post('/i18n/preferences', data);
+    },
 };
 
 export default translateApi;

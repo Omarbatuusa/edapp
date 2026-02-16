@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import chatApi, { MessageDto } from './chat-api';
+import { offlineQueue } from './offline-queue';
 
 // ============================================================
 // CHAT STORE - Zustand store for chat state management
@@ -35,7 +36,7 @@ export interface Message {
     isMe: boolean;
     time: string;
     date: string;
-    status: 'sending' | 'sent' | 'delivered' | 'read';
+    status: 'queued' | 'sending' | 'sent' | 'delivered' | 'read';
     attachments?: {
         type: 'image' | 'document' | 'voice';
         url: string;
@@ -175,8 +176,50 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 }
             }));
         } catch (error) {
-            console.error(error);
-            // Remove optimistic message or mark error?
+            console.error('Send failed, queueing offline:', error);
+            // Mark as queued
+            set(state => ({
+                messagesByThread: {
+                    ...state.messagesByThread,
+                    [threadId]: state.messagesByThread[threadId].map(m =>
+                        m.id === tempId ? { ...m, status: 'queued' as const } : m
+                    ),
+                },
+            }));
+            // Queue for retry
+            offlineQueue.enqueue({
+                id: tempId,
+                thread_id: threadId,
+                content,
+                created_at: new Date().toISOString(),
+            }).catch(() => {});
+        }
+    },
+
+    drainOfflineQueue: async (userId: string) => {
+        try {
+            const pending = await offlineQueue.getAll();
+            for (const msg of pending) {
+                try {
+                    const dto = await chatApi.sendMessage({ thread_id: msg.thread_id, content: msg.content });
+                    const realMsg = mapDtoToMessage(dto, userId);
+
+                    set(state => ({
+                        messagesByThread: {
+                            ...state.messagesByThread,
+                            [msg.thread_id]: (state.messagesByThread[msg.thread_id] || []).map(m =>
+                                m.id === msg.id ? realMsg : m
+                            ),
+                        },
+                    }));
+
+                    await offlineQueue.dequeue(msg.id);
+                } catch {
+                    await offlineQueue.incrementRetry(msg.id);
+                }
+            }
+        } catch {
+            // IndexedDB not available
         }
     },
 
@@ -233,7 +276,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         }));
 
         try {
-            await chatApi.updateActionStatus(messageId, action, userId);
+            await chatApi.updateActionStatus(messageId, action);
         } catch (error) {
             console.error(error);
             // Revert?

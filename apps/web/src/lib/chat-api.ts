@@ -124,8 +124,6 @@ export const chatApi = {
     },
 
     async findThreadByContext(data: {
-        tenant_id: string;
-        user_id: string;
         student_id?: string;
         ticket_category?: string;
         type?: string;
@@ -187,8 +185,8 @@ export const chatApi = {
         await apiClient.delete(`/messages/${messageId}`);
     },
 
-    async updateActionStatus(messageId: string, status: 'approved' | 'rejected' | 'acknowledged', userId: string): Promise<MessageDto> {
-        const response = await apiClient.put(`/messages/${messageId}/action`, { status, user_id: userId });
+    async updateActionStatus(messageId: string, status: 'approved' | 'rejected' | 'acknowledged'): Promise<MessageDto> {
+        const response = await apiClient.put(`/messages/${messageId}/action`, { status });
         return response.data;
     },
 
@@ -241,6 +239,171 @@ export const chatApi = {
 
     async markAllNotificationsRead(): Promise<void> {
         await apiClient.post('/notifications/read-all');
+    },
+
+    // ============================================
+    // FEED (Unified, cursor-paginated)
+    // ============================================
+
+    async getFeed(params?: {
+        type?: string;
+        student_id?: string;
+        cursor?: string;
+        limit?: number;
+    }): Promise<{ threads: ThreadDto[]; next_cursor: string | null }> {
+        const queryParams = new URLSearchParams();
+        if (params?.type) queryParams.append('type', params.type);
+        if (params?.student_id) queryParams.append('student_id', params.student_id);
+        if (params?.cursor) queryParams.append('cursor', params.cursor);
+        if (params?.limit) queryParams.append('limit', params.limit.toString());
+
+        const response = await apiClient.get(`/threads/feed?${queryParams.toString()}`);
+        return response.data;
+    },
+
+    // ============================================
+    // ACTION REQUIRED (Aggregation)
+    // ============================================
+
+    async getActionRequired(): Promise<{
+        unacked_announcements: ThreadDto[];
+        pending_ticket_actions: any[];
+    }> {
+        const response = await apiClient.get('/threads/action-required');
+        return response.data;
+    },
+
+    // ============================================
+    // SEARCH
+    // ============================================
+
+    async searchAll(query: string): Promise<ThreadDto[]> {
+        const response = await apiClient.get(`/threads/search?q=${encodeURIComponent(query)}`);
+        return response.data;
+    },
+
+    // ============================================
+    // ANNOUNCEMENTS
+    // ============================================
+
+    async markAnnouncementRead(threadId: string): Promise<void> {
+        await apiClient.post(`/announcements/${threadId}/read`);
+    },
+
+    async addAnnouncementReaction(threadId: string, emoji: string): Promise<void> {
+        await apiClient.post(`/announcements/${threadId}/react/${encodeURIComponent(emoji)}`);
+    },
+
+    async removeAnnouncementReaction(threadId: string, emoji: string): Promise<void> {
+        await apiClient.delete(`/announcements/${threadId}/react/${encodeURIComponent(emoji)}`);
+    },
+
+    async getAnnouncementStats(threadId: string): Promise<{
+        total_members: number;
+        read_count: number;
+        ack_count: number;
+        reactions: { emoji: string; count: number }[];
+    }> {
+        const response = await apiClient.get(`/announcements/${threadId}/stats`);
+        return response.data;
+    },
+
+    // ============================================
+    // TICKET ACTIONS
+    // ============================================
+
+    async getTicketActions(threadId: string): Promise<any[]> {
+        const response = await apiClient.get(`/ticket-actions/thread/${threadId}`);
+        return response.data;
+    },
+
+    async completeTicketAction(actionId: string): Promise<any> {
+        const response = await apiClient.patch(`/ticket-actions/${actionId}/complete`);
+        return response.data;
+    },
+
+    async getPendingActions(): Promise<any[]> {
+        const response = await apiClient.get('/ticket-actions/pending');
+        return response.data;
+    },
+
+    // ============================================
+    // MESSAGE REPORTS
+    // ============================================
+
+    async reportMessage(messageId: string, reason: string, details?: string): Promise<any> {
+        const response = await apiClient.post('/message-reports', { message_id: messageId, reason, details });
+        return response.data;
+    },
+
+    // ============================================
+    // PARENT-CHILD
+    // ============================================
+
+    async getMyChildren(): Promise<any[]> {
+        const response = await apiClient.get('/parent-children/my-children');
+        return response.data;
+    },
+
+    // ============================================
+    // TICKET ASSIGNMENT
+    // ============================================
+
+    async assignTicket(threadId: string, staffUserId: string): Promise<any> {
+        const response = await apiClient.post(`/threads/${threadId}/assign`, { staff_user_id: staffUserId });
+        return response.data;
+    },
+
+    // ============================================
+    // DM (Find or create)
+    // ============================================
+
+    async findOrCreateDM(user2Id: string): Promise<ThreadDto> {
+        const response = await apiClient.post('/threads/dm', { user2_id: user2Id });
+        return response.data;
+    },
+
+    // ============================================
+    // MARK THREAD READ
+    // ============================================
+
+    async markThreadRead(threadId: string, messageId?: string): Promise<void> {
+        await apiClient.post(`/threads/${threadId}/read`, { message_id: messageId });
+    },
+
+    async markAllMessagesRead(threadId: string): Promise<void> {
+        await apiClient.post(`/messages/thread/${threadId}/read-all`);
+    },
+
+    async getMessageUnreadCount(): Promise<number> {
+        const response = await apiClient.get('/messages/unread-count');
+        return response.data.unread_count;
+    },
+
+    // ============================================
+    // STORAGE (GCS Attachments)
+    // ============================================
+
+    async getUploadUrl(category: string, filename: string, contentType?: string): Promise<{ uploadUrl: string; objectKey: string }> {
+        const response = await apiClient.post('/storage/upload-url', { category, filename, contentType });
+        return response.data;
+    },
+
+    async getReadUrl(key: string): Promise<{ readUrl: string }> {
+        const response = await apiClient.get(`/storage/read-url?key=${encodeURIComponent(key)}`);
+        return response.data;
+    },
+
+    // Upload file to GCS via signed URL, then return the object key
+    async uploadAttachment(file: File): Promise<{ objectKey: string; url: string }> {
+        const { uploadUrl, objectKey } = await chatApi.getUploadUrl('attachments', file.name, file.type);
+        await fetch(uploadUrl, {
+            method: 'PUT',
+            body: file,
+            headers: { 'Content-Type': file.type },
+        });
+        const { readUrl } = await chatApi.getReadUrl(objectKey);
+        return { objectKey, url: readUrl };
     },
 };
 

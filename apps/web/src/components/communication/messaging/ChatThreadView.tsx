@@ -7,6 +7,7 @@ interface ChatThreadViewProps {
     item: FeedItem;
     onBack: () => void;
     onAction?: () => void;
+    onCall?: () => void;
 }
 
 import { useChatStore } from '../../../lib/chat-store';
@@ -27,7 +28,7 @@ const getAutoTranslate = () => {
 // ... (Existing constants PARENT_TEACHER_REPLIES etc. remain, but we can keep them or move if needed. 
 // For this replacement, I will assume the imports are at the top and I'm replacing the component body mostly)
 
-export function ChatThreadView({ item, onBack, onAction }: ChatThreadViewProps) {
+export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadViewProps) {
     const messagesByThread = useChatStore(state => state.messagesByThread);
     const fetchMessages = useChatStore(state => state.fetchMessages);
     const sendMessage = useChatStore(state => state.sendMessage);
@@ -153,6 +154,11 @@ export function ChatThreadView({ item, onBack, onAction }: ChatThreadViewProps) 
                     </div>
 
                     {/* Actions */}
+                    {onCall && (
+                        <button onClick={onCall} className="w-9 h-9 flex items-center justify-center text-muted-foreground hover:bg-secondary/50 rounded-full shrink-0">
+                            <span className="material-symbols-outlined text-xl">call</span>
+                        </button>
+                    )}
                     <button className="w-9 h-9 flex items-center justify-center text-muted-foreground hover:bg-secondary/50 rounded-full shrink-0">
                         <span className="material-symbols-outlined text-xl">search</span>
                     </button>

@@ -325,4 +325,47 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const sockets = this.onlineUsers.get(user_id);
         return !!sockets && sockets.size > 0;
     }
+
+    // ============================================
+    // BROADCAST: Announcement published
+    // ============================================
+
+    broadcastAnnouncementPublished(tenant_id: string, data: { thread_id: string; title: string }) {
+        this.server.to(`tenant:${tenant_id}`).emit('announcement:published', data);
+    }
+
+    // ============================================
+    // BROADCAST: Ticket status changed
+    // ============================================
+
+    broadcastTicketStatusChanged(thread_id: string, data: { status: string; updated_by: string }) {
+        this.server.to(`thread:${thread_id}`).emit('ticket:status_changed', {
+            thread_id,
+            ...data,
+        });
+    }
+
+    // ============================================
+    // BROADCAST: Ticket assigned
+    // ============================================
+
+    broadcastTicketAssigned(user_id: string, data: { thread_id: string; title: string }) {
+        this.broadcastToUser(user_id, 'ticket:assigned', data);
+    }
+
+    // ============================================
+    // BROADCAST: Action created
+    // ============================================
+
+    broadcastActionCreated(user_id: string, data: { action_id: string; title: string; thread_id: string }) {
+        this.broadcastToUser(user_id, 'action:created', data);
+    }
+
+    // ============================================
+    // BROADCAST: Feed refresh trigger
+    // ============================================
+
+    broadcastFeedRefresh(tenant_id: string) {
+        this.server.to(`tenant:${tenant_id}`).emit('feed:refresh');
+    }
 }

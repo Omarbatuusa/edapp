@@ -61,7 +61,7 @@ export function useAudioCall(options: AudioCallOptions) {
     useEffect(() => {
         if (!tenant_id || !user_id) return;
 
-        const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+        const backendUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001';
 
         const socket = io(`${backendUrl}/calls`, {
             query: { tenant_id, user_id },

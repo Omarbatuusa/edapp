@@ -20,8 +20,14 @@ import { Message } from './communication/message.entity';
 import { ThreadMember } from './communication/thread-member.entity';
 import { MessageReceipt } from './communication/message-receipt.entity';
 import { Notification } from './communication/notification.entity';
+import { ParentChildLink } from './communication/parent-child-link.entity';
+import { AnnouncementRead } from './communication/announcement-read.entity';
+import { AnnouncementReaction } from './communication/announcement-reaction.entity';
+import { TicketAction } from './communication/ticket-action.entity';
+import { MessageReport } from './communication/message-report.entity';
 import { DeviceToken } from './notifications/device-token.entity';
 import { ContentTranslation } from './translation/content-translation.entity';
+import { UserLanguagePreference } from './translation/user-language-preference.entity';
 
 // Modules
 import { BrandsModule } from './brands/brands.module';
@@ -75,8 +81,14 @@ import { BullModule } from '@nestjs/bullmq';
           ThreadMember,
           MessageReceipt,
           Notification,
+          ParentChildLink,
+          AnnouncementRead,
+          AnnouncementReaction,
+          TicketAction,
+          MessageReport,
           DeviceToken,
           ContentTranslation,
+          UserLanguagePreference,
         ],
         autoLoadEntities: true,
         synchronize: true, // DEV only, set to false in prod

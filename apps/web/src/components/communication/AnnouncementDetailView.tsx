@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import { DetailViewProps } from './types';
 import { TranslateButton } from './TranslateButton';
+import chatApi from '../../lib/chat-api';
 
 const REACTIONS = [
-    { id: 'like', icon: 'thumb_up', label: 'Like' },
-    { id: 'check', icon: 'check_circle', label: 'Agree' },
-    { id: 'heart', icon: 'favorite', label: 'Love' },
-    { id: 'celebrate', icon: 'celebration', label: 'Celebrate' },
+    { id: 'like', emoji: '👍', icon: 'thumb_up', label: 'Like' },
+    { id: 'check', emoji: '✅', icon: 'check_circle', label: 'Agree' },
+    { id: 'heart', emoji: '❤️', icon: 'favorite', label: 'Love' },
+    { id: 'celebrate', emoji: '🎉', icon: 'celebration', label: 'Celebrate' },
 ];
 
 export function AnnouncementDetailView({ item, isTranslated }: DetailViewProps) {
@@ -19,12 +20,39 @@ export function AnnouncementDetailView({ item, isTranslated }: DetailViewProps) 
     // Extract tenantId from URL
     const pathname = usePathname();
     const tenantId = pathname?.match(/\/tenant\/([^\/]+)/)?.[1] || '';
+    const threadId = item.threadId || item.id;
 
-    const [acknowledged, setAcknowledged] = React.useState(false);
+    const [acknowledged, setAcknowledged] = React.useState(item.ackStatus === 'acknowledged');
     const [activeReaction, setActiveReaction] = React.useState<string | null>(null);
+    const [stats, setStats] = React.useState<{ read_count: number; ack_count: number; total_members: number; reactions: { emoji: string; count: number }[] } | null>(null);
 
-    const handleReaction = (reactionId: string) => {
-        setActiveReaction(activeReaction === reactionId ? null : reactionId);
+    // Mark as read on mount
+    useEffect(() => {
+        chatApi.markAnnouncementRead(threadId).catch(() => {});
+        chatApi.getAnnouncementStats(threadId).then(setStats).catch(() => {});
+    }, [threadId]);
+
+    const handleReaction = async (reactionId: string) => {
+        const reaction = REACTIONS.find(r => r.id === reactionId);
+        if (!reaction) return;
+
+        if (activeReaction === reactionId) {
+            setActiveReaction(null);
+            await chatApi.removeAnnouncementReaction(threadId, reaction.emoji).catch(() => {});
+        } else {
+            // Remove old reaction if any
+            if (activeReaction) {
+                const oldReaction = REACTIONS.find(r => r.id === activeReaction);
+                if (oldReaction) await chatApi.removeAnnouncementReaction(threadId, oldReaction.emoji).catch(() => {});
+            }
+            setActiveReaction(reactionId);
+            await chatApi.addAnnouncementReaction(threadId, reaction.emoji).catch(() => {});
+        }
+    };
+
+    const handleAcknowledge = async () => {
+        setAcknowledged(true);
+        await chatApi.acknowledgeThread(threadId).catch(() => {});
     };
 
     return (
@@ -53,10 +81,18 @@ export function AnnouncementDetailView({ item, isTranslated }: DetailViewProps) 
                 </div>
             </div>
 
+            {/* Stats */}
+            {stats && (
+                <div className="flex gap-4 text-xs text-muted-foreground">
+                    <span>{stats.read_count}/{stats.total_members} read</span>
+                    <span>{stats.ack_count}/{stats.total_members} acknowledged</span>
+                </div>
+            )}
+
             {/* Acknowledge Button */}
             {!acknowledged ? (
                 <button
-                    onClick={() => setAcknowledged(true)}
+                    onClick={handleAcknowledge}
                     className="w-full py-3 bg-primary text-primary-foreground font-bold rounded-xl shadow-md active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
                 >
                     <span className="material-symbols-outlined">check_circle</span>

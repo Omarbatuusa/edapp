@@ -40,12 +40,12 @@ export function LanguageSheet({ isOpen, onClose, currentLanguage, onSelectLangua
 
                 <div className="p-4 overflow-y-auto space-y-2">
                     {LANGUAGES.map(lang => {
-                        const isSelected = currentLanguage === lang.name;
+                        const isSelected = currentLanguage === lang.code;
                         return (
                             <button
                                 key={lang.code}
                                 onClick={() => {
-                                    onSelectLanguage(lang.name);
+                                    onSelectLanguage(lang.code);
                                     onClose();
                                 }}
                                 className={`w-full p-4 rounded-xl border flex items-center justify-between transition-all ${isSelected

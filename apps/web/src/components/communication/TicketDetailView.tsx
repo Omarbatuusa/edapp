@@ -1,19 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DetailViewProps } from './types';
 import { ChatComposer } from './ChatComposer';
 import { AttachmentSheet } from './AttachmentSheet';
 import { PermissionModal } from './PermissionModal';
+import chatApi from '../../lib/chat-api';
 
 export function TicketDetailView({ item, isTranslated }: DetailViewProps) {
-    const [messages, setMessages] = useState([
-        { id: 1, text: "Hi, I noticed an error in the transport fee for this month.", isMe: true, time: "10:00 AM", date: "Today" },
-        { id: 2, text: "Hello! Thank you for reaching out. Let me check that for you immediately.", isMe: false, time: "10:05 AM", date: "Today", sender: "Finance Office" },
-    ]);
+    const threadId = item?.threadId || item?.id || '';
+    const currentUserId = typeof window !== 'undefined' ? localStorage.getItem('user_id') || '' : '';
+
+    const [messages, setMessages] = useState<any[]>([]);
+    const [ticketActions, setTicketActions] = useState<any[]>([]);
     const [showAttachments, setShowAttachments] = useState(false);
     const [permissionModal, setPermissionModal] = useState<{ isOpen: boolean, type: 'camera' | 'microphone' } | null>(null);
 
-    const handleSend = (text: string) => {
-        setMessages([...messages, { id: Date.now(), text, isMe: true, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), date: "Today" }]);
+    // Fetch real messages and ticket actions
+    useEffect(() => {
+        if (!threadId) return;
+        chatApi.getMessages(threadId).then(msgs => {
+            setMessages(msgs.map(m => ({
+                id: m.id,
+                text: m.content,
+                isMe: m.sender_id === currentUserId,
+                time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                date: 'Today',
+                sender: m.sender_name,
+            })));
+        }).catch(() => {});
+
+        chatApi.getTicketActions(threadId).then(setTicketActions).catch(() => {});
+    }, [threadId, currentUserId]);
+
+    const handleSend = async (text: string) => {
+        // Optimistic update
+        const tempMsg = { id: Date.now(), text, isMe: true, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), date: "Today" };
+        setMessages(prev => [...prev, tempMsg]);
+
+        try {
+            await chatApi.sendMessage({ thread_id: threadId, content: text });
+        } catch {
+            // Message will be sent via socket/retry
+        }
     };
 
     const checkPermission = (type: 'camera' | 'microphone', callback: () => void) => {

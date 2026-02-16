@@ -2,12 +2,16 @@ import { Controller, Get, Post, Put, Patch, Delete, Body, Param, Query, UseGuard
 import { ThreadsService } from './threads.service';
 import type { CreateThreadDto } from './threads.service';
 import { ThreadType, TicketStatus, TicketCategory } from './thread.entity';
+import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 
 // ============================================================
 // THREADS CONTROLLER - REST API for thread management
+// All endpoints secured via FirebaseAuthGuard
+// tenant_id from TenantsMiddleware, user_id from Firebase JWT
 // ============================================================
 
 @Controller('api/v1/threads')
+@UseGuards(FirebaseAuthGuard)
 export class ThreadsController {
     constructor(private readonly threadsService: ThreadsService) { }
 
@@ -16,15 +20,14 @@ export class ThreadsController {
     // ============================================
     @Get()
     async getThreads(
-        @Query('tenant_id') tenant_id: string,
-        @Query('user_id') user_id: string,
+        @Req() req: any,
         @Query('type') type?: ThreadType,
         @Query('ticket_category') ticket_category?: TicketCategory,
         @Query('student_id') student_id?: string,
         @Query('unread_only') unread_only?: string,
         @Query('search') search?: string,
     ) {
-        return this.threadsService.getUserThreads(tenant_id, user_id, {
+        return this.threadsService.getUserThreads(req.tenant_id, req.user.uid, {
             type,
             ticket_category,
             student_id,
@@ -34,22 +37,74 @@ export class ThreadsController {
     }
 
     // ============================================
+    // GET FEED (Unified, cursor-paginated)
+    // ============================================
+    @Get('feed')
+    async getFeed(
+        @Req() req: any,
+        @Query('type') type?: ThreadType,
+        @Query('student_id') student_id?: string,
+        @Query('cursor') cursor?: string,
+        @Query('limit') limit?: string,
+    ) {
+        return this.threadsService.getFeed(req.tenant_id, req.user.uid, {
+            type,
+            student_id,
+            cursor,
+            limit: limit ? parseInt(limit, 10) : undefined,
+        });
+    }
+
+    // ============================================
+    // GET ACTION REQUIRED (Aggregation)
+    // ============================================
+    @Get('action-required')
+    async getActionRequired(@Req() req: any) {
+        return this.threadsService.getActionRequired(req.tenant_id, req.user.uid);
+    }
+
+    // ============================================
+    // SEARCH THREADS
+    // ============================================
+    @Get('search')
+    async searchThreads(
+        @Req() req: any,
+        @Query('q') q: string,
+    ) {
+        return this.threadsService.searchThreads(req.tenant_id, req.user.uid, q || '');
+    }
+
+    // ============================================
+    // ASSIGN TICKET TO STAFF
+    // ============================================
+    @Post(':id/assign')
+    async assignTicket(
+        @Param('id') thread_id: string,
+        @Body() body: { staff_user_id: string },
+        @Req() req: any,
+    ) {
+        return this.threadsService.assignTicket(thread_id, body.staff_user_id, req.user.uid);
+    }
+
+    // ============================================
     // GET SINGLE THREAD
     // ============================================
     @Get(':id')
     async getThread(
         @Param('id') id: string,
-        @Query('tenant_id') tenant_id: string,
-        @Query('user_id') user_id: string,
+        @Req() req: any,
     ) {
-        return this.threadsService.getThread(id, user_id, tenant_id);
+        return this.threadsService.getThread(id, req.user.uid, req.tenant_id);
     }
 
     // ============================================
     // CREATE THREAD
     // ============================================
     @Post()
-    async createThread(@Body() dto: CreateThreadDto) {
+    async createThread(@Body() dto: CreateThreadDto, @Req() req: any) {
+        // Inject tenant_id and created_by from auth context
+        dto.tenant_id = req.tenant_id;
+        dto.created_by = req.user.uid;
         return this.threadsService.createThread(dto);
     }
 
@@ -67,12 +122,13 @@ export class ThreadsController {
     @Post(':id/members')
     async addMember(
         @Param('id') thread_id: string,
-        @Body() body: { user_id: string; added_by: string; role?: string },
+        @Body() body: { user_id: string; role?: string },
+        @Req() req: any,
     ) {
         return this.threadsService.addMember(
             thread_id,
             body.user_id,
-            body.added_by,
+            req.user.uid,
             body.role as any,
         );
     }
@@ -83,9 +139,10 @@ export class ThreadsController {
     @Post(':id/read')
     async markAsRead(
         @Param('id') thread_id: string,
-        @Body() body: { user_id: string; message_id?: string },
+        @Body() body: { message_id?: string },
+        @Req() req: any,
     ) {
-        await this.threadsService.markAsRead(thread_id, body.user_id, body.message_id);
+        await this.threadsService.markAsRead(thread_id, req.user.uid, body.message_id);
         return { success: true };
     }
 
@@ -95,9 +152,10 @@ export class ThreadsController {
     @Patch(':id/status')
     async updateStatus(
         @Param('id') thread_id: string,
-        @Body() body: { status: TicketStatus; user_id: string },
+        @Body() body: { status: TicketStatus },
+        @Req() req: any,
     ) {
-        return this.threadsService.updateTicketStatus(thread_id, body.status, body.user_id);
+        return this.threadsService.updateTicketStatus(thread_id, body.status, req.user.uid);
     }
 
     // ============================================
@@ -106,22 +164,20 @@ export class ThreadsController {
     @Post(':id/acknowledge')
     async acknowledge(
         @Param('id') thread_id: string,
-        @Body() body: { user_id: string },
+        @Req() req: any,
     ) {
-        return this.threadsService.acknowledgeAnnouncement(thread_id, body.user_id);
+        return this.threadsService.acknowledgeAnnouncement(thread_id, req.user.uid);
     }
 
     // ============================================
     // FIND OR CREATE DM
     // ============================================
-    // ============================================
-    // FIND OR CREATE DM
-    // ============================================
     @Post('dm')
     async findOrCreateDM(
-        @Body() body: { tenant_id: string; user1_id: string; user2_id: string }
+        @Body() body: { user2_id: string },
+        @Req() req: any,
     ) {
-        return this.threadsService.findOrCreateDM(body.tenant_id, body.user1_id, body.user2_id);
+        return this.threadsService.findOrCreateDM(req.tenant_id, req.user.uid, body.user2_id);
     }
 
     // ============================================
@@ -130,18 +186,17 @@ export class ThreadsController {
     @Post('find-context')
     async findByContext(
         @Body() body: {
-            tenant_id: string;
-            user_id: string;
             student_id?: string;
             ticket_category?: TicketCategory;
             type?: ThreadType;
         },
+        @Req() req: any,
     ) {
-        const thread = await this.threadsService.findThreadByContext(body.tenant_id, body.user_id, {
+        const thread = await this.threadsService.findThreadByContext(req.tenant_id, req.user.uid, {
             student_id: body.student_id,
             ticket_category: body.ticket_category,
             type: body.type,
         });
-        return { thread }; // Returns null if not found, frontend handles redirection to Create
+        return { thread };
     }
 }

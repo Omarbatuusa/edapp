@@ -1,12 +1,16 @@
-import { Controller, Get, Post, Body, Param, Query, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, Patch, UseGuards, Req } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { NotificationType, NotificationUrgency } from './notification.entity';
+import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 
 // ============================================================
 // NOTIFICATIONS CONTROLLER - REST API for notifications
+// All endpoints secured via FirebaseAuthGuard
+// tenant_id from TenantsMiddleware, user_id from Firebase JWT
 // ============================================================
 
 @Controller('api/v1/notifications')
+@UseGuards(FirebaseAuthGuard)
 export class NotificationsController {
     constructor(private readonly notificationsService: NotificationsService) { }
 
@@ -15,15 +19,14 @@ export class NotificationsController {
     // ============================================
     @Get()
     async getNotifications(
-        @Query('tenant_id') tenant_id: string,
-        @Query('user_id') user_id: string,
+        @Req() req: any,
         @Query('limit') limit?: string,
         @Query('offset') offset?: string,
         @Query('unread_only') unread_only?: string,
         @Query('type') type?: NotificationType,
         @Query('urgency') urgency?: NotificationUrgency,
     ) {
-        return this.notificationsService.getUserNotifications(tenant_id, user_id, {
+        return this.notificationsService.getUserNotifications(req.tenant_id, req.user.uid, {
             limit: limit ? parseInt(limit, 10) : undefined,
             offset: offset ? parseInt(offset, 10) : undefined,
             unread_only: unread_only === 'true',
@@ -36,11 +39,8 @@ export class NotificationsController {
     // GET UNREAD COUNT
     // ============================================
     @Get('unread-count')
-    async getUnreadCount(
-        @Query('tenant_id') tenant_id: string,
-        @Query('user_id') user_id: string,
-    ) {
-        const count = await this.notificationsService.getUnreadCount(tenant_id, user_id);
+    async getUnreadCount(@Req() req: any) {
+        const count = await this.notificationsService.getUnreadCount(req.tenant_id, req.user.uid);
         return { unread_count: count };
     }
 
@@ -50,19 +50,17 @@ export class NotificationsController {
     @Patch(':id/read')
     async markAsRead(
         @Param('id') id: string,
-        @Body() body: { user_id: string },
+        @Req() req: any,
     ) {
-        return this.notificationsService.markAsRead(id, body.user_id);
+        return this.notificationsService.markAsRead(id, req.user.uid);
     }
 
     // ============================================
     // MARK ALL AS READ
     // ============================================
     @Post('read-all')
-    async markAllAsRead(
-        @Body() body: { tenant_id: string; user_id: string },
-    ) {
-        await this.notificationsService.markAllAsRead(body.tenant_id, body.user_id);
+    async markAllAsRead(@Req() req: any) {
+        await this.notificationsService.markAllAsRead(req.tenant_id, req.user.uid);
         return { success: true };
     }
 
@@ -72,8 +70,8 @@ export class NotificationsController {
     @Patch(':id/action')
     async markAsActioned(
         @Param('id') id: string,
-        @Body() body: { user_id: string },
+        @Req() req: any,
     ) {
-        return this.notificationsService.markAsActioned(id, body.user_id);
+        return this.notificationsService.markAsActioned(id, req.user.uid);
     }
 }

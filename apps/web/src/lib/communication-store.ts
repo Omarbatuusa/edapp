@@ -59,20 +59,29 @@ interface CommunicationState {
     // Feed items
     items: FeedItem[];
     isLoading: boolean;
+    isLoadingMore: boolean;
     error: string | null;
+    nextCursor: string | null;
+
+    // Children for filtering
+    children: { id: string; name: string; grade?: string }[];
 
     // UI state
     filter: FilterType;
     sort: SortType;
     density: DensityType;
     searchQuery: string;
+    selectedChildId: string | null;
 
     // Actions
-    fetchFeed: () => Promise<void>;
+    fetchFeed: (childId?: string) => Promise<void>;
+    fetchMore: () => Promise<void>;
+    fetchChildren: () => Promise<void>;
     setFilter: (filter: FilterType) => void;
     setSort: (sort: SortType) => void;
     setDensity: (density: DensityType) => void;
     setSearchQuery: (query: string) => void;
+    setSelectedChild: (childId: string | null) => void;
     acknowledgeItem: (id: string) => Promise<void>;
     markAsRead: (id: string) => Promise<void>;
 
@@ -123,20 +132,80 @@ const mapThreadToFeedItem = (thread: ThreadDto): FeedItem => {
 export const useCommunicationStore = create<CommunicationState>((set, get) => ({
     items: [],
     isLoading: false,
+    isLoadingMore: false,
     error: null,
+    nextCursor: null,
+    children: [],
     filter: 'all',
     sort: 'newest',
     density: 'comfortable',
     searchQuery: '',
+    selectedChildId: null,
 
-    fetchFeed: async () => {
+    fetchFeed: async (childId?: string) => {
         set({ isLoading: true, error: null });
         try {
-            const threads = await chatApi.getThreads();
-            const items = threads.map(mapThreadToFeedItem);
-            set({ items, isLoading: false });
+            const typeMap: Record<string, string | undefined> = {
+                all: undefined,
+                announcement: 'announcement',
+                message: 'dm',
+                support: 'ticket',
+                unread: undefined,
+                urgent: undefined,
+            };
+            const filter = get().filter;
+            const result = await chatApi.getFeed({
+                type: typeMap[filter],
+                student_id: childId || get().selectedChildId || undefined,
+            });
+            const items = result.threads.map(mapThreadToFeedItem);
+            set({ items, nextCursor: result.next_cursor, isLoading: false });
         } catch (error: any) {
             set({ error: error.message, isLoading: false });
+        }
+    },
+
+    fetchMore: async () => {
+        const { nextCursor, isLoadingMore } = get();
+        if (!nextCursor || isLoadingMore) return;
+        set({ isLoadingMore: true });
+        try {
+            const filter = get().filter;
+            const typeMap: Record<string, string | undefined> = {
+                all: undefined,
+                announcement: 'announcement',
+                message: 'dm',
+                support: 'ticket',
+                unread: undefined,
+                urgent: undefined,
+            };
+            const result = await chatApi.getFeed({
+                type: typeMap[filter],
+                student_id: get().selectedChildId || undefined,
+                cursor: nextCursor,
+            });
+            const newItems = result.threads.map(mapThreadToFeedItem);
+            set((state) => ({
+                items: [...state.items, ...newItems],
+                nextCursor: result.next_cursor,
+                isLoadingMore: false,
+            }));
+        } catch (error: any) {
+            set({ isLoadingMore: false });
+        }
+    },
+
+    fetchChildren: async () => {
+        try {
+            const links = await chatApi.getMyChildren();
+            const children = links.map((link: any) => ({
+                id: link.child_user_id,
+                name: link.child?.display_name || link.child?.first_name || 'Child',
+                grade: link.child?.grade || undefined,
+            }));
+            set({ children });
+        } catch {
+            // Not a parent or no children — that's fine
         }
     },
 
@@ -144,6 +213,7 @@ export const useCommunicationStore = create<CommunicationState>((set, get) => ({
     setSort: (sort) => set({ sort }),
     setDensity: (density) => set({ density }),
     setSearchQuery: (query) => set({ searchQuery: query }),
+    setSelectedChild: (childId) => set({ selectedChildId: childId }),
 
     acknowledgeItem: async (id) => {
         // Optimistic update

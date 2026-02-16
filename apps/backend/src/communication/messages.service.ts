@@ -5,6 +5,7 @@ import { Message, MessageType } from './message.entity';
 import { MessageReceipt } from './message-receipt.entity';
 import { Thread } from './thread.entity';
 import { ThreadMember } from './thread-member.entity';
+import { AuditService } from '../audit/audit.service';
 
 // ============================================================
 // MESSAGES SERVICE - Message management
@@ -49,6 +50,7 @@ export class MessagesService {
         private threadRepo: Repository<Thread>,
         @InjectRepository(ThreadMember)
         private memberRepo: Repository<ThreadMember>,
+        private readonly auditService: AuditService,
     ) { }
 
     // ============================================
@@ -241,11 +243,20 @@ export class MessagesService {
             throw new NotFoundException('Message not found or not authorized');
         }
 
+        const originalContent = message.content;
         message.content = new_content;
         message.is_edited = true;
         message.edited_at = new Date();
 
-        return this.messageRepo.save(message);
+        const saved = await this.messageRepo.save(message);
+
+        await this.auditService.log({
+            action: 'message.edit',
+            userId: user_id,
+            metadata: { message_id, thread_id: message.thread_id, original_length: originalContent?.length },
+        });
+
+        return saved;
     }
 
     // ============================================
@@ -267,6 +278,12 @@ export class MessagesService {
         message.attachments = [];
 
         await this.messageRepo.save(message);
+
+        await this.auditService.log({
+            action: 'message.delete',
+            userId: user_id,
+            metadata: { message_id, thread_id: message.thread_id },
+        });
     }
 
     // ============================================
@@ -357,11 +374,20 @@ export class MessagesService {
             throw new ForbiddenException('Not a member of this thread');
         }
 
+        const previousStatus = message.action_data.status;
         message.action_data = {
             ...message.action_data,
             status,
         };
 
-        return this.messageRepo.save(message);
+        const saved = await this.messageRepo.save(message);
+
+        await this.auditService.log({
+            action: 'message.action_status_update',
+            userId: user_id,
+            metadata: { message_id, thread_id: message.thread_id, previousStatus, newStatus: status },
+        });
+
+        return saved;
     }
 }
