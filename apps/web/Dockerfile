@@ -10,8 +10,8 @@ WORKDIR /app
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json* ./
 RUN \
-    if [ -f package-lock.json ]; then npm ci; \
-    else npm install; \
+    if [ -f package-lock.json ]; then npm ci --legacy-peer-deps; \
+    else npm install --legacy-peer-deps; \
     fi
 
 # Rebuild the source code only when needed
