@@ -77,6 +77,8 @@ interface ChatState {
     // Async Actions
     fetchMessages: (threadId: string, userId: string) => Promise<void>;
     sendMessage: (threadId: string, content: string, userId: string) => Promise<void>;
+    sendMessageWithAttachment: (threadId: string, file: File, userId: string, type?: 'image' | 'document' | 'voice') => Promise<void>;
+    deleteMessage: (threadId: string, messageId: string) => Promise<void>;
     handleAction: (threadId: string, messageId: string, action: 'approved' | 'rejected' | 'acknowledged', userId: string) => Promise<void>;
 
     // Socket Actions
@@ -193,6 +195,77 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 content,
                 created_at: new Date().toISOString(),
             }).catch(() => {});
+        }
+    },
+
+    sendMessageWithAttachment: async (threadId, file, userId, type) => {
+        const attachType = type || (file.type.startsWith('image/') ? 'image' : file.type.startsWith('audio/') ? 'voice' : 'document');
+        const tempId = Date.now().toString();
+        const optimisticMsg: Message = {
+            id: tempId,
+            threadId,
+            contentType: attachType === 'voice' ? 'voice' : attachType === 'image' ? 'image' : 'document',
+            content: file.name,
+            senderId: userId,
+            isMe: true,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            date: 'Today',
+            status: 'sending',
+            attachments: [{ type: attachType, url: '', name: file.name }],
+        };
+
+        set(state => ({
+            messagesByThread: {
+                ...state.messagesByThread,
+                [threadId]: [...(state.messagesByThread[threadId] || []), optimisticMsg]
+            }
+        }));
+
+        try {
+            const { url } = await chatApi.uploadAttachment(file);
+            const dto = await chatApi.sendMessage({
+                thread_id: threadId,
+                content: attachType === 'voice' ? '' : file.name,
+                attachments: [{
+                    type: attachType,
+                    url,
+                    name: file.name,
+                    size_bytes: file.size,
+                    mime_type: file.type,
+                }],
+            });
+            const realMsg = mapDtoToMessage(dto, userId);
+            set(state => ({
+                messagesByThread: {
+                    ...state.messagesByThread,
+                    [threadId]: state.messagesByThread[threadId].map(m => m.id === tempId ? realMsg : m)
+                }
+            }));
+        } catch (error) {
+            console.error('Attachment upload failed:', error);
+            set(state => ({
+                messagesByThread: {
+                    ...state.messagesByThread,
+                    [threadId]: state.messagesByThread[threadId].map(m =>
+                        m.id === tempId ? { ...m, status: 'queued' as const } : m
+                    ),
+                },
+            }));
+        }
+    },
+
+    deleteMessage: async (threadId, messageId) => {
+        // Optimistic remove
+        set(state => ({
+            messagesByThread: {
+                ...state.messagesByThread,
+                [threadId]: (state.messagesByThread[threadId] || []).filter(m => m.id !== messageId),
+            },
+        }));
+        try {
+            await chatApi.deleteMessage(messageId);
+        } catch (error) {
+            console.error('Delete failed:', error);
         }
     },
 

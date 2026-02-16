@@ -87,7 +87,6 @@ export class Thread {
 
     // For groups - context binding
     @Column({ type: 'jsonb', nullable: true })
-    @Column({ type: 'jsonb', nullable: true })
     context: {
         grade_id?: string;
         class_id?: string;

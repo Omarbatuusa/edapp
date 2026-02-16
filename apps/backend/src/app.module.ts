@@ -28,6 +28,10 @@ import { MessageReport } from './communication/message-report.entity';
 import { DeviceToken } from './notifications/device-token.entity';
 import { ContentTranslation } from './translation/content-translation.entity';
 import { UserLanguagePreference } from './translation/user-language-preference.entity';
+import { TenantSecurityPolicy } from './security/tenant-security-policy.entity';
+import { BranchSecurityPolicy } from './security/branch-security-policy.entity';
+import { IpAllowlist } from './security/ip-allowlist.entity';
+import { GeoZone } from './security/geo-zone.entity';
 
 // Modules
 import { BrandsModule } from './brands/brands.module';
@@ -43,6 +47,8 @@ import { PoliciesModule } from './policies/policies.module';
 import { CommunicationModule } from './communication/communication.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { TranslationModule } from './translation/translation.module';
+import { SecurityModule } from './security/security.module';
+import { AttendanceModule } from './attendance/attendance.module';
 
 import { BullModule } from '@nestjs/bullmq';
 
@@ -89,6 +95,10 @@ import { BullModule } from '@nestjs/bullmq';
           DeviceToken,
           ContentTranslation,
           UserLanguagePreference,
+          TenantSecurityPolicy,
+          BranchSecurityPolicy,
+          IpAllowlist,
+          GeoZone,
         ],
         autoLoadEntities: true,
         synchronize: true, // DEV only, set to false in prod
@@ -107,7 +117,10 @@ import { BullModule } from '@nestjs/bullmq';
     PoliciesModule,
     CommunicationModule,
     NotificationsModule,
+    NotificationsModule,
     TranslationModule,
+    SecurityModule,
+    AttendanceModule,
   ],
   controllers: [AppController],
   providers: [AppService],
