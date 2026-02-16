@@ -1,13 +1,28 @@
 'use client';
 
 import { BookOpen, Star, Trophy, Clock } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import AttendanceCapture from '../../../../../components/attendance/AttendanceCapture';
 
 export default function LearnerDashboard() {
+    const params = useParams();
+    const slug = params.slug as string;
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+
     return (
         <div className="space-y-6">
-            <div className="p-6 bg-gradient-to-r from-primary to-indigo-600 rounded-2xl text-white shadow-lg">
-                <h1 className="text-2xl font-bold mb-2">Welcome back, Bart!</h1>
-                <p className="opacity-90">You have 3 assignments due this week.</p>
+            <div className="flex flex-col md:flex-row gap-6">
+                <div className="flex-1 p-6 bg-gradient-to-r from-primary to-indigo-600 rounded-2xl text-white shadow-lg">
+                    <h1 className="text-2xl font-bold mb-2">Welcome back, Bart!</h1>
+                    <p className="opacity-90">You have 3 assignments due this week.</p>
+                </div>
+                <div>
+                    <AttendanceCapture
+                        endpoint={`${API_URL}/attendance/learner/mark`}
+                        headers={{ 'x-tenant-id': slug }}
+                        label="Mark Attendance"
+                    />
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

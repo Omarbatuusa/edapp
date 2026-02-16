@@ -1,11 +1,26 @@
 'use client';
 
 import { Users, BookOpen, Calendar, Clock } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import AttendanceCapture from '../../../../../components/attendance/AttendanceCapture';
 
 export default function StaffDashboard() {
+    const params = useParams();
+    const slug = params.slug as string;
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+
     return (
         <div className="space-y-6">
-            <h1 className="text-2xl font-bold tracking-tight">Staff Dashboard</h1>
+            <div className="flex justify-between items-center">
+                <h1 className="text-2xl font-bold tracking-tight">Staff Dashboard</h1>
+                <div className="w-full max-w-xs">
+                    <AttendanceCapture
+                        endpoint={`${API_URL}/attendance/staff/check-in`}
+                        headers={{ 'x-tenant-id': slug }}
+                        label="Staff Check-In"
+                    />
+                </div>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="surface-card p-6 col-span-2">

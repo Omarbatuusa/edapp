@@ -9,11 +9,13 @@ export class AttendanceController {
     @Post('learner/mark')
     @SecurityAction('attendance.learner.mark')
     async markLearnerAttendance(@Body() body: any, @Req() req: any) {
+        const securityDecision = req.securityDecision;
         return {
             status: 'success',
             message: 'Attendance marked',
             geo: req.body.geo,
-            ip: req.ip // or extracted IP 
+            ip: req.ip,
+            security: securityDecision
         };
     }
 

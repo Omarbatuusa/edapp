@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn, Index } from 'typeorm';
 import { Tenant } from '../tenants/tenant.entity';
+import { SecurityMode } from '../security/tenant-security-policy.entity';
 
 @Entity('branches')
 @Index(['tenant_id', 'branch_code'], { unique: true }) // Unique branch code per tenant
@@ -63,4 +64,44 @@ export class Branch {
 
     @UpdateDateColumn()
     updated_at: Date;
+
+    // ========== SECURITY FIELDS ==========
+
+    @Column({ type: 'decimal', precision: 10, scale: 7, nullable: true })
+    lat: number;
+
+    @Column({ type: 'decimal', precision: 10, scale: 7, nullable: true })
+    lng: number;
+
+    @Column({ default: 100 })
+    geofence_radius_m: number;
+
+    @Column({ default: true })
+    geo_required_for_staff: boolean;
+
+    @Column({ default: false })
+    geo_required_for_learners: boolean;
+
+    @Column({ default: 80 })
+    geo_min_accuracy_m: number;
+
+    @Column({
+        type: 'enum',
+        enum: SecurityMode,
+        default: SecurityMode.WARN,
+    })
+    geo_policy_mode: SecurityMode;
+
+    @Column({ type: 'simple-array', nullable: true })
+    allowed_public_ips: string[];
+
+    @Column({
+        type: 'enum',
+        enum: SecurityMode,
+        default: SecurityMode.WARN,
+    })
+    ip_policy_mode: SecurityMode;
+
+    @Column({ default: true })
+    allow_ip_autodetect: boolean;
 }

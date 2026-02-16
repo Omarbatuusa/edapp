@@ -1,7 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FeedItem } from './types';
+
+interface SubOption {
+    id: string;
+    name: string;
+    desc: string;
+    icon: string;
+}
 
 interface NewChatViewProps {
     onBack: () => void;
@@ -13,6 +20,7 @@ export function NewChatView({ onBack, onStartChat, onCreateChannel }: NewChatVie
     const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
     const [selectedSubItem, setSelectedSubItem] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const summaryRef = useRef<HTMLDivElement>(null);
 
     const TOPICS = [
         { id: 'Academics', icon: 'school', label: 'Academics', desc: 'Teachers & Subjects' },
@@ -27,6 +35,34 @@ export function NewChatView({ onBack, onStartChat, onCreateChannel }: NewChatVie
         { id: 'hoover', name: 'Ms. Hoover', role: 'Art Teacher', avatar: 'https://ui-avatars.com/api/?name=Hoover&background=1d4ed8&color=fff' },
     ];
 
+    const TRANSPORT_OPTIONS: SubOption[] = [
+        { id: 'route-morning', name: 'Morning Route', desc: 'Pickup schedule & stops', icon: 'wb_sunny' },
+        { id: 'route-afternoon', name: 'Afternoon Route', desc: 'Drop-off schedule & stops', icon: 'wb_twilight' },
+        { id: 'route-change', name: 'Route Change Request', desc: 'Request pickup/drop-off changes', icon: 'edit_location_alt' },
+        { id: 'transport-general', name: 'General Enquiry', desc: 'Other transport questions', icon: 'help_outline' },
+    ];
+
+    const FEES_OPTIONS: SubOption[] = [
+        { id: 'fees-balance', name: 'Account Balance', desc: 'Outstanding fees & statements', icon: 'account_balance' },
+        { id: 'fees-payment', name: 'Payment Query', desc: 'Payment issues & proof of payment', icon: 'receipt_long' },
+        { id: 'fees-plan', name: 'Payment Plan', desc: 'Arrange instalment plan', icon: 'calendar_month' },
+        { id: 'fees-general', name: 'General Enquiry', desc: 'Other fee-related questions', icon: 'help_outline' },
+    ];
+
+    const SUPPORT_OPTIONS: SubOption[] = [
+        { id: 'support-admin', name: 'Administration', desc: 'Letters, forms & certificates', icon: 'description' },
+        { id: 'support-it', name: 'IT Support', desc: 'Login, app & device issues', icon: 'computer' },
+        { id: 'support-wellbeing', name: 'Wellbeing', desc: 'Pastoral care & counselling', icon: 'favorite' },
+        { id: 'support-general', name: 'General Help', desc: 'Other questions', icon: 'help_outline' },
+    ];
+
+    const getSubOptions = (): SubOption[] | null => {
+        if (selectedTopic === 'Transport') return TRANSPORT_OPTIONS;
+        if (selectedTopic === 'Fees') return FEES_OPTIONS;
+        if (selectedTopic === 'Support') return SUPPORT_OPTIONS;
+        return null;
+    };
+
     const handleTopicSelect = (topicId: string) => {
         if (selectedTopic === topicId) {
             setSelectedTopic(null);
@@ -37,32 +73,38 @@ export function NewChatView({ onBack, onStartChat, onCreateChannel }: NewChatVie
         }
     };
 
+    const canStart = selectedTopic && selectedSubItem;
+
+    // Scroll summary card into view when it appears
+    useEffect(() => {
+        if (canStart && summaryRef.current) {
+            setTimeout(() => {
+                summaryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
+    }, [canStart]);
+
+    const getSummary = (): { title: string; subtitle: string } => {
+        if (selectedTopic === 'Academics' && selectedSubItem) {
+            const contact = ACADEMIC_CONTACTS.find(c => c.id === selectedSubItem);
+            return { title: contact?.name || 'Teacher', subtitle: contact?.role || 'Staff' };
+        }
+        const subOptions = getSubOptions();
+        if (subOptions && selectedSubItem) {
+            const option = subOptions.find(o => o.id === selectedSubItem);
+            const topicLabel = selectedTopic === 'Transport' ? 'Transport' : selectedTopic === 'Fees' ? 'Finance Office' : 'School Support';
+            return { title: topicLabel, subtitle: option?.name || '' };
+        }
+        return { title: '', subtitle: '' };
+    };
+
     const handleDirectStart = async () => {
-        if (!selectedTopic) return;
+        if (!canStart) return;
         setIsLoading(true);
 
         try {
-            let title = '';
-            let subtitle = '';
-            let threadType: 'message' | 'support' = 'message';
-
-            if (selectedTopic === 'Academics' && selectedSubItem) {
-                const contact = ACADEMIC_CONTACTS.find(c => c.id === selectedSubItem);
-                title = contact?.name || 'Teacher';
-                subtitle = contact?.role || 'Staff';
-            } else if (selectedTopic === 'Transport') {
-                title = 'Transport Support';
-                subtitle = 'Bus Routes & Schedules';
-                threadType = 'support';
-            } else if (selectedTopic === 'Fees') {
-                title = 'Finance Office';
-                subtitle = 'Fees & Payments';
-                threadType = 'support';
-            } else if (selectedTopic === 'Support') {
-                title = 'School Support';
-                subtitle = 'General Assistance';
-                threadType = 'support';
-            }
+            const { title, subtitle } = getSummary();
+            const threadType: 'message' | 'support' = selectedTopic === 'Academics' ? 'message' : 'support';
 
             const threadId = `thread-${Date.now()}`;
             const newThreadItem: FeedItem = {
@@ -80,11 +122,12 @@ export function NewChatView({ onBack, onStartChat, onCreateChannel }: NewChatVie
                 source: {
                     name: title,
                     role: subtitle,
-                    avatar: selectedSubItem
+                    avatar: selectedTopic === 'Academics' && selectedSubItem
                         ? ACADEMIC_CONTACTS.find(c => c.id === selectedSubItem)?.avatar
                         : `https://ui-avatars.com/api/?name=${encodeURIComponent(title)}&background=2563eb&color=fff`,
                 },
                 threadId,
+                category: selectedTopic || undefined,
             };
 
             onStartChat(newThreadItem);
@@ -95,7 +138,8 @@ export function NewChatView({ onBack, onStartChat, onCreateChannel }: NewChatVie
         }
     };
 
-    const canStart = selectedTopic && (selectedSubItem || ['Transport', 'Fees', 'Support'].includes(selectedTopic));
+    const subOptions = getSubOptions();
+    const summary = canStart ? getSummary() : null;
 
     return (
         <div className="flex flex-col h-full bg-[#f8fafc] dark:bg-[#0f172a]">
@@ -184,9 +228,50 @@ export function NewChatView({ onBack, onStartChat, onCreateChannel }: NewChatVie
                     </div>
                 )}
 
-                {/* Summary Card — shows when ready to start */}
-                {canStart && (
+                {/* Sub-options for Transport / Fees / Support */}
+                {subOptions && selectedTopic && (
                     <div className="px-4 pb-3">
+                        <p className="text-[12px] font-semibold text-[#64748b] dark:text-[#94a3b8] uppercase tracking-wider mb-3">
+                            {selectedTopic === 'Transport' ? 'Select Route Topic' : selectedTopic === 'Fees' ? 'Select Fee Topic' : 'Select Category'}
+                        </p>
+                        <div className="space-y-2">
+                            {subOptions.map(option => {
+                                const isSelected = selectedSubItem === option.id;
+                                return (
+                                    <button
+                                        key={option.id}
+                                        type="button"
+                                        onClick={() => setSelectedSubItem(option.id)}
+                                        className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 ${
+                                            isSelected
+                                                ? 'bg-[#eff6ff] dark:bg-[#1e3a5f] border-2 border-[#2563eb]'
+                                                : 'bg-white dark:bg-[#1e293b] border border-[#e2e8f0] dark:border-[#334155] hover:border-[#2563eb]/40'
+                                        }`}
+                                    >
+                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+                                            isSelected ? 'bg-[#2563eb]/10' : 'bg-[#f1f5f9] dark:bg-[#334155]'
+                                        }`}>
+                                            <span className={`material-symbols-outlined text-[20px] ${isSelected ? 'text-[#2563eb]' : 'text-[#64748b]'}`}>{option.icon}</span>
+                                        </div>
+                                        <div className="text-left flex-1 min-w-0">
+                                            <h4 className={`font-semibold text-[14px] ${isSelected ? 'text-[#2563eb]' : 'text-[#0f172a] dark:text-[#f1f5f9]'}`}>{option.name}</h4>
+                                            <p className="text-[12px] text-[#64748b] dark:text-[#94a3b8]">{option.desc}</p>
+                                        </div>
+                                        {isSelected ? (
+                                            <span className="material-symbols-outlined text-[#2563eb] text-[22px] shrink-0">check_circle</span>
+                                        ) : (
+                                            <span className="material-symbols-outlined text-[#cbd5e1] dark:text-[#475569] text-[22px] shrink-0">radio_button_unchecked</span>
+                                        )}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+
+                {/* Summary Card — shows when ready to start */}
+                {canStart && summary && (
+                    <div ref={summaryRef} className="px-4 pb-3">
                         <div className="bg-white dark:bg-[#1e293b] rounded-xl border border-[#e2e8f0] dark:border-[#334155] p-4">
                             <p className="text-[12px] font-semibold text-[#64748b] dark:text-[#94a3b8] uppercase tracking-wider mb-2.5">Summary</p>
                             <div className="flex items-center gap-3">
@@ -196,20 +281,8 @@ export function NewChatView({ onBack, onStartChat, onCreateChannel }: NewChatVie
                                     </span>
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="font-semibold text-[14px] text-[#0f172a] dark:text-[#f1f5f9]">
-                                        {selectedTopic === 'Academics' && selectedSubItem
-                                            ? ACADEMIC_CONTACTS.find(c => c.id === selectedSubItem)?.name
-                                            : selectedTopic === 'Transport' ? 'Transport Support'
-                                            : selectedTopic === 'Fees' ? 'Finance Office'
-                                            : 'School Support'}
-                                    </p>
-                                    <p className="text-[12px] text-[#64748b] dark:text-[#94a3b8]">
-                                        {selectedTopic === 'Academics' && selectedSubItem
-                                            ? ACADEMIC_CONTACTS.find(c => c.id === selectedSubItem)?.role
-                                            : selectedTopic === 'Transport' ? 'Bus Routes & Schedules'
-                                            : selectedTopic === 'Fees' ? 'Fees & Payments'
-                                            : 'General Assistance'}
-                                    </p>
+                                    <p className="font-semibold text-[14px] text-[#0f172a] dark:text-[#f1f5f9]">{summary.title}</p>
+                                    <p className="text-[12px] text-[#64748b] dark:text-[#94a3b8]">{summary.subtitle}</p>
                                 </div>
                                 <span className="material-symbols-outlined text-[#22c55e] text-[22px] shrink-0">verified</span>
                             </div>

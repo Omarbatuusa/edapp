@@ -2,179 +2,258 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import dynamic from 'next/dynamic';
 
-interface Policy {
-    geoMode: string;
-    ipMode: string;
-    geoAccuracyThresholdM: number;
-    geoMaxAgeSeconds: number;
-}
+// Dynamic import for Map to avoid SSR issues
+const GeoZoneMap = dynamic(() => import('../../../../../../components/security/GeoZoneMap'), {
+    ssr: false,
+    loading: () => <div className="h-[400px] w-full bg-gray-100 animate-pulse rounded-lg flex items-center justify-center">Loading Map...</div>
+});
 
-interface IpEntry {
+interface Branch {
     id: string;
-    cidr: string;
-    label: string;
-    enabled: boolean;
+    branch_name: string;
+    lat: number;
+    lng: number;
+    geofence_radius_m: number;
+    geo_required_for_staff: boolean;
+    geo_required_for_learners: boolean;
+    geo_min_accuracy_m: number;
+    geo_policy_mode: string;
+    allowed_public_ips: string[];
+    ip_policy_mode: string;
+    allow_ip_autodetect: boolean;
 }
 
 export default function SecuritySettingsPage() {
     const params = useParams();
     const slug = params.slug as string;
-    const [policy, setPolicy] = useState<Policy | null>(null);
-    const [ips, setIps] = useState<IpEntry[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'geo' | 'ip'>('geo');
-    const [newIp, setNewIp] = useState({ cidr: '', label: '' });
 
-    // API Base URL - assuming relative path proxy or env var
+    const [branches, setBranches] = useState<Branch[]>([]);
+    const [selectedBranchId, setSelectedBranchId] = useState<string>('');
+    const [branch, setBranch] = useState<Branch | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState<'location' | 'network'>('location');
+    const [newIp, setNewIp] = useState('');
+    const [myIp, setMyIp] = useState('');
+
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
     useEffect(() => {
-        fetchData();
+        fetchBranches();
+        fetchMyIp();
     }, []);
 
-    const fetchData = async () => {
+    useEffect(() => {
+        if (selectedBranchId) {
+            fetchBranchDetails(selectedBranchId);
+        }
+    }, [selectedBranchId]);
+
+    const fetchBranches = async () => {
         setLoading(true);
         try {
-            // Mock headers for tenant context - in real app this comes from session/auth middleware
-            const headers = {
-                'Content-Type': 'application/json',
-                'x-tenant-id': slug // Using slug as tenantId for demo simplicity
-            };
-
-            const [policyRes, ipRes] = await Promise.all([
-                fetch(`${API_URL}/security-settings/policy`, { headers }),
-                fetch(`${API_URL}/security-settings/ip-allowlist`, { headers })
-            ]);
-
-            if (policyRes.ok) setPolicy(await policyRes.json());
-            if (ipRes.ok) setIps(await ipRes.json());
-
+            const res = await fetch(`${API_URL}/security-settings/branches`, {
+                headers: { 'x-tenant-id': slug }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setBranches(data);
+                if (data.length > 0) setSelectedBranchId(data[0].id);
+            }
         } catch (e) {
-            console.error('Failed to fetch settings', e);
+            console.error('Failed to fetch branches', e);
         } finally {
             setLoading(false);
         }
     };
 
-    const savePolicy = async () => {
-        if (!policy) return;
+    const fetchBranchDetails = async (id: string) => {
+        setLoading(true);
         try {
-            const headers = {
-                'Content-Type': 'application/json',
-                'x-tenant-id': slug
-            };
-            await fetch(`${API_URL}/security-settings/policy`, {
-                method: 'PUT',
-                headers,
-                body: JSON.stringify(policy)
-            });
-            alert('Policy saved successfully');
-        } catch (e) {
-            alert('Failed to save policy');
-        }
-    };
-
-    const addIp = async () => {
-        if (!newIp.cidr) return;
-        try {
-            const headers = {
-                'Content-Type': 'application/json',
-                'x-tenant-id': slug
-            };
-            const res = await fetch(`${API_URL}/security-settings/ip-allowlist`, {
-                method: 'POST',
-                headers,
-                body: JSON.stringify(newIp)
+            const res = await fetch(`${API_URL}/security-settings/branch/${id}`, {
+                headers: { 'x-tenant-id': slug }
             });
             if (res.ok) {
-                setIps([...ips, await res.json()]);
-                setNewIp({ cidr: '', label: '' });
+                const data = await res.json();
+                // Ensure array exists
+                if (!data.allowed_public_ips) data.allowed_public_ips = [];
+                setBranch(data);
             }
         } catch (e) {
-            alert('Failed to add IP');
+            console.error('Failed to fetch branch details', e);
+        } finally {
+            setLoading(false);
         }
     };
 
-    const toggleIp = async (id: string, enabled: boolean) => {
+    const fetchMyIp = async () => {
         try {
-            const headers = {
-                'Content-Type': 'application/json',
-                'x-tenant-id': slug
-            };
-            await fetch(`${API_URL}/security-settings/ip-allowlist/${id}`, {
-                method: 'PUT',
-                headers,
-                body: JSON.stringify({ enabled })
-            });
-            setIps(ips.map(ip => ip.id === id ? { ...ip, enabled } : ip));
+            const res = await fetch(`${API_URL}/security-settings/my-ip`);
+            if (res.ok) {
+                const data = await res.json();
+                setMyIp(data.ip);
+            }
         } catch (e) {
-            console.error(e);
+            console.error('Failed to get IP', e);
         }
     };
 
-    if (loading) return <div className="p-8">Loading security settings...</div>;
+    const saveBranch = async () => {
+        if (!branch) return;
+        try {
+            await fetch(`${API_URL}/security-settings/branch/${branch.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-tenant-id': slug
+                },
+                body: JSON.stringify(branch)
+            });
+            alert('Settings saved successfully');
+        } catch (e) {
+            alert('Failed to save settings');
+        }
+    };
+
+    const handleLocationChange = (lat: number, lng: number) => {
+        if (branch) setBranch({ ...branch, lat, lng });
+    };
+
+    const addIp = () => {
+        if (newIp && branch) {
+            const updatedIps = [...(branch.allowed_public_ips || []), newIp];
+            setBranch({ ...branch, allowed_public_ips: updatedIps });
+            setNewIp('');
+        }
+    };
+
+    const removeIp = (ipToRemove: string) => {
+        if (branch) {
+            const updatedIps = branch.allowed_public_ips.filter(ip => ip !== ipToRemove);
+            setBranch({ ...branch, allowed_public_ips: updatedIps });
+        }
+    };
+
+    if (loading && !branch) return <div className="p-8">Loading...</div>;
 
     return (
-        <div className="p-6 max-w-4xl mx-auto">
-            <h1 className="text-2xl font-bold mb-6">Attendance & Access Security</h1>
+        <div className="p-6 max-w-5xl mx-auto">
+            <h1 className="text-2xl font-bold mb-6">Security Settings</h1>
 
+            {/* Branch Selector */}
+            <div className="mb-6">
+                <label className="block text-sm font-medium mb-1">Select Branch</label>
+                <select
+                    className="border rounded p-2 w-64"
+                    value={selectedBranchId}
+                    onChange={(e) => setSelectedBranchId(e.target.value)}
+                >
+                    {branches.map(b => (
+                        <option key={b.id} value={b.id}>{b.branch_name}</option>
+                    ))}
+                </select>
+            </div>
+
+            {/* Tabs */}
             <div className="flex space-x-4 mb-6 border-b">
                 <button
-                    className={`pb-2 px-4 ${activeTab === 'geo' ? 'border-b-2 border-blue-500 font-medium' : 'text-gray-500'}`}
-                    onClick={() => setActiveTab('geo')}
+                    className={`pb-2 px-4 ${activeTab === 'location' ? 'border-b-2 border-blue-500 font-medium' : 'text-gray-500'}`}
+                    onClick={() => setActiveTab('location')}
                 >
-                    Geo-Fencing
+                    Location & Geo-Fencing
                 </button>
                 <button
-                    className={`pb-2 px-4 ${activeTab === 'ip' ? 'border-b-2 border-blue-500 font-medium' : 'text-gray-500'}`}
-                    onClick={() => setActiveTab('ip')}
+                    className={`pb-2 px-4 ${activeTab === 'network' ? 'border-b-2 border-blue-500 font-medium' : 'text-gray-500'}`}
+                    onClick={() => setActiveTab('network')}
                 >
-                    IP Allowlist
+                    Network & IP Security
                 </button>
             </div>
 
-            {activeTab === 'geo' && policy && (
-                <div className="space-y-6">
-                    <div className="bg-white p-6 rounded-lg shadow border">
-                        <h2 className="text-lg font-semibold mb-4">Geo-Fence Configuration</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Enforcement Mode</label>
-                                <select
-                                    className="w-full border rounded p-2"
-                                    value={policy.geoMode}
-                                    onChange={(e) => setPolicy({ ...policy, geoMode: e.target.value })}
-                                >
-                                    <option value="OFF">Off</option>
-                                    <option value="WARN">Warn (Log only)</option>
-                                    <option value="ENFORCE">Enforce (Block)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Accuracy Threshold (meters)</label>
-                                <input
-                                    type="number"
-                                    className="w-full border rounded p-2"
-                                    value={policy.geoAccuracyThresholdM}
-                                    onChange={(e) => setPolicy({ ...policy, geoAccuracyThresholdM: parseInt(e.target.value) })}
+            {branch && activeTab === 'location' && (
+                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        {/* Map Column */}
+                        <div className="lg:col-span-2">
+                            <label className="block text-sm font-medium mb-2">Branch Location & Geo-Fence</label>
+                            <div className="border rounded-lg shadow-sm">
+                                <GeoZoneMap
+                                    lat={branch.lat}
+                                    lng={branch.lng}
+                                    radius={branch.geofence_radius_m}
+                                    editable={true}
+                                    onLocationChange={handleLocationChange}
                                 />
                             </div>
+                            <p className="text-sm text-gray-500 mt-2">Click on the map to set the branch center.</p>
                         </div>
 
-                        <div className="mt-6">
-                            <h3 className="font-medium mb-2">Branch Zones</h3>
-                            <p className="text-sm text-gray-500 mb-4">Define permitted zones for each branch.</p>
-                            {/* Map Component Placeholder */}
-                            <div className="bg-gray-100 h-64 rounded flex items-center justify-center border-2 border-dashed">
-                                <span className="text-gray-500">Map Component Placeholder (Google Maps / Leaflet)</span>
+                        {/* Controls Column */}
+                        <div className="space-y-6">
+                            <div className="bg-white p-4 rounded-lg border shadow-sm">
+                                <h3 className="font-semibold mb-4">Configuration</h3>
+
+                                <div className="mb-4">
+                                    <label className="block text-sm font-medium mb-1">Enforcement Mode</label>
+                                    <select
+                                        className="w-full border rounded p-2"
+                                        value={branch.geo_policy_mode}
+                                        onChange={(e) => setBranch({ ...branch, geo_policy_mode: e.target.value })}
+                                    >
+                                        <option value="OFF">Off</option>
+                                        <option value="WARN">Warn (Log only)</option>
+                                        <option value="ENFORCE">Enforce (Block)</option>
+                                    </select>
+                                </div>
+
+                                <div className="mb-4">
+                                    <label className="block text-sm font-medium mb-1">Fence Radius (meters)</label>
+                                    <input
+                                        type="range"
+                                        min="10"
+                                        max="500"
+                                        step="10"
+                                        className="w-full"
+                                        value={branch.geofence_radius_m}
+                                        onChange={(e) => setBranch({ ...branch, geofence_radius_m: parseInt(e.target.value) })}
+                                    />
+                                    <div className="text-right text-sm text-gray-600">{branch.geofence_radius_m}m</div>
+                                </div>
+
+                                <div className="mb-4">
+                                    <label className="block text-sm font-medium mb-1">Min Accuracy (meters)</label>
+                                    <input
+                                        type="number"
+                                        className="w-full border rounded p-2"
+                                        value={branch.geo_min_accuracy_m}
+                                        onChange={(e) => setBranch({ ...branch, geo_min_accuracy_m: parseInt(e.target.value) })}
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="flex items-center space-x-2">
+                                        <input
+                                            type="checkbox"
+                                            checked={branch.geo_required_for_staff}
+                                            onChange={(e) => setBranch({ ...branch, geo_required_for_staff: e.target.checked })}
+                                        />
+                                        <span className="text-sm">Required for Staff</span>
+                                    </label>
+                                    <label className="flex items-center space-x-2">
+                                        <input
+                                            type="checkbox"
+                                            checked={branch.geo_required_for_learners}
+                                            onChange={(e) => setBranch({ ...branch, geo_required_for_learners: e.target.checked })}
+                                        />
+                                        <span className="text-sm">Required for Learners</span>
+                                    </label>
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="mt-6 flex justify-end">
                             <button
-                                onClick={savePolicy}
-                                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                                onClick={saveBranch}
+                                className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                             >
                                 Save Changes
                             </button>
@@ -183,85 +262,86 @@ export default function SecuritySettingsPage() {
                 </div>
             )}
 
-            {activeTab === 'ip' && policy && (
-                <div className="space-y-6">
-                    <div className="bg-white p-6 rounded-lg shadow border">
-                        <h2 className="text-lg font-semibold mb-4">IP Address Allowlist</h2>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium mb-1">Enforcement Mode</label>
-                            <select
-                                className="w-full border rounded p-2"
-                                value={policy.ipMode}
-                                onChange={(e) => setPolicy({ ...policy, ipMode: e.target.value })}
-                            >
-                                <option value="OFF">Off</option>
-                                <option value="WARN">Warn (Log only)</option>
-                                <option value="ENFORCE">Enforce (Block)</option>
-                            </select>
+            {branch && activeTab === 'network' && (
+                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="bg-white p-6 rounded-lg shadow border max-w-2xl">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-lg font-semibold">IP Address Allowlist</h2>
+                            <div className="flex items-center space-x-2">
+                                <span className="text-sm font-medium">Mode:</span>
+                                <select
+                                    className="border rounded p-1 text-sm"
+                                    value={branch.ip_policy_mode}
+                                    onChange={(e) => setBranch({ ...branch, ip_policy_mode: e.target.value })}
+                                >
+                                    <option value="OFF">Off</option>
+                                    <option value="WARN">Warn</option>
+                                    <option value="ENFORCE">Enforce</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-2 mb-4">
+                            <input
+                                type="text"
+                                className="flex-1 border rounded p-2"
+                                placeholder="Enter IP Address (e.g. 203.0.113.1)"
+                                value={newIp}
+                                onChange={(e) => setNewIp(e.target.value)}
+                            />
                             <button
-                                onClick={savePolicy}
-                                className="mt-2 text-sm text-blue-600 hover:underline"
+                                onClick={addIp}
+                                className="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700"
                             >
-                                Save Mode
+                                Add
                             </button>
                         </div>
 
-                        <div className="border rounded overflow-hidden mb-6">
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
-                                    <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CIDR / IP</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Label</th>
-                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Enabled</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                    {ips.length === 0 && (
-                                        <tr>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" colSpan={3}>No IPs configured.</td>
-                                        </tr>
-                                    )}
-                                    {ips.map(ip => (
-                                        <tr key={ip.id}>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{ip.cidr}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{ip.label}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={ip.enabled}
-                                                    onChange={(e) => toggleIp(ip.id, e.target.checked)}
-                                                />
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                        <div className="mb-6 flex justify-between items-center bg-blue-50 p-3 rounded border border-blue-100">
+                            <div className="text-sm text-blue-800">
+                                Your current IP: <span className="font-mono font-bold">{myIp || 'Loading...'}</span>
+                            </div>
+                            <button
+                                onClick={() => setNewIp(myIp)}
+                                className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200"
+                            >
+                                Use My IP
+                            </button>
                         </div>
 
-                        <div className="bg-gray-50 p-4 rounded border">
-                            <h3 className="text-sm font-medium mb-2">Add New IP</h3>
-                            <div className="flex gap-4">
+                        <div className="space-y-2">
+                            {branch.allowed_public_ips?.length === 0 && (
+                                <p className="text-gray-500 italic text-sm">No IPs allowed. Policy logic (Off/Warn/Enforce) determines access.</p>
+                            )}
+                            {branch.allowed_public_ips?.map(ip => (
+                                <div key={ip} className="flex justify-between items-center p-3 bg-gray-50 rounded border">
+                                    <span className="font-mono text-sm">{ip}</span>
+                                    <button
+                                        onClick={() => removeIp(ip)}
+                                        className="text-red-600 hover:text-red-800 text-sm"
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="mt-6 border-t pt-4">
+                            <label className="flex items-center space-x-2 mb-4">
                                 <input
-                                    type="text"
-                                    placeholder="CIDR (e.g. 192.168.1.1/32)"
-                                    className="border rounded p-2 flex-1"
-                                    value={newIp.cidr}
-                                    onChange={e => setNewIp({ ...newIp, cidr: e.target.value })}
+                                    type="checkbox"
+                                    checked={branch.allow_ip_autodetect}
+                                    onChange={(e) => setBranch({ ...branch, allow_ip_autodetect: e.target.checked })}
                                 />
-                                <input
-                                    type="text"
-                                    placeholder="Label (e.g. Office)"
-                                    className="border rounded p-2 flex-1"
-                                    value={newIp.label}
-                                    onChange={e => setNewIp({ ...newIp, label: e.target.value })}
-                                />
-                                <button
-                                    onClick={addIp}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                                >
-                                    Add
-                                </button>
-                            </div>
+                                <span className="text-sm">Allow Auto-Detect via Magic Link (Mobile App)</span>
+                            </label>
+
+                            <button
+                                onClick={saveBranch}
+                                className="w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                            >
+                                Save Network Settings
+                            </button>
                         </div>
                     </div>
                 </div>

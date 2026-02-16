@@ -31,13 +31,9 @@ export class SecurityEnforcementGuard implements CanActivate {
 
         const req = context.switchToHttp().getRequest();
         const user = req.user;
-        // Assuming tenantId is attached to user by global middleware orAuthGuard
         const tenantId = user?.tenantId || req.headers['x-tenant-id'];
 
         if (!tenantId) {
-            // If no tenant context, we can't enforce tenant policies. 
-            // This might happen on public routes or if auth failed but was optional.
-            // We'll allow but log warning if user exists but no tenant (weird state)
             if (user) this.logger.warn(`User ${user.id} has no tenantId in SecurityEnforcementGuard`);
             return true;
         }
@@ -45,28 +41,36 @@ export class SecurityEnforcementGuard implements CanActivate {
         const branchId = req.body?.branchId || req.query?.branchId || user?.branchId;
         const policy = await this.securityPolicyService.getEffectivePolicy(tenantId, branchId);
 
+        // Prepare Decision Object
+        const decisionResults = {
+            allowed: true,
+            flagged: false,
+            reasons: [] as string[],
+            decision: 'ALLOW', // ALLOW, ALLOW_FLAGGED, BLOCK
+            geo: null as any,
+            ip: '',
+        };
+
         // Override Check
         const override = req.body?.override === true || req.query?.override === 'true';
         if (override) {
-            // Only Tenant Admin or Super Admin can override
-            // Assuming role check logic here. 
-            // For EdApp, roles are in user.roles or similar.
-            // We will assume a helper or simple check.
-            // If user is NOT admin, block override attempt.
             if (!this.canOverride(user)) {
                 throw new ForbiddenException('OVERRIDE_PERMISSION_DENIED');
             }
-
             const reason = req.body?.override_reason || req.query?.override_reason;
             if (!reason) {
                 throw new BadRequestException('OVERRIDE_REASON_REQUIRED');
             }
-
             await this.logDecision(tenantId, user?.id, action, 'SEC_OVERRIDE_USED', reason, { override: true });
+
+            // Allow but mark as overridden
+            req.securityDecision = { ...decisionResults, decision: 'ALLOW', overrideReason: reason };
             return true;
         }
 
         const { ip, source } = this.ipExtractionService.extractIp(req);
+        decisionResults.ip = ip;
+
         // Parse Geo Payload safely
         let geoPayload: GeoPayload | null = null;
         try {
@@ -79,81 +83,117 @@ export class SecurityEnforcementGuard implements CanActivate {
         } catch (e) {
             this.logger.debug('Failed to parse geo payload', e);
         }
+        decisionResults.geo = geoPayload;
 
         // 1. IP Enforcement
         if (policy.ipMode !== SecurityMode.OFF) {
             const allowedIps = await this.securityPolicyService.getIpAllowlist(tenantId, branchId);
             if (allowedIps.length > 0 && !this.ipExtractionService.isIpAllowed(ip, allowedIps)) {
                 if (policy.ipMode === SecurityMode.ENFORCE) {
-                    await this.logDecision(tenantId, user?.id, action, 'SEC_IP_BLOCKED', 'IP Not Allowed', { ip, source });
-                    throw new ForbiddenException('IP_NOT_ALLOWED');
+                    decisionResults.allowed = false;
+                    decisionResults.reasons.push('IP_NOT_ALLOWED');
+                    decisionResults.decision = 'BLOCK';
                 } else {
-                    await this.logDecision(tenantId, user?.id, action, 'SEC_IP_WARNED', 'IP Not Allowed', { ip, source });
+                    decisionResults.flagged = true;
+                    decisionResults.reasons.push('IP_NOT_ALLOWED');
+                    decisionResults.decision = 'ALLOW_FLAGGED';
                 }
-            } else if (allowedIps.length > 0) {
-                // Log allowed explicit check? Maybe too noisy. Only log allowed if we want full audit trail.
-                // Prompt said "Audit... SEC_IP_ALLOWED", so we will.
-                // await this.logDecision(tenantId, user?.id, action, 'SEC_IP_ALLOWED', 'IP Allowed', { ip, source });
             }
         }
 
         // 2. Geo Enforcement
-        if (policy.geoMode !== SecurityMode.OFF) {
-            if (!geoPayload) {
-                if (policy.geoMode === SecurityMode.ENFORCE) {
-                    await this.logDecision(tenantId, user?.id, action, 'SEC_GEO_BLOCKED', 'Missing Geo Payload', { ip });
-                    throw new BadRequestException('GEO_REQUIRED');
-                }
-                await this.logDecision(tenantId, user?.id, action, 'SEC_GEO_WARNED', 'Missing Geo Payload', { ip });
-            } else {
-                try {
-                    this.geoService.validateGeoPayload(geoPayload, policy.geoMaxAgeSeconds, policy.geoAccuracyThresholdM);
-                    const zones = await this.securityPolicyService.getActiveZones(tenantId, branchId);
+        if (policy.geoMode !== SecurityMode.OFF && decisionResults.allowed) {
+            const isStaff = this.checkRole(user, 'staff');
+            const isLearner = this.checkRole(user, 'learner');
 
-                    let insideAny = false;
-                    if (zones.length === 0) {
-                        // No zones defined. If ENFORCE, this effectively blocks everything requiring Geo.
-                        // Or we can assume Tenant default zone from settings if branch has none?
-                        // The getActiveZones helper should probably return tenant zones if branch has none?
-                        // Current implementation returns branch OR tenant zones if logic in Service was: `if branch ... OR branchId IS NULL`.
-                        // Yes, logic was `branchId = :branchId OR branchId IS NULL`. So it returns both.
-                        // If list empty, it means NO zones defined at all for tenant.
-                        // We treat this as "Inside" to prevent locking out newly enabled tenants? 
-                        // Or "Outside" to be secure?
-                        // Prompt: "branch zone if configured and enabled; else tenant default zone(s)."
-                        // If neither exists, we probably shouldn't Enforce Geo since it's impossible.
-                        insideAny = true;
-                    } else {
-                        insideAny = zones.some(z => this.geoService.isWithinZone(geoPayload!, z));
-                    }
+            let required = false;
+            if (isStaff && policy.geoRequiredForStaff) required = true;
+            if (isLearner && policy.geoRequiredForLearners) required = true;
 
-                    if (!insideAny) {
-                        if (policy.geoMode === SecurityMode.ENFORCE) {
-                            await this.logDecision(tenantId, user?.id, action, 'SEC_GEO_BLOCKED', 'Outside Zone', { geoPayload });
-                            throw new ForbiddenException('GEO_OUTSIDE_ZONE');
-                        }
-                        await this.logDecision(tenantId, user?.id, action, 'SEC_GEO_WARNED', 'Outside Zone', { geoPayload });
-                    } else {
-                        // await this.logDecision(tenantId, user?.id, action, 'SEC_GEO_ALLOWED', 'Inside Zone', { geoPayload });
-                    }
-                } catch (e) {
+            if (required) {
+                if (!geoPayload) {
                     if (policy.geoMode === SecurityMode.ENFORCE) {
-                        await this.logDecision(tenantId, user?.id, action, 'SEC_GEO_BLOCKED', e.message, { geoPayload });
-                        // Map service exceptions to HTTP exceptions
-                        if (e instanceof BadRequestException) throw e;
-                        throw new ForbiddenException(e.message);
+                        decisionResults.allowed = false;
+                        decisionResults.reasons.push('GEO_MISSING');
+                        decisionResults.decision = 'BLOCK';
+                    } else {
+                        decisionResults.flagged = true;
+                        decisionResults.reasons.push('GEO_MISSING');
+                        if (decisionResults.decision !== 'BLOCK') decisionResults.decision = 'ALLOW_FLAGGED';
                     }
-                    await this.logDecision(tenantId, user?.id, action, 'SEC_GEO_WARNED', e.message, { geoPayload });
+                } else {
+                    try {
+                        // Check accuracy
+                        if (geoPayload.accuracy && geoPayload.accuracy > policy.geoAccuracyThresholdM) {
+                            if (policy.geoMode === SecurityMode.ENFORCE) {
+                                decisionResults.allowed = false;
+                                decisionResults.reasons.push('GEO_LOW_ACCURACY');
+                                decisionResults.decision = 'BLOCK';
+                            } else {
+                                decisionResults.flagged = true;
+                                decisionResults.reasons.push('GEO_LOW_ACCURACY');
+                                if (decisionResults.decision !== 'BLOCK') decisionResults.decision = 'ALLOW_FLAGGED';
+                            }
+                        } else {
+                            this.geoService.validateGeoPayload(geoPayload, policy.geoMaxAgeSeconds, policy.geoAccuracyThresholdM);
+                            const zones = await this.securityPolicyService.getActiveZones(tenantId, branchId);
+
+                            let insideAny = false;
+                            if (zones.length === 0) {
+                                insideAny = true;
+                            } else {
+                                insideAny = zones.some(z => this.geoService.isWithinZone(geoPayload!, z));
+                            }
+
+                            if (!insideAny) {
+                                if (policy.geoMode === SecurityMode.ENFORCE) {
+                                    decisionResults.allowed = false;
+                                    decisionResults.reasons.push('GEO_OUTSIDE_ZONE');
+                                    decisionResults.decision = 'BLOCK';
+                                } else {
+                                    decisionResults.flagged = true;
+                                    decisionResults.reasons.push('GEO_OUTSIDE_ZONE');
+                                    if (decisionResults.decision !== 'BLOCK') decisionResults.decision = 'ALLOW_FLAGGED';
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        if (policy.geoMode === SecurityMode.ENFORCE) {
+                            decisionResults.allowed = false;
+                            decisionResults.reasons.push(e.message || 'GEO_INVALID');
+                            decisionResults.decision = 'BLOCK';
+                        } else {
+                            decisionResults.flagged = true;
+                            decisionResults.reasons.push(e.message || 'GEO_INVALID');
+                            if (decisionResults.decision !== 'BLOCK') decisionResults.decision = 'ALLOW_FLAGGED';
+                        }
+                    }
                 }
             }
+        }
+
+        req.securityDecision = decisionResults;
+
+        if (decisionResults.decision === 'BLOCK') {
+            await this.logDecision(tenantId, user?.id, action, 'SEC_BLOCKED', decisionResults.reasons.join(', '), decisionResults);
+            throw new ForbiddenException(decisionResults.reasons.join(', '));
+        } else if (decisionResults.decision === 'ALLOW_FLAGGED') {
+            await this.logDecision(tenantId, user?.id, action, 'SEC_FLAGGED', decisionResults.reasons.join(', '), decisionResults);
         }
 
         return true;
     }
 
+    private checkRole(user: any, roleFragment: string): boolean {
+        if (!user || !user.roles) return false;
+        return user.roles.some((r: any) => {
+            const roleName = typeof r === 'string' ? r : r.role?.name || r.name || '';
+            return roleName.toLowerCase().includes(roleFragment);
+        });
+    }
+
     private canOverride(user: any): boolean {
         // Basic check: looks for role assignment
-        // In real EdApp, user.roles is likely an array of strings or objects.
         if (!user || !user.roles) return false;
         const roles = user.roles.map((r: any) => typeof r === 'string' ? r : r.role?.name || r.name);
         return roles.includes('tenant_admin') || roles.includes('app_super_admin');

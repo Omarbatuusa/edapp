@@ -31,6 +31,7 @@ import { AnnouncementsController } from './announcements.controller';
 import { TicketActionsController } from './ticket-actions.controller';
 import { MessageReportsController } from './message-reports.controller';
 import { ParentChildController } from './parent-child.controller';
+import { GifController } from './gif.controller';
 
 // Gateways
 import { ChatGateway } from './chat.gateway';
@@ -63,6 +64,7 @@ import { SlaProcessor } from './sla.processor';
         TicketActionsController,
         MessageReportsController,
         ParentChildController,
+        GifController,
     ],
     providers: [
         ThreadsService,

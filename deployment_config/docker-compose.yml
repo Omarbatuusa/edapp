@@ -29,13 +29,16 @@ services:
 
   api:
     build:
-      context: ../backend # Code is one level up
+      context: ../backend
       dockerfile: Dockerfile
-    image: edapp-api:latest # Optional explicit name
+    image: edapp-api:latest
     restart: unless-stopped
     env_file: .env
     depends_on:
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
     expose:
       - "3000"
     networks:
@@ -43,13 +46,16 @@ services:
 
   web:
     build:
-      context: ../web # Code is one level up
+      context: ../web
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${NEXT_PUBLIC_TURNSTILE_SITE_KEY}
     image: edapp-web:latest
     restart: unless-stopped
     env_file: .env
     expose:
-      - "80" # Nginx proxies to this
+      - "3000"
     networks:
       - edapp_net
 
