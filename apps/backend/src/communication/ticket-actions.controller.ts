@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Patch, Param, Body, Req, UseGuards } from '@nestjs/common';
-import { TicketActionsService, CreateTicketActionDto } from './ticket-actions.service';
+import { TicketActionsService } from './ticket-actions.service';
+import type { CreateTicketActionDto } from './ticket-actions.service';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 
 // ============================================================

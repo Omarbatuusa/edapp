@@ -64,7 +64,7 @@ interface CommunicationState {
     nextCursor: string | null;
 
     // Children for filtering
-    children: { id: string; name: string; grade?: string }[];
+    children: { id: string; name: string; grade?: string; avatar?: string }[];
 
     // UI state
     filter: FilterType;

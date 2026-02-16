@@ -14,6 +14,7 @@ import { AuditService } from '../audit/audit.service';
 export interface SendMessageDto {
     thread_id: string;
     sender_id: string;
+    tenant_id?: string;
     content?: string;
     type?: MessageType;
     attachments?: {

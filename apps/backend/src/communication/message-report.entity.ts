@@ -62,7 +62,7 @@ export class MessageReport {
     reviewed_by: string;
 
     @Column({ type: 'text', nullable: true })
-    review_notes: string;
+    review_notes: string | null;
 
     @CreateDateColumn()
     created_at: Date;
