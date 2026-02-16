@@ -238,27 +238,27 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
                     )}
                 </div>
 
-                {/* Other Detail Views (ticket, announcement, new-chat) */}
-                <div className={`absolute inset-0 z-[55] bg-slate-50 dark:bg-[#0B1120] transform transition-transform duration-300 ease-out ${['ticket', 'announcement', 'new-chat'].includes(activeView) ? 'translate-x-0' : 'translate-x-full pointer-events-none'}`}>
-                    {['ticket', 'announcement', 'new-chat'].includes(activeView) && (
-                        <ScreenStackDetail
-                            onBack={handleBack}
-                            actionIcon={activeView === 'new-chat' ? 'group_add' : undefined}
-                            onAction={activeView === 'new-chat' ? () => setActiveView('create-channel') : undefined}
-                        >
+                {/* Detail Views (ticket, announcement) */}
+                <div className={`absolute inset-0 z-[55] bg-slate-50 dark:bg-[#0B1120] transform transition-transform duration-300 ease-out ${['ticket', 'announcement'].includes(activeView) ? 'translate-x-0' : 'translate-x-full pointer-events-none'}`}>
+                    {['ticket', 'announcement'].includes(activeView) && (
+                        <ScreenStackDetail onBack={handleBack}>
                             {activeView === 'ticket' && <TicketDetailView item={selectedItem} isTranslated={isTranslated} />}
                             {activeView === 'announcement' && <AnnouncementDetailView item={selectedItem} isTranslated={isTranslated} />}
-                            {activeView === 'new-chat' && (
-                                <NewChatView
-                                    onStart={() => setActiveView('feed')}
-                                    onStartChat={(item) => {
-                                        setSelectedItem(item);
-                                        setActiveView('thread');
-                                    }}
-                                    onCreateChannel={() => setActiveView('create-channel')}
-                                />
-                            )}
                         </ScreenStackDetail>
+                    )}
+                </div>
+
+                {/* New Chat View — own panel with built-in header */}
+                <div className={`absolute inset-0 z-[55] transform transition-transform duration-300 ease-out ${activeView === 'new-chat' ? 'translate-x-0' : 'translate-x-full pointer-events-none'}`}>
+                    {activeView === 'new-chat' && (
+                        <NewChatView
+                            onBack={handleBack}
+                            onStartChat={(item) => {
+                                setSelectedItem(item);
+                                setActiveView('thread');
+                            }}
+                            onCreateChannel={() => setActiveView('create-channel')}
+                        />
                     )}
                 </div>
             </div>
