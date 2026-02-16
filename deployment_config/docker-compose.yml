@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:16-alpine
@@ -29,7 +27,7 @@ services:
 
   api:
     build:
-      context: ../backend
+      context: ../apps/backend
       dockerfile: Dockerfile
     image: edapp-api:latest
     restart: unless-stopped
@@ -46,7 +44,7 @@ services:
 
   web:
     build:
-      context: ../web
+      context: ../apps/web
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
