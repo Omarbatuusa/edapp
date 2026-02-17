@@ -581,10 +581,10 @@ async function seed() {
     console.log(`   - Tenants: ${tenants.length}`);
     console.log(`   - Domains: ${domains.length}`);
     console.log(`   - Branches: ${allBranches.length}`);
-    console.log(`   - Users: 9 (2 super admins, 4 LIA demo, 3 LIA staff)`);
-    console.log(`   - Parent-child links: 1`);
-    console.log(`   - Chat threads: 2 (DMs)`);
-    console.log(`   - Messages: 7`);
+    console.log(`   - Users: 16 (2 super admins, 4 LIA demo, 3 LIA staff, 7 Allied)`);
+    console.log(`   - Parent-child links: 2 (LIA + Allied)`);
+    console.log(`   - Chat threads: 3 (2 LIA DMs + 1 Allied DM)`);
+    console.log(`   - Messages: 9`);
     console.log('\n🔐 Admin Credentials:');
     console.log('   - umarbatuusa@gmail.com / Janat@2000');
     console.log('   - admin@edapp.co.za / Janat@2000');
@@ -601,6 +601,14 @@ async function seed() {
     console.log('   - Finance: finance@lakewood.edu / Janat@2000');
     console.log('   - Transport: transport@lakewood.edu / Janat@2000');
     console.log('   - IT Support: itsupport@lakewood.edu / Janat@2000');
+    console.log('\n🧪 Allied Schools (ALL01) — Real Firebase Accounts:');
+    console.log('   - Parent: ssebuguzisula@gmail.com (Firebase)');
+    console.log('   - Staff/Teacher: alliedschoolrobertsham@gmail.com (Firebase)');
+    console.log('   - Admin: umarbatuusa@gmail.com (Firebase, shared with platform admin)');
+    console.log('   - Teacher: teacher@allied.edu / Janat@2000');
+    console.log('   - Finance: finance@allied.edu / Janat@2000');
+    console.log('   - Transport: transport@allied.edu / Janat@2000');
+    console.log('   - Learner: ALL001 / Pin: 1234');
 
     await AppDataSource.destroy();
 }
