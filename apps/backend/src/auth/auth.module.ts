@@ -21,6 +21,6 @@ import { HandoffService } from './handoff.service';
     ],
     controllers: [AuthController, HandoffController, EmailAuthController],
     providers: [AuthService, EnhancedAuthService, EmailAuthService, FirebaseAuthGuard, HandoffService],
-    exports: [AuthService, EnhancedAuthService, EmailAuthService, FirebaseAuthGuard, HandoffService],
+    exports: [AuthService, EnhancedAuthService, EmailAuthService, FirebaseAuthGuard, HandoffService, TypeOrmModule],
 })
 export class AuthModule { }
