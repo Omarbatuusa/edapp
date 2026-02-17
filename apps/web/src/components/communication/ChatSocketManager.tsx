@@ -114,6 +114,27 @@ export function ChatSocketManager({ tenantId, userId }: ChatSocketManagerProps) 
                     }
                 });
 
+                // Typing indicator
+                socket.on('typing:start', (data: { thread_id: string; user_id: string; display_name: string }) => {
+                    if (!mounted || data.user_id === userId) return;
+                    const store = useChatStore.getState();
+                    const current = store.typing[data.thread_id] || [];
+                    if (!current.some((t: any) => t.user_id === data.user_id)) {
+                        useChatStore.setState({
+                            typing: { ...store.typing, [data.thread_id]: [...current, { user_id: data.user_id, display_name: data.display_name }] },
+                        });
+                    }
+                });
+
+                socket.on('typing:stop', (data: { thread_id: string; user_id: string }) => {
+                    if (!mounted || data.user_id === userId) return;
+                    const store = useChatStore.getState();
+                    const current = store.typing[data.thread_id] || [];
+                    useChatStore.setState({
+                        typing: { ...store.typing, [data.thread_id]: current.filter((t: any) => t.user_id !== data.user_id) },
+                    });
+                });
+
                 // New event listeners for broadcast events
                 socket.on('announcement:published', () => {
                     if (!mounted) return;

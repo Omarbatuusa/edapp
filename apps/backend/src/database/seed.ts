@@ -6,12 +6,16 @@ import { TenantDomain, TenantDomainType } from '../tenants/tenant-domain.entity'
 import { Branch } from '../branches/branch.entity';
 import { User, UserStatus } from '../users/user.entity';
 import { RoleAssignment, UserRole } from '../users/role-assignment.entity';
+import { Thread, ThreadType, TicketCategory } from '../communication/thread.entity';
+import { ThreadMember, MemberRole, MemberPermission } from '../communication/thread-member.entity';
+import { Message, MessageType } from '../communication/message.entity';
+import { ParentChildLink } from '../communication/parent-child-link.entity';
 
 // Initialize TypeORM DataSource for seeding
 const AppDataSource = new DataSource({
     type: 'postgres',
     url: process.env.DATABASE_URL || 'postgresql://edapp:edapp123@localhost:5432/edapp',
-    entities: [Brand, Tenant, TenantDomain, Branch, User, RoleAssignment],
+    entities: [Brand, Tenant, TenantDomain, Branch, User, RoleAssignment, Thread, ThreadMember, Message, ParentChildLink],
     synchronize: true, // Auto-create tables (DEV only)
     logging: true,
 });
@@ -23,7 +27,7 @@ async function seed() {
     console.log('✅ Database connected');
 
     // Clear existing data (fresh start)
-    await AppDataSource.query('TRUNCATE brands, tenants, tenant_domains, branches, users, role_assignments CASCADE');
+    await AppDataSource.query('TRUNCATE brands, tenants, tenant_domains, branches, users, role_assignments, threads, thread_members, messages, parent_child_links CASCADE');
     console.log('🗑️  Cleared existing data');
 
     const brandRepo = AppDataSource.getRepository(Brand);
@@ -323,6 +327,137 @@ async function seed() {
 
     console.log(`   ✅ Created role assignments`);
 
+    // ========== 9. CREATE ADDITIONAL STAFF FOR LIA ==========
+    console.log('\n👥 Creating additional LIA staff...');
+
+    const liaFinance = await userRepo.save({
+        email: 'finance@lakewood.edu',
+        display_name: 'Jane Finance',
+        first_name: 'Jane',
+        last_name: 'Finance',
+        password_hash: passwordHash,
+        status: UserStatus.ACTIVE,
+    });
+
+    const liaTransport = await userRepo.save({
+        email: 'transport@lakewood.edu',
+        display_name: 'Tom Transport',
+        first_name: 'Tom',
+        last_name: 'Transport',
+        password_hash: passwordHash,
+        status: UserStatus.ACTIVE,
+    });
+
+    const liaIT = await userRepo.save({
+        email: 'itsupport@lakewood.edu',
+        display_name: 'Sam IT Support',
+        first_name: 'Sam',
+        last_name: 'Support',
+        password_hash: passwordHash,
+        status: UserStatus.ACTIVE,
+    });
+
+    await roleRepo.save([
+        { user_id: liaFinance.id, tenant_id: liaTenant.id, role: UserRole.STAFF, is_active: true },
+        { user_id: liaTransport.id, tenant_id: liaTenant.id, role: UserRole.STAFF, is_active: true },
+        { user_id: liaIT.id, tenant_id: liaTenant.id, role: UserRole.STAFF, is_active: true },
+    ]);
+
+    console.log('   ✅ Created 3 staff users (Finance, Transport, IT)');
+
+    // ========== 10. PARENT-CHILD LINKS ==========
+    console.log('\n👨‍👧 Creating parent-child links...');
+
+    const parentChildRepo = AppDataSource.getRepository(ParentChildLink);
+    await parentChildRepo.save({
+        tenant_id: liaTenant.id,
+        parent_user_id: liaParent.id,
+        child_user_id: liaStudent.id,
+    });
+
+    console.log('   ✅ Linked Marge Simpson → Bart Simpson');
+
+    // ========== 11. COMMUNICATION THREADS + MESSAGES ==========
+    console.log('\n💬 Creating communication threads and messages...');
+
+    const threadRepo = AppDataSource.getRepository(Thread);
+    const memberRepo = AppDataSource.getRepository(ThreadMember);
+    const messageRepo = AppDataSource.getRepository(Message);
+
+    // Thread 1: Parent ↔ Teacher (DM about homework)
+    const dmTeacher = await threadRepo.save({
+        tenant_id: liaTenant.id,
+        type: ThreadType.DM,
+        title: 'Edna Krabappel',
+        created_by: liaParent.id,
+        last_message_content: 'I\'ll send his progress report by Friday.',
+        last_message_at: new Date(),
+    });
+
+    await memberRepo.save([
+        { thread_id: dmTeacher.id, user_id: liaParent.id, role: MemberRole.MEMBER, permission: MemberPermission.WRITE },
+        { thread_id: dmTeacher.id, user_id: liaTeacher.id, role: MemberRole.MEMBER, permission: MemberPermission.WRITE },
+    ]);
+
+    const now = new Date();
+    await messageRepo.save([
+        {
+            thread_id: dmTeacher.id, sender_id: liaParent.id, type: MessageType.TEXT,
+            content: 'Hi Mrs. Krabappel, I wanted to check in about Bart\'s progress this week.',
+            created_at: new Date(now.getTime() - 3600000 * 4),
+        },
+        {
+            thread_id: dmTeacher.id, sender_id: liaTeacher.id, type: MessageType.TEXT,
+            content: 'Thank you for reaching out! Bart has been doing much better in class. His math scores have improved significantly.',
+            created_at: new Date(now.getTime() - 3600000 * 3.5),
+        },
+        {
+            thread_id: dmTeacher.id, sender_id: liaParent.id, type: MessageType.TEXT,
+            content: 'That\'s wonderful to hear! We\'ve been working on practice problems at home.',
+            created_at: new Date(now.getTime() - 3600000 * 3),
+        },
+        {
+            thread_id: dmTeacher.id, sender_id: liaTeacher.id, type: MessageType.TEXT,
+            content: 'I\'ll send his progress report by Friday.',
+            created_at: new Date(now.getTime() - 3600000 * 2),
+        },
+    ]);
+
+    // Thread 2: Parent ↔ Finance (DM about fees)
+    const dmFinance = await threadRepo.save({
+        tenant_id: liaTenant.id,
+        type: ThreadType.DM,
+        title: 'Jane Finance',
+        created_by: liaParent.id,
+        last_message_content: 'I\'ll check your account and get back to you shortly.',
+        last_message_at: new Date(now.getTime() - 1800000),
+    });
+
+    await memberRepo.save([
+        { thread_id: dmFinance.id, user_id: liaParent.id, role: MemberRole.MEMBER, permission: MemberPermission.WRITE },
+        { thread_id: dmFinance.id, user_id: liaFinance.id, role: MemberRole.MEMBER, permission: MemberPermission.WRITE },
+    ]);
+
+    await messageRepo.save([
+        {
+            thread_id: dmFinance.id, sender_id: liaParent.id, type: MessageType.TEXT,
+            content: 'Good morning, I would like to check on my outstanding balance for this term.',
+            created_at: new Date(now.getTime() - 7200000),
+        },
+        {
+            thread_id: dmFinance.id, sender_id: liaFinance.id, type: MessageType.TEXT,
+            content: 'Good morning Mrs. Simpson. Let me pull up your account details.',
+            created_at: new Date(now.getTime() - 5400000),
+        },
+        {
+            thread_id: dmFinance.id, sender_id: liaFinance.id, type: MessageType.TEXT,
+            content: 'I\'ll check your account and get back to you shortly.',
+            created_at: new Date(now.getTime() - 1800000),
+        },
+    ]);
+
+    console.log('   ✅ Created 2 DM threads with 7 messages');
+
     // ========== SUMMARY ==========
     console.log('\n✨ Seed completed successfully!\n');
     console.log('📊 Summary:');
@@ -330,7 +465,10 @@ async function seed() {
     console.log(`   - Tenants: ${tenants.length}`);
     console.log(`   - Domains: ${domains.length}`);
     console.log(`   - Branches: ${allBranches.length}`);
-    console.log(`   - Users: 2 (Platform Super Admins)`);
+    console.log(`   - Users: 9 (2 super admins, 4 LIA demo, 3 LIA staff)`);
+    console.log(`   - Parent-child links: 1`);
+    console.log(`   - Chat threads: 2 (DMs)`);
+    console.log(`   - Messages: 7`);
     console.log('\n🔐 Admin Credentials:');
     console.log('   - umarbatuusa@gmail.com / Janat@2000');
     console.log('   - admin@edapp.co.za / Janat@2000');
@@ -344,6 +482,9 @@ async function seed() {
     console.log('   - Teacher: teacher@lakewood.edu / Janat@2000');
     console.log('   - Parent: parent@lakewood.edu / Janat@2000');
     console.log('   - Student: LIA001 / Pin: 1234');
+    console.log('   - Finance: finance@lakewood.edu / Janat@2000');
+    console.log('   - Transport: transport@lakewood.edu / Janat@2000');
+    console.log('   - IT Support: itsupport@lakewood.edu / Janat@2000');
 
     await AppDataSource.destroy();
 }

@@ -9,12 +9,9 @@ interface AttachmentSheetProps {
 }
 
 const OPTIONS = [
-    { id: 'document', icon: 'description', label: 'Document', bg: 'bg-[#7f66ff]' },
     { id: 'camera', icon: 'photo_camera', label: 'Camera', bg: 'bg-[#ff6680]' },
     { id: 'gallery', icon: 'image', label: 'Gallery', bg: 'bg-[#bf59cf]' },
-    { id: 'audio', icon: 'headphones', label: 'Audio', bg: 'bg-[#ee7b30]' },
-    { id: 'location', icon: 'location_on', label: 'Location', bg: 'bg-[#1fa855]' },
-    { id: 'contact', icon: 'person', label: 'Contact', bg: 'bg-[#2563eb]' },
+    { id: 'document', icon: 'description', label: 'Document', bg: 'bg-[#7f66ff]' },
 ];
 
 export function AttachmentSheet({ isOpen, onClose, onSelect }: AttachmentSheetProps) {

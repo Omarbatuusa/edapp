@@ -143,8 +143,16 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
     const [showHeaderMenu, setShowHeaderMenu] = useState(false);
     const [copiedToast, setCopiedToast] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+    const [searchOpen, setSearchOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const typingUsers = useChatStore(state => state.typing[item.threadId || item.id] || []);
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const messagesContainerRef = useRef<HTMLDivElement>(null);
+    const isNearBottomRef = useRef(true);
+    const [showNewMsgButton, setShowNewMsgButton] = useState(false);
+    const prevMessageCountRef = useRef(0);
     const preferredLang = typeof window !== 'undefined' ? localStorage.getItem('preferred_language') || 'en' : 'en';
 
     useEffect(() => {
@@ -157,9 +165,28 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
         if (threadId) fetchMessages(threadId, currentUserId);
     }, [threadId, fetchMessages, currentUserId]);
 
+    // Smart autoscroll: only scroll if near bottom or own message
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        if (messages.length === 0) return;
+        const isNewMessage = messages.length > prevMessageCountRef.current;
+        prevMessageCountRef.current = messages.length;
+        if (!isNewMessage) return;
+
+        const lastMsg = messages[messages.length - 1];
+        if (lastMsg?.isMe || isNearBottomRef.current) {
+            messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+            setShowNewMsgButton(false);
+        } else {
+            setShowNewMsgButton(true);
+        }
     }, [messages]);
+
+    const handleMessagesScroll = () => {
+        const el = messagesContainerRef.current;
+        if (!el) return;
+        isNearBottomRef.current = (el.scrollHeight - el.scrollTop - el.clientHeight) < 120;
+        if (isNearBottomRef.current) setShowNewMsgButton(false);
+    };
 
     // ============================================
     // HANDLERS
@@ -258,6 +285,9 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
     const avatarUrl = (typeof item.source === 'object' ? item.source?.avatar : undefined)
         || `https://ui-avatars.com/api/?name=${encodeURIComponent(item.title || 'U')}&background=2563eb&color=fff&size=80`;
 
+    const filteredMessages = searchQuery
+        ? messages.filter(m => m.content?.toLowerCase().includes(searchQuery.toLowerCase()))
+        : messages;
     const hasMessages = messages.length > 0;
 
     return (
@@ -299,6 +329,10 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="py-1">
+                            <button type="button" onClick={() => { setShowHeaderMenu(false); setSearchOpen(true); setSearchQuery(''); }}
+                                className="w-full flex items-center gap-3 px-4 py-3 text-[13px] text-[#0f172a] dark:text-[#e2e8f0] hover:bg-[#f1f5f9] dark:hover:bg-[#334155] text-left">
+                                <span className="material-symbols-outlined text-[18px] text-[#64748b]">search</span> Search in chat
+                            </button>
                             <button type="button" onClick={() => { setShowHeaderMenu(false); if (onAction) onAction(); }}
                                 className="w-full flex items-center gap-3 px-4 py-3 text-[13px] text-[#0f172a] dark:text-[#e2e8f0] hover:bg-[#f1f5f9] dark:hover:bg-[#334155] text-left">
                                 <span className="material-symbols-outlined text-[18px] text-[#64748b]">image</span> Media & docs
@@ -315,6 +349,29 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                     </div>
                 )}
             </div>
+
+            {/* Search bar */}
+            {searchOpen && (
+                <div className="shrink-0 bg-white dark:bg-[#1e293b] border-b border-[#e2e8f0] dark:border-[#334155] px-3 py-2 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[20px] text-[#94a3b8]">search</span>
+                    <input
+                        type="text"
+                        autoFocus
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search messages..."
+                        className="flex-1 bg-transparent text-[14px] text-[#0f172a] dark:text-[#f1f5f9] placeholder:text-[#94a3b8] border-none outline-none"
+                    />
+                    {searchQuery && (
+                        <span className="text-[12px] text-[#64748b]">
+                            {messages.filter(m => m.content?.toLowerCase().includes(searchQuery.toLowerCase())).length} found
+                        </span>
+                    )}
+                    <button type="button" onClick={() => { setSearchOpen(false); setSearchQuery(''); }} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#f1f5f9] dark:hover:bg-[#334155]">
+                        <span className="material-symbols-outlined text-[18px] text-[#94a3b8]">close</span>
+                    </button>
+                </div>
+            )}
 
             {/* Upload indicator */}
             {isUploading && (
@@ -333,7 +390,9 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
 
             {/* ====== MESSAGES AREA — Educational wallpaper ====== */}
             <div
-                className="flex-1 min-h-0 overflow-y-auto overscroll-contain"
+                ref={messagesContainerRef}
+                onScroll={handleMessagesScroll}
+                className="flex-1 min-h-0 overflow-y-auto overscroll-contain relative"
                 style={{
                     WebkitOverflowScrolling: 'touch',
                     backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232563eb' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
@@ -375,7 +434,7 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                         </div>
                     )}
 
-                    {messages.map((msg) => {
+                    {filteredMessages.map((msg) => {
                         const isMe = msg.isMe;
                         const hasVoice = msg.attachments?.some(a => a.type === 'voice');
                         const hasImage = msg.attachments?.some(a => a.type === 'image');
@@ -513,8 +572,36 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                         );
                     })}
 
+                    {/* Typing indicator */}
+                    {typingUsers.length > 0 && (
+                        <div className="flex justify-start">
+                            <div className="bg-white dark:bg-[#1e293b] rounded-lg rounded-tl-none shadow-sm px-3 py-2 max-w-[200px]">
+                                <p className="text-[11px] text-[#2563eb] font-medium mb-1">
+                                    {typingUsers.map((t: any) => t.display_name || 'Someone').join(', ')}
+                                </p>
+                                <div className="flex items-center gap-1">
+                                    <span className="w-2 h-2 rounded-full bg-[#94a3b8] animate-bounce" style={{ animationDelay: '0ms' }} />
+                                    <span className="w-2 h-2 rounded-full bg-[#94a3b8] animate-bounce" style={{ animationDelay: '150ms' }} />
+                                    <span className="w-2 h-2 rounded-full bg-[#94a3b8] animate-bounce" style={{ animationDelay: '300ms' }} />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     <div ref={messagesEndRef} />
                 </div>
+
+                {/* "New messages" floating button */}
+                {showNewMsgButton && (
+                    <button
+                        type="button"
+                        onClick={() => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); setShowNewMsgButton(false); }}
+                        className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-[#1e293b] rounded-full shadow-lg border border-[#e2e8f0] dark:border-[#334155] text-[12px] font-medium text-[#2563eb] hover:bg-[#eff6ff] transition-colors"
+                    >
+                        <span className="material-symbols-outlined text-[16px]">keyboard_arrow_down</span>
+                        New messages
+                    </button>
+                )}
             </div>
 
             {/* ====== REPLY PREVIEW BAR ====== */}
@@ -531,11 +618,37 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                 </div>
             )}
 
+            {/* ====== SUGGESTION CHIPS (show for new threads) ====== */}
+            {messages.length < 3 && (
+                <div className="shrink-0 bg-[#f8fafc] dark:bg-[#0f172a] border-t border-[#e2e8f0] dark:border-[#1e293b] px-2 py-1.5">
+                    <div className="flex gap-1.5 overflow-x-auto max-w-4xl mx-auto scrollbar-none">
+                        {(userRole === 'parent' ? [
+                            { label: 'Report absence', template: 'I would like to report my child\'s absence today.' },
+                            { label: 'Late arrival', template: 'My child will be arriving late today.' },
+                            { label: 'Request meeting', template: 'I would like to request a meeting to discuss my child\'s progress.' },
+                            { label: 'Homework query', template: 'I have a question about the homework assigned.' },
+                            { label: 'Upload payment', template: 'Please find attached proof of payment.' },
+                            { label: 'Payment plan', template: 'I would like to discuss a payment arrangement.' },
+                            { label: 'Transport change', template: 'I need to request a change to my child\'s transport arrangement.' },
+                        ] : suggestions.map(s => ({ label: s.label, template: s.label }))).map((chip) => (
+                            <button
+                                key={chip.label}
+                                type="button"
+                                onClick={() => handleSend(chip.template)}
+                                className="shrink-0 px-3 py-1.5 rounded-full bg-white dark:bg-[#1e293b] border border-[#e2e8f0] dark:border-[#334155] text-[12px] font-medium text-[#334155] dark:text-[#cbd5e1] hover:bg-[#eff6ff] hover:border-[#2563eb]/30 transition-colors whitespace-nowrap"
+                            >
+                                {chip.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* ====== COMPOSER ====== */}
             <ChatComposer
                 onSend={handleSend}
                 onAttach={() => setShowAttachments(true)}
-                onVoice={() => {}} // Voice recording is handled internally by ChatComposer now
+                onVoice={() => {}}
                 onSendVoice={(file: File) => handleFileUpload(file, 'voice')}
             />
 

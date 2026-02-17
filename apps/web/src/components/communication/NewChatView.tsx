@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { FeedItem } from './types';
+import chatApi from '../../lib/chat-api';
 
 interface SubOption {
     id: string;
@@ -106,7 +107,47 @@ export function NewChatView({ onBack, onStartChat, onCreateChannel }: NewChatVie
             const { title, subtitle } = getSummary();
             const threadType: 'message' | 'support' = selectedTopic === 'Academics' ? 'message' : 'support';
 
-            const threadId = `thread-${Date.now()}`;
+            let threadId: string;
+            const avatar = selectedTopic === 'Academics' && selectedSubItem
+                ? ACADEMIC_CONTACTS.find(c => c.id === selectedSubItem)?.avatar
+                : `https://ui-avatars.com/api/?name=${encodeURIComponent(title)}&background=2563eb&color=fff`;
+
+            if (selectedTopic === 'Academics' && selectedSubItem) {
+                // For teacher DMs: find or create DM thread
+                // Use the contact ID as the user2Id (backend resolves)
+                const contact = ACADEMIC_CONTACTS.find(c => c.id === selectedSubItem);
+                try {
+                    const dmThread = await chatApi.findOrCreateDM(contact?.id || selectedSubItem);
+                    threadId = dmThread.id;
+                } catch {
+                    // Fallback: create as a general thread
+                    const thread = await chatApi.createThread({
+                        type: 'dm',
+                        title: contact?.name || title,
+                        member_ids: [selectedSubItem],
+                    });
+                    threadId = thread.id;
+                }
+            } else {
+                // For Transport/Fees/Support: create ticket thread
+                const categoryMap: Record<string, 'fees' | 'transport' | 'it' | 'health' | 'academics' | 'general'> = {
+                    'Transport': 'transport',
+                    'Fees': 'fees',
+                    'Support': selectedSubItem === 'support-it' ? 'it' : selectedSubItem === 'support-wellbeing' ? 'health' : 'general',
+                };
+                const ticketCategory = categoryMap[selectedTopic!] || 'general';
+                const subOpt = getSubOptions()?.find(o => o.id === selectedSubItem);
+
+                const thread = await chatApi.createThread({
+                    type: 'ticket',
+                    title: `${title} — ${subOpt?.name || subtitle}`,
+                    description: subOpt?.desc || '',
+                    ticket_category: ticketCategory,
+                    member_ids: [],
+                });
+                threadId = thread.id;
+            }
+
             const newThreadItem: FeedItem = {
                 id: threadId,
                 type: threadType,
@@ -119,13 +160,7 @@ export function NewChatView({ onBack, onStartChat, onCreateChannel }: NewChatVie
                 unread: false,
                 requiresAck: false,
                 ackStatus: null,
-                source: {
-                    name: title,
-                    role: subtitle,
-                    avatar: selectedTopic === 'Academics' && selectedSubItem
-                        ? ACADEMIC_CONTACTS.find(c => c.id === selectedSubItem)?.avatar
-                        : `https://ui-avatars.com/api/?name=${encodeURIComponent(title)}&background=2563eb&color=fff`,
-                },
+                source: { name: title, role: subtitle, avatar },
                 threadId,
                 category: selectedTopic || undefined,
             };

@@ -7,7 +7,6 @@ interface ChatComposerProps {
     onAttach: () => void;
     onVoice: () => void;
     onSendVoice?: (file: File) => Promise<void> | void;
-    onSendGif?: (gifUrl: string) => void;
     placeholder?: string;
 }
 
@@ -65,111 +64,12 @@ function EmojiPickerPanel({ onSelect, onClose }: { onSelect: (emoji: string) => 
 }
 
 // ============================================================
-// GIF PICKER
-// ============================================================
-
-function GifPickerPanel({ onSelect, onClose }: { onSelect: (url: string) => void; onClose: () => void }) {
-    const [query, setQuery] = useState('');
-    const [gifs, setGifs] = useState<{ id: string; url: string; preview: string; width: number; height: number }[]>([]);
-    const [loading, setLoading] = useState(false);
-    const ref = useRef<HTMLDivElement>(null);
-    const debounceRef = useRef<NodeJS.Timeout | null>(null);
-
-    useEffect(() => {
-        const handler = (e: MouseEvent) => {
-            if (ref.current && !ref.current.contains(e.target as Node)) onClose();
-        };
-        document.addEventListener('mousedown', handler);
-        return () => document.removeEventListener('mousedown', handler);
-    }, [onClose]);
-
-    // Load trending on mount
-    useEffect(() => {
-        fetchGifs('');
-    }, []);
-
-    const fetchGifs = async (q: string) => {
-        setLoading(true);
-        try {
-            const { apiClient } = await import('../../lib/api-client');
-            const endpoint = q ? `/gifs/search?q=${encodeURIComponent(q)}&limit=20` : `/gifs/trending?limit=20`;
-            const res = await apiClient.get(endpoint);
-            setGifs(res.data || []);
-        } catch {
-            // GIF endpoint may not be available yet — show empty state
-            setGifs([]);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleSearch = (value: string) => {
-        setQuery(value);
-        if (debounceRef.current) clearTimeout(debounceRef.current);
-        debounceRef.current = setTimeout(() => fetchGifs(value), 400);
-    };
-
-    return (
-        <div ref={ref} className="w-[320px] max-h-[380px] bg-white dark:bg-[#1e293b] rounded-xl shadow-xl overflow-hidden flex flex-col">
-            {/* Search */}
-            <div className="shrink-0 p-2 border-b border-[#e2e8f0] dark:border-[#334155]">
-                <div className="relative">
-                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-[18px] text-[#94a3b8]">search</span>
-                    <input
-                        type="text"
-                        value={query}
-                        onChange={(e) => handleSearch(e.target.value)}
-                        placeholder="Search GIFs..."
-                        className="w-full h-9 pl-9 pr-3 bg-[#f1f5f9] dark:bg-[#334155] rounded-lg text-[13px] text-[#0f172a] dark:text-[#f1f5f9] border-none outline-none focus:ring-0"
-                        autoFocus
-                    />
-                </div>
-            </div>
-
-            {/* Grid */}
-            <div className="flex-1 overflow-y-auto p-1.5">
-                {loading ? (
-                    <div className="flex items-center justify-center py-8">
-                        <span className="material-symbols-outlined text-[24px] text-[#94a3b8] animate-spin">progress_activity</span>
-                    </div>
-                ) : gifs.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-8 text-[#94a3b8]">
-                        <span className="material-symbols-outlined text-[32px] mb-2">gif_box</span>
-                        <p className="text-[12px]">{query ? 'No GIFs found' : 'Search for GIFs'}</p>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-2 gap-1.5">
-                        {gifs.map((gif) => (
-                            <button
-                                key={gif.id}
-                                type="button"
-                                aria-label="Select GIF"
-                                onClick={() => onSelect(gif.url)}
-                                className="rounded-lg overflow-hidden hover:opacity-80 transition-opacity"
-                            >
-                                <img src={gif.preview || gif.url} alt="" className="w-full h-24 object-cover" loading="lazy" />
-                            </button>
-                        ))}
-                    </div>
-                )}
-            </div>
-
-            {/* Powered by Tenor */}
-            <div className="shrink-0 px-3 py-1.5 border-t border-[#e2e8f0] dark:border-[#334155] text-center">
-                <span className="text-[10px] text-[#94a3b8]">Powered by Tenor</span>
-            </div>
-        </div>
-    );
-}
-
-// ============================================================
 // CHAT COMPOSER
 // ============================================================
 
-export function ChatComposer({ onSend, onAttach, onVoice, onSendVoice, onSendGif, placeholder = "Type a message..." }: ChatComposerProps) {
+export function ChatComposer({ onSend, onAttach, onVoice, onSendVoice, placeholder = "Type a message..." }: ChatComposerProps) {
     const [text, setText] = useState('');
     const [showEmojis, setShowEmojis] = useState(false);
-    const [showGifs, setShowGifs] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
     // Voice recording state
@@ -184,7 +84,6 @@ export function ChatComposer({ onSend, onAttach, onVoice, onSendVoice, onSendGif
         onSend(text.trim());
         setText('');
         setShowEmojis(false);
-        setShowGifs(false);
         inputRef.current?.focus();
     };
 
@@ -199,16 +98,6 @@ export function ChatComposer({ onSend, onAttach, onVoice, onSendVoice, onSendGif
         setText(prev => prev + emoji);
         setShowEmojis(false);
         inputRef.current?.focus();
-    };
-
-    const handleGifSelect = (gifUrl: string) => {
-        setShowGifs(false);
-        if (onSendGif) {
-            onSendGif(gifUrl);
-        } else {
-            // Fallback: send as text message with GIF URL
-            onSend(gifUrl);
-        }
     };
 
     // ============================================
@@ -275,12 +164,19 @@ export function ChatComposer({ onSend, onAttach, onVoice, onSendVoice, onSendGif
     }, []);
 
     const sendRecording = useCallback(async () => {
+        const duration = recordingDuration;
         const file = await stopRecording();
         if (file && onSendVoice) {
+            // Validate: reject empty or very short recordings
+            if (file.size < 1000 || duration < 1) {
+                // Recording too short — silently discard
+                setRecordingDuration(0);
+                return;
+            }
             onSendVoice(file);
         }
         setRecordingDuration(0);
-    }, [stopRecording, onSendVoice]);
+    }, [stopRecording, onSendVoice, recordingDuration]);
 
     // Cleanup on unmount
     useEffect(() => {
@@ -360,16 +256,6 @@ export function ChatComposer({ onSend, onAttach, onVoice, onSendVoice, onSendGif
                 </div>
             )}
 
-            {/* GIF picker popup */}
-            {showGifs && (
-                <div className="absolute bottom-full left-2 mb-2 z-50">
-                    <GifPickerPanel
-                        onSelect={handleGifSelect}
-                        onClose={() => setShowGifs(false)}
-                    />
-                </div>
-            )}
-
             {/* Composer bar */}
             <div className="bg-[#f8fafc] dark:bg-[#0f172a] border-t border-[#e2e8f0] dark:border-[#1e293b] px-2 py-2">
                 <div className="flex items-center gap-1.5 max-w-4xl mx-auto">
@@ -378,7 +264,7 @@ export function ChatComposer({ onSend, onAttach, onVoice, onSendVoice, onSendGif
                         {/* Emoji toggle */}
                         <button
                             type="button"
-                            onClick={() => { setShowEmojis(!showEmojis); setShowGifs(false); }}
+                            onClick={() => setShowEmojis(!showEmojis)}
                             className={`shrink-0 w-9 h-9 flex items-center justify-center rounded-full transition-colors ${showEmojis ? 'text-[#2563eb]' : 'text-[#94a3b8] hover:text-[#64748b]'}`}
                         >
                             <span className="material-symbols-outlined text-[22px]">{showEmojis ? 'keyboard' : 'sentiment_satisfied'}</span>
@@ -391,21 +277,12 @@ export function ChatComposer({ onSend, onAttach, onVoice, onSendVoice, onSendGif
                             value={text}
                             onChange={(e) => setText(e.target.value)}
                             onKeyDown={handleKeyDown}
-                            onFocus={() => { setShowEmojis(false); setShowGifs(false); }}
+                            onFocus={() => setShowEmojis(false)}
                             className="flex-1 bg-transparent text-[15px] text-[#0f172a] dark:text-[#f1f5f9] placeholder:text-[#94a3b8] h-full px-1 border-none outline-none shadow-none ring-0 focus:border-none focus:outline-none focus:shadow-none focus:ring-0"
                             placeholder={placeholder}
                             autoComplete="off"
                             style={{ boxShadow: 'none' }}
                         />
-
-                        {/* GIF button */}
-                        <button
-                            type="button"
-                            onClick={() => { setShowGifs(!showGifs); setShowEmojis(false); }}
-                            className={`shrink-0 w-8 h-8 flex items-center justify-center rounded-md transition-colors text-[12px] font-bold ${showGifs ? 'bg-[#2563eb] text-white' : 'text-[#94a3b8] hover:text-[#64748b] border border-[#d1d5db] dark:border-[#475569]'}`}
-                        >
-                            GIF
-                        </button>
 
                         {/* Attach */}
                         <button type="button" onClick={onAttach} className="shrink-0 w-9 h-9 flex items-center justify-center text-[#94a3b8] hover:text-[#64748b] transition-colors rounded-full">
