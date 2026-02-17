@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import { FeedItem } from '../types';
 
@@ -24,94 +24,6 @@ const EMPTY_TYPING: any[] = [];
 const EMPTY_MESSAGES: Message[] = [];
 
 // ============================================================
-// ROLE-AWARE SUGGESTIONS
-// ============================================================
-
-const PARENT_SUGGESTIONS = [
-    { icon: 'menu_book', label: 'Ask about homework' },
-    { icon: 'event', label: 'Request a meeting' },
-    { icon: 'sick', label: 'Report absence' },
-    { icon: 'trending_up', label: 'Ask about progress' },
-    { icon: 'upload_file', label: 'Send documents' },
-    { icon: 'help', label: 'General enquiry' },
-];
-
-const TEACHER_SUGGESTIONS = [
-    { icon: 'assignment', label: 'Share homework update' },
-    { icon: 'event', label: 'Schedule parent meeting' },
-    { icon: 'assessment', label: 'Share progress report' },
-    { icon: 'request_page', label: 'Request documents' },
-    { icon: 'campaign', label: 'Send class update' },
-    { icon: 'chat', label: 'General message' },
-];
-
-const STAFF_SUGGESTIONS = [
-    { icon: 'campaign', label: 'Send announcement' },
-    { icon: 'info', label: 'Request information' },
-    { icon: 'event', label: 'Schedule meeting' },
-    { icon: 'update', label: 'Share update' },
-    { icon: 'assignment_ind', label: 'Assign task' },
-    { icon: 'chat', label: 'General message' },
-];
-
-// ============================================================
-// VOICE NOTE PLAYER
-// ============================================================
-
-function VoiceNotePlayer({ url, duration }: { url: string; duration?: number }) {
-    const audioRef = useRef<HTMLAudioElement>(null);
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [progress, setProgress] = useState(0);
-    const [currentTime, setCurrentTime] = useState(0);
-
-    useEffect(() => {
-        const audio = audioRef.current;
-        if (!audio) return;
-        const onTime = () => {
-            setCurrentTime(audio.currentTime);
-            if (audio.duration) setProgress((audio.currentTime / audio.duration) * 100);
-        };
-        const onEnd = () => { setIsPlaying(false); setProgress(0); setCurrentTime(0); };
-        audio.addEventListener('timeupdate', onTime);
-        audio.addEventListener('ended', onEnd);
-        return () => { audio.removeEventListener('timeupdate', onTime); audio.removeEventListener('ended', onEnd); };
-    }, []);
-
-    const toggle = () => {
-        const audio = audioRef.current;
-        if (!audio) return;
-        if (isPlaying) { audio.pause(); } else { audio.play(); }
-        setIsPlaying(!isPlaying);
-    };
-
-    const fmt = (s: number) => {
-        const m = Math.floor(s / 60);
-        const sec = Math.floor(s % 60);
-        return `${m}:${sec.toString().padStart(2, '0')}`;
-    };
-
-    return (
-        <div className="flex items-center gap-2 min-w-[180px]">
-            <audio ref={audioRef} src={url} preload="metadata" />
-            <button type="button" onClick={toggle} className="w-8 h-8 rounded-full bg-[#2563eb] flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-white text-[18px]">{isPlaying ? 'pause' : 'play_arrow'}</span>
-            </button>
-            <div className="flex-1 flex flex-col gap-0.5">
-                {/* Waveform bars */}
-                <div className="flex items-end gap-[2px] h-5">
-                    {Array.from({ length: 28 }).map((_, i) => {
-                        const h = [3, 5, 8, 12, 6, 14, 10, 4, 8, 16, 12, 6, 10, 14, 8, 4, 12, 16, 6, 10, 8, 14, 4, 12, 8, 6, 10, 5][i] || 6;
-                        const filled = progress > (i / 28) * 100;
-                        return <div key={i} className={`w-[3px] rounded-full transition-colors ${filled ? 'bg-[#2563eb]' : 'bg-[#94a3b8]/40'}`} style={{ height: `${h}px` }} />;
-                    })}
-                </div>
-                <span className="text-[10px] text-[#64748b]">{fmt(isPlaying ? currentTime : (duration || 0))}</span>
-            </div>
-        </div>
-    );
-}
-
-// ============================================================
 // CHAT THREAD VIEW
 // ============================================================
 
@@ -130,10 +42,6 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
 
     // Derive role from URL: /tenant/[slug]/[role]/chat
     const userRole = pathname?.match(/\/tenant\/[^/]+\/([^/]+)/)?.[1] || 'parent';
-
-    const suggestions = userRole === 'teacher' ? TEACHER_SUGGESTIONS
-        : userRole === 'staff' || userRole === 'admin' ? STAFF_SUGGESTIONS
-            : PARENT_SUGGESTIONS;
 
     // UI State
     const [showAttachments, setShowAttachments] = useState(false);
@@ -168,8 +76,22 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
         if (threadId) fetchMessages(threadId, currentUserId);
     }, [threadId, fetchMessages, currentUserId]);
 
-    // Smart autoscroll: only scroll if near bottom or own message
+    // Scroll to bottom on initial load
+    const initialScrollDone = useRef(false);
     useEffect(() => {
+        if (messages.length > 0 && !initialScrollDone.current) {
+            initialScrollDone.current = true;
+            // Use rAF to ensure DOM is painted before scrolling
+            requestAnimationFrame(() => {
+                messagesEndRef.current?.scrollIntoView({ behavior: 'instant' });
+            });
+            prevMessageCountRef.current = messages.length;
+        }
+    }, [messages]);
+
+    // Smart autoscroll on NEW messages (after initial load)
+    useEffect(() => {
+        if (!initialScrollDone.current) return;
         if (messages.length === 0) return;
         const isNewMessage = messages.length > prevMessageCountRef.current;
         prevMessageCountRef.current = messages.length;
@@ -177,7 +99,12 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
 
         const lastMsg = messages[messages.length - 1];
         if (lastMsg?.isMe || isNearBottomRef.current) {
-            messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+            // Delay scroll to after React renders the new bubble
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+                }, 50);
+            });
             setShowNewMsgButton(false);
         } else {
             setShowNewMsgButton(true);
@@ -195,10 +122,9 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
     // HANDLERS
     // ============================================
 
-    const handleSend = async (text: string) => {
+    const handleSend = useCallback(async (text: string) => {
         if (!text.trim()) return;
         if (replyToMsg) {
-            // Send with reply — use API directly for reply_to_id
             const tempId = Date.now().toString();
             const optimisticMsg: Message = {
                 id: tempId, threadId, contentType: 'text', content: text.trim(),
@@ -219,7 +145,9 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
         } else {
             await sendMessage(threadId, text, currentUserId);
         }
-    };
+        // Force near-bottom so autoscroll picks up our own message
+        isNearBottomRef.current = true;
+    }, [replyToMsg, threadId, currentUserId, sendMessage]);
 
     const handleAction = async (msgId: string, action: 'approve' | 'reject' | 'acknowledge') => {
         const status = action === 'approve' ? 'approved' : action === 'reject' ? 'rejected' : 'acknowledged';
@@ -267,10 +195,11 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
         setPermissionModal(null);
     };
 
-    const handleFileUpload = async (file: File, type?: 'image' | 'document' | 'voice') => {
+    const handleFileUpload = async (file: File, type?: 'image' | 'document') => {
         setIsUploading(true);
         try {
             await sendMessageWithAttachment(threadId, file, currentUserId, type);
+            isNearBottomRef.current = true;
         } finally {
             setIsUploading(false);
         }
@@ -293,10 +222,31 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
         : messages;
     const hasMessages = messages.length > 0;
 
+    // Suggestion chips — only ONE location (above composer), not duplicated
+    const suggestionChips = userRole === 'parent' ? [
+        { label: 'Report absence', template: "I would like to report my child's absence today." },
+        { label: 'Late arrival', template: 'My child will be arriving late today.' },
+        { label: 'Request meeting', template: "I would like to request a meeting to discuss my child's progress." },
+        { label: 'Homework query', template: 'I have a question about the homework assigned.' },
+        { label: 'Upload payment', template: 'Please find attached proof of payment.' },
+        { label: 'Payment plan', template: 'I would like to discuss a payment arrangement.' },
+        { label: 'Transport change', template: "I need to request a change to my child's transport arrangement." },
+    ] : userRole === 'teacher' ? [
+        { label: 'Homework update', template: 'Homework update' },
+        { label: 'Schedule meeting', template: 'Schedule parent meeting' },
+        { label: 'Progress report', template: 'Share progress report' },
+        { label: 'Class update', template: 'Send class update' },
+    ] : [
+        { label: 'Send announcement', template: 'Send announcement' },
+        { label: 'Request info', template: 'Request information' },
+        { label: 'Schedule meeting', template: 'Schedule meeting' },
+        { label: 'Share update', template: 'Share update' },
+    ];
+
     return (
         <div className="flex-1 flex flex-col min-h-0 bg-[#f0f4f8] dark:bg-[#0b141a]">
             {/* ====== HEADER — Blue brand ====== */}
-            <div className="shrink-0 bg-[#2563eb] text-white relative">
+            <div className="shrink-0 bg-[#2563eb] text-white relative z-20">
                 <div className="flex items-center px-1 h-14 gap-1">
                     <button type="button" onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-white/15 shrink-0">
                         <span className="material-symbols-outlined text-white text-[22px]">arrow_back</span>
@@ -410,36 +360,21 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                         </span>
                     </div>
 
-                    {/* Empty state with suggestions */}
+                    {/* Empty state — clean, no duplicate suggestions */}
                     {!hasMessages && (
-                        <div className="flex flex-col items-center py-8 px-4">
+                        <div className="flex flex-col items-center py-12 px-4">
                             <div className="w-16 h-16 rounded-full bg-[#2563eb]/10 flex items-center justify-center mb-4">
                                 <span className="material-symbols-outlined text-[32px] text-[#2563eb]">school</span>
                             </div>
                             <h3 className="text-[15px] font-semibold text-[#1e293b] dark:text-[#e2e8f0] mb-1">Start a conversation</h3>
-                            <p className="text-[13px] text-[#64748b] dark:text-[#94a3b8] text-center mb-6 max-w-[260px]">
-                                Send a message to {item.title} or choose a quick action below
+                            <p className="text-[13px] text-[#64748b] dark:text-[#94a3b8] text-center max-w-[260px]">
+                                Send a message to {item.title} or use a suggestion below
                             </p>
-
-                            <div className="flex flex-wrap justify-center gap-2 max-w-[340px]">
-                                {suggestions.map((s) => (
-                                    <button
-                                        key={s.label}
-                                        type="button"
-                                        onClick={() => handleSend(s.label)}
-                                        className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-white dark:bg-[#1e293b] border border-[#e2e8f0] dark:border-[#334155] text-[12px] font-medium text-[#334155] dark:text-[#cbd5e1] hover:bg-[#eff6ff] hover:border-[#2563eb]/30 transition-colors shadow-sm"
-                                    >
-                                        <span className="material-symbols-outlined text-[16px] text-[#2563eb]">{s.icon}</span>
-                                        {s.label}
-                                    </button>
-                                ))}
-                            </div>
                         </div>
                     )}
 
                     {filteredMessages.map((msg) => {
                         const isMe = msg.isMe;
-                        const hasVoice = msg.attachments?.some(a => a.type === 'voice');
                         const hasImage = msg.attachments?.some(a => a.type === 'image');
                         const hasDoc = msg.attachments?.some(a => a.type === 'document');
 
@@ -511,15 +446,8 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                                         </a>
                                     ))}
 
-                                    {/* Voice note */}
-                                    {hasVoice && msg.attachments?.filter(a => a.type === 'voice').map((att, i) => (
-                                        <div key={i} className="py-1">
-                                            <VoiceNotePlayer url={att.url} duration={att.duration} />
-                                        </div>
-                                    ))}
-
                                     {/* Text content */}
-                                    {msg.content && !hasVoice && (
+                                    {msg.content && (
                                         <span className={`whitespace-pre-wrap break-words text-[14.2px] leading-[19px] ${hasImage ? 'block px-1.5 pt-1' : ''}`}>{msg.content}</span>
                                     )}
 
@@ -621,19 +549,11 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                 </div>
             )}
 
-            {/* ====== SUGGESTION CHIPS (show for new threads) ====== */}
+            {/* ====== SUGGESTION CHIPS (single location — above composer, for new threads) ====== */}
             {messages.length < 3 && (
                 <div className="shrink-0 bg-[#f8fafc] dark:bg-[#0f172a] border-t border-[#e2e8f0] dark:border-[#1e293b] px-2 py-1.5">
                     <div className="flex gap-1.5 overflow-x-auto max-w-4xl mx-auto scrollbar-none">
-                        {(userRole === 'parent' ? [
-                            { label: 'Report absence', template: 'I would like to report my child\'s absence today.' },
-                            { label: 'Late arrival', template: 'My child will be arriving late today.' },
-                            { label: 'Request meeting', template: 'I would like to request a meeting to discuss my child\'s progress.' },
-                            { label: 'Homework query', template: 'I have a question about the homework assigned.' },
-                            { label: 'Upload payment', template: 'Please find attached proof of payment.' },
-                            { label: 'Payment plan', template: 'I would like to discuss a payment arrangement.' },
-                            { label: 'Transport change', template: 'I need to request a change to my child\'s transport arrangement.' },
-                        ] : suggestions.map(s => ({ label: s.label, template: s.label }))).map((chip) => (
+                        {suggestionChips.map((chip) => (
                             <button
                                 key={chip.label}
                                 type="button"
@@ -647,12 +567,10 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                 </div>
             )}
 
-            {/* ====== COMPOSER ====== */}
+            {/* ====== COMPOSER (no audio) ====== */}
             <ChatComposer
                 onSend={handleSend}
                 onAttach={() => setShowAttachments(true)}
-                onVoice={() => {}}
-                onSendVoice={(file: File) => handleFileUpload(file, 'voice')}
             />
 
             {/* ====== MODALS ====== */}

@@ -121,7 +121,6 @@ export function TicketDetailView({ item, isTranslated }: DetailViewProps) {
             <ChatComposer
                 onSend={handleSend}
                 onAttach={() => setShowAttachments(true)}
-                onVoice={() => checkPermission('microphone', () => console.log('Recording...'))}
                 placeholder="Reply to ticket..."
             />
 

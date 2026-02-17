@@ -5,8 +5,6 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 interface ChatComposerProps {
     onSend: (text: string) => void;
     onAttach: () => void;
-    onVoice: () => void;
-    onSendVoice?: (file: File) => Promise<void> | void;
     placeholder?: string;
 }
 
@@ -64,28 +62,23 @@ function EmojiPickerPanel({ onSelect, onClose }: { onSelect: (emoji: string) => 
 }
 
 // ============================================================
-// CHAT COMPOSER
+// CHAT COMPOSER — WhatsApp-stable, no audio
 // ============================================================
 
-export function ChatComposer({ onSend, onAttach, onVoice, onSendVoice, placeholder = "Type a message..." }: ChatComposerProps) {
+export function ChatComposer({ onSend, onAttach, placeholder = "Type a message..." }: ChatComposerProps) {
     const [text, setText] = useState('');
     const [showEmojis, setShowEmojis] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
+    const composerRef = useRef<HTMLDivElement>(null);
 
-    // Voice recording state
-    const [isRecording, setIsRecording] = useState(false);
-    const [recordingDuration, setRecordingDuration] = useState(0);
-    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-    const audioChunksRef = useRef<Blob[]>([]);
-    const timerRef = useRef<NodeJS.Timeout | null>(null);
-
-    const handleSend = () => {
+    const handleSend = useCallback(() => {
         if (!text.trim()) return;
         onSend(text.trim());
         setText('');
         setShowEmojis(false);
-        inputRef.current?.focus();
-    };
+        // Re-focus after send with slight delay so DOM settles
+        requestAnimationFrame(() => inputRef.current?.focus());
+    }, [text, onSend]);
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
@@ -100,152 +93,32 @@ export function ChatComposer({ onSend, onAttach, onVoice, onSendVoice, placehold
         inputRef.current?.focus();
     };
 
-    // ============================================
-    // VOICE RECORDING
-    // ============================================
-
-    const startRecording = useCallback(async () => {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
-            audioChunksRef.current = [];
-
-            mediaRecorder.ondataavailable = (e) => {
-                if (e.data.size > 0) audioChunksRef.current.push(e.data);
-            };
-
-            mediaRecorder.start(100); // Collect data every 100ms
-            mediaRecorderRef.current = mediaRecorder;
-            setIsRecording(true);
-            setRecordingDuration(0);
-
-            timerRef.current = setInterval(() => {
-                setRecordingDuration(prev => prev + 1);
-            }, 1000);
-        } catch {
-            // Microphone not available
-        }
-    }, []);
-
-    const stopRecording = useCallback(() => {
-        if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
-
-        const recorder = mediaRecorderRef.current;
-        if (!recorder || recorder.state === 'inactive') {
-            setIsRecording(false);
-            return null;
-        }
-
-        return new Promise<File | null>((resolve) => {
-            recorder.onstop = () => {
-                const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-                const file = new File([blob], `voice_note_${Date.now()}.webm`, { type: 'audio/webm' });
-                // Stop all tracks
-                recorder.stream.getTracks().forEach(t => t.stop());
-                setIsRecording(false);
-                resolve(file);
-            };
-            recorder.stop();
-        });
-    }, []);
-
-    const cancelRecording = useCallback(() => {
-        if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
-        const recorder = mediaRecorderRef.current;
-        if (recorder && recorder.state !== 'inactive') {
-            recorder.onstop = () => {
-                recorder.stream.getTracks().forEach(t => t.stop());
-            };
-            recorder.stop();
-        }
-        audioChunksRef.current = [];
-        setIsRecording(false);
-        setRecordingDuration(0);
-    }, []);
-
-    const sendRecording = useCallback(async () => {
-        const duration = recordingDuration;
-        const file = await stopRecording();
-        if (file && onSendVoice) {
-            // Validate: reject empty or very short recordings
-            if (file.size < 1000 || duration < 1) {
-                // Recording too short — silently discard
-                setRecordingDuration(0);
-                return;
-            }
-            onSendVoice(file);
-        }
-        setRecordingDuration(0);
-    }, [stopRecording, onSendVoice, recordingDuration]);
-
-    // Cleanup on unmount
+    // Mobile keyboard stability: use visualViewport to keep composer pinned
     useEffect(() => {
+        const vv = typeof window !== 'undefined' ? window.visualViewport : null;
+        if (!vv || !composerRef.current) return;
+
+        const onResize = () => {
+            const composer = composerRef.current;
+            if (!composer) return;
+            // When mobile keyboard opens, visualViewport.height shrinks.
+            // We offset the composer bottom by the difference.
+            const offsetBottom = window.innerHeight - vv.height - vv.offsetTop;
+            composer.style.transform = offsetBottom > 0 ? `translateY(-${offsetBottom}px)` : '';
+        };
+
+        vv.addEventListener('resize', onResize);
+        vv.addEventListener('scroll', onResize);
         return () => {
-            if (timerRef.current) clearInterval(timerRef.current);
-            const recorder = mediaRecorderRef.current;
-            if (recorder && recorder.state !== 'inactive') {
-                recorder.stream.getTracks().forEach(t => t.stop());
-                recorder.stop();
-            }
+            vv.removeEventListener('resize', onResize);
+            vv.removeEventListener('scroll', onResize);
         };
     }, []);
 
-    const fmtDuration = (s: number) => {
-        const m = Math.floor(s / 60);
-        const sec = s % 60;
-        return `${m}:${sec.toString().padStart(2, '0')}`;
-    };
-
     const hasText = text.trim().length > 0;
 
-    // ============================================
-    // RECORDING UI
-    // ============================================
-
-    if (isRecording) {
-        return (
-            <div className="shrink-0">
-                <div className="bg-[#f8fafc] dark:bg-[#0f172a] border-t border-[#e2e8f0] dark:border-[#1e293b] px-2 py-2">
-                    <div className="flex items-center gap-2 max-w-4xl mx-auto">
-                        {/* Cancel */}
-                        <button type="button" onClick={cancelRecording} className="shrink-0 w-[44px] h-[44px] rounded-full bg-[#f1f5f9] dark:bg-[#334155] flex items-center justify-center transition-colors">
-                            <span className="material-symbols-outlined text-[22px] text-red-500">delete</span>
-                        </button>
-
-                        {/* Recording indicator */}
-                        <div className="flex-1 flex items-center gap-2 bg-white dark:bg-[#1e293b] rounded-full h-[44px] px-4 border border-[#e2e8f0] dark:border-[#334155]">
-                            <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse shrink-0" />
-                            <span className="text-[14px] font-medium text-red-500 tabular-nums">{fmtDuration(recordingDuration)}</span>
-                            <div className="flex-1 flex items-center gap-[2px] mx-2">
-                                {Array.from({ length: 24 }).map((_, i) => (
-                                    <div
-                                        key={i}
-                                        className="w-[3px] rounded-full bg-red-400/60"
-                                        style={{
-                                            height: `${Math.max(4, Math.random() * 20)}px`,
-                                            animation: `pulse ${0.5 + Math.random() * 0.5}s ease-in-out infinite alternate`,
-                                        }}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Send voice */}
-                        <button type="button" onClick={sendRecording} className="shrink-0 w-[44px] h-[44px] rounded-full bg-[#2563eb] hover:bg-[#1d4ed8] flex items-center justify-center transition-colors shadow-sm">
-                            <span className="material-symbols-outlined text-[22px] text-white">send</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    // ============================================
-    // NORMAL COMPOSER UI
-    // ============================================
-
     return (
-        <div className="shrink-0 relative">
+        <div ref={composerRef} className="shrink-0 relative will-change-transform">
             {/* Emoji picker popup */}
             {showEmojis && (
                 <div className="absolute bottom-full left-2 mb-2 z-50">
@@ -256,7 +129,7 @@ export function ChatComposer({ onSend, onAttach, onVoice, onSendVoice, placehold
                 </div>
             )}
 
-            {/* Composer bar */}
+            {/* Composer bar — fixed height, no layout shift */}
             <div className="bg-[#f8fafc] dark:bg-[#0f172a] border-t border-[#e2e8f0] dark:border-[#1e293b] px-2 py-2">
                 <div className="flex items-center gap-1.5 max-w-4xl mx-auto">
                     {/* Input pill */}
@@ -270,7 +143,7 @@ export function ChatComposer({ onSend, onAttach, onVoice, onSendVoice, placehold
                             <span className="material-symbols-outlined text-[22px]">{showEmojis ? 'keyboard' : 'sentiment_satisfied'}</span>
                         </button>
 
-                        {/* Fixed-height input */}
+                        {/* Fixed-height input — no resize */}
                         <input
                             ref={inputRef}
                             type="text"
@@ -281,6 +154,7 @@ export function ChatComposer({ onSend, onAttach, onVoice, onSendVoice, placehold
                             className="flex-1 bg-transparent text-[15px] text-[#0f172a] dark:text-[#f1f5f9] placeholder:text-[#94a3b8] h-full px-1 border-none outline-none shadow-none ring-0 focus:border-none focus:outline-none focus:shadow-none focus:ring-0"
                             placeholder={placeholder}
                             autoComplete="off"
+                            enterKeyHint="send"
                             style={{ boxShadow: 'none' }}
                         />
 
@@ -290,16 +164,19 @@ export function ChatComposer({ onSend, onAttach, onVoice, onSendVoice, placehold
                         </button>
                     </div>
 
-                    {/* Send / Voice */}
-                    {hasText ? (
-                        <button type="button" onClick={handleSend} className="shrink-0 w-[44px] h-[44px] rounded-full bg-[#2563eb] hover:bg-[#1d4ed8] flex items-center justify-center transition-colors shadow-sm">
-                            <span className="material-symbols-outlined text-[22px] text-white">send</span>
-                        </button>
-                    ) : (
-                        <button type="button" onClick={startRecording} className="shrink-0 w-[44px] h-[44px] rounded-full bg-[#2563eb] hover:bg-[#1d4ed8] flex items-center justify-center transition-colors shadow-sm">
-                            <span className="material-symbols-outlined text-[22px] text-white">mic</span>
-                        </button>
-                    )}
+                    {/* Send button — always visible, disabled when empty */}
+                    <button
+                        type="button"
+                        onClick={handleSend}
+                        disabled={!hasText}
+                        className={`shrink-0 w-[44px] h-[44px] rounded-full flex items-center justify-center transition-colors shadow-sm ${
+                            hasText
+                                ? 'bg-[#2563eb] hover:bg-[#1d4ed8] active:bg-[#1e40af]'
+                                : 'bg-[#94a3b8]/30'
+                        }`}
+                    >
+                        <span className={`material-symbols-outlined text-[22px] ${hasText ? 'text-white' : 'text-[#94a3b8]'}`}>send</span>
+                    </button>
                 </div>
             </div>
         </div>

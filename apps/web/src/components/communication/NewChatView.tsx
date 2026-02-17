@@ -30,18 +30,20 @@ export function NewChatView({ onBack, onStartChat, onCreateChannel }: NewChatVie
     useEffect(() => {
         if (selectedTopic === 'Academics') {
             setContactsLoading(true);
-            // Fetch teachers + principal + admin staff
-            Promise.all([
-                chatApi.getContactsByRole('teacher').catch(() => []),
-                chatApi.getContactsByRole('class_teacher').catch(() => []),
-                chatApi.getContactsByRole('principal').catch(() => []),
-                chatApi.getContactsByRole('main_branch_admin').catch(() => []),
-            ]).then(([teachers, classTeachers, principals, admins]) => {
-                // Deduplicate by id
-                const all = [...teachers, ...classTeachers, ...principals, ...admins];
-                const unique = Array.from(new Map(all.map(c => [c.id, c])).values());
-                setContacts(unique);
-            }).finally(() => setContactsLoading(false));
+            setContacts([]);
+            // Fetch all staff-like roles, deduplicate by user id
+            const roles = ['teacher', 'class_teacher', 'principal', 'main_branch_admin', 'STAFF'];
+            Promise.all(roles.map(r => chatApi.getContactsByRole(r).catch(() => [])))
+                .then((results) => {
+                    const seen = new Map<string, any>();
+                    for (const list of results) {
+                        for (const c of list) {
+                            if (c?.id && !seen.has(c.id)) seen.set(c.id, c);
+                        }
+                    }
+                    setContacts(Array.from(seen.values()));
+                })
+                .finally(() => setContactsLoading(false));
         }
     }, [selectedTopic]);
 
