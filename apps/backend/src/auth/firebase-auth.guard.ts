@@ -1,9 +1,16 @@
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { AuthService } from './auth.service';
+import { User } from '../users/user.entity';
 
 @Injectable()
 export class FirebaseAuthGuard implements CanActivate {
-    constructor(private authService: AuthService) { }
+    constructor(
+        private authService: AuthService,
+        @InjectRepository(User)
+        private userRepo: Repository<User>,
+    ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
@@ -16,7 +23,31 @@ export class FirebaseAuthGuard implements CanActivate {
         const token = authHeader.split(' ')[1];
         try {
             const decoded = await this.authService.verifyToken(token);
-            request.user = decoded; // Attach firebase user to request
+
+            // Resolve Firebase UID → database user UUID
+            let dbUser = await this.userRepo.findOne({
+                where: { firebase_uid: decoded.uid },
+            });
+
+            // Auto-link: if no user found by firebase_uid, try by email
+            if (!dbUser && decoded.email) {
+                dbUser = await this.userRepo.findOne({
+                    where: { email: decoded.email },
+                });
+                // Link firebase_uid to existing DB user for future lookups
+                if (dbUser && !dbUser.firebase_uid) {
+                    await this.userRepo.update(dbUser.id, { firebase_uid: decoded.uid });
+                }
+            }
+
+            // Attach resolved user: uid = DB UUID (for thread operations)
+            request.user = {
+                ...decoded,
+                uid: dbUser?.id || decoded.uid,
+                firebaseUid: decoded.uid,
+                dbUserId: dbUser?.id || null,
+            };
+
             return true;
         } catch (err) {
             throw new UnauthorizedException('Invalid token');

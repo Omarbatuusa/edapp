@@ -458,6 +458,122 @@ async function seed() {
 
     console.log('   ✅ Created 2 DM threads with 7 messages');
 
+    // ========== 12. CREATE ALLIED TENANT USERS (Real Firebase accounts) ==========
+    console.log('\n🏫 Creating Allied Schools users (real Firebase emails)...');
+
+    const alliedTenant = tenantMap['allied'];
+
+    // Parent — ssebuguzisula@gmail.com (exists in Firebase)
+    const alliedParent = await userRepo.save({
+        email: 'ssebuguzisula@gmail.com',
+        display_name: 'Ssebuguzi Sula',
+        first_name: 'Ssebuguzi',
+        last_name: 'Sula',
+        password_hash: passwordHash,
+        status: UserStatus.ACTIVE,
+    });
+
+    // Staff — alliedschoolrobertsham@gmail.com (exists in Firebase)
+    const alliedStaff = await userRepo.save({
+        email: 'alliedschoolrobertsham@gmail.com',
+        display_name: 'Allied Staff',
+        first_name: 'Allied',
+        last_name: 'Staff',
+        password_hash: passwordHash,
+        status: UserStatus.ACTIVE,
+    });
+
+    // Admin — umarbatuusa@gmail.com (already created as super admin, add Allied role)
+    // superAdmin1 already exists with this email
+
+    // Additional staff for Allied (teacher, finance, transport)
+    const alliedTeacher = await userRepo.save({
+        email: 'teacher@allied.edu',
+        display_name: 'Mrs. Johnson',
+        first_name: 'Sarah',
+        last_name: 'Johnson',
+        password_hash: passwordHash,
+        status: UserStatus.ACTIVE,
+    });
+
+    const alliedFinance = await userRepo.save({
+        email: 'finance@allied.edu',
+        display_name: 'Finance Office',
+        first_name: 'Finance',
+        last_name: 'Office',
+        password_hash: passwordHash,
+        status: UserStatus.ACTIVE,
+    });
+
+    const alliedTransport = await userRepo.save({
+        email: 'transport@allied.edu',
+        display_name: 'Transport Office',
+        first_name: 'Transport',
+        last_name: 'Office',
+        password_hash: passwordHash,
+        status: UserStatus.ACTIVE,
+    });
+
+    // Learner for Allied
+    const alliedLearner = await userRepo.save({
+        email: 'learner@allied.edu',
+        student_number: 'ALL001',
+        pin_hash: await bcrypt.hash('1234', 10),
+        display_name: 'Test Learner',
+        first_name: 'Test',
+        last_name: 'Learner',
+        status: UserStatus.ACTIVE,
+    });
+
+    // Assign roles for Allied
+    await roleRepo.save([
+        { user_id: alliedParent.id, tenant_id: alliedTenant.id, role: UserRole.PARENT, is_active: true },
+        { user_id: alliedStaff.id, tenant_id: alliedTenant.id, role: UserRole.TEACHER, is_active: true },
+        { user_id: superAdmin1.id, tenant_id: alliedTenant.id, role: UserRole.MAIN_BRANCH_ADMIN, is_active: true },
+        { user_id: alliedTeacher.id, tenant_id: alliedTenant.id, role: UserRole.TEACHER, is_active: true },
+        { user_id: alliedFinance.id, tenant_id: alliedTenant.id, role: UserRole.STAFF, is_active: true },
+        { user_id: alliedTransport.id, tenant_id: alliedTenant.id, role: UserRole.STAFF, is_active: true },
+        { user_id: alliedLearner.id, tenant_id: alliedTenant.id, role: UserRole.LEARNER, is_active: true },
+    ]);
+
+    // Parent-child link for Allied
+    await parentChildRepo.save({
+        tenant_id: alliedTenant.id,
+        parent_user_id: alliedParent.id,
+        child_user_id: alliedLearner.id,
+    });
+
+    // Create DM threads for Allied
+    // Thread: Parent ↔ Staff (teacher)
+    const alliedDmStaff = await threadRepo.save({
+        tenant_id: alliedTenant.id,
+        type: ThreadType.DM,
+        title: 'Allied Staff',
+        created_by: alliedParent.id,
+        last_message_content: 'Welcome to Allied Schools communication.',
+        last_message_at: new Date(),
+    });
+
+    await memberRepo.save([
+        { thread_id: alliedDmStaff.id, user_id: alliedParent.id, role: MemberRole.MEMBER, permission: MemberPermission.WRITE },
+        { thread_id: alliedDmStaff.id, user_id: alliedStaff.id, role: MemberRole.MEMBER, permission: MemberPermission.WRITE },
+    ]);
+
+    await messageRepo.save([
+        {
+            thread_id: alliedDmStaff.id, sender_id: alliedStaff.id, type: MessageType.TEXT,
+            content: 'Welcome to Allied Schools! Feel free to reach out anytime.',
+            created_at: new Date(now.getTime() - 3600000),
+        },
+        {
+            thread_id: alliedDmStaff.id, sender_id: alliedParent.id, type: MessageType.TEXT,
+            content: 'Thank you! Looking forward to the term.',
+            created_at: new Date(now.getTime() - 1800000),
+        },
+    ]);
+
+    console.log('   ✅ Created Allied users, roles, threads, and messages');
+
     // ========== SUMMARY ==========
     console.log('\n✨ Seed completed successfully!\n');
     console.log('📊 Summary:');

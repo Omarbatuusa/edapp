@@ -22,19 +22,27 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(async (config) => {
-    // Attach Firebase token if user is authenticated
     if (typeof window !== 'undefined') {
+        let token: string | null = null;
+
+        // 1. Try Firebase client SDK (direct Firebase login on same domain)
         try {
             const { auth } = await import('@/lib/firebase');
-            if (auth) {
-                const user = auth.currentUser;
-                if (user) {
-                    const token = await user.getIdToken();
-                    config.headers.Authorization = `Bearer ${token}`;
-                }
+            if (auth?.currentUser) {
+                token = await auth.currentUser.getIdToken();
             }
-        } catch (error) {
-            console.error('Error getting auth token:', error);
+        } catch {
+            // Firebase not available or not signed in on this domain
+        }
+
+        // 2. Fallback: session_token from handoff auth flow
+        //    (user logged in via auth broker on different subdomain)
+        if (!token) {
+            token = localStorage.getItem('session_token');
+        }
+
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
         }
     }
     return config;

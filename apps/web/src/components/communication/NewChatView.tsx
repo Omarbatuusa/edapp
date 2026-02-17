@@ -21,6 +21,7 @@ export function NewChatView({ onBack, onStartChat, onCreateChannel }: NewChatVie
     const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
     const [selectedSubItem, setSelectedSubItem] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const [contacts, setContacts] = useState<{ id: string; display_name: string; first_name?: string; last_name?: string }[]>([]);
     const [contactsLoading, setContactsLoading] = useState(false);
     const summaryRef = useRef<HTMLDivElement>(null);
@@ -177,8 +178,13 @@ export function NewChatView({ onBack, onStartChat, onCreateChannel }: NewChatVie
             };
 
             onStartChat(newThreadItem);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error creating thread:', error);
+            const msg = error?.response?.status === 401
+                ? 'Not authenticated. Please log in again.'
+                : error?.response?.data?.message || 'Failed to start chat. Please try again.';
+            setErrorMsg(msg);
+            setTimeout(() => setErrorMsg(null), 4000);
         } finally {
             setIsLoading(false);
         }
@@ -201,6 +207,17 @@ export function NewChatView({ onBack, onStartChat, onCreateChannel }: NewChatVie
                     </button>
                 </div>
             </div>
+
+            {/* Error toast */}
+            {errorMsg && (
+                <div className="shrink-0 bg-red-50 border-b border-red-200 px-4 py-2.5 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px] text-red-500">error</span>
+                    <span className="text-[13px] text-red-700 font-medium flex-1">{errorMsg}</span>
+                    <button type="button" onClick={() => setErrorMsg(null)} className="text-red-400 hover:text-red-600">
+                        <span className="material-symbols-outlined text-[16px]">close</span>
+                    </button>
+                </div>
+            )}
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto">
