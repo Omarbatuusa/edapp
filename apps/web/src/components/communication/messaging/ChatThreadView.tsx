@@ -20,6 +20,9 @@ import { AttachmentSheet } from '../AttachmentSheet';
 import { PermissionModal } from '../PermissionModal';
 import { ReportModal } from '../ReportModal';
 
+const EMPTY_TYPING: any[] = [];
+const EMPTY_MESSAGES: Message[] = [];
+
 // ============================================================
 // ROLE-AWARE SUGGESTIONS
 // ============================================================
@@ -123,7 +126,7 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
     const pathname = usePathname();
     const currentUserId = typeof window !== 'undefined' ? localStorage.getItem('user_id') || 'user-1' : 'user-1';
     const threadId = item.threadId || item.id;
-    const messages = messagesByThread[threadId] || [];
+    const messages = messagesByThread[threadId] ?? EMPTY_MESSAGES;
 
     // Derive role from URL: /tenant/[slug]/[role]/chat
     const userRole = pathname?.match(/\/tenant\/[^/]+\/([^/]+)/)?.[1] || 'parent';
@@ -146,7 +149,7 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
     const [searchOpen, setSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
-    const typingUsers = useChatStore(state => state.typing[item.threadId || item.id] || []);
+    const typingUsers = useChatStore(state => state.typing[item.threadId || item.id] ?? EMPTY_TYPING);
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const messagesContainerRef = useRef<HTMLDivElement>(null);
