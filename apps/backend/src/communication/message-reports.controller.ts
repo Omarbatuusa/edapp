@@ -8,7 +8,7 @@ import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 // All endpoints secured via FirebaseAuthGuard
 // ============================================================
 
-@Controller('api/v1/message-reports')
+@Controller('message-reports')
 @UseGuards(FirebaseAuthGuard)
 export class MessageReportsController {
     constructor(private readonly reportsService: MessageReportsService) { }

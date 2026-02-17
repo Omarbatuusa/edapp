@@ -5,7 +5,7 @@ import { User } from './user.entity';
 import { RoleAssignment } from './role-assignment.entity';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 
-@Controller('api/v1/users')
+@Controller('users')
 @UseGuards(FirebaseAuthGuard)
 export class UsersController {
     constructor(

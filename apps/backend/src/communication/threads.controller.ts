@@ -10,7 +10,7 @@ import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 // tenant_id from TenantsMiddleware, user_id from Firebase JWT
 // ============================================================
 
-@Controller('api/v1/threads')
+@Controller('threads')
 @UseGuards(FirebaseAuthGuard)
 export class ThreadsController {
     constructor(private readonly threadsService: ThreadsService) { }

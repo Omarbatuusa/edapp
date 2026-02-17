@@ -7,7 +7,7 @@ import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 // All endpoints secured via FirebaseAuthGuard
 // ============================================================
 
-@Controller('api/v1/announcements')
+@Controller('announcements')
 @UseGuards(FirebaseAuthGuard)
 export class AnnouncementsController {
     constructor(private readonly announcementsService: AnnouncementsService) { }

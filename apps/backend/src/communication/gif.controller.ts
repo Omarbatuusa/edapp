@@ -15,7 +15,7 @@ interface TenorGif {
     height: number;
 }
 
-@Controller('api/v1/gifs')
+@Controller('gifs')
 @UseGuards(FirebaseAuthGuard)
 export class GifController {
     private readonly logger = new Logger(GifController.name);

@@ -7,7 +7,7 @@ import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 // All endpoints secured via FirebaseAuthGuard
 // ============================================================
 
-@Controller('api/v1/parent-children')
+@Controller('parent-children')
 @UseGuards(FirebaseAuthGuard)
 export class ParentChildController {
     constructor(private readonly parentChildService: ParentChildService) { }

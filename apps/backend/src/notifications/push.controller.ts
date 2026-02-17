@@ -16,7 +16,7 @@ interface UnregisterTokenDto {
     token: string;
 }
 
-@Controller('api/v1/push')
+@Controller('push')
 export class PushController {
     constructor(private pushService: PushService) { }
 

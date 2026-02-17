@@ -9,7 +9,7 @@ import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 // tenant_id from TenantsMiddleware, user_id from Firebase JWT
 // ============================================================
 
-@Controller('api/v1/messages')
+@Controller('messages')
 @UseGuards(FirebaseAuthGuard)
 export class MessagesController {
     constructor(private readonly messagesService: MessagesService) { }

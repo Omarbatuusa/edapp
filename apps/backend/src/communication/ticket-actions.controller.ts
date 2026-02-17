@@ -8,7 +8,7 @@ import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 // All endpoints secured via FirebaseAuthGuard
 // ============================================================
 
-@Controller('api/v1/ticket-actions')
+@Controller('ticket-actions')
 @UseGuards(FirebaseAuthGuard)
 export class TicketActionsController {
     constructor(private readonly ticketActionsService: TicketActionsService) { }
