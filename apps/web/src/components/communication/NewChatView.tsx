@@ -21,19 +21,34 @@ export function NewChatView({ onBack, onStartChat, onCreateChannel }: NewChatVie
     const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
     const [selectedSubItem, setSelectedSubItem] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [contacts, setContacts] = useState<{ id: string; display_name: string; first_name?: string; last_name?: string }[]>([]);
+    const [contactsLoading, setContactsLoading] = useState(false);
     const summaryRef = useRef<HTMLDivElement>(null);
+
+    // Fetch real teachers/staff when Academics is selected
+    useEffect(() => {
+        if (selectedTopic === 'Academics') {
+            setContactsLoading(true);
+            // Fetch teachers + principal + admin staff
+            Promise.all([
+                chatApi.getContactsByRole('teacher').catch(() => []),
+                chatApi.getContactsByRole('class_teacher').catch(() => []),
+                chatApi.getContactsByRole('principal').catch(() => []),
+                chatApi.getContactsByRole('main_branch_admin').catch(() => []),
+            ]).then(([teachers, classTeachers, principals, admins]) => {
+                // Deduplicate by id
+                const all = [...teachers, ...classTeachers, ...principals, ...admins];
+                const unique = Array.from(new Map(all.map(c => [c.id, c])).values());
+                setContacts(unique);
+            }).finally(() => setContactsLoading(false));
+        }
+    }, [selectedTopic]);
 
     const TOPICS = [
         { id: 'Academics', icon: 'school', label: 'Academics', desc: 'Teachers & Subjects' },
         { id: 'Transport', icon: 'directions_bus', label: 'Transport', desc: 'Routes & Schedules' },
         { id: 'Fees', icon: 'payments', label: 'Fees', desc: 'Payments & Invoices' },
         { id: 'Support', icon: 'support_agent', label: 'Support', desc: 'General Help' },
-    ];
-
-    const ACADEMIC_CONTACTS = [
-        { id: 'mrs-k', name: 'Mrs. Krabappel', role: 'Class Teacher', avatar: 'https://ui-avatars.com/api/?name=Edna+Krabappel&background=3b82f6&color=fff' },
-        { id: 'mr-s', name: 'Mr. Skinner', role: 'Principal', avatar: 'https://ui-avatars.com/api/?name=Skinner&background=2563eb&color=fff' },
-        { id: 'hoover', name: 'Ms. Hoover', role: 'Art Teacher', avatar: 'https://ui-avatars.com/api/?name=Hoover&background=1d4ed8&color=fff' },
     ];
 
     const TRANSPORT_OPTIONS: SubOption[] = [
@@ -87,8 +102,8 @@ export function NewChatView({ onBack, onStartChat, onCreateChannel }: NewChatVie
 
     const getSummary = (): { title: string; subtitle: string } => {
         if (selectedTopic === 'Academics' && selectedSubItem) {
-            const contact = ACADEMIC_CONTACTS.find(c => c.id === selectedSubItem);
-            return { title: contact?.name || 'Teacher', subtitle: contact?.role || 'Staff' };
+            const contact = contacts.find(c => c.id === selectedSubItem);
+            return { title: contact?.display_name || 'Teacher', subtitle: 'Staff' };
         }
         const subOptions = getSubOptions();
         if (subOptions && selectedSubItem) {
@@ -108,22 +123,18 @@ export function NewChatView({ onBack, onStartChat, onCreateChannel }: NewChatVie
             const threadType: 'message' | 'support' = selectedTopic === 'Academics' ? 'message' : 'support';
 
             let threadId: string;
-            const avatar = selectedTopic === 'Academics' && selectedSubItem
-                ? ACADEMIC_CONTACTS.find(c => c.id === selectedSubItem)?.avatar
-                : `https://ui-avatars.com/api/?name=${encodeURIComponent(title)}&background=2563eb&color=fff`;
+            const avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(title)}&background=2563eb&color=fff`;
 
             if (selectedTopic === 'Academics' && selectedSubItem) {
-                // For teacher DMs: find or create DM thread
-                // Use the contact ID as the user2Id (backend resolves)
-                const contact = ACADEMIC_CONTACTS.find(c => c.id === selectedSubItem);
+                // selectedSubItem is the real user UUID from the API
                 try {
-                    const dmThread = await chatApi.findOrCreateDM(contact?.id || selectedSubItem);
+                    const dmThread = await chatApi.findOrCreateDM(selectedSubItem);
                     threadId = dmThread.id;
                 } catch {
-                    // Fallback: create as a general thread
+                    const contact = contacts.find(c => c.id === selectedSubItem);
                     const thread = await chatApi.createThread({
                         type: 'dm',
-                        title: contact?.name || title,
+                        title: contact?.display_name || title,
                         member_ids: [selectedSubItem],
                     });
                     threadId = thread.id;
@@ -232,34 +243,46 @@ export function NewChatView({ onBack, onStartChat, onCreateChannel }: NewChatVie
                 {selectedTopic === 'Academics' && (
                     <div className="px-4 pb-3">
                         <p className="text-[12px] font-semibold text-[#64748b] dark:text-[#94a3b8] uppercase tracking-wider mb-3">Select Teacher</p>
-                        <div className="space-y-2">
-                            {ACADEMIC_CONTACTS.map(contact => {
-                                const isSelected = selectedSubItem === contact.id;
-                                return (
-                                    <button
-                                        key={contact.id}
-                                        type="button"
-                                        onClick={() => setSelectedSubItem(contact.id)}
-                                        className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 ${
-                                            isSelected
-                                                ? 'bg-[#eff6ff] dark:bg-[#1e3a5f] border-2 border-[#2563eb]'
-                                                : 'bg-white dark:bg-[#1e293b] border border-[#e2e8f0] dark:border-[#334155] hover:border-[#2563eb]/40'
-                                        }`}
-                                    >
-                                        <img src={contact.avatar} alt="" className="w-11 h-11 rounded-full object-cover shrink-0" />
-                                        <div className="text-left flex-1 min-w-0">
-                                            <h4 className={`font-semibold text-[14px] ${isSelected ? 'text-[#2563eb]' : 'text-[#0f172a] dark:text-[#f1f5f9]'}`}>{contact.name}</h4>
-                                            <p className="text-[12px] text-[#64748b] dark:text-[#94a3b8]">{contact.role}</p>
-                                        </div>
-                                        {isSelected ? (
-                                            <span className="material-symbols-outlined text-[#2563eb] text-[22px] shrink-0">check_circle</span>
-                                        ) : (
-                                            <span className="material-symbols-outlined text-[#cbd5e1] dark:text-[#475569] text-[22px] shrink-0">radio_button_unchecked</span>
-                                        )}
-                                    </button>
-                                );
-                            })}
-                        </div>
+                        {contactsLoading ? (
+                            <div className="flex items-center justify-center py-8">
+                                <span className="material-symbols-outlined text-[24px] text-[#2563eb] animate-spin">progress_activity</span>
+                            </div>
+                        ) : contacts.length === 0 ? (
+                            <div className="text-center py-6">
+                                <span className="material-symbols-outlined text-[32px] text-[#94a3b8] mb-2">person_off</span>
+                                <p className="text-[13px] text-[#64748b]">No teachers found</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-2">
+                                {contacts.map(contact => {
+                                    const isSelected = selectedSubItem === contact.id;
+                                    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(contact.display_name || 'U')}&background=2563eb&color=fff`;
+                                    return (
+                                        <button
+                                            key={contact.id}
+                                            type="button"
+                                            onClick={() => setSelectedSubItem(contact.id)}
+                                            className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 ${
+                                                isSelected
+                                                    ? 'bg-[#eff6ff] dark:bg-[#1e3a5f] border-2 border-[#2563eb]'
+                                                    : 'bg-white dark:bg-[#1e293b] border border-[#e2e8f0] dark:border-[#334155] hover:border-[#2563eb]/40'
+                                            }`}
+                                        >
+                                            <img src={avatarUrl} alt="" className="w-11 h-11 rounded-full object-cover shrink-0" />
+                                            <div className="text-left flex-1 min-w-0">
+                                                <h4 className={`font-semibold text-[14px] ${isSelected ? 'text-[#2563eb]' : 'text-[#0f172a] dark:text-[#f1f5f9]'}`}>{contact.display_name}</h4>
+                                                <p className="text-[12px] text-[#64748b] dark:text-[#94a3b8]">Staff</p>
+                                            </div>
+                                            {isSelected ? (
+                                                <span className="material-symbols-outlined text-[#2563eb] text-[22px] shrink-0">check_circle</span>
+                                            ) : (
+                                                <span className="material-symbols-outlined text-[#cbd5e1] dark:text-[#475569] text-[22px] shrink-0">radio_button_unchecked</span>
+                                            )}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
                 )}
 

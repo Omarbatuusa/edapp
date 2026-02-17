@@ -119,7 +119,12 @@ export const chatApi = {
     },
 
     async createThread(data: CreateThreadRequest): Promise<ThreadDto> {
-        const response = await apiClient.post('/threads', data);
+        // Map frontend member_ids to backend members format
+        const payload = {
+            ...data,
+            members: (data.member_ids || []).map(id => ({ user_id: id })),
+        };
+        const response = await apiClient.post('/threads', payload);
         return response.data;
     },
 
