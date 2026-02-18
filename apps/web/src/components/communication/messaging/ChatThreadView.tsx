@@ -71,7 +71,7 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
 
     // UI State
     const [showAttachments, setShowAttachments] = useState(false);
-    const [permissionModal, setPermissionModal] = useState<{ isOpen: boolean; type: 'camera' | 'microphone' } | null>(null);
+    const [permissionModal, setPermissionModal] = useState<{ isOpen: boolean; type: 'camera' | 'microphone' | 'storage' } | null>(null);
     const [reportModalOpen, setReportModalOpen] = useState(false);
     const [reportMessageId, setReportMessageId] = useState<string | null>(null);
     const [activeMessageId, setActiveMessageId] = useState<string | null>(null);
@@ -166,8 +166,35 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
             }));
             setReplyToMsg(null);
             try {
-                await chatApi.sendMessage({ thread_id: threadId, content: text.trim(), reply_to_id: replyToMsg.id });
-            } catch { /* optimistic stays */ }
+                const dto = await chatApi.sendMessage({ thread_id: threadId, content: text.trim(), reply_to_id: replyToMsg.id });
+                // Swap optimistic message with real one
+                const realMsg: Message = {
+                    id: dto.id, threadId: dto.thread_id, contentType: dto.type,
+                    content: dto.content, senderId: dto.sender_id, senderName: dto.sender_name,
+                    isMe: true,
+                    time: new Date(dto.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    date: new Date(dto.created_at).toLocaleDateString(),
+                    status: 'sent',
+                };
+                useChatStore.setState(state => ({
+                    messagesByThread: {
+                        ...state.messagesByThread,
+                        [threadId]: (state.messagesByThread[threadId] || []).map(m =>
+                            m.id === tempId ? realMsg : m
+                        ),
+                    },
+                }));
+            } catch {
+                // Mark as queued on failure
+                useChatStore.setState(state => ({
+                    messagesByThread: {
+                        ...state.messagesByThread,
+                        [threadId]: (state.messagesByThread[threadId] || []).map(m =>
+                            m.id === tempId ? { ...m, status: 'queued' as const } : m
+                        ),
+                    },
+                }));
+            }
         } else {
             await sendMessage(threadId, text, currentUserId);
         }
@@ -211,7 +238,7 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
         setActiveMessageId(null);
     };
 
-    const checkPermission = (type: 'camera' | 'microphone', cb: () => void) => {
+    const checkPermission = (type: 'camera' | 'microphone' | 'storage', cb: () => void) => {
         const ok = typeof window !== 'undefined' && localStorage.getItem(`permission_${type}`) === 'granted';
         if (ok) cb(); else setPermissionModal({ isOpen: true, type });
     };
@@ -461,7 +488,7 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                                     </div>
                                 ) : (
                                     /* Regular message bubble */
-                                    <div className={`flex ${isMe ? 'justify-end' : 'justify-start'} ${clustered ? 'mt-[1px]' : 'mt-3'}`}>
+                                    <div className={`flex ${isMe ? 'justify-end' : 'justify-start'} ${clustered ? 'mt-[3px]' : 'mt-4'}`}>
                                         <div
                                             className={`relative max-w-[75%] rounded-lg shadow-sm ${
                                                 isMe
@@ -647,30 +674,19 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
             <AttachmentSheet
                 isOpen={showAttachments}
                 onClose={() => setShowAttachments(false)}
-                onSelect={(type) => {
-                    setShowAttachments(false);
-                    if (type === 'camera') {
-                        checkPermission('camera', () => {
-                            const input = document.createElement('input');
-                            input.type = 'file';
-                            input.accept = 'image/*';
-                            input.capture = 'environment';
-                            input.onchange = (e) => {
-                                const file = (e.target as HTMLInputElement).files?.[0];
-                                if (file) handleFileUpload(file, 'image');
-                            };
-                            input.click();
-                        });
-                    } else if (type === 'gallery' || type === 'document') {
+                onFile={(file, type) => handleFileUpload(file, type)}
+                onCamera={() => {
+                    checkPermission('camera', () => {
                         const input = document.createElement('input');
                         input.type = 'file';
-                        input.accept = type === 'gallery' ? 'image/*,video/*' : '*/*';
+                        input.accept = 'image/*';
+                        input.capture = 'environment';
                         input.onchange = (e) => {
                             const file = (e.target as HTMLInputElement).files?.[0];
-                            if (file) handleFileUpload(file, type === 'gallery' ? 'image' : 'document');
+                            if (file) handleFileUpload(file, 'image');
                         };
                         input.click();
-                    }
+                    });
                 }}
             />
 

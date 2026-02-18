@@ -128,10 +128,8 @@ export function TicketDetailView({ item, isTranslated }: DetailViewProps) {
             <AttachmentSheet
                 isOpen={showAttachments}
                 onClose={() => setShowAttachments(false)}
-                onSelect={(type) => {
-                    setShowAttachments(false);
-                    if (type === 'camera') checkPermission('camera', () => console.log('Camera started'));
-                }}
+                onFile={(file, type) => { console.log('Ticket attachment:', file.name, type); }}
+                onCamera={() => checkPermission('camera', () => console.log('Camera started'))}
             />
 
             {/* Permission Modal */}

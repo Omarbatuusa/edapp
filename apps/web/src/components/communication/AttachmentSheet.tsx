@@ -5,7 +5,8 @@ import React, { useRef } from 'react';
 interface AttachmentSheetProps {
     isOpen: boolean;
     onClose: () => void;
-    onSelect: (type: string) => void;
+    onFile: (file: File, type: 'image' | 'document') => void;
+    onCamera: () => void;
 }
 
 const OPTIONS = [
@@ -14,27 +15,37 @@ const OPTIONS = [
     { id: 'document', icon: 'description', label: 'Document', bg: 'bg-[#7f66ff]' },
 ];
 
-export function AttachmentSheet({ isOpen, onClose, onSelect }: AttachmentSheetProps) {
-    const fileInputRef = useRef<HTMLInputElement>(null);
-    const imageInputRef = useRef<HTMLInputElement>(null);
+export function AttachmentSheet({ isOpen, onClose, onFile, onCamera }: AttachmentSheetProps) {
+    const docInputRef = useRef<HTMLInputElement>(null);
+    const galleryInputRef = useRef<HTMLInputElement>(null);
 
     if (!isOpen) return null;
 
     const handleOption = (id: string) => {
         if (id === 'document') {
-            fileInputRef.current?.click();
+            docInputRef.current?.click();
         } else if (id === 'gallery') {
-            imageInputRef.current?.click();
-        } else {
-            onSelect(id);
+            galleryInputRef.current?.click();
+        } else if (id === 'camera') {
+            onClose();
+            onCamera();
         }
     };
 
-    const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
+    const handleDocSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            console.log(`Selected ${type}:`, file.name, file.size);
-            onSelect(type);
+            onClose();
+            onFile(file, 'document');
+        }
+        e.target.value = '';
+    };
+
+    const handleGallerySelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            onClose();
+            onFile(file, 'image');
         }
         e.target.value = '';
     };
@@ -43,8 +54,24 @@ export function AttachmentSheet({ isOpen, onClose, onSelect }: AttachmentSheetPr
         <div className="fixed inset-0 z-[100] flex items-end justify-center">
             <div className="absolute inset-0 bg-black/40" onClick={onClose} />
 
-            <input ref={fileInputRef} type="file" accept="*/*" className="hidden" title="Select document" onChange={(e) => handleFileSelected(e, 'document')} />
-            <input ref={imageInputRef} type="file" accept="image/*,video/*" className="hidden" title="Select image or video" onChange={(e) => handleFileSelected(e, 'gallery')} />
+            {/* Document picker — accepts all file types */}
+            <input
+                ref={docInputRef}
+                type="file"
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip,.rar"
+                className="hidden"
+                title="Select document"
+                onChange={handleDocSelected}
+            />
+            {/* Gallery picker — images and videos only */}
+            <input
+                ref={galleryInputRef}
+                type="file"
+                accept="image/*,video/*"
+                className="hidden"
+                title="Select image or video"
+                onChange={handleGallerySelected}
+            />
 
             {/* Constrained width sheet — not full-width on desktop */}
             <div className="relative w-full max-w-md bg-white dark:bg-[#1e293b] rounded-t-2xl shadow-2xl px-6 pt-4 pb-8">
