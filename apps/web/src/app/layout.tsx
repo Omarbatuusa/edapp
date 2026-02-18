@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Lexend } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
@@ -8,6 +8,13 @@ const lexend = Lexend({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "EdApp",
   description: "School Management System",
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  interactiveWidget: 'resizes-content',
 };
 
 export default function RootLayout({

@@ -23,6 +23,32 @@ import { ReportModal } from '../ReportModal';
 const EMPTY_TYPING: any[] = [];
 const EMPTY_MESSAGES: Message[] = [];
 
+// Clustering: same sender within same minute → tight spacing
+function shouldCluster(prev: Message | undefined, curr: Message): boolean {
+    if (!prev) return false;
+    if (prev.senderId !== curr.senderId) return false;
+    return prev.time === curr.time;
+}
+
+// Dynamic date divider label
+function formatDateDivider(dateStr: string): string {
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+    const todayStr = today.toLocaleDateString();
+    const yesterdayStr = yesterday.toLocaleDateString();
+    if (dateStr === todayStr) return 'Today';
+    if (dateStr === yesterdayStr) return 'Yesterday';
+    // Parse and format nicely
+    try {
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return dateStr;
+        return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    } catch {
+        return dateStr;
+    }
+}
+
 // ============================================================
 // CHAT THREAD VIEW
 // ============================================================
@@ -205,6 +231,13 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
         }
     };
 
+    const handleRetrySend = useCallback(async (msg: Message) => {
+        // Remove the queued message, then re-send
+        deleteMessageStore(threadId, msg.id);
+        await sendMessage(threadId, msg.content, currentUserId);
+        isNearBottomRef.current = true;
+    }, [threadId, currentUserId, sendMessage, deleteMessageStore]);
+
     const handleMuteThread = async () => {
         setShowHeaderMenu(false);
         try { await chatApi.muteThread(threadId, true); } catch { /* silent */ }
@@ -352,13 +385,13 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                     backgroundColor: '#f0f4f8',
                 }}
             >
-                <div className="flex flex-col px-3 py-2 gap-[2px] max-w-4xl mx-auto">
-                    {/* Date pill */}
-                    <div className="flex justify-center my-3">
-                        <span className="bg-white/90 dark:bg-[#233138] text-[#54656f] dark:text-[#8696a0] text-[11px] font-medium px-3 py-1 rounded-lg shadow-sm">
-                            Today
-                        </span>
-                    </div>
+                <div className="flex flex-col px-3 pt-6 pb-2 max-w-4xl mx-auto">
+                    {/* Loading spinner at top */}
+                    {useChatStore.getState().isLoadingMessages && (
+                        <div className="flex justify-center py-4">
+                            <span className="material-symbols-outlined text-[20px] text-[#2563eb] animate-spin">progress_activity</span>
+                        </div>
+                    )}
 
                     {/* Empty state — clean, no duplicate suggestions */}
                     {!hasMessages && (
@@ -373,135 +406,172 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                         </div>
                     )}
 
-                    {filteredMessages.map((msg) => {
+                    {(() => {
+                        let lastDate = '';
+                        return filteredMessages.map((msg, idx) => {
                         const isMe = msg.isMe;
                         const hasImage = msg.attachments?.some(a => a.type === 'image');
                         const hasDoc = msg.attachments?.some(a => a.type === 'document');
+                        const hasVoice = msg.contentType === 'voice' || msg.attachments?.some(a => a.type === 'voice');
 
-                        // Action card
-                        if (msg.contentType === 'action_card' && msg.actionData) {
-                            return (
-                                <div key={msg.id} className="flex justify-center my-2">
-                                    <div className="bg-white dark:bg-[#1f2c34] rounded-xl p-4 shadow-sm w-full max-w-[320px]">
-                                        <div className="flex items-start gap-3 mb-3">
-                                            <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-[#2563eb] shrink-0">
-                                                <span className="material-symbols-outlined text-[20px]">{msg.actionType === 'approval' ? 'approval' : 'priority_high'}</span>
+                        // Clustering
+                        const prevMsg = idx > 0 ? filteredMessages[idx - 1] : undefined;
+                        const clustered = shouldCluster(prevMsg, msg);
+
+                        // Date divider
+                        const showDateDivider = msg.date !== lastDate;
+                        if (showDateDivider) lastDate = msg.date;
+
+                        return (
+                            <React.Fragment key={msg.id}>
+                                {/* Dynamic date divider */}
+                                {showDateDivider && (
+                                    <div className="flex justify-center my-3">
+                                        <span className="bg-white/90 dark:bg-[#233138] text-[#54656f] dark:text-[#8696a0] text-[11px] font-medium px-3 py-1 rounded-lg shadow-sm">
+                                            {formatDateDivider(msg.date)}
+                                        </span>
+                                    </div>
+                                )}
+
+                                {/* Action card */}
+                                {msg.contentType === 'action_card' && msg.actionData ? (
+                                    <div className="flex justify-center my-2">
+                                        <div className="bg-white dark:bg-[#1f2c34] rounded-xl p-4 shadow-sm w-full max-w-[320px]">
+                                            <div className="flex items-start gap-3 mb-3">
+                                                <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-[#2563eb] shrink-0">
+                                                    <span className="material-symbols-outlined text-[20px]">{msg.actionType === 'approval' ? 'approval' : 'priority_high'}</span>
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <h4 className="font-bold text-[13px] leading-tight">{msg.actionData.title}</h4>
+                                                    <p className="text-[11px] text-muted-foreground mt-0.5">{msg.actionData.subtitle}</p>
+                                                </div>
                                             </div>
-                                            <div className="min-w-0">
-                                                <h4 className="font-bold text-[13px] leading-tight">{msg.actionData.title}</h4>
-                                                <p className="text-[11px] text-muted-foreground mt-0.5">{msg.actionData.subtitle}</p>
-                                            </div>
+                                            {msg.actionData.status === 'pending' ? (
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <button type="button" onClick={() => handleAction(msg.id, 'reject')} className="py-2 rounded-lg border border-border text-[12px] font-bold hover:bg-secondary transition-colors">Decline</button>
+                                                    <button type="button" onClick={() => handleAction(msg.id, 'approve')} className="py-2 rounded-lg bg-[#2563eb] text-white text-[12px] font-bold hover:bg-[#1d4ed8] transition-colors">Approve</button>
+                                                </div>
+                                            ) : (
+                                                <div className={`py-2 rounded-lg text-[12px] font-bold text-center flex items-center justify-center gap-1.5 ${msg.actionData.status === 'approved' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'}`}>
+                                                    <span className="material-symbols-outlined text-[14px]">{msg.actionData.status === 'approved' ? 'check_circle' : 'cancel'}</span>
+                                                    {msg.actionData.status === 'approved' ? 'Approved' : 'Declined'}
+                                                </div>
+                                            )}
                                         </div>
-                                        {msg.actionData.status === 'pending' ? (
-                                            <div className="grid grid-cols-2 gap-2">
-                                                <button type="button" onClick={() => handleAction(msg.id, 'reject')} className="py-2 rounded-lg border border-border text-[12px] font-bold hover:bg-secondary transition-colors">Decline</button>
-                                                <button type="button" onClick={() => handleAction(msg.id, 'approve')} className="py-2 rounded-lg bg-[#2563eb] text-white text-[12px] font-bold hover:bg-[#1d4ed8] transition-colors">Approve</button>
-                                            </div>
-                                        ) : (
-                                            <div className={`py-2 rounded-lg text-[12px] font-bold text-center flex items-center justify-center gap-1.5 ${msg.actionData.status === 'approved' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'}`}>
-                                                <span className="material-symbols-outlined text-[14px]">{msg.actionData.status === 'approved' ? 'check_circle' : 'cancel'}</span>
-                                                {msg.actionData.status === 'approved' ? 'Approved' : 'Declined'}
-                                            </div>
+                                    </div>
+                                ) : (
+                                    /* Regular message bubble */
+                                    <div className={`flex ${isMe ? 'justify-end' : 'justify-start'} ${clustered ? 'mt-[1px]' : 'mt-3'}`}>
+                                        <div
+                                            className={`relative max-w-[75%] rounded-lg shadow-sm ${
+                                                isMe
+                                                    ? `bg-[#dbeafe] dark:bg-[#1e3a5f] text-[#0f172a] dark:text-[#e2e8f0] ${clustered ? '' : 'rounded-tr-none'}`
+                                                    : `bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-[#e2e8f0] ${clustered ? '' : 'rounded-tl-none'}`
+                                            } ${hasImage ? 'p-1 overflow-hidden' : 'px-2.5 pt-1.5 pb-[5px]'}`}
+                                            onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); setActiveMessageId(msg.id); }}
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            {!isMe && msg.senderName && !clustered && (
+                                                <p className={`text-[12.5px] font-semibold text-[#2563eb] mb-0.5 ${hasImage ? 'px-1.5 pt-0.5' : ''}`}>{msg.senderName}</p>
+                                            )}
+
+                                            {/* Voice/audio → unsupported */}
+                                            {hasVoice && (
+                                                <div className="flex items-center gap-2 py-1 px-1 text-[#64748b]">
+                                                    <span className="material-symbols-outlined text-[18px]">mic_off</span>
+                                                    <span className="text-[12px] italic">Audio message not supported</span>
+                                                </div>
+                                            )}
+
+                                            {/* Image attachment */}
+                                            {!hasVoice && hasImage && msg.attachments?.filter(a => a.type === 'image').map((att, i) => (
+                                                <a key={i} href={att.url} target="_blank" rel="noopener noreferrer" className="block">
+                                                    <img src={att.url} alt={att.name || 'Image'} className="max-w-[260px] w-full rounded-md" loading="lazy" />
+                                                </a>
+                                            ))}
+
+                                            {/* Document attachment */}
+                                            {!hasVoice && hasDoc && msg.attachments?.filter(a => a.type === 'document').map((att, i) => (
+                                                <a key={i} href={att.url} target="_blank" rel="noopener noreferrer"
+                                                    className="flex items-center gap-2.5 p-2 rounded-lg bg-[#f1f5f9] dark:bg-[#334155] hover:bg-[#e2e8f0] dark:hover:bg-[#475569] transition-colors mb-1">
+                                                    <div className="w-10 h-10 rounded-lg bg-[#2563eb]/10 flex items-center justify-center shrink-0">
+                                                        <span className="material-symbols-outlined text-[20px] text-[#2563eb]">description</span>
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-[13px] font-medium truncate">{att.name || 'Document'}</p>
+                                                        <p className="text-[10px] text-[#64748b]">Tap to open</p>
+                                                    </div>
+                                                    <span className="material-symbols-outlined text-[18px] text-[#94a3b8]">download</span>
+                                                </a>
+                                            ))}
+
+                                            {/* Text content */}
+                                            {!hasVoice && msg.content && (
+                                                <span className={`whitespace-pre-wrap break-words text-[14.2px] leading-[19px] ${hasImage ? 'block px-1.5 pt-1' : ''}`}>{msg.content}</span>
+                                            )}
+
+                                            {translatedMessages.has(msg.id) && !isMe && msg.content && (
+                                                <div className="mt-1 pt-1 border-t border-black/10 dark:border-white/10">
+                                                    <InlineTranslate contentId={msg.id} text={msg.content} tenantId="default" targetLang={preferredLang} />
+                                                </div>
+                                            )}
+
+                                            {/* Time + ticks */}
+                                            <span className={`float-right ml-2 -mb-[3px] flex items-center gap-0.5 text-[11px] text-[#64748b] dark:text-[#94a3b8] leading-none select-none ${hasImage ? 'pr-1 pb-0.5' : ''}`}>
+                                                {msg.status === 'sending' && <span className="material-symbols-outlined text-[14px] animate-spin text-[#94a3b8]">progress_activity</span>}
+                                                {msg.status === 'queued' && <span className="material-symbols-outlined text-[14px] text-amber-500">schedule</span>}
+                                                {msg.time}
+                                                {isMe && msg.status !== 'sending' && msg.status !== 'queued' && (
+                                                    <span className={`material-symbols-outlined text-[16px] ${msg.status === 'read' ? 'text-[#2563eb]' : ''}`}>
+                                                        {msg.status === 'read' || msg.status === 'delivered' ? 'done_all' : 'check'}
+                                                    </span>
+                                                )}
+                                            </span>
+
+                                            {/* Context menu */}
+                                            {activeMessageId === msg.id && (
+                                                <div className={`absolute ${isMe ? 'right-0' : 'left-0'} top-full mt-1 z-50 bg-white dark:bg-[#1e293b] rounded-xl shadow-xl overflow-hidden min-w-[150px]`}>
+                                                    <div className="py-1">
+                                                        <button type="button" onClick={() => handleReply(msg)} className="w-full flex items-center gap-2.5 px-4 py-2.5 text-[13px] hover:bg-[#f1f5f9] dark:hover:bg-[#334155] text-left">
+                                                            <span className="material-symbols-outlined text-[18px]">reply</span> Reply
+                                                        </button>
+                                                        <button type="button" onClick={() => handleCopy(msg.content)} className="w-full flex items-center gap-2.5 px-4 py-2.5 text-[13px] hover:bg-[#f1f5f9] dark:hover:bg-[#334155] text-left">
+                                                            <span className="material-symbols-outlined text-[18px]">content_copy</span> Copy
+                                                        </button>
+                                                        {!isMe && (
+                                                            <button type="button" onClick={(e) => toggleTranslation(msg.id, e)} className="w-full flex items-center gap-2.5 px-4 py-2.5 text-[13px] hover:bg-[#f1f5f9] dark:hover:bg-[#334155] text-left text-[#2563eb]">
+                                                                <span className="material-symbols-outlined text-[18px]">translate</span>
+                                                                {translatedMessages.has(msg.id) ? 'Hide' : 'Translate'}
+                                                            </button>
+                                                        )}
+                                                        {isMe && (
+                                                            <button type="button" onClick={() => handleDelete(msg.id)} className="w-full flex items-center gap-2.5 px-4 py-2.5 text-[13px] hover:bg-[#f1f5f9] dark:hover:bg-[#334155] text-left text-red-500">
+                                                                <span className="material-symbols-outlined text-[18px]">delete</span> Delete
+                                                            </button>
+                                                        )}
+                                                        {!isMe && (
+                                                            <button type="button" onClick={() => handleReport(msg.id)} className="w-full flex items-center gap-2.5 px-4 py-2.5 text-[13px] hover:bg-[#f1f5f9] dark:hover:bg-[#334155] text-left text-red-500">
+                                                                <span className="material-symbols-outlined text-[18px]">flag</span> Report
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Failed message retry */}
+                                        {msg.status === 'queued' && isMe && (
+                                            <button type="button" onClick={() => handleRetrySend(msg)} className="flex items-center gap-1 mt-1 ml-1 text-red-500 text-[11px] self-end">
+                                                <span className="material-symbols-outlined text-[14px]">error</span>
+                                                Tap to retry
+                                            </button>
                                         )}
                                     </div>
-                                </div>
-                            );
-                        }
-
-                        // Regular message bubble
-                        return (
-                            <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                                <div
-                                    className={`relative max-w-[80%] rounded-lg shadow-sm my-[1px] ${
-                                        isMe
-                                            ? 'bg-[#dbeafe] dark:bg-[#1e3a5f] text-[#0f172a] dark:text-[#e2e8f0] rounded-tr-none'
-                                            : 'bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-[#e2e8f0] rounded-tl-none'
-                                    } ${hasImage ? 'p-1 overflow-hidden' : 'px-2.5 pt-1.5 pb-[5px]'}`}
-                                    onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); setActiveMessageId(msg.id); }}
-                                    onClick={(e) => e.stopPropagation()}
-                                >
-                                    {!isMe && msg.senderName && (
-                                        <p className={`text-[12.5px] font-semibold text-[#2563eb] mb-0.5 ${hasImage ? 'px-1.5 pt-0.5' : ''}`}>{msg.senderName}</p>
-                                    )}
-
-                                    {/* Image attachment */}
-                                    {hasImage && msg.attachments?.filter(a => a.type === 'image').map((att, i) => (
-                                        <a key={i} href={att.url} target="_blank" rel="noopener noreferrer" className="block">
-                                            <img src={att.url} alt={att.name || 'Image'} className="max-w-[260px] w-full rounded-md" loading="lazy" />
-                                        </a>
-                                    ))}
-
-                                    {/* Document attachment */}
-                                    {hasDoc && msg.attachments?.filter(a => a.type === 'document').map((att, i) => (
-                                        <a key={i} href={att.url} target="_blank" rel="noopener noreferrer"
-                                            className="flex items-center gap-2.5 p-2 rounded-lg bg-[#f1f5f9] dark:bg-[#334155] hover:bg-[#e2e8f0] dark:hover:bg-[#475569] transition-colors mb-1">
-                                            <div className="w-10 h-10 rounded-lg bg-[#2563eb]/10 flex items-center justify-center shrink-0">
-                                                <span className="material-symbols-outlined text-[20px] text-[#2563eb]">description</span>
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-[13px] font-medium truncate">{att.name || 'Document'}</p>
-                                                <p className="text-[10px] text-[#64748b]">Tap to open</p>
-                                            </div>
-                                            <span className="material-symbols-outlined text-[18px] text-[#94a3b8]">download</span>
-                                        </a>
-                                    ))}
-
-                                    {/* Text content */}
-                                    {msg.content && (
-                                        <span className={`whitespace-pre-wrap break-words text-[14.2px] leading-[19px] ${hasImage ? 'block px-1.5 pt-1' : ''}`}>{msg.content}</span>
-                                    )}
-
-                                    {translatedMessages.has(msg.id) && !isMe && msg.content && (
-                                        <div className="mt-1 pt-1 border-t border-black/10 dark:border-white/10">
-                                            <InlineTranslate contentId={msg.id} text={msg.content} tenantId="default" targetLang={preferredLang} />
-                                        </div>
-                                    )}
-
-                                    {/* Time + ticks */}
-                                    <span className={`float-right ml-2 -mb-[3px] flex items-center gap-0.5 text-[11px] text-[#64748b] dark:text-[#94a3b8] leading-none select-none ${hasImage ? 'pr-1 pb-0.5' : ''}`}>
-                                        {msg.status === 'sending' && <span className="material-symbols-outlined text-[14px] animate-spin text-[#94a3b8]">progress_activity</span>}
-                                        {msg.status === 'queued' && <span className="material-symbols-outlined text-[14px] text-amber-500">schedule</span>}
-                                        {msg.time}
-                                        {isMe && msg.status !== 'sending' && msg.status !== 'queued' && (
-                                            <span className={`material-symbols-outlined text-[16px] ${msg.status === 'read' ? 'text-[#2563eb]' : ''}`}>
-                                                {msg.status === 'read' || msg.status === 'delivered' ? 'done_all' : 'check'}
-                                            </span>
-                                        )}
-                                    </span>
-
-                                    {/* Context menu */}
-                                    {activeMessageId === msg.id && (
-                                        <div className={`absolute ${isMe ? 'right-0' : 'left-0'} top-full mt-1 z-50 bg-white dark:bg-[#1e293b] rounded-xl shadow-xl overflow-hidden min-w-[150px]`}>
-                                            <div className="py-1">
-                                                <button type="button" onClick={() => handleReply(msg)} className="w-full flex items-center gap-2.5 px-4 py-2.5 text-[13px] hover:bg-[#f1f5f9] dark:hover:bg-[#334155] text-left">
-                                                    <span className="material-symbols-outlined text-[18px]">reply</span> Reply
-                                                </button>
-                                                <button type="button" onClick={() => handleCopy(msg.content)} className="w-full flex items-center gap-2.5 px-4 py-2.5 text-[13px] hover:bg-[#f1f5f9] dark:hover:bg-[#334155] text-left">
-                                                    <span className="material-symbols-outlined text-[18px]">content_copy</span> Copy
-                                                </button>
-                                                {!isMe && (
-                                                    <button type="button" onClick={(e) => toggleTranslation(msg.id, e)} className="w-full flex items-center gap-2.5 px-4 py-2.5 text-[13px] hover:bg-[#f1f5f9] dark:hover:bg-[#334155] text-left text-[#2563eb]">
-                                                        <span className="material-symbols-outlined text-[18px]">translate</span>
-                                                        {translatedMessages.has(msg.id) ? 'Hide' : 'Translate'}
-                                                    </button>
-                                                )}
-                                                {isMe && (
-                                                    <button type="button" onClick={() => handleDelete(msg.id)} className="w-full flex items-center gap-2.5 px-4 py-2.5 text-[13px] hover:bg-[#f1f5f9] dark:hover:bg-[#334155] text-left text-red-500">
-                                                        <span className="material-symbols-outlined text-[18px]">delete</span> Delete
-                                                    </button>
-                                                )}
-                                                {!isMe && (
-                                                    <button type="button" onClick={() => handleReport(msg.id)} className="w-full flex items-center gap-2.5 px-4 py-2.5 text-[13px] hover:bg-[#f1f5f9] dark:hover:bg-[#334155] text-left text-red-500">
-                                                        <span className="material-symbols-outlined text-[18px]">flag</span> Report
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
+                                )}
+                            </React.Fragment>
                         );
-                    })}
+                    });
+                    })()}
 
                     {/* Typing indicator */}
                     {typingUsers.length > 0 && (
