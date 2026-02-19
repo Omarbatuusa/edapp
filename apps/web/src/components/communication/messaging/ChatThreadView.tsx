@@ -3,6 +3,13 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import { FeedItem } from '../types';
+import { useChatStore, Message } from '../../../lib/chat-store';
+import chatApi from '../../../lib/chat-api';
+import { InlineTranslate } from '../TranslateButton';
+import { ChatComposer } from '../ChatComposer';
+import { AttachmentSheet } from '../AttachmentSheet';
+import { PermissionModal } from '../PermissionModal';
+import { ReportModal } from '../ReportModal';
 
 interface ChatThreadViewProps {
     item: FeedItem;
@@ -10,15 +17,6 @@ interface ChatThreadViewProps {
     onAction?: () => void;
     onCall?: () => void;
 }
-
-import { useChatStore, Message } from '../../../lib/chat-store';
-import chatApi from '../../../lib/chat-api';
-import { InlineTranslate } from '../TranslateButton';
-
-import { ChatComposer } from '../ChatComposer';
-import { AttachmentSheet } from '../AttachmentSheet';
-import { PermissionModal } from '../PermissionModal';
-import { ReportModal } from '../ReportModal';
 
 const EMPTY_TYPING: any[] = [];
 const EMPTY_MESSAGES: Message[] = [];
