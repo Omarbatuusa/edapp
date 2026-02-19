@@ -38,6 +38,7 @@ export interface Message {
     date: string;
     status: 'queued' | 'sending' | 'sent' | 'delivered' | 'read';
     createdAtMs?: number; // unix ms — used for clustering precision
+    is_edited?: boolean;
     attachments?: {
         type: 'image' | 'document' | 'voice';
         url: string;
@@ -102,6 +103,7 @@ const mapDtoToMessage = (dto: MessageDto, currentUserId: string): Message => {
         date: date.toLocaleDateString(),
         createdAtMs: date.getTime(),
         status: 'read',
+        is_edited: dto.is_edited ?? false,
         attachments: dto.attachments,
         actionType: dto.action_data?.type,
         actionData: dto.action_data,

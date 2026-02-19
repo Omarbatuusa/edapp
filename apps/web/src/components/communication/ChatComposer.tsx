@@ -106,7 +106,7 @@ export function ChatComposer({ onSend, onAttach, placeholder = "Type a message..
             )}
 
             {/* Composer bar — clean flat white, hairline separator only, no shadow, no pattern */}
-            <div className="bg-white dark:bg-[#1e2b32] border-t border-[#e2e8f0] dark:border-[#334155] px-2 py-2">
+            <div className="bg-[#f0f2f5] dark:bg-[#1e2b32] border-t border-[#e2e8f0] dark:border-[#334155] px-2 py-2">
                 <div className="flex items-center gap-1.5 max-w-4xl mx-auto">
                     {/* Input pill */}
                     <div className="flex-1 flex items-center bg-white dark:bg-[#2a3942] rounded-full h-[44px] pl-1 pr-1.5">

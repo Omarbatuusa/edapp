@@ -42,7 +42,6 @@ function formatDateDivider(dateStr: string): string {
     const yesterdayStr = yesterday.toLocaleDateString();
     if (dateStr === todayStr) return 'Today';
     if (dateStr === yesterdayStr) return 'Yesterday';
-    // Parse and format nicely
     try {
         const d = new Date(dateStr);
         if (isNaN(d.getTime())) return dateStr;
@@ -86,6 +85,9 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
     const [isUploading, setIsUploading] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [editingMsg, setEditingMsg] = useState<Message | null>(null);
+    const [editText, setEditText] = useState('');
+    const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
     const typingUsers = useChatStore(state => state.typing[item.threadId || item.id] ?? EMPTY_TYPING);
 
@@ -106,18 +108,23 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
         if (threadId) fetchMessages(threadId, currentUserId);
     }, [threadId, fetchMessages, currentUserId]);
 
+    // Scroll helper — instant snap to bottom
+    const scrollToBottom = useCallback(() => {
+        requestAnimationFrame(() => {
+            const el = messagesContainerRef.current;
+            if (el) el.scrollTop = el.scrollHeight;
+        });
+    }, []);
+
     // Scroll to bottom on initial load
     const initialScrollDone = useRef(false);
     useEffect(() => {
         if (messages.length > 0 && !initialScrollDone.current) {
             initialScrollDone.current = true;
-            // Use rAF to ensure DOM is painted before scrolling
-            requestAnimationFrame(() => {
-                messagesEndRef.current?.scrollIntoView({ behavior: 'instant' });
-            });
+            scrollToBottom();
             prevMessageCountRef.current = messages.length;
         }
-    }, [messages]);
+    }, [messages, scrollToBottom]);
 
     // Smart autoscroll on NEW messages (after initial load)
     useEffect(() => {
@@ -129,17 +136,12 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
 
         const lastMsg = messages[messages.length - 1];
         if (lastMsg?.isMe || isNearBottomRef.current) {
-            // Delay scroll to after React renders the new bubble
-            requestAnimationFrame(() => {
-                setTimeout(() => {
-                    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-                }, 50);
-            });
+            scrollToBottom();
             setShowNewMsgButton(false);
         } else {
             setShowNewMsgButton(true);
         }
-    }, [messages]);
+    }, [messages, scrollToBottom]);
 
     const handleMessagesScroll = () => {
         const el = messagesContainerRef.current;
@@ -154,13 +156,17 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
 
     const handleSend = useCallback(async (text: string) => {
         if (!text.trim()) return;
+        // Set flag BEFORE state update so autoscroll effect sees it
+        isNearBottomRef.current = true;
         if (replyToMsg) {
             const tempId = Date.now().toString();
+            const nowMs = Date.now();
             const optimisticMsg: Message = {
                 id: tempId, threadId, contentType: 'text', content: text.trim(),
                 senderId: currentUserId, isMe: true,
-                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                date: 'Today', status: 'sending',
+                time: new Date(nowMs).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                date: new Date(nowMs).toLocaleDateString(), status: 'sending',
+                createdAtMs: nowMs,
             };
             useChatStore.setState(state => ({
                 messagesByThread: {
@@ -169,9 +175,9 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                 },
             }));
             setReplyToMsg(null);
+            scrollToBottom();
             try {
                 const dto = await chatApi.sendMessage({ thread_id: threadId, content: text.trim(), reply_to_id: replyToMsg.id });
-                // Swap optimistic message with real one
                 const realMsg: Message = {
                     id: dto.id, threadId: dto.thread_id, contentType: dto.type,
                     content: dto.content, senderId: dto.sender_id, senderName: dto.sender_name,
@@ -179,6 +185,7 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                     time: new Date(dto.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                     date: new Date(dto.created_at).toLocaleDateString(),
                     status: 'sent',
+                    createdAtMs: new Date(dto.created_at).getTime(),
                 };
                 useChatStore.setState(state => ({
                     messagesByThread: {
@@ -189,7 +196,6 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                     },
                 }));
             } catch {
-                // Mark as queued on failure
                 useChatStore.setState(state => ({
                     messagesByThread: {
                         ...state.messagesByThread,
@@ -201,10 +207,25 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
             }
         } else {
             await sendMessage(threadId, text, currentUserId);
+            scrollToBottom();
         }
-        // Force near-bottom so autoscroll picks up our own message
-        isNearBottomRef.current = true;
-    }, [replyToMsg, threadId, currentUserId, sendMessage]);
+    }, [replyToMsg, threadId, currentUserId, sendMessage, scrollToBottom]);
+
+    const handleEditConfirm = useCallback(async () => {
+        if (!editingMsg || !editText.trim()) return;
+        const msgId = editingMsg.id;
+        const newContent = editText.trim();
+        setEditingMsg(null);
+        useChatStore.setState(state => ({
+            messagesByThread: {
+                ...state.messagesByThread,
+                [threadId]: (state.messagesByThread[threadId] || []).map(m =>
+                    m.id === msgId ? { ...m, content: newContent, is_edited: true } : m
+                ),
+            },
+        }));
+        try { await chatApi.editMessage(msgId, newContent); } catch { /* optimistic stays */ }
+    }, [editingMsg, editText, threadId]);
 
     const handleAction = async (msgId: string, action: 'approve' | 'reject' | 'acknowledge') => {
         const status = action === 'approve' ? 'approved' : action === 'reject' ? 'rejected' : 'acknowledged';
@@ -253,21 +274,22 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
     };
 
     const handleFileUpload = async (file: File, type?: 'image' | 'document') => {
+        isNearBottomRef.current = true;
         setIsUploading(true);
         try {
             await sendMessageWithAttachment(threadId, file, currentUserId, type);
-            isNearBottomRef.current = true;
+            scrollToBottom();
         } finally {
             setIsUploading(false);
         }
     };
 
     const handleRetrySend = useCallback(async (msg: Message) => {
-        // Remove the queued message, then re-send
         deleteMessageStore(threadId, msg.id);
-        await sendMessage(threadId, msg.content, currentUserId);
         isNearBottomRef.current = true;
-    }, [threadId, currentUserId, sendMessage, deleteMessageStore]);
+        await sendMessage(threadId, msg.content, currentUserId);
+        scrollToBottom();
+    }, [threadId, currentUserId, sendMessage, deleteMessageStore, scrollToBottom]);
 
     const handleMuteThread = async () => {
         setShowHeaderMenu(false);
@@ -412,12 +434,11 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                 className="flex-1 min-h-0 overflow-y-auto overscroll-contain relative"
                 style={{
                     WebkitOverflowScrolling: 'touch',
-                    // Educative tiled background: open book, pencil, graduation cap, atom
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='%232563eb' fill-opacity='0.035'%3E%3C!-- Open book (top-left) --%3E%3Cpath d='M8 18 Q15 14 22 18 L22 34 Q15 30 8 34Z M22 18 Q29 14 36 18 L36 34 Q29 30 22 34Z M8 34 L8 36 L36 36 L36 34'/%3E%3C!-- Pencil (top-right) --%3E%3Crect x='78' y='6' width='5' height='22' rx='1' transform='rotate(40 80 17)'/%3E%3Cpolygon points='80,28 77,35 83,35' transform='rotate(40 80 17)'/%3E%3Crect x='78' y='4' width='5' height='4' rx='1' fill='%232563eb' fill-opacity='0.06' transform='rotate(40 80 17)'/%3E%3C!-- Graduation cap (bottom-left) --%3E%3Cellipse cx='22' cy='82' rx='14' ry='4'/%3E%3Cpolygon points='22,68 36,76 22,84 8,76'/%3E%3Crect x='34' y='76' width='2' height='8' rx='1'/%3E%3Ccircle cx='35' cy='85' r='2'/%3E%3C!-- Atom (bottom-right) --%3E%3Ccircle cx='90' cy='90' r='4'/%3E%3Cellipse cx='90' cy='90' rx='16' ry='6' fill='none' stroke='%232563eb' stroke-opacity='0.035' stroke-width='2'/%3E%3Cellipse cx='90' cy='90' rx='16' ry='6' fill='none' stroke='%232563eb' stroke-opacity='0.035' stroke-width='2' transform='rotate(60 90 90)'/%3E%3Cellipse cx='90' cy='90' rx='16' ry='6' fill='none' stroke='%232563eb' stroke-opacity='0.035' stroke-width='2' transform='rotate(120 90 90)'/%3E%3C/g%3E%3C/svg%3E")`,
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='%232563eb' fill-opacity='0.035'%3E%3Cpath d='M8 18 Q15 14 22 18 L22 34 Q15 30 8 34Z M22 18 Q29 14 36 18 L36 34 Q29 30 22 34Z M8 34 L8 36 L36 36 L36 34'/%3E%3Crect x='78' y='6' width='5' height='22' rx='1' transform='rotate(40 80 17)'/%3E%3Cpolygon points='80,28 77,35 83,35' transform='rotate(40 80 17)'/%3E%3Crect x='78' y='4' width='5' height='4' rx='1' fill='%232563eb' fill-opacity='0.06' transform='rotate(40 80 17)'/%3E%3Cellipse cx='22' cy='82' rx='14' ry='4'/%3E%3Cpolygon points='22,68 36,76 22,84 8,76'/%3E%3Crect x='34' y='76' width='2' height='8' rx='1'/%3E%3Ccircle cx='35' cy='85' r='2'/%3E%3Ccircle cx='90' cy='90' r='4'/%3E%3Cellipse cx='90' cy='90' rx='16' ry='6' fill='none' stroke='%232563eb' stroke-opacity='0.035' stroke-width='2'/%3E%3Cellipse cx='90' cy='90' rx='16' ry='6' fill='none' stroke='%232563eb' stroke-opacity='0.035' stroke-width='2' transform='rotate(60 90 90)'/%3E%3Cellipse cx='90' cy='90' rx='16' ry='6' fill='none' stroke='%232563eb' stroke-opacity='0.035' stroke-width='2' transform='rotate(120 90 90)'/%3E%3C/g%3E%3C/svg%3E")`,
                     backgroundColor: '#f0f4f8',
                 }}
             >
-                <div className="flex flex-col px-3 pt-6 pb-2 max-w-4xl mx-auto">
+                <div className="flex flex-col px-3 pt-4 pb-2 max-w-4xl mx-auto">
                     {/* Loading spinner at top */}
                     {useChatStore.getState().isLoadingMessages && (
                         <div className="flex justify-center py-4">
@@ -425,7 +446,15 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                         </div>
                     )}
 
-                    {/* Empty state — clean, no duplicate suggestions */}
+                    {/* School monitored notice */}
+                    <div className="flex justify-center mb-3 mt-1">
+                        <span className="bg-white/80 dark:bg-[#1e293b]/80 text-[#64748b] dark:text-[#94a3b8] text-[11px] px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                            <span className="material-symbols-outlined text-[12px]">shield</span>
+                            Conversations are monitored for student safety
+                        </span>
+                    </div>
+
+                    {/* Empty state */}
                     {!hasMessages && (
                         <div className="flex flex-col items-center py-12 px-4">
                             <div className="w-16 h-16 rounded-full bg-[#2563eb]/10 flex items-center justify-center mb-4">
@@ -515,12 +544,12 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                                                 </div>
                                             )}
 
-                                            {/* Image attachment — blob URL while sending, real URL on success */}
+                                            {/* Image attachment — in-app lightbox, no URL exposure */}
                                             {!hasVoice && hasImage && msg.attachments?.filter(a => a.type === 'image').map((att, i) => (
                                                 <div
                                                     key={i}
                                                     className="cursor-pointer"
-                                                    onClick={() => att.url && window.open(att.url, '_blank', 'noopener,noreferrer')}
+                                                    onClick={() => att.url && setLightboxUrl(att.url)}
                                                 >
                                                     {att.url
                                                         ? <img src={att.url} alt={att.name || 'Image'} className="max-w-[260px] w-full rounded-md" loading="lazy" />
@@ -550,9 +579,31 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                                                 </div>
                                             ))}
 
-                                            {/* Text content */}
+                                            {/* Text content — or inline edit textarea */}
                                             {!hasVoice && msg.content && (
-                                                <span className={`whitespace-pre-wrap break-words text-[14.2px] leading-[19px] ${hasImage ? 'block px-1.5 pt-1' : ''}`}>{msg.content}</span>
+                                                editingMsg?.id === msg.id ? (
+                                                    <div className="flex flex-col gap-1 min-w-[180px]">
+                                                        <textarea
+                                                            autoFocus
+                                                            value={editText}
+                                                            title="Edit message"
+                                                            placeholder="Edit message..."
+                                                            onChange={(e) => setEditText(e.target.value)}
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleEditConfirm(); }
+                                                                if (e.key === 'Escape') setEditingMsg(null);
+                                                            }}
+                                                            className="w-full bg-transparent resize-none text-[14.2px] leading-[19px] outline-none border-b border-[#2563eb] py-0.5"
+                                                            rows={2}
+                                                        />
+                                                        <div className="flex justify-end gap-2 mt-1">
+                                                            <button type="button" onClick={() => setEditingMsg(null)} className="text-[11px] text-[#64748b] px-2 py-0.5 rounded hover:bg-black/10">Cancel</button>
+                                                            <button type="button" onClick={handleEditConfirm} className="text-[11px] text-[#2563eb] font-semibold px-2 py-0.5 rounded hover:bg-[#2563eb]/10">Save</button>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <span className={`whitespace-pre-wrap break-words text-[14.2px] leading-[19px] ${hasImage ? 'block px-1.5 pt-1' : ''}`}>{msg.content}</span>
+                                                )
                                             )}
 
                                             {translatedMessages.has(msg.id) && !isMe && msg.content && (
@@ -561,8 +612,9 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                                                 </div>
                                             )}
 
-                                            {/* Time + ticks */}
+                                            {/* Time + ticks + edited label */}
                                             <span className={`float-right ml-2 -mb-[3px] flex items-center gap-0.5 text-[11px] text-[#64748b] dark:text-[#94a3b8] leading-none select-none ${hasImage ? 'pr-1 pb-0.5' : ''}`}>
+                                                {msg.is_edited && <span className="text-[10px] text-[#94a3b8] mr-0.5">edited</span>}
                                                 {msg.status === 'sending' && <span className="material-symbols-outlined text-[14px] animate-spin text-[#94a3b8]">progress_activity</span>}
                                                 {msg.status === 'queued' && <span className="material-symbols-outlined text-[14px] text-amber-500">schedule</span>}
                                                 {msg.time}
@@ -583,6 +635,11 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                                                         <button type="button" onClick={() => handleCopy(msg.content)} className="w-full flex items-center gap-2.5 px-4 py-2.5 text-[13px] hover:bg-[#f1f5f9] dark:hover:bg-[#334155] text-left">
                                                             <span className="material-symbols-outlined text-[18px]">content_copy</span> Copy
                                                         </button>
+                                                        {isMe && !hasImage && !hasDoc && (
+                                                            <button type="button" onClick={() => { setEditingMsg(msg); setEditText(msg.content); setActiveMessageId(null); }} className="w-full flex items-center gap-2.5 px-4 py-2.5 text-[13px] hover:bg-[#f1f5f9] dark:hover:bg-[#334155] text-left">
+                                                                <span className="material-symbols-outlined text-[18px]">edit</span> Edit
+                                                            </button>
+                                                        )}
                                                         {!isMe && (
                                                             <button type="button" onClick={(e) => toggleTranslation(msg.id, e)} className="w-full flex items-center gap-2.5 px-4 py-2.5 text-[13px] hover:bg-[#f1f5f9] dark:hover:bg-[#334155] text-left text-[#2563eb]">
                                                                 <span className="material-symbols-outlined text-[18px]">translate</span>
@@ -641,7 +698,7 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                 {showNewMsgButton && (
                     <button
                         type="button"
-                        onClick={() => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); setShowNewMsgButton(false); }}
+                        onClick={() => { scrollToBottom(); setShowNewMsgButton(false); }}
                         className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-[#1e293b] rounded-full shadow-lg border border-[#e2e8f0] dark:border-[#334155] text-[12px] font-medium text-[#2563eb] hover:bg-[#eff6ff] transition-colors"
                     >
                         <span className="material-symbols-outlined text-[16px]">keyboard_arrow_down</span>
@@ -664,7 +721,7 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                 </div>
             )}
 
-            {/* ====== SUGGESTION CHIPS (single location — above composer, for new threads) ====== */}
+            {/* ====== SUGGESTION CHIPS ====== */}
             {messages.length < 3 && (
                 <div className="shrink-0 px-2 py-1.5">
                     <div className="flex gap-1.5 overflow-x-auto max-w-4xl mx-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
@@ -682,7 +739,7 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                 </div>
             )}
 
-            {/* ====== COMPOSER (no audio) ====== */}
+            {/* ====== COMPOSER ====== */}
             <ChatComposer
                 onSend={handleSend}
                 onAttach={() => setShowAttachments(true)}
@@ -720,6 +777,28 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                     setReportMessageId(null);
                 }}
             />
+
+            {/* ====== IMAGE LIGHTBOX — in-app viewer, no URL in browser bar ====== */}
+            {lightboxUrl && (
+                <div
+                    className="fixed inset-0 z-[200] bg-black/90 flex items-center justify-center p-4"
+                    onClick={() => setLightboxUrl(null)}
+                >
+                    <button
+                        type="button"
+                        className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-black/50 text-white z-10"
+                        onClick={() => setLightboxUrl(null)}
+                    >
+                        <span className="material-symbols-outlined text-[22px]">close</span>
+                    </button>
+                    <img
+                        src={lightboxUrl}
+                        alt="Attachment"
+                        className="max-w-full max-h-full object-contain rounded-lg"
+                        onClick={(e) => e.stopPropagation()}
+                    />
+                </div>
+            )}
         </div>
     );
 }

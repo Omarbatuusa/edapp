@@ -239,7 +239,7 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
 
                 {(activeView === 'ticket' || activeView === 'announcement') && (
                     <ScreenStackDetail onBack={handleBack}>
-                        {activeView === 'ticket' && <TicketDetailView item={selectedItem} isTranslated={isTranslated} />}
+                        {activeView === 'ticket' && <TicketDetailView item={selectedItem} isTranslated={isTranslated} onBack={handleBack} />}
                         {activeView === 'announcement' && <AnnouncementDetailView item={selectedItem} isTranslated={isTranslated} />}
                     </ScreenStackDetail>
                 )}

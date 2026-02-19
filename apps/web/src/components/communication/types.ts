@@ -40,4 +40,5 @@ export interface FeedItem {
 export interface DetailViewProps {
     item: FeedItem | null;
     isTranslated?: boolean;
+    onBack?: () => void;
 }
