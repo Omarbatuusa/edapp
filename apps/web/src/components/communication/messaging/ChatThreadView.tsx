@@ -23,10 +23,13 @@ import { ReportModal } from '../ReportModal';
 const EMPTY_TYPING: any[] = [];
 const EMPTY_MESSAGES: Message[] = [];
 
-// Clustering: same sender within same minute → tight spacing
+// Clustering: same sender within 3 minutes → tight spacing
 function shouldCluster(prev: Message | undefined, curr: Message): boolean {
     if (!prev) return false;
     if (prev.senderId !== curr.senderId) return false;
+    if (prev.createdAtMs && curr.createdAtMs) {
+        return (curr.createdAtMs - prev.createdAtMs) < 3 * 60 * 1000;
+    }
     return prev.time === curr.time;
 }
 
@@ -66,7 +69,8 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
     const threadId = item.threadId || item.id;
     const messages = messagesByThread[threadId] ?? EMPTY_MESSAGES;
 
-    // Derive role from URL: /tenant/[slug]/[role]/chat
+    // Derive role and tenant slug from URL: /tenant/[slug]/[role]/chat
+    const tenantSlug = pathname?.match(/\/tenant\/([^/]+)/)?.[1] || 'default';
     const userRole = pathname?.match(/\/tenant\/[^/]+\/([^/]+)/)?.[1] || 'parent';
 
     // UI State
@@ -408,7 +412,8 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                 className="flex-1 min-h-0 overflow-y-auto overscroll-contain relative"
                 style={{
                     WebkitOverflowScrolling: 'touch',
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232563eb' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                    // Educative tiled background: open book, pencil, graduation cap, atom
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='%232563eb' fill-opacity='0.035'%3E%3C!-- Open book (top-left) --%3E%3Cpath d='M8 18 Q15 14 22 18 L22 34 Q15 30 8 34Z M22 18 Q29 14 36 18 L36 34 Q29 30 22 34Z M8 34 L8 36 L36 36 L36 34'/%3E%3C!-- Pencil (top-right) --%3E%3Crect x='78' y='6' width='5' height='22' rx='1' transform='rotate(40 80 17)'/%3E%3Cpolygon points='80,28 77,35 83,35' transform='rotate(40 80 17)'/%3E%3Crect x='78' y='4' width='5' height='4' rx='1' fill='%232563eb' fill-opacity='0.06' transform='rotate(40 80 17)'/%3E%3C!-- Graduation cap (bottom-left) --%3E%3Cellipse cx='22' cy='82' rx='14' ry='4'/%3E%3Cpolygon points='22,68 36,76 22,84 8,76'/%3E%3Crect x='34' y='76' width='2' height='8' rx='1'/%3E%3Ccircle cx='35' cy='85' r='2'/%3E%3C!-- Atom (bottom-right) --%3E%3Ccircle cx='90' cy='90' r='4'/%3E%3Cellipse cx='90' cy='90' rx='16' ry='6' fill='none' stroke='%232563eb' stroke-opacity='0.035' stroke-width='2'/%3E%3Cellipse cx='90' cy='90' rx='16' ry='6' fill='none' stroke='%232563eb' stroke-opacity='0.035' stroke-width='2' transform='rotate(60 90 90)'/%3E%3Cellipse cx='90' cy='90' rx='16' ry='6' fill='none' stroke='%232563eb' stroke-opacity='0.035' stroke-width='2' transform='rotate(120 90 90)'/%3E%3C/g%3E%3C/svg%3E")`,
                     backgroundColor: '#f0f4f8',
                 }}
             >
@@ -488,7 +493,7 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                                     </div>
                                 ) : (
                                     /* Regular message bubble */
-                                    <div className={`flex ${isMe ? 'justify-end' : 'justify-start'} ${clustered ? 'mt-[3px]' : 'mt-4'}`}>
+                                    <div className={`flex ${isMe ? 'justify-end' : 'justify-start'} ${clustered ? 'mt-[3px]' : 'mt-3'}`}>
                                         <div
                                             className={`relative max-w-[75%] rounded-lg shadow-sm ${
                                                 isMe
@@ -510,26 +515,39 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
                                                 </div>
                                             )}
 
-                                            {/* Image attachment */}
+                                            {/* Image attachment — blob URL while sending, real URL on success */}
                                             {!hasVoice && hasImage && msg.attachments?.filter(a => a.type === 'image').map((att, i) => (
-                                                <a key={i} href={att.url} target="_blank" rel="noopener noreferrer" className="block">
-                                                    <img src={att.url} alt={att.name || 'Image'} className="max-w-[260px] w-full rounded-md" loading="lazy" />
-                                                </a>
+                                                <div
+                                                    key={i}
+                                                    className="cursor-pointer"
+                                                    onClick={() => att.url && window.open(att.url, '_blank', 'noopener,noreferrer')}
+                                                >
+                                                    {att.url
+                                                        ? <img src={att.url} alt={att.name || 'Image'} className="max-w-[260px] w-full rounded-md" loading="lazy" />
+                                                        : <div className="w-[200px] h-[120px] bg-[#e2e8f0] dark:bg-[#334155] animate-pulse rounded-md" />
+                                                    }
+                                                </div>
                                             ))}
 
-                                            {/* Document attachment */}
+                                            {/* Document attachment — no href, open via JS */}
                                             {!hasVoice && hasDoc && msg.attachments?.filter(a => a.type === 'document').map((att, i) => (
-                                                <a key={i} href={att.url} target="_blank" rel="noopener noreferrer"
-                                                    className="flex items-center gap-2.5 p-2 rounded-lg bg-[#f1f5f9] dark:bg-[#334155] hover:bg-[#e2e8f0] dark:hover:bg-[#475569] transition-colors mb-1">
+                                                <div
+                                                    key={i}
+                                                    onClick={() => att.url && window.open(att.url, '_blank', 'noopener,noreferrer')}
+                                                    className={`flex items-center gap-2.5 p-2 rounded-lg bg-[#f1f5f9] dark:bg-[#334155] transition-colors mb-1 ${att.url ? 'cursor-pointer hover:bg-[#e2e8f0] dark:hover:bg-[#475569]' : 'cursor-default'}`}
+                                                >
                                                     <div className="w-10 h-10 rounded-lg bg-[#2563eb]/10 flex items-center justify-center shrink-0">
                                                         <span className="material-symbols-outlined text-[20px] text-[#2563eb]">description</span>
                                                     </div>
                                                     <div className="flex-1 min-w-0">
                                                         <p className="text-[13px] font-medium truncate">{att.name || 'Document'}</p>
-                                                        <p className="text-[10px] text-[#64748b]">Tap to open</p>
+                                                        <p className="text-[10px] text-[#64748b]">
+                                                            {att.url ? 'Tap to open' : 'Uploading...'}
+                                                        </p>
                                                     </div>
-                                                    <span className="material-symbols-outlined text-[18px] text-[#94a3b8]">download</span>
-                                                </a>
+                                                    {att.url && <span className="material-symbols-outlined text-[18px] text-[#94a3b8]">download</span>}
+                                                    {!att.url && <span className="material-symbols-outlined text-[16px] text-[#94a3b8] animate-spin">progress_activity</span>}
+                                                </div>
                                             ))}
 
                                             {/* Text content */}
@@ -539,7 +557,7 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
 
                                             {translatedMessages.has(msg.id) && !isMe && msg.content && (
                                                 <div className="mt-1 pt-1 border-t border-black/10 dark:border-white/10">
-                                                    <InlineTranslate contentId={msg.id} text={msg.content} tenantId="default" targetLang={preferredLang} />
+                                                    <InlineTranslate contentId={msg.id} text={msg.content} tenantId={tenantSlug} targetLang={preferredLang} />
                                                 </div>
                                             )}
 
@@ -648,8 +666,8 @@ export function ChatThreadView({ item, onBack, onAction, onCall }: ChatThreadVie
 
             {/* ====== SUGGESTION CHIPS (single location — above composer, for new threads) ====== */}
             {messages.length < 3 && (
-                <div className="shrink-0 bg-[#f8fafc] dark:bg-[#0f172a] border-t border-[#e2e8f0] dark:border-[#1e293b] px-2 py-1.5">
-                    <div className="flex gap-1.5 overflow-x-auto max-w-4xl mx-auto scrollbar-none">
+                <div className="shrink-0 px-2 py-1.5">
+                    <div className="flex gap-1.5 overflow-x-auto max-w-4xl mx-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                         {suggestionChips.map((chip) => (
                             <button
                                 key={chip.label}

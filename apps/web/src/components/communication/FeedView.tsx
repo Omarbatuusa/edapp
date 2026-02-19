@@ -194,7 +194,15 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                         <div className="shrink-0 px-5 py-3 flex items-center justify-between border-b border-border/50 bg-white/95 dark:bg-[#0B1120]/95 backdrop-blur-sm">
                             <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Children</span>
                             <button
-                                onClick={() => setSelectedChildId('all')}
+                                onClick={() => {
+                                    if (selectedChildId === 'all') {
+                                        // Deselect — go back to first real child
+                                        const first = children.find(c => c.id !== 'all');
+                                        if (first) setSelectedChildId(first.id);
+                                    } else {
+                                        setSelectedChildId('all');
+                                    }
+                                }}
                                 className="flex items-center gap-2 group"
                             >
                                 <span className="text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors">Select All</span>

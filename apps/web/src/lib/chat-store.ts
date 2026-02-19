@@ -37,6 +37,7 @@ export interface Message {
     time: string;
     date: string;
     status: 'queued' | 'sending' | 'sent' | 'delivered' | 'read';
+    createdAtMs?: number; // unix ms — used for clustering precision
     attachments?: {
         type: 'image' | 'document' | 'voice';
         url: string;
@@ -98,8 +99,9 @@ const mapDtoToMessage = (dto: MessageDto, currentUserId: string): Message => {
         senderName: dto.sender_name,
         isMe: dto.sender_id === currentUserId,
         time: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        date: date.toLocaleDateString(), // simplified
-        status: 'read', // simplified
+        date: date.toLocaleDateString(),
+        createdAtMs: date.getTime(),
+        status: 'read',
         attachments: dto.attachments,
         actionType: dto.action_data?.type,
         actionData: dto.action_data,
@@ -147,7 +149,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
     sendMessage: async (threadId, content, userId) => {
         // Optimistic add
-        const tempId = Date.now().toString();
+        const nowMs = Date.now();
+        const tempId = nowMs.toString();
         const optimisticMsg: Message = {
             id: tempId,
             threadId,
@@ -155,8 +158,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
             content,
             senderId: userId,
             isMe: true,
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            date: 'Today',
+            time: new Date(nowMs).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            date: new Date(nowMs).toLocaleDateString(),
+            createdAtMs: nowMs,
             status: 'sending'
         };
 
@@ -200,7 +204,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
     sendMessageWithAttachment: async (threadId, file, userId, type) => {
         const attachType = type || (file.type.startsWith('image/') ? 'image' : file.type.startsWith('audio/') ? 'voice' : 'document');
-        const tempId = Date.now().toString();
+        const now = Date.now();
+        const tempId = now.toString();
+        const localBlobUrl = URL.createObjectURL(file); // local preview while uploading
         const optimisticMsg: Message = {
             id: tempId,
             threadId,
@@ -208,10 +214,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
             content: file.name,
             senderId: userId,
             isMe: true,
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            date: 'Today',
+            time: new Date(now).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            date: new Date(now).toLocaleDateString(),
+            createdAtMs: now,
             status: 'sending',
-            attachments: [{ type: attachType, url: '', name: file.name }],
+            attachments: [{ type: attachType, url: localBlobUrl, name: file.name }],
         };
 
         set(state => ({
@@ -234,6 +241,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
                     mime_type: file.type,
                 }],
             });
+            URL.revokeObjectURL(localBlobUrl); // free memory once real URL arrives
             const realMsg = mapDtoToMessage(dto, userId);
             set(state => ({
                 messagesByThread: {

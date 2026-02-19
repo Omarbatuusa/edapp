@@ -222,7 +222,8 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
                         onBack={handleBack}
                         onStartChat={(item) => {
                             setSelectedItem(item);
-                            setActiveView('thread');
+                            // 'support' type → TicketDetailView; 'message' → ChatThreadView
+                            setActiveView(item.type === 'support' ? 'ticket' : 'thread');
                         }}
                         onCreateChannel={() => setActiveView('create-channel')}
                     />

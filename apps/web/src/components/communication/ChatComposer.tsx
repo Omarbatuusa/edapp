@@ -97,7 +97,7 @@ export function ChatComposer({ onSend, onAttach, placeholder = "Type a message..
         <div className="shrink-0 relative">
             {/* Emoji picker popup */}
             {showEmojis && (
-                <div className="absolute bottom-full left-2 mb-2 z-50">
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 max-w-[calc(100vw-16px)]">
                     <EmojiPickerPanel
                         onSelect={insertEmoji}
                         onClose={() => setShowEmojis(false)}
@@ -105,15 +105,8 @@ export function ChatComposer({ onSend, onAttach, placeholder = "Type a message..
                 </div>
             )}
 
-            {/* Composer bar — subtle top border + light shadow, educative bg */}
-            <div
-                className="border-t border-[#e2e8f0] dark:border-[#334155] px-2 py-2"
-                style={{
-                    boxShadow: '0 -1px 3px rgba(0,0,0,0.06)',
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232563eb' fill-opacity='0.03'%3E%3Cpath d='M20 18l2 2-2 2-2-2 2-2zm10-10l2 2-2 2-2-2 2-2zM0 18l2 2-2 2-2-2 2-2zm10-10l2 2-2 2-2-2 2-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                    backgroundColor: '#f0f2f5',
-                }}
-            >
+            {/* Composer bar — clean flat white, hairline separator only, no shadow, no pattern */}
+            <div className="bg-white dark:bg-[#1e2b32] border-t border-[#e2e8f0] dark:border-[#334155] px-2 py-2">
                 <div className="flex items-center gap-1.5 max-w-4xl mx-auto">
                     {/* Input pill */}
                     <div className="flex-1 flex items-center bg-white dark:bg-[#2a3942] rounded-full h-[44px] pl-1 pr-1.5">
