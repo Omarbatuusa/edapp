@@ -21,12 +21,15 @@ export class HandoffController {
     // Called by Tenant to exchange code for session
     @Post('exchange')
     async exchangeHandoff(
-        @Body() body: { code: string },
-        @Headers('x-tenant-slug') tenantSlug: string // From middleware
+        @Body() body: { code: string; tenantSlug?: string },
+        @Headers('x-tenant-slug') tenantSlugHeader: string
     ) {
         if (!body.code) {
             throw new BadRequestException('Missing code');
         }
+
+        // Body takes priority over header (nginx may strip custom headers)
+        const tenantSlug = body.tenantSlug || tenantSlugHeader;
 
         if (!tenantSlug) {
             throw new BadRequestException('Missing tenant context');

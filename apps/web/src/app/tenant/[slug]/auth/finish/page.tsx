@@ -29,7 +29,7 @@ function AuthFinishContent() {
                         'Content-Type': 'application/json',
                         'x-tenant-slug': tenantSlug
                     },
-                    body: JSON.stringify({ code: handoffCode })
+                    body: JSON.stringify({ code: handoffCode, tenantSlug })
                 });
 
                 if (!exchangeRes.ok) {
