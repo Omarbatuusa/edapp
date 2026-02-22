@@ -18,7 +18,7 @@ export class AdminEmailVerifyController {
         private readonly draftRepo: Repository<AdminDraft>,
     ) {
         const region = configService.get<string>('AWS_REGION') || 'af-south-1';
-        this.fromEmail = configService.get<string>('AWS_SES_FROM_EMAIL') || 'noreply@edapp.co.za';
+        this.fromEmail = configService.get<string>('SES_FROM_EMAIL') || 'noreply@edapp.co.za';
 
         this.sesClient = new SESClient({
             region,
