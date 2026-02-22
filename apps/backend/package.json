@@ -22,6 +22,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.995.0",
     "@google-cloud/storage": "^7.14.0",
     "@google-cloud/translate": "^9.3.0",
     "@nestjs/bullmq": "^11.0.4",
@@ -38,6 +39,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.3",
     "firebase-admin": "^13.6.1",
+    "libphonenumber-js": "^1.12.37",
     "pg": "^8.17.2",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",

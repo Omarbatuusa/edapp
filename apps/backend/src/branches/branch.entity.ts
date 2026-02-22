@@ -2,6 +2,16 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDa
 import { Tenant } from '../tenants/tenant.entity';
 import { SecurityMode } from '../security/tenant-security-policy.entity';
 
+export enum CurriculumFramework {
+    CAPS = 'CAPS',
+    IEB = 'IEB',
+    CAMBRIDGE = 'CAMBRIDGE',
+    IB = 'IB',
+    TVET = 'TVET',
+    ABE = 'ABE',
+    OTHER = 'OTHER',
+}
+
 @Entity('branches')
 @Index(['tenant_id', 'branch_code'], { unique: true }) // Unique branch code per tenant
 export class Branch {
@@ -49,6 +59,70 @@ export class Branch {
 
     @Column({ nullable: true })
     emis_number: string;
+
+    @Column({
+        type: 'enum',
+        enum: CurriculumFramework,
+        nullable: true,
+    })
+    curriculum_framework: CurriculumFramework;
+
+    // ========== STRUCTURED ADDRESS ==========
+
+    @Column({ nullable: true })
+    google_place_id: string;
+
+    @Column({ type: 'text', nullable: true })
+    formatted_address: string;
+
+    @Column({ type: 'jsonb', nullable: true })
+    address_components: {
+        street?: string;
+        suburb?: string;
+        city?: string;
+        province?: string;
+        postal_code?: string;
+        country?: string;
+    };
+
+    @Column({ type: 'jsonb', nullable: true })
+    geo: { lat: number; lng: number };
+
+    // ========== PHONE E.164 METADATA ==========
+
+    @Column({ nullable: true })
+    mobile_e164: string;
+
+    @Column({ nullable: true })
+    mobile_country_iso2: string;
+
+    @Column({ nullable: true })
+    mobile_dial_code: string;
+
+    @Column({ nullable: true })
+    landline_e164: string;
+
+    @Column({ nullable: true })
+    landline_country_iso2: string;
+
+    @Column({ nullable: true })
+    landline_dial_code: string;
+
+    // ========== EMAIL VERIFICATION ==========
+
+    @Column({ default: false })
+    branch_email_verified: boolean;
+
+    @Column({ type: 'timestamp', nullable: true })
+    branch_email_verified_at: Date;
+
+    // ========== BRANCH HIERARCHY ==========
+
+    @Column({ nullable: true })
+    parent_branch_id: string;
+
+    @Column({ nullable: true })
+    brand_id: string;
 
     @Column({ nullable: true })
     school_logo_url: string;

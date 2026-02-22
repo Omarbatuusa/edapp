@@ -1,6 +1,8 @@
 'use client';
 
-import { use, useState } from 'react';
+import { use, useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import {
     Users,
     TrendingUp,
@@ -10,7 +12,28 @@ import {
     Search
 } from 'lucide-react';
 
-export default function AdminDashboard() {
+interface Props { params: Promise<{ slug: string }> }
+
+const BRAND_ROLES = ['PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN', 'platform_admin'];
+const BRANCH_ROLES = ['TENANT_ADMIN', 'MAIN_BRANCH_ADMIN', 'BRANCH_ADMIN', 'PLATFORM_SUPER_ADMIN', 'platform_admin'];
+
+function useAdminRole(slug: string) {
+    const [role, setRole] = useState('');
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const r = localStorage.getItem(`edapp_role_${slug}`) || localStorage.getItem('user_role') || '';
+            setRole(r);
+        }
+    }, [slug]);
+    return role;
+}
+
+export default function AdminDashboard({ params }: Props) {
+    const { slug } = use(params);
+    const role = useAdminRole(slug);
+    const canManageBrands = BRAND_ROLES.some(r => role.includes(r) || r.includes(role));
+    const canManageBranches = BRANCH_ROLES.some(r => role.includes(r) || r.includes(role));
+
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -27,6 +50,51 @@ export default function AdminDashboard() {
                     </button>
                 </div>
             </div>
+
+            {/* School Setup Management Cards */}
+            {(canManageBrands || canManageBranches) && (
+                <div>
+                    <h2 className="text-base font-semibold text-slate-700 dark:text-slate-300 mb-3">School Setup</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {canManageBrands && (
+                            <Link href={`/tenant/${slug}/admin/brands`} className="surface-card p-5 flex items-center gap-4 hover:shadow-md hover:border-blue-200 dark:hover:border-blue-700 transition-all group cursor-pointer border border-transparent">
+                                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-purple-200 dark:group-hover:bg-purple-900/50 transition-colors">
+                                    <span className="material-symbols-outlined text-purple-600 dark:text-purple-400">category</span>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="font-semibold text-slate-800 dark:text-slate-100">Brand Management</p>
+                                    <p className="text-xs text-muted-foreground mt-0.5">Manage school brands and groups</p>
+                                </div>
+                                <ArrowRight size={16} className="text-muted-foreground/50 group-hover:text-primary transition-colors flex-shrink-0" />
+                            </Link>
+                        )}
+                        {canManageBranches && (
+                            <>
+                                <Link href={`/tenant/${slug}/admin/main-branch`} className="surface-card p-5 flex items-center gap-4 hover:shadow-md hover:border-blue-200 dark:hover:border-blue-700 transition-all group cursor-pointer border border-transparent">
+                                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors">
+                                        <span className="material-symbols-outlined text-blue-600 dark:text-blue-400">account_balance</span>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="font-semibold text-slate-800 dark:text-slate-100">Main Branch Setup</p>
+                                        <p className="text-xs text-muted-foreground mt-0.5">Configure your primary school profile</p>
+                                    </div>
+                                    <ArrowRight size={16} className="text-muted-foreground/50 group-hover:text-primary transition-colors flex-shrink-0" />
+                                </Link>
+                                <Link href={`/tenant/${slug}/admin/branches`} className="surface-card p-5 flex items-center gap-4 hover:shadow-md hover:border-blue-200 dark:hover:border-blue-700 transition-all group cursor-pointer border border-transparent">
+                                    <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-green-200 dark:group-hover:bg-green-900/50 transition-colors">
+                                        <span className="material-symbols-outlined text-green-600 dark:text-green-400">location_city</span>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="font-semibold text-slate-800 dark:text-slate-100">Branch Management</p>
+                                        <p className="text-xs text-muted-foreground mt-0.5">Manage campuses and branches</p>
+                                    </div>
+                                    <ArrowRight size={16} className="text-muted-foreground/50 group-hover:text-primary transition-colors flex-shrink-0" />
+                                </Link>
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

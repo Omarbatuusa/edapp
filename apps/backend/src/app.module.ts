@@ -32,6 +32,7 @@ import { TenantSecurityPolicy } from './security/tenant-security-policy.entity';
 import { BranchSecurityPolicy } from './security/branch-security-policy.entity';
 import { IpAllowlist } from './security/ip-allowlist.entity';
 import { GeoZone } from './security/geo-zone.entity';
+import { AdminDraft } from './admin/admin-draft.entity';
 
 // Modules
 import { BrandsModule } from './brands/brands.module';
@@ -49,6 +50,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { TranslationModule } from './translation/translation.module';
 import { SecurityModule } from './security/security.module';
 import { AttendanceModule } from './attendance/attendance.module';
+import { AdminModule } from './admin/admin.module';
 
 import { BullModule } from '@nestjs/bullmq';
 
@@ -99,6 +101,7 @@ import { BullModule } from '@nestjs/bullmq';
           BranchSecurityPolicy,
           IpAllowlist,
           GeoZone,
+          AdminDraft,
         ],
         autoLoadEntities: true,
         synchronize: true, // DEV only, set to false in prod
@@ -121,6 +124,7 @@ import { BullModule } from '@nestjs/bullmq';
     TranslationModule,
     SecurityModule,
     AttendanceModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],
