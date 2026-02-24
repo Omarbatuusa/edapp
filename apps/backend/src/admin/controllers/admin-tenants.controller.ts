@@ -105,7 +105,7 @@ export class AdminTenantsController {
         enable_student_pin: true,
         pin_length: 4,
       },
-    } as any));
+    } as any)) as unknown as Tenant;
     // Auto-create default feature flags
     for (const f of DEFAULT_FEATURES) {
       await this.featureRepo.save(this.featureRepo.create({ tenant_id: tenant.id, ...f } as any));
