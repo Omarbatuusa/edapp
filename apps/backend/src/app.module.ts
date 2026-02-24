@@ -33,6 +33,24 @@ import { BranchSecurityPolicy } from './security/branch-security-policy.entity';
 import { IpAllowlist } from './security/ip-allowlist.entity';
 import { GeoZone } from './security/geo-zone.entity';
 import { AdminDraft } from './admin/admin-draft.entity';
+import { DictPhase } from './admin/entities/dict-phase.entity';
+import { DictGrade } from './admin/entities/dict-grade.entity';
+import { DictClassGender } from './admin/entities/dict-class-gender.entity';
+import { DictSubjectCategory } from './admin/entities/dict-subject-category.entity';
+import { DictSubjectType } from './admin/entities/dict-subject-type.entity';
+import { DictLanguageLevel } from './admin/entities/dict-language-level.entity';
+import { DictLanguageHL } from './admin/entities/dict-language-hl.entity';
+import { DictLanguageFAL } from './admin/entities/dict-language-fal.entity';
+import { DictSalutation } from './admin/entities/dict-salutation.entity';
+import { DictReligion } from './admin/entities/dict-religion.entity';
+import { Subject } from './admin/entities/subject.entity';
+import { TenantFeature } from './admin/entities/tenant-feature.entity';
+import { TenantPhaseLink } from './admin/entities/tenant-phase-link.entity';
+import { TenantGradeLink } from './admin/entities/tenant-grade-link.entity';
+import { SubjectOffering } from './admin/entities/subject-offering.entity';
+import { SubjectStream } from './admin/entities/subject-stream.entity';
+import { AdmissionsProcessCard } from './admin/entities/admissions-process-card.entity';
+import { AuditEvent } from './admin/entities/audit-event.entity';
 
 // Modules
 import { BrandsModule } from './brands/brands.module';
@@ -51,6 +69,7 @@ import { TranslationModule } from './translation/translation.module';
 import { SecurityModule } from './security/security.module';
 import { AttendanceModule } from './attendance/attendance.module';
 import { AdminModule } from './admin/admin.module';
+import { AdminPlatformModule } from './admin/admin-platform.module';
 
 import { BullModule } from '@nestjs/bullmq';
 
@@ -102,6 +121,24 @@ import { BullModule } from '@nestjs/bullmq';
           IpAllowlist,
           GeoZone,
           AdminDraft,
+          DictPhase,
+          DictGrade,
+          DictClassGender,
+          DictSubjectCategory,
+          DictSubjectType,
+          DictLanguageLevel,
+          DictLanguageHL,
+          DictLanguageFAL,
+          DictSalutation,
+          DictReligion,
+          Subject,
+          TenantFeature,
+          TenantPhaseLink,
+          TenantGradeLink,
+          SubjectOffering,
+          SubjectStream,
+          AdmissionsProcessCard,
+          AuditEvent,
         ],
         autoLoadEntities: true,
         synchronize: true, // DEV only, set to false in prod
@@ -125,6 +162,7 @@ import { BullModule } from '@nestjs/bullmq';
     SecurityModule,
     AttendanceModule,
     AdminModule,
+    AdminPlatformModule,
   ],
   controllers: [AppController],
   providers: [AppService],

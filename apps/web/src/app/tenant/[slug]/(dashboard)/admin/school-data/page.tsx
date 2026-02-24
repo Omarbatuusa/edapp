@@ -1,0 +1,30 @@
+'use client';
+
+import { use, useState, useEffect } from 'react';
+import SchoolDataManager from '@/components/admin/school-data/SchoolDataManager';
+
+interface Props { params: Promise<{ slug: string }> }
+
+export default function SchoolDataPage({ params }: Props) {
+  const { slug } = use(params);
+  const [tenantId, setTenantId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const id = localStorage.getItem('tenant_id') || localStorage.getItem(`edapp_tenant_id_${slug}`);
+    setTenantId(id);
+  }, [slug]);
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">School Data</h1>
+        <p className="text-muted-foreground">Configure phases, grade levels, and subject offerings for your school.</p>
+      </div>
+      {tenantId ? <SchoolDataManager tenantId={tenantId} /> : (
+        <div className="surface-card p-8 text-center text-muted-foreground text-sm">
+          Unable to load. Please ensure you are logged in with a valid tenant account.
+        </div>
+      )}
+    </div>
+  );
+}

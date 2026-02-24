@@ -14,7 +14,9 @@ import {
 
 interface Props { params: Promise<{ slug: string }> }
 
-const BRAND_ROLES = ['PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN', 'platform_admin'];
+const PLATFORM_ROLES = ['PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN', 'platform_admin'];
+const SECRETARY_ROLES = ['PLATFORM_SECRETARY'];
+const TENANT_ROLES = ['TENANT_ADMIN', 'MAIN_BRANCH_ADMIN'];
 const BRANCH_ROLES = ['TENANT_ADMIN', 'MAIN_BRANCH_ADMIN', 'BRANCH_ADMIN', 'PLATFORM_SUPER_ADMIN', 'platform_admin'];
 
 function useAdminRole(slug: string) {
@@ -31,7 +33,9 @@ function useAdminRole(slug: string) {
 export default function AdminDashboard({ params }: Props) {
     const { slug } = use(params);
     const role = useAdminRole(slug);
-    const canManageBrands = BRAND_ROLES.some(r => role.includes(r) || r.includes(role));
+    const isPlatform = PLATFORM_ROLES.some(r => role.includes(r) || r.includes(role));
+    const isSecretary = SECRETARY_ROLES.some(r => role.includes(r) || r.includes(role));
+    const isTenantAdmin = TENANT_ROLES.some(r => role.includes(r) || r.includes(role));
     const canManageBranches = BRANCH_ROLES.some(r => role.includes(r) || r.includes(role));
 
     return (
@@ -51,49 +55,41 @@ export default function AdminDashboard({ params }: Props) {
                 </div>
             </div>
 
-            {/* School Setup Management Cards */}
-            {(canManageBrands || canManageBranches) && (
-                <div>
-                    <h2 className="text-base font-semibold text-slate-700 dark:text-slate-300 mb-3">School Setup</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {canManageBrands && (
-                            <Link href={`/tenant/${slug}/admin/brands`} className="surface-card p-5 flex items-center gap-4 hover:shadow-md hover:border-blue-200 dark:hover:border-blue-700 transition-all group cursor-pointer border border-transparent">
-                                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-purple-200 dark:group-hover:bg-purple-900/50 transition-colors">
-                                    <span className="material-symbols-outlined text-purple-600 dark:text-purple-400">category</span>
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="font-semibold text-slate-800 dark:text-slate-100">Brand Management</p>
-                                    <p className="text-xs text-muted-foreground mt-0.5">Manage school brands and groups</p>
-                                </div>
-                                <ArrowRight size={16} className="text-muted-foreground/50 group-hover:text-primary transition-colors flex-shrink-0" />
-                            </Link>
-                        )}
-                        {canManageBranches && (
-                            <>
-                                <Link href={`/tenant/${slug}/admin/main-branch`} className="surface-card p-5 flex items-center gap-4 hover:shadow-md hover:border-blue-200 dark:hover:border-blue-700 transition-all group cursor-pointer border border-transparent">
-                                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors">
-                                        <span className="material-symbols-outlined text-blue-600 dark:text-blue-400">account_balance</span>
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="font-semibold text-slate-800 dark:text-slate-100">Main Branch Setup</p>
-                                        <p className="text-xs text-muted-foreground mt-0.5">Configure your primary school profile</p>
-                                    </div>
-                                    <ArrowRight size={16} className="text-muted-foreground/50 group-hover:text-primary transition-colors flex-shrink-0" />
-                                </Link>
-                                <Link href={`/tenant/${slug}/admin/branches`} className="surface-card p-5 flex items-center gap-4 hover:shadow-md hover:border-blue-200 dark:hover:border-blue-700 transition-all group cursor-pointer border border-transparent">
-                                    <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-green-200 dark:group-hover:bg-green-900/50 transition-colors">
-                                        <span className="material-symbols-outlined text-green-600 dark:text-green-400">location_city</span>
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="font-semibold text-slate-800 dark:text-slate-100">Branch Management</p>
-                                        <p className="text-xs text-muted-foreground mt-0.5">Manage campuses and branches</p>
-                                    </div>
-                                    <ArrowRight size={16} className="text-muted-foreground/50 group-hover:text-primary transition-colors flex-shrink-0" />
-                                </Link>
-                            </>
-                        )}
-                    </div>
-                </div>
+            {/* Platform Management (Super Admin + App Admin) */}
+            {isPlatform && (
+                <NavSection title="Platform Management">
+                    <NavCard href={`/tenant/${slug}/admin/tenants`} label="Tenants" description="View and manage all school tenants" icon="domain" color="indigo" />
+                    <NavCard href={`/tenant/${slug}/admin/brands`} label="Brand Management" description="Manage school brands and groups" icon="category" color="purple" />
+                    <NavCard href={`/tenant/${slug}/admin/dictionaries`} label="Dictionaries" description="Phases, grades, subjects, languages" icon="menu_book" color="violet" />
+                </NavSection>
+            )}
+
+            {/* School Setup (Platform + Tenant Admin) */}
+            {canManageBranches && (
+                <NavSection title="School Setup">
+                    <NavCard href={`/tenant/${slug}/admin/main-branch`} label="Main Branch Setup" description="Configure your primary school profile" icon="account_balance" color="blue" />
+                    <NavCard href={`/tenant/${slug}/admin/branches`} label="Branch Management" description="Manage campuses and branches" icon="location_city" color="green" />
+                </NavSection>
+            )}
+
+            {/* App Secretary */}
+            {isSecretary && (
+                <NavSection title="Secretary Tools">
+                    <NavCard href={`/tenant/${slug}/admin/inbox`} label="Inbox / Tasks" description="View pending tasks and approvals" icon="inbox" color="orange" />
+                    <NavCard href={`/tenant/${slug}/admin/tenants`} label="Tenants Lookup" description="Search tenants by school code" icon="search" color="gray" />
+                    <NavCard href={`/tenant/${slug}/admin/approvals`} label="Approvals" description="Process pending approvals" icon="task_alt" color="teal" />
+                </NavSection>
+            )}
+
+            {/* Tenant Admin */}
+            {isTenantAdmin && (
+                <NavSection title="School Administration">
+                    <NavCard href={`/tenant/${slug}/admin/control`} label="Control Dashboard" description="School overview and quick links" icon="dashboard" color="blue" />
+                    <NavCard href={`/tenant/${slug}/admin/integrations`} label="Integrations & Features" description="Feature flags and external systems" icon="integration_instructions" color="amber" />
+                    <NavCard href={`/tenant/${slug}/admin/people`} label="People & Roles" description="Manage users and role assignments" icon="group" color="teal" />
+                    <NavCard href={`/tenant/${slug}/admin/school-data`} label="School Data" description="Phases, grades and subject offerings" icon="school" color="green" />
+                    <NavCard href={`/tenant/${slug}/admin/admissions`} label="Admissions Builder" description="Design your admissions process" icon="assignment" color="rose" />
+                </NavSection>
             )}
 
             {/* Stats Grid */}
@@ -226,4 +222,44 @@ function TaskItem({ title, time, urgent }: any) {
             <ArrowRight size={14} className="mt-1 text-muted-foreground/50" />
         </div>
     )
+}
+
+function NavSection({ title, children }: { title: string; children: React.ReactNode }) {
+    return (
+        <div>
+            <h2 className="text-base font-semibold text-slate-700 dark:text-slate-300 mb-3">{title}</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {children}
+            </div>
+        </div>
+    );
+}
+
+const COLOR_MAP: Record<string, { bg: string; icon: string }> = {
+    indigo: { bg: 'bg-indigo-100 dark:bg-indigo-900/30 group-hover:bg-indigo-200', icon: 'text-indigo-600 dark:text-indigo-400' },
+    purple: { bg: 'bg-purple-100 dark:bg-purple-900/30 group-hover:bg-purple-200', icon: 'text-purple-600 dark:text-purple-400' },
+    violet: { bg: 'bg-violet-100 dark:bg-violet-900/30 group-hover:bg-violet-200', icon: 'text-violet-600 dark:text-violet-400' },
+    blue: { bg: 'bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200', icon: 'text-blue-600 dark:text-blue-400' },
+    green: { bg: 'bg-green-100 dark:bg-green-900/30 group-hover:bg-green-200', icon: 'text-green-600 dark:text-green-400' },
+    teal: { bg: 'bg-teal-100 dark:bg-teal-900/30 group-hover:bg-teal-200', icon: 'text-teal-600 dark:text-teal-400' },
+    amber: { bg: 'bg-amber-100 dark:bg-amber-900/30 group-hover:bg-amber-200', icon: 'text-amber-600 dark:text-amber-400' },
+    orange: { bg: 'bg-orange-100 dark:bg-orange-900/30 group-hover:bg-orange-200', icon: 'text-orange-600 dark:text-orange-400' },
+    rose: { bg: 'bg-rose-100 dark:bg-rose-900/30 group-hover:bg-rose-200', icon: 'text-rose-600 dark:text-rose-400' },
+    gray: { bg: 'bg-gray-100 dark:bg-gray-900/30 group-hover:bg-gray-200', icon: 'text-gray-600 dark:text-gray-400' },
+};
+
+function NavCard({ href, label, description, icon, color }: { href: string; label: string; description: string; icon: string; color: string }) {
+    const c = COLOR_MAP[color] || COLOR_MAP.blue;
+    return (
+        <Link href={href} className="surface-card p-5 flex items-center gap-4 hover:shadow-md hover:border-blue-200 dark:hover:border-blue-700 transition-all group cursor-pointer border border-transparent">
+            <div className={`w-12 h-12 ${c.bg} rounded-2xl flex items-center justify-center flex-shrink-0 transition-colors`}>
+                <span className={`material-symbols-outlined ${c.icon}`}>{icon}</span>
+            </div>
+            <div className="flex-1 min-w-0">
+                <p className="font-semibold text-slate-800 dark:text-slate-100">{label}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
+            </div>
+            <ArrowRight size={16} className="text-muted-foreground/50 group-hover:text-primary transition-colors flex-shrink-0" />
+        </Link>
+    );
 }
