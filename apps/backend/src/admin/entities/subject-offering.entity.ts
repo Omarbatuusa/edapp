@@ -14,18 +14,19 @@ export class SubjectOffering {
   @Column({ type: 'uuid' })
   subject_id: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   stream_code: string | null;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   type_code: string | null;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   language_level_code: string | null;
 
-  @Column({ default: true })
+  @Column({ type: 'boolean', default: true })
   is_active: boolean;
 
   @CreateDateColumn()
   created_at: Date;
 }
+
