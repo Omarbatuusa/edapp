@@ -1,68 +1,142 @@
 #!/bin/bash
-# EdApp Multi-Tenant Deployment Script
-# Run this on the OCI server after SSH
+# =============================================================================
+# EdApp Production Deployment Script
+# Target: /opt/edapp on Google Cloud Compute Engine (edapp-api-vm)
+# Usage: cd /opt/edapp && sudo bash deploy.sh
+# =============================================================================
 
-set -e
+set -euo pipefail
 
-echo "🚀 EdApp Multi-Tenant Deployment"
-echo "================================="
+echo "=============================================="
+echo "    EdApp Deployment — $(date '+%Y-%m-%d %H:%M:%S')"
+echo "=============================================="
 
-# Navigate to project directory
-cd /opt/edapp || mkdir -p /opt/edapp && cd /opt/edapp
+DEPLOY_DIR="/opt/edapp"
+COMPOSE_FILE="docker-compose.prod.yml"
+ENV_FILE=".env.production"
 
-# Verify environment file exists
-if [ ! -f .env.production ]; then
-    echo "⚠️ .env.production file not found!"
+cd "$DEPLOY_DIR"
+
+# ─────────────────────────────────────────────
+# 1. Pre-flight checks
+# ─────────────────────────────────────────────
+echo ""
+echo "▶ Step 1: Pre-flight checks"
+
+if [ ! -f "$ENV_FILE" ]; then
+    echo "❌ $ENV_FILE not found! Run CONFIG_SERVER_ENV.sh first."
     exit 1
 fi
-echo "✓ Found .env.production"
+echo "  ✔ $ENV_FILE found"
 
-# Stop existing containers
-echo "📦 Stopping existing containers..."
-docker compose --env-file .env.production -f docker-compose.prod.yml down --remove-orphans 2>/dev/null || true
+if [ ! -f "firebase-service-account.json" ]; then
+    echo "⚠️  firebase-service-account.json not found — API may fail to start"
+fi
 
-# Pull latest code from GitHub
-echo "📥 Pulling latest code..."
+if [ ! -f "nginx/ssl/cert.pem" ] || [ ! -f "nginx/ssl/key.pem" ]; then
+    echo "⚠️  SSL certificates missing in nginx/ssl/"
+    echo "   Run CONFIG_SERVER_ENV.sh to create them, or copy Cloudflare Origin certs."
+fi
+
+# ─────────────────────────────────────────────
+# 2. Pull latest code
+# ─────────────────────────────────────────────
+echo ""
+echo "▶ Step 2: Pull latest code from GitHub"
+
 if [ -d ".git" ]; then
     git fetch origin main
     git reset --hard origin/main
+    echo "  ✔ Updated to latest main branch"
 else
-    git clone https://github.com/Omarbatuusa/edapp.git .
+    echo "  ⚠ Not a git repo — skipping pull"
 fi
 
-# Build and start containers
-echo "🔨 Building containers..."
-docker compose --env-file .env.production -f docker-compose.prod.yml build --no-cache
+# ─────────────────────────────────────────────
+# 3. Stop existing containers
+# ─────────────────────────────────────────────
+echo ""
+echo "▶ Step 3: Stop existing containers"
+docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" down --remove-orphans 2>/dev/null || true
+echo "  ✔ Containers stopped"
 
-echo "🚀 Starting containers..."
-docker compose --env-file .env.production -f docker-compose.prod.yml up -d
+# ─────────────────────────────────────────────
+# 4. Build fresh images (no cache)
+# ─────────────────────────────────────────────
+echo ""
+echo "▶ Step 4: Build Docker images (this may take 5-10 minutes)"
+docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" build --no-cache
 
-# Wait for database to be ready
-echo "⏳ Waiting for database..."
-sleep 10
+echo "  ✔ Images built"
 
-# Run database seed
-echo "🌱 Running database seed..."
-docker compose --env-file .env.production -f docker-compose.prod.yml exec api npm run seed:prod || docker compose --env-file .env.production -f docker-compose.prod.yml exec api npx ts-node src/database/seed.ts
+# ─────────────────────────────────────────────
+# 5. Start all containers
+# ─────────────────────────────────────────────
+echo ""
+echo "▶ Step 5: Start containers"
+docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" up -d
+echo "  ✔ Containers starting..."
+
+# ─────────────────────────────────────────────
+# 6. Wait for health checks
+# ─────────────────────────────────────────────
+echo ""
+echo "▶ Step 6: Waiting for services to become healthy..."
+MAX_WAIT=120
+ELAPSED=0
+while [ $ELAPSED -lt $MAX_WAIT ]; do
+    # Check if API responds
+    if curl -s -f http://localhost:3333/v1 > /dev/null 2>&1 || \
+       docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" exec -T api wget -qO- http://localhost:3333/v1 > /dev/null 2>&1; then
+        echo "  ✔ API is healthy"
+        break
+    fi
+    echo "  ⏳ Waiting... ($ELAPSED/${MAX_WAIT}s)"
+    sleep 10
+    ELAPSED=$((ELAPSED + 10))
+done
+
+if [ $ELAPSED -ge $MAX_WAIT ]; then
+    echo "  ⚠ API did not become healthy within ${MAX_WAIT}s"
+    echo "  Check logs: docker compose --env-file $ENV_FILE -f $COMPOSE_FILE logs api --tail 50"
+fi
+
+# ─────────────────────────────────────────────
+# 7. Show container status
+# ─────────────────────────────────────────────
+echo ""
+echo "▶ Step 7: Container Status"
+docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" ps
+
+# ─────────────────────────────────────────────
+# 8. Quick smoke test
+# ─────────────────────────────────────────────
+echo ""
+echo "▶ Step 8: Smoke Tests"
+
+# Test via Nginx proxy
+if curl -s -f http://localhost/ > /dev/null 2>&1; then
+    echo "  ✔ Frontend responds on http://localhost/"
+else
+    echo "  ⚠ Frontend not responding (may need more startup time)"
+fi
+
+if curl -s -f http://localhost/v1/ > /dev/null 2>&1; then
+    echo "  ✔ API responds on http://localhost/v1/"
+else
+    echo "  ⚠ API not responding via proxy (may need more startup time)"
+fi
 
 echo ""
+echo "=============================================="
 echo "✅ Deployment complete!"
+echo "=============================================="
 echo ""
-echo "🔐 Admin Credentials:"
-echo "   - umarbatuusa@gmail.com / Janat@2000"
-echo "   - admin@edapp.co.za / Janat@2000"
+echo "📊 Useful commands:"
+echo "   docker compose --env-file $ENV_FILE -f $COMPOSE_FILE logs -f         # Follow all logs"
+echo "   docker compose --env-file $ENV_FILE -f $COMPOSE_FILE logs api -f     # API logs only"
+echo "   docker compose --env-file $ENV_FILE -f $COMPOSE_FILE logs web -f     # Web logs only"
+echo "   docker compose --env-file $ENV_FILE -f $COMPOSE_FILE logs proxy -f   # Nginx logs"
+echo "   docker compose --env-file $ENV_FILE -f $COMPOSE_FILE ps              # Container status"
+echo "   docker compose --env-file $ENV_FILE -f $COMPOSE_FILE restart         # Restart all"
 echo ""
-echo "🏫 School Codes:"
-echo "   - RAI01 (Rainbow City Schools)"
-echo "   - ALL01 (Allied Schools)"
-echo "   - LIA01 (Lakewood International Academy)"
-echo "   - JEP01 (Jeppe Education Centre)"
-echo ""
-echo "🌐 Domains:"
-echo "   - https://app.edapp.co.za (Discovery)"
-echo "   - https://rainbow.edapp.co.za"
-echo "   - https://allied.edapp.co.za"
-echo "   - https://lia.edapp.co.za"
-echo "   - https://jeppe.edapp.co.za"
-echo ""
-echo "📊 Check logs: docker compose logs -f"
