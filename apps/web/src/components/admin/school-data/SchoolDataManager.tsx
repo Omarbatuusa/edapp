@@ -85,7 +85,7 @@ export default function SchoolDataManager({ tenantId }: Props) {
       headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       body: JSON.stringify({ subject_id: subjectId }),
     });
-    if (res.ok) setOfferings(o => [...o, await res.json()]);
+    if (res.ok) { const newOffering = await res.json(); setOfferings(o => [...o, newOffering]); }
   }
 
   if (loading) return <div className="p-8 text-center text-muted-foreground text-sm">Loading school data...</div>;
