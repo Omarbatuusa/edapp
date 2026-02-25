@@ -2,12 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Material Symbols - Hide text until font loads */
+/* ═══════════════════════════════════════════════════════
+   MATERIAL SYMBOLS ICON FONT
+   ═══════════════════════════════════════════════════════ */
 @font-face {
   font-family: 'Material Symbols Outlined';
   font-style: normal;
   font-display: block;
-  /* Block text until font loads */
   src: url(https://fonts.gstatic.com/s/materialsymbolsoutlined/v227/kJEhBvYX7BgnkSrUwT8OhrdQw4oELdPIeeII9v6oFsI.woff2) format('woff2');
 }
 
@@ -25,74 +26,77 @@
   direction: ltr;
   -webkit-font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
-  /* Hide text ligatures until font renders */
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
+/* ═══════════════════════════════════════════════════════
+   DESIGN TOKENS — SINGLE SOURCE OF TRUTH
+   ═══════════════════════════════════════════════════════ */
 @layer base {
   :root {
-    /* Apple-Minimal Theme Tokens */
-
-    /* Backgrounds: Warm/Soft Neutrals (not stark white) */
+    /* ── Core Theme ── */
     --background: 210 20% 98%;
-    /* F8F9FA: Soft app background */
     --foreground: 220 15% 20%;
-    /* 2C323A: Soft black for text */
-
-    /* Surfaces: Layered Whites */
     --card: 0 0% 100%;
-    /* Pure white cards */
     --card-foreground: 220 15% 20%;
     --popover: 0 0% 100%;
     --popover-foreground: 220 15% 20%;
 
-    /* Primary: EdApp Blue (Tenant Accent Base) */
+    /* Primary: EdApp Blue */
     --primary: 210.2 88% 50%;
-    /* #137FEC */
     --primary-foreground: 210 40% 98%;
 
-    /* Secondary/Muted: Subtle Grays */
+    /* Secondary / Muted */
     --secondary: 210 20% 96%;
     --secondary-foreground: 220 15% 20%;
     --muted: 210 20% 96%;
     --muted-foreground: 215 10% 45%;
-    /* Soft gray for helpers */
+
+    /* Accent */
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
 
     /* Destructive */
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    /* Borders: Deprecated in favor of Soft Shadows */
+    /* Borders & Inputs */
     --border: 210 20% 92%;
-    /* Very light hairline if needed */
     --input: 210 20% 94%;
-    /* Input background fill */
     --ring: 210.2 88% 50%;
 
+    /* Radius & Spacing */
     --radius: 1rem;
-    /* Larger iOS-like radius */
-
-    /* App Container */
     --app-max-width: 520px;
-    /* Slightly wider for modern feel */
     --app-padding: 1rem;
 
     /* Transitions */
     --transition-slide: 400ms cubic-bezier(0.32, 0.72, 0, 1);
-    /* iOS Spring */
     --transition-fade: 200ms ease-in-out;
+
+    /* ── Admin Design Tokens ── */
+    --admin-max-width-mobile: 100%;
+    --admin-max-width-tablet: 860px;
+    --admin-max-width-desktop: 1120px;
+    --admin-nav-height: 64px;
+    --admin-rail-width-tablet: 64px;
+    --admin-rail-width-desktop: 200px;
+    --admin-header-height: 56px;
+    --admin-surface: 0 0% 100%;
+    --admin-surface-alt: 210 20% 97%;
+    --admin-border: 210 20% 92%;
+    --admin-text-main: 220 15% 15%;
+    --admin-text-sub: 215 12% 50%;
+    --admin-text-muted: 215 10% 65%;
+
+    /* Viewport */
+    --app-vh: 1vh;
   }
 
   .dark {
-    /* Dark Mode: Deep Charcoal (not black) */
     --background: 220 15% 10%;
-    /* #15181C */
     --foreground: 220 10% 90%;
-    /* Soft white */
-
-    /* Layered Darks */
     --card: 220 15% 13%;
-    /* Slightly lighter surface */
     --card-foreground: 220 10% 90%;
     --popover: 220 15% 13%;
     --popover-foreground: 220 10% 90%;
@@ -105,27 +109,29 @@
     --muted: 220 15% 16%;
     --muted-foreground: 220 10% 60%;
 
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 220 15% 18%;
     --input: 220 15% 16%;
     --ring: 210.2 88% 50%;
+
+    /* Admin Dark Tokens */
+    --admin-surface: 210 30% 12%;
+    --admin-surface-alt: 210 28% 15%;
+    --admin-border: 210 20% 20%;
+    --admin-text-main: 210 20% 92%;
+    --admin-text-sub: 215 15% 60%;
+    --admin-text-muted: 215 10% 45%;
   }
-}
 
-@layer base {
-
-  /* Mobile App Shell - Use auto overflow to allow scrolling */
+  /* Base body */
   html,
   body {
     height: 100%;
-    /* Allow scrolling - Shell component manages its own scroll */
-  }
-
-  /* Stable viewport height using JS-updated CSS variable */
-  :root {
-    --app-vh: 1vh;
   }
 
   body {
@@ -136,7 +142,9 @@
   }
 }
 
-/* Mobile App Shell Utilities */
+/* ═══════════════════════════════════════════════════════
+   PARENT/LEARNER SHELL UTILITIES
+   ═══════════════════════════════════════════════════════ */
 .app-shell {
   height: calc(var(--app-vh, 1vh) * 100);
   display: flex;
@@ -177,18 +185,14 @@
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
 }
 
-
-/* Apple-Minimal Surface & Shadow Utilities */
-
-/* 1. Layout: Centered App Container */
 .app-container {
   width: 100%;
   max-width: var(--app-max-width);
   margin: 0 auto;
+  padding: var(--app-padding);
   min-height: 100vh;
   position: relative;
 
-  /* Desktop: Centered card look */
   @media (min-width: 768px) {
     min-height: calc(100vh - 40px);
     margin-top: 20px;
@@ -197,19 +201,148 @@
     background: hsl(var(--card));
     box-shadow: 0 20px 40px -4px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(0, 0, 0, 0.03);
-    /* Hairline hint */
     overflow: hidden;
-    /* Clip content */
   }
 }
 
-/* 2. Surfaces: Soft & Borderless */
+.app-page {
+  width: 100%;
+  min-height: 100vh;
+  background: hsl(var(--background));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ═══════════════════════════════════════════════════════
+   ADMIN SHELL UTILITIES
+   ═══════════════════════════════════════════════════════ */
+
+/* Admin outer wrapper — centers the app container */
+.admin-app-outer {
+  width: 100%;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  background-color: hsl(var(--background));
+}
+
+/* Admin app container — device-like centered shell */
+.admin-app-container {
+  width: 100%;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: hsl(var(--admin-surface));
+  position: relative;
+}
+
+@media (min-width: 641px) {
+  .admin-app-container {
+    max-width: var(--admin-max-width-tablet);
+    margin: 12px auto;
+    height: calc(100dvh - 24px);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px -12px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  }
+}
+
+@media (min-width: 1025px) {
+  .admin-app-container {
+    max-width: var(--admin-max-width-desktop);
+  }
+}
+
+/* Admin header */
+.admin-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background-color: hsl(var(--admin-surface) / 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid hsl(var(--admin-border) / 0.5);
+  padding: max(12px, env(safe-area-inset-top, 12px)) 16px 12px 16px;
+  flex-shrink: 0;
+}
+
+/* Admin body — flex row for rail + content */
+.admin-body {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Admin main content — single scroll container */
+.admin-main {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Admin bottom nav — mobile only, inside container */
+.admin-bottom-nav {
+  flex-shrink: 0;
+  border-top: 1px solid hsl(var(--admin-border) / 0.5);
+  background-color: hsl(var(--admin-surface) / 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 8px 16px;
+  padding-bottom: max(12px, env(safe-area-inset-bottom, 12px));
+}
+
+@media (min-width: 641px) {
+  .admin-bottom-nav {
+    display: none;
+  }
+}
+
+/* Admin nav rail — tablet+ only, inside container */
+.admin-nav-rail {
+  display: none;
+  flex-shrink: 0;
+  border-right: 1px solid hsl(var(--admin-border) / 0.5);
+  background-color: hsl(var(--admin-surface-alt));
+  padding: 8px;
+  overflow-y: auto;
+}
+
+@media (min-width: 641px) {
+  .admin-nav-rail {
+    display: flex;
+    flex-direction: column;
+    width: var(--admin-rail-width-tablet);
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+@media (min-width: 1025px) {
+  .admin-nav-rail {
+    width: var(--admin-rail-width-desktop);
+    align-items: stretch;
+    padding: 12px;
+    gap: 2px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   SURFACE & COMPONENT UTILITIES
+   ═══════════════════════════════════════════════════════ */
+
+/* Soft card surface */
 .surface-card {
   @apply bg-card rounded-2xl p-6 transition-all duration-300;
-  /* Shadow instead of border */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
+/* Surface-filled inputs */
 .surface-input {
   @apply bg-secondary/50 rounded-xl px-4 py-3 text-base outline-none transition-all duration-200;
   border: 1px solid transparent;
@@ -218,10 +351,9 @@
 .surface-input:focus {
   @apply bg-background;
   box-shadow: 0 0 0 2px hsl(var(--ring) / 0.15);
-  /* Subtle glow ring */
 }
 
-/* 3. Buttons: Minimal Chrome */
+/* Button styles */
 .btn-primary {
   @apply bg-primary text-primary-foreground font-medium rounded-xl px-6 py-3 transition-transform active:scale-[0.98];
   box-shadow: 0 2px 8px hsl(var(--primary) / 0.25);
@@ -231,10 +363,9 @@
   @apply bg-secondary text-secondary-foreground font-medium rounded-xl px-6 py-3 transition-transform active:scale-[0.98];
 }
 
-/* 4. Role Cards: Apple Style */
+/* Role card */
 .role-card-apple {
   @apply relative overflow-hidden bg-card rounded-2xl p-5 transition-all duration-300 cursor-pointer text-left;
-  /* Default: Soft shadow, no border */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
@@ -244,154 +375,17 @@
 }
 
 .role-card-apple.selected {
-  /* Selected: Ring instead of border */
   box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2), 0 12px 24px rgba(0, 0, 0, 0.06);
   background: hsl(var(--secondary) / 0.3);
 }
 
-/* Role card hover with 3px border outline */
 .role-card-hover:hover,
 .role-card-hover.selected {
   outline: 3px solid hsl(var(--primary));
   outline-offset: -1px;
 }
 
-/* 5. Typography */
-h1 {
-  @apply text-2xl font-bold tracking-tight text-foreground/90;
-}
-
-h2 {
-  @apply text-xl font-semibold tracking-tight text-foreground/80;
-}
-
-p {
-  @apply text-muted-foreground leading-relaxed;
-}
-
-/* 6. Animations (iOS Spring) */
-@keyframes ios-slide-in {
-  from {
-    transform: translateX(20px);
-    opacity: 0;
-  }
-
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-.animate-ios-slide {
-  animation: ios-slide-in var(--transition-slide);
-}
-
-/* Hide scrollbars but allow scroll */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-@font-face {
-  font-family: 'Material Symbols Outlined';
-  font-style: normal;
-  font-display: block;
-  /* Block text until font loads */
-  src: url(https://fonts.gstatic.com/s/materialsymbolsoutlined/v227/kJEhBvYX7BgnkSrUwT8OhrdQw4oELdPIeeII9v6oFsI.woff2) format('woff2');
-}
-
-.material-symbols-outlined {
-  font-family: 'Material Symbols Outlined';
-  font-weight: normal;
-  font-style: normal;
-  font-size: 24px;
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  display: inline-block;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  -webkit-font-feature-settings: 'liga';
-  -webkit-font-smoothing: antialiased;
-  /* Hide text ligatures until font renders */
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-}
-
-@layer base {
-  :root {
-    /* Design Tokens - Colors */
-    --background: 0 0% 100%;
-    /* #ffffff */
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 210.2 88% 50%;
-    /* #137fec -> 210, 88%, 50% roughly, let's use exact hex override if possible or close HSL */
-    /* HSL for #137fec is approx 210, 88%, 50% */
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 210.2 88% 50%;
-    --radius: 0.5rem;
-
-    /* App Container */
-    --app-max-width: 480px;
-    --app-padding: 1rem;
-
-    /* Transitions */
-    --transition-slide: 300ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-fade: 200ms ease-in-out;
-  }
-
-  .dark {
-    --background: 210 36% 10%;
-    /* #101922 -> 210, 36%, 10% */
-    --foreground: 210 40% 98%;
-    --card: 210 36% 10%;
-    --card-foreground: 210 40% 98%;
-    --popover: 210 36% 10%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210.2 88% 50%;
-    /* #137fec */
-    --primary-foreground: 210 40% 98%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 210.2 88% 50%;
-  }
-}
-
-@layer base {
-  body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
-    font-feature-settings: "rlig" 1, "calt" 1;
-  }
-}
-
-/* Apple-Minimal Design Utilities */
+/* Shadows */
 .ios-shadow {
   box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
 }
@@ -408,28 +402,55 @@ p {
   box-shadow: 0 0 0 2px hsl(var(--primary) / 0.3);
 }
 
-/* App Container - Centered on Desktop */
-.app-container {
-  width: 100%;
-  max-width: var(--app-max-width);
-  margin: 0 auto;
-  padding: var(--app-padding);
-  min-height: 100vh;
+/* Card elevation */
+.card-elevated {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.2s;
+}
+
+.card-elevated:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Button outline effect */
+.btn-outline-effect {
   position: relative;
 }
 
-/* Mobile-App Page Wrapper */
-.app-page {
-  width: 100%;
-  min-height: 100vh;
-  background: linear-gradient(to bottom, hsl(var(--background)), hsl(var(--muted)));
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.btn-outline-effect::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border: 3px solid currentColor;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
 }
 
-/* Slide Transitions */
+.btn-outline-effect:hover::after {
+  opacity: 0.3;
+}
+
+.btn-outline-effect:active::after {
+  opacity: 0.5;
+}
+
+/* ═══════════════════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════════════════ */
+@keyframes ios-slide-in {
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 @keyframes slide-in-right {
   from {
     transform: translateX(100%);
@@ -476,6 +497,10 @@ p {
   }
 }
 
+.animate-ios-slide {
+  animation: ios-slide-in var(--transition-slide);
+}
+
 .slide-in-right {
   animation: slide-in-right var(--transition-slide);
 }
@@ -492,92 +517,54 @@ p {
   animation: fade-in var(--transition-fade);
 }
 
-/* Card Enhancements */
-.card-elevated {
-  @apply shadow-xl border-2 transition-all duration-300;
+.animate-in-right {
+  animation: slide-in-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.card-elevated:hover {
-  @apply shadow-2xl scale-[1.02];
+/* ═══════════════════════════════════════════════════════
+   SCROLLBAR & UTILITY
+   ═══════════════════════════════════════════════════════ */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
-/* Role Card Specific Styles */
-.role-card {
-  @apply relative rounded-xl border-2 bg-white p-6 transition-all duration-200 ease-in-out;
-  @apply hover:shadow-lg hover:scale-105;
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-.role-card.selected {
-  @apply border-primary ring-2 ring-primary ring-offset-2;
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
 }
 
-.role-card:not(.selected) {
-  @apply border-gray-200 hover:border-primary;
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-/* Button Outline Behavior */
-.btn-outline-effect {
-  @apply relative;
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
 }
 
-.btn-outline-effect::after {
-  content: '';
-  @apply absolute inset-0 rounded-lg border-2 border-transparent;
-  @apply transition-all duration-200;
-  margin: -2px;
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
 }
 
-.btn-outline-effect:active::after {
-  @apply border-primary;
-  margin: -4px;
-}
-
-/* Form Field Outline */
-.input-outline-effect {
-  @apply transition-all duration-200;
-}
-
-.input-outline-effect:focus {
-  @apply ring-2 ring-primary ring-offset-2;
-}
-
-/* Smooth Page Transitions */
-.page-transition-enter {
-  opacity: 0;
-  transform: translateX(20px);
-}
-
-.page-transition-enter-active {
-  opacity: 1;
-  transform: translateX(0);
-  transition: opacity var(--transition-fade), transform var(--transition-slide);
-}
-
-.page-transition-exit {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.page-transition-exit-active {
-  opacity: 0;
-  transform: translateX(-20px);
-  transition: opacity var(--transition-fade), transform var(--transition-slide);
-}
-
-/* Utility Classes */
 .text-gradient {
   @apply bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent;
 }
 
-.bg-app-gradient {
-  @apply bg-gradient-to-b from-gray-50 to-gray-100;
+.ios-input-shadow {
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
-.bg-app-gradient-dark {
-  @apply bg-gradient-to-b from-gray-900 to-gray-800;
+.mask-fade-right {
+  mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
 }
 
-/* Responsive Breakpoints */
+/* Responsive app container padding */
 @media (min-width: 768px) {
   .app-container {
     padding: 1.5rem;
@@ -588,87 +575,4 @@ p {
   .app-container {
     padding: 2rem;
   }
-}
-
-/* App Container - Centered on desktop */
-.app-page {
-  min-height: 100vh;
-  background: hsl(var(--background));
-}
-
-.app-container {
-  max-width: var(--app-max-width);
-  margin: 0 auto;
-  padding: var(--app-padding);
-}
-
-@media (min-width: 768px) {
-  .app-container {
-    padding: 2rem;
-  }
-}
-
-/* Card Elevated Effect */
-.card-elevated {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  transition: box-shadow 0.2s;
-}
-
-.card-elevated:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-/* Button Outline Effect */
-.btn-outline-effect {
-  position: relative;
-}
-
-.btn-outline-effect::after {
-  content: '';
-  position: absolute;
-  inset: -3px;
-  border: 3px solid currentColor;
-  border-radius: inherit;
-  opacity: 0;
-  transition: opacity 0.2s;
-  pointer-events: none;
-}
-
-.btn-outline-effect:hover::after {
-  opacity: 0.3;
-}
-
-.btn-outline-effect:active::after {
-  opacity: 0.5;
-}
-
-/* Slide In Animation */
-@keyframes slideInBottom {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.slide-in-bottom {
-  animation: slideInBottom 0.3s ease-out;
-}
-
-/* Custom Utilities */
-.ios-input-shadow {
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
-}
-
-.mask-fade-right {
-  mask-image: linear-gradient(to right, black 85%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
-}
-
-.animate-in-right {
-  animation: slide-in-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }

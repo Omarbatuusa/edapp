@@ -15,10 +15,10 @@ export default function IntegrationsPage({ params }: Props) {
   }, [slug]);
 
   return (
-    <div className="space-y-6">
+    <div className="p-4 md:p-6 space-y-5">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Integrations & Features</h1>
-        <p className="text-muted-foreground">Enable or disable feature modules and external system integrations.</p>
+        <h1 className="text-xl font-bold tracking-tight">Integrations & Features</h1>
+        <p className="text-sm text-muted-foreground">Enable or disable feature modules and external system integrations.</p>
       </div>
       {tenantId ? <IntegrationsPanel tenantId={tenantId} /> : (
         <div className="surface-card p-8 text-center text-muted-foreground text-sm">

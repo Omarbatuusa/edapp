@@ -15,10 +15,10 @@ export default function SchoolDataPage({ params }: Props) {
   }, [slug]);
 
   return (
-    <div className="space-y-6">
+    <div className="p-4 md:p-6 space-y-5">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">School Data</h1>
-        <p className="text-muted-foreground">Configure phases, grade levels, and subject offerings for your school.</p>
+        <h1 className="text-xl font-bold tracking-tight">School Data</h1>
+        <p className="text-sm text-muted-foreground">Configure phases, grade levels, and subject offerings for your school.</p>
       </div>
       {tenantId ? <SchoolDataManager tenantId={tenantId} /> : (
         <div className="surface-card p-8 text-center text-muted-foreground text-sm">

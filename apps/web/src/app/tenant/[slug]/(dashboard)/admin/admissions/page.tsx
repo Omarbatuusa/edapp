@@ -15,10 +15,10 @@ export default function AdmissionsPage({ params }: Props) {
   }, [slug]);
 
   return (
-    <div className="space-y-6">
+    <div className="p-4 md:p-6 space-y-5">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Admissions Process Builder</h1>
-        <p className="text-muted-foreground">Design the step-by-step admissions process applicants will follow.</p>
+        <h1 className="text-xl font-bold tracking-tight">Admissions Process Builder</h1>
+        <p className="text-sm text-muted-foreground">Design the step-by-step admissions process applicants will follow.</p>
       </div>
       {tenantId ? <AdmissionsBuilder tenantId={tenantId} /> : (
         <div className="surface-card p-8 text-center text-muted-foreground text-sm">

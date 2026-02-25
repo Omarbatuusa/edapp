@@ -34,7 +34,7 @@ export default function MainBranchPage({ params }: Props) {
                 const main = Array.isArray(data) ? data.find(b => b.is_main_branch) : null;
                 setBranch(main || null);
             })
-            .catch(() => {})
+            .catch(() => { })
             .finally(() => setLoading(false));
     }, []);
 
@@ -48,9 +48,9 @@ export default function MainBranchPage({ params }: Props) {
 
     if (!branch) {
         return (
-            <div className="p-4 sm:p-6 max-w-2xl mx-auto">
-                <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-1">Main Branch Setup</h1>
-                <p className="text-sm text-slate-500 mb-8">Set up your school's primary location and profile</p>
+            <div className="p-4 md:p-6">
+                <h1 className="text-xl font-bold tracking-tight mb-1">Main Branch Setup</h1>
+                <p className="text-sm text-muted-foreground mb-8">Set up your school's primary location and profile</p>
                 <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-8 text-center">
                     <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
                         <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-3xl">account_balance</span>
@@ -70,11 +70,11 @@ export default function MainBranchPage({ params }: Props) {
     }
 
     return (
-        <div className="p-4 sm:p-6 max-w-3xl mx-auto">
+        <div className="p-4 md:p-6">
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Main Branch</h1>
-                    <p className="text-sm text-slate-500 mt-1">Your school's primary profile</p>
+                    <h1 className="text-xl font-bold tracking-tight">Main Branch</h1>
+                    <p className="text-sm text-muted-foreground mt-1">Your school's primary profile</p>
                 </div>
                 <Link
                     href={`/tenant/${slug}/admin/main-branch/${branch.id}/edit`}

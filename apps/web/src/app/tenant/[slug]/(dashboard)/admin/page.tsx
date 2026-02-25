@@ -39,11 +39,11 @@ export default function AdminDashboard({ params }: Props) {
     const canManageBranches = BRANCH_ROLES.some(r => role.includes(r) || r.includes(role));
 
     return (
-        <div className="space-y-6">
+        <div className="p-4 md:p-6 space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-foreground">Admin Dashboard</h1>
-                    <p className="text-muted-foreground">Overview of school performance and alerts.</p>
+                    <h1 className="text-xl font-bold tracking-tight text-foreground">Admin Dashboard</h1>
+                    <p className="text-sm text-muted-foreground">Overview of school performance and alerts.</p>
                 </div>
                 <div className="flex gap-2">
                     <button className="h-9 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 transition-colors">
@@ -187,7 +187,7 @@ function StatCard({ title, value, change, trend, icon: Icon, alert }: any) {
                     <Icon size={20} />
                 </div>
                 <span className={`text-xs font-semibold px-2 py-1 rounded-full ${trend === 'up' ? 'bg-green-100 text-green-700' :
-                        trend === 'down' ? 'bg-red-100 text-red-700' : 'bg-secondary text-secondary-foreground'
+                    trend === 'down' ? 'bg-red-100 text-red-700' : 'bg-secondary text-secondary-foreground'
                     }`}>
                     {change}
                 </span>

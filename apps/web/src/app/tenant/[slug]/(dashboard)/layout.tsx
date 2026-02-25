@@ -5,11 +5,15 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { RoleProvider } from '@/contexts/RoleContext';
 import { Shell } from '@/components/layout/Shell';
+import { AdminShell } from '@/components/admin/layout/AdminShell';
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
     params: Promise<{ slug: string }>;
 }
+
+const PLATFORM_ROLES = ['PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN', 'platform_admin'];
+const SECRETARY_ROLES = ['PLATFORM_SECRETARY'];
 
 export default function DashboardLayout({ children, params }: DashboardLayoutProps) {
     const { slug } = use(params);
@@ -31,7 +35,6 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
                 setHasSession(true);
                 if (role) {
                     setUserRole(role);
-                    // Also save role per tenant
                     localStorage.setItem(`edapp_role_${slug}`, role);
                 }
             }
@@ -42,25 +45,30 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
     // Get initial role from URL path or local storage
     const getInitialRole = () => {
         if (typeof window !== 'undefined') {
-            // Check if role is in URL path
             if (pathname.includes('/admin')) return 'admin';
             if (pathname.includes('/staff')) return 'staff';
             if (pathname.includes('/parent')) return 'parent';
             if (pathname.includes('/learner')) return 'learner';
 
-            // Fall back to stored role
             const stored = localStorage.getItem(`edapp_role_${slug}`) || localStorage.getItem('user_role');
             if (stored && ['admin', 'staff', 'parent', 'learner'].includes(stored)) {
                 return stored as 'admin' | 'staff' | 'parent' | 'learner';
             }
         }
-        return 'parent'; // Default fallback
+        return 'parent';
     };
 
-    // Redirect to login only if:
-    // 1. Auth check is complete (not loading)
-    // 2. Session check is complete
-    // 3. No Firebase user AND no localStorage session
+    // Determine admin role type for AdminShell
+    const getAdminRoleType = (): 'platform' | 'secretary' | 'tenant' => {
+        if (typeof window !== 'undefined') {
+            const r = localStorage.getItem(`edapp_role_${slug}`) || localStorage.getItem('user_role') || '';
+            if (PLATFORM_ROLES.some(pr => r.includes(pr) || pr.includes(r))) return 'platform';
+            if (SECRETARY_ROLES.some(sr => r.includes(sr) || sr.includes(r))) return 'secretary';
+        }
+        return 'tenant';
+    };
+
+    // Redirect to login if not authenticated
     useEffect(() => {
         if (!authLoading && sessionChecked) {
             if (!user && !hasSession) {
@@ -69,7 +77,7 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
         }
     }, [user, authLoading, sessionChecked, hasSession, router, slug]);
 
-    // Show loading state while checking auth
+    // Loading state
     if (authLoading || !sessionChecked) {
         return (
             <div className="min-h-screen min-h-[100dvh] flex items-center justify-center bg-slate-50 dark:bg-slate-950">
@@ -81,18 +89,43 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
         );
     }
 
-    // Don't render if not authenticated (either Firebase or session)
+    // Don't render if not authenticated
     if (!user && !hasSession) {
         return null;
     }
 
-    // Create a mock user object if we only have session (no Firebase user)
+    // Create a mock user if we only have session
     const displayUser = user || {
         uid: localStorage.getItem('user_id') || '',
         email: null,
         displayName: null,
         photoURL: null,
     };
+
+    // Determine if this is an admin route
+    const isAdminRoute = pathname?.includes('/admin');
+
+    // Admin routes → AdminShell; Everything else → Parent/Learner Shell
+    if (isAdminRoute) {
+        const adminRole = getAdminRoleType();
+        return (
+            <RoleProvider tenantSlug={slug} initialRole={getInitialRole()}>
+                <AdminShell
+                    tenantSlug={slug}
+                    adminRole={adminRole}
+                    headerProps={{
+                        title: slug.toUpperCase(),
+                        subtitle: adminRole === 'platform' ? 'Platform Admin'
+                            : adminRole === 'secretary' ? 'Secretary'
+                                : 'School Admin',
+                        logoUrl: `https://ui-avatars.com/api/?name=${slug}&background=random`,
+                    }}
+                >
+                    {children}
+                </AdminShell>
+            </RoleProvider>
+        );
+    }
 
     return (
         <RoleProvider tenantSlug={slug} initialRole={getInitialRole()}>

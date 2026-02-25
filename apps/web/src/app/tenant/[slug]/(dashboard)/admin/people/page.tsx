@@ -15,10 +15,10 @@ export default function PeoplePage({ params }: Props) {
   }, [slug]);
 
   return (
-    <div className="space-y-6">
+    <div className="p-4 md:p-6 space-y-5">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">People & Roles</h1>
-        <p className="text-muted-foreground">Manage users and assign roles within your school.</p>
+        <h1 className="text-xl font-bold tracking-tight">People & Roles</h1>
+        <p className="text-sm text-muted-foreground">Manage users and assign roles within your school.</p>
       </div>
       {tenantId ? <PeopleList tenantId={tenantId} /> : (
         <div className="surface-card p-8 text-center text-muted-foreground text-sm">
