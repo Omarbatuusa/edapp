@@ -3,7 +3,7 @@ import {
   UseGuards, Req, ForbiddenException, NotFoundException, BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, IsNull, Or } from 'typeorm';
+import { Repository } from 'typeorm';
 import { FirebaseAuthGuard } from '../../auth/firebase-auth.guard';
 import { Subject } from '../entities/subject.entity';
 

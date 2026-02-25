@@ -77,7 +77,7 @@ export class AdminPeopleController {
       branch_id: body.branch_id || null,
       role: body.role,
       is_active: true,
-    } as any));
+    } as any)) as unknown as RoleAssignment;
     await this.log(req, tenantId, AuditAction.ROLE_ASSIGN, assignment.id, null, { user_id: body.user_id, role: body.role, branch_id: body.branch_id });
     return assignment;
   }
