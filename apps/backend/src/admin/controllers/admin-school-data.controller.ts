@@ -41,7 +41,7 @@ export class AdminSchoolDataController {
   async setPhases(@Req() req: any, @Param('tenantId') tenantId: string, @Body() body: { phase_codes: string[] }) {
     this.checkAccess(req, tenantId);
     await this.phaseRepo.delete({ tenant_id: tenantId });
-    const links = body.phase_codes.map(code => this.phaseRepo.create({ tenant_id: tenantId, phase_code: code } as any));
+    const links = body.phase_codes.map(code => this.phaseRepo.create({ tenant_id: tenantId, phase_code: code } as any) as unknown as TenantPhaseLink);
     return this.phaseRepo.save(links);
   }
 
@@ -55,7 +55,7 @@ export class AdminSchoolDataController {
   async setGrades(@Req() req: any, @Param('tenantId') tenantId: string, @Body() body: { grade_codes: string[] }) {
     this.checkAccess(req, tenantId);
     await this.gradeRepo.delete({ tenant_id: tenantId });
-    const links = body.grade_codes.map(code => this.gradeRepo.create({ tenant_id: tenantId, grade_code: code } as any));
+    const links = body.grade_codes.map(code => this.gradeRepo.create({ tenant_id: tenantId, grade_code: code } as any) as unknown as TenantGradeLink);
     return this.gradeRepo.save(links);
   }
 
