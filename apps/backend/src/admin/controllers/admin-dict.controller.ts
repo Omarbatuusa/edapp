@@ -75,7 +75,7 @@ export class AdminDictController {
     if (!this.isPlatform(req)) throw new ForbiddenException('Insufficient permissions');
     const repo = this.getRepo(dictName);
     if (!body.code || !body.label) throw new BadRequestException('code and label are required');
-    const entry = await repo.save(repo.create(body));
+    const entry = await repo.save(repo.create(body)) as any;
     await this.log(req, dictName, entry.id, null, entry);
     return entry;
   }
