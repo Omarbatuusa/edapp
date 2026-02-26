@@ -74,20 +74,34 @@
     --transition-slide: 400ms cubic-bezier(0.32, 0.72, 0, 1);
     --transition-fade: 200ms ease-in-out;
 
-    /* ── Admin Design Tokens ── */
+    /* ── Admin Design Tokens (iOS Premium) ── */
     --admin-max-width-mobile: 100%;
     --admin-max-width-tablet: 860px;
     --admin-max-width-desktop: 1120px;
-    --admin-nav-height: 64px;
-    --admin-rail-width-tablet: 64px;
-    --admin-rail-width-desktop: 200px;
-    --admin-header-height: 56px;
+    --admin-nav-height: 84px;
+    --admin-rail-width-tablet: 72px;
+    --admin-rail-width-desktop: 240px;
+    --admin-header-height: 60px;
+
+    /* Light Mode - iOS Grouped Background & Pure White Cards */
+    --admin-background: 240 5% 96%;
+    /* #f2f2f7 */
     --admin-surface: 0 0% 100%;
-    --admin-surface-alt: 210 20% 97%;
-    --admin-border: 210 20% 92%;
-    --admin-text-main: 220 15% 15%;
-    --admin-text-sub: 215 12% 50%;
-    --admin-text-muted: 215 10% 65%;
+    /* #ffffff */
+    --admin-surface-alt: 240 5% 96%;
+    /* used for hover/rail if not white */
+    --admin-border: 240 5% 90%;
+    --admin-text-main: 0 0% 0%;
+    --admin-text-sub: 240 4% 46%;
+    /* #8e8e93 */
+    --admin-text-muted: 240 5% 65%;
+
+    /* iOS Interactive Colors */
+    --admin-primary: 211 100% 50%;
+    /* iOS System Blue #007aff */
+    --admin-danger: 0 100% 50%;
+    /* iOS System Red #ff3b30 */
+    --spring-ease: cubic-bezier(0.32, 0.72, 0, 1);
 
     /* Viewport */
     --app-vh: 1vh;
@@ -119,13 +133,22 @@
     --input: 220 15% 16%;
     --ring: 210.2 88% 50%;
 
-    /* Admin Dark Tokens */
-    --admin-surface: 210 30% 12%;
-    --admin-surface-alt: 210 28% 15%;
-    --admin-border: 210 20% 20%;
-    --admin-text-main: 210 20% 92%;
-    --admin-text-sub: 215 15% 60%;
-    --admin-text-muted: 215 10% 45%;
+    /* Admin Dark Tokens (iOS Premium) */
+    --admin-background: 0 0% 0%;
+    /* True black for iOS dark mode */
+    --admin-surface: 240 4% 11%;
+    /* #1c1c1e */
+    --admin-surface-alt: 240 5% 17%;
+    /* #2c2c2e */
+    --admin-border: 240 4% 22%;
+    /* #38383a */
+    --admin-text-main: 0 0% 100%;
+    --admin-text-sub: 240 5% 61%;
+    /* #98989d */
+    --admin-text-muted: 240 4% 46%;
+    /* #8e8e93 */
+    --admin-primary: 210 100% 56%;
+    /* #0a84ff */
   }
 
   /* Base body */
@@ -225,7 +248,8 @@
   min-height: 100dvh;
   display: flex;
   justify-content: center;
-  background-color: hsl(var(--background));
+  background-color: hsl(var(--admin-background));
+  /* Changed to admin-background */
 }
 
 /* Admin app container — device-like centered shell */
@@ -235,7 +259,8 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background-color: hsl(var(--admin-surface));
+  background-color: hsl(var(--admin-background));
+  /* Changed to admin-background */
   position: relative;
 }
 
@@ -260,11 +285,12 @@
   position: sticky;
   top: 0;
   z-index: 30;
-  background-color: hsl(var(--admin-surface) / 0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid hsl(var(--admin-border) / 0.5);
-  padding: max(12px, env(safe-area-inset-top, 12px)) 16px 12px 16px;
+  /* iOS translucent header */
+  background-color: hsl(var(--admin-background) / 0.75);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 0.5px solid hsl(var(--admin-border) / 0.8);
+  padding: max(16px, env(safe-area-inset-top, 16px)) 20px 12px 20px;
   flex-shrink: 0;
 }
 
@@ -289,12 +315,13 @@
 /* Admin bottom nav — mobile only, inside container */
 .admin-bottom-nav {
   flex-shrink: 0;
-  border-top: 1px solid hsl(var(--admin-border) / 0.5);
-  background-color: hsl(var(--admin-surface) / 0.95);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  border-top: 0.5px solid hsl(var(--admin-border) / 0.8);
+  /* iOS translucent tab bar */
+  background-color: hsl(var(--admin-background) / 0.8);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
   padding: 8px 16px;
-  padding-bottom: max(12px, env(safe-area-inset-bottom, 12px));
+  padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
 }
 
 @media (min-width: 641px) {
@@ -307,9 +334,11 @@
 .admin-nav-rail {
   display: none;
   flex-shrink: 0;
-  border-right: 1px solid hsl(var(--admin-border) / 0.5);
-  background-color: hsl(var(--admin-surface-alt));
-  padding: 8px;
+  border-right: 0.5px solid hsl(var(--admin-border) / 0.8);
+  background-color: hsl(var(--admin-surface-alt) / 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 12px 8px;
   overflow-y: auto;
 }
 
@@ -327,9 +356,27 @@
   .admin-nav-rail {
     width: var(--admin-rail-width-desktop);
     align-items: stretch;
-    padding: 12px;
-    gap: 2px;
+    padding: 16px 12px;
+    gap: 4px;
   }
+}
+
+/* iOS Specific Utility Classes for Admin */
+.ios-list-container {
+  @apply bg-[hsl(var(--admin-surface))] rounded-[12px] overflow-hidden;
+}
+
+.ios-list-item {
+  @apply relative bg-transparent flex items-center px-4 py-3 min-h-[44px] transition-colors active:bg-[hsl(var(--admin-surface-alt))];
+}
+
+.ios-list-item:not(:last-child)::after {
+  content: '';
+  @apply absolute bottom-0 left-4 right-0 h-[0.5px] bg-[hsl(var(--admin-border))];
+}
+
+.ios-card {
+  @apply bg-[hsl(var(--admin-surface))] rounded-[20px] p-5 ios-shadow;
 }
 
 /* ═══════════════════════════════════════════════════════

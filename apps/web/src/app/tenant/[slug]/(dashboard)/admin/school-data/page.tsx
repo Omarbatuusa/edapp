@@ -15,13 +15,13 @@ export default function SchoolDataPage({ params }: Props) {
   }, [slug]);
 
   return (
-    <div className="p-4 md:p-6 space-y-5">
+    <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
       <div>
-        <h1 className="text-xl font-bold tracking-tight">School Data</h1>
-        <p className="text-sm text-muted-foreground">Configure phases, grade levels, and subject offerings for your school.</p>
+        <h1 className="text-3xl font-bold tracking-tight text-[hsl(var(--admin-text-main))]">School Data</h1>
+        <p className="text-[15px] font-medium text-[hsl(var(--admin-text-sub))] mt-1">Configure phases, grade levels, and subject offerings for your school.</p>
       </div>
       {tenantId ? <SchoolDataManager tenantId={tenantId} /> : (
-        <div className="surface-card p-8 text-center text-muted-foreground text-sm">
+        <div className="ios-card p-8 text-center text-[hsl(var(--admin-text-muted))] text-[15px] font-medium">
           Unable to load. Please ensure you are logged in with a valid tenant account.
         </div>
       )}

@@ -35,9 +35,9 @@ export function NewChatView({ onBack, onStartChat, onCreateChannel }: NewChatVie
             const roles = ['teacher', 'class_teacher', 'principal', 'main_branch_admin', 'STAFF'];
             Promise.all(roles.map(r => chatApi.getContactsByRole(r).catch(() => [])))
                 .then((results) => {
-                    const seen = new Map<string, any>();
+                    const seen = new Map<string, { id: string; display_name: string; first_name?: string; last_name?: string }>();
                     for (const list of results) {
-                        for (const c of list) {
+                        for (const c of list as any[]) {
                             if (c?.id && !seen.has(c.id)) seen.set(c.id, c);
                         }
                     }
@@ -234,15 +234,13 @@ export function NewChatView({ onBack, onStartChat, onCreateChannel }: NewChatVie
                                     key={topic.id}
                                     type="button"
                                     onClick={() => handleTopicSelect(topic.id)}
-                                    className={`relative flex flex-col items-center gap-1.5 rounded-xl p-4 transition-all duration-200 ${
-                                        isActive
+                                    className={`relative flex flex-col items-center gap-1.5 rounded-xl p-4 transition-all duration-200 ${isActive
                                             ? 'bg-[#2563eb] text-white shadow-lg shadow-blue-500/25'
                                             : 'bg-white dark:bg-[#1e293b] border border-[#e2e8f0] dark:border-[#334155] hover:border-[#2563eb]/40 hover:shadow-sm'
-                                    }`}
+                                        }`}
                                 >
-                                    <div className={`w-11 h-11 rounded-full flex items-center justify-center transition-colors ${
-                                        isActive ? 'bg-white/20' : 'bg-[#eff6ff] dark:bg-[#1e3a5f]'
-                                    }`}>
+                                    <div className={`w-11 h-11 rounded-full flex items-center justify-center transition-colors ${isActive ? 'bg-white/20' : 'bg-[#eff6ff] dark:bg-[#1e3a5f]'
+                                        }`}>
                                         <span className={`material-symbols-outlined text-[22px] ${isActive ? 'text-white' : 'text-[#2563eb]'}`}>{topic.icon}</span>
                                     </div>
                                     <span className="font-semibold text-[13px]">{topic.label}</span>
@@ -281,11 +279,10 @@ export function NewChatView({ onBack, onStartChat, onCreateChannel }: NewChatVie
                                             key={contact.id}
                                             type="button"
                                             onClick={() => setSelectedSubItem(contact.id)}
-                                            className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 ${
-                                                isSelected
+                                            className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 ${isSelected
                                                     ? 'bg-[#eff6ff] dark:bg-[#1e3a5f] border-2 border-[#2563eb]'
                                                     : 'bg-white dark:bg-[#1e293b] border border-[#e2e8f0] dark:border-[#334155] hover:border-[#2563eb]/40'
-                                            }`}
+                                                }`}
                                         >
                                             <img src={avatarUrl} alt="" className="w-11 h-11 rounded-full object-cover shrink-0" />
                                             <div className="text-left flex-1 min-w-0">
@@ -319,15 +316,13 @@ export function NewChatView({ onBack, onStartChat, onCreateChannel }: NewChatVie
                                         key={option.id}
                                         type="button"
                                         onClick={() => setSelectedSubItem(option.id)}
-                                        className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 ${
-                                            isSelected
+                                        className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 ${isSelected
                                                 ? 'bg-[#eff6ff] dark:bg-[#1e3a5f] border-2 border-[#2563eb]'
                                                 : 'bg-white dark:bg-[#1e293b] border border-[#e2e8f0] dark:border-[#334155] hover:border-[#2563eb]/40'
-                                        }`}
+                                            }`}
                                     >
-                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-                                            isSelected ? 'bg-[#2563eb]/10' : 'bg-[#f1f5f9] dark:bg-[#334155]'
-                                        }`}>
+                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${isSelected ? 'bg-[#2563eb]/10' : 'bg-[#f1f5f9] dark:bg-[#334155]'
+                                            }`}>
                                             <span className={`material-symbols-outlined text-[20px] ${isSelected ? 'text-[#2563eb]' : 'text-[#64748b]'}`}>{option.icon}</span>
                                         </div>
                                         <div className="text-left flex-1 min-w-0">

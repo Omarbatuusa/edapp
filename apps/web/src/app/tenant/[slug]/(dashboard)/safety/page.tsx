@@ -20,32 +20,32 @@ export default function SafetyHub() {
     };
 
     return (
-        <div className="max-w-5xl mx-auto">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold tracking-tight mb-2">Campus Safety Hub</h1>
-                <p className="text-muted-foreground">Emergency broadcast system and incident logging.</p>
+        <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
+            <div className="mb-6">
+                <h1 className="text-3xl font-bold tracking-tight text-[hsl(var(--admin-text-main))] mb-1">Campus Safety Hub</h1>
+                <p className="text-[15px] font-medium text-[hsl(var(--admin-text-sub))]">Emergency broadcast system and incident logging.</p>
             </div>
 
             {status.active ? (
-                <div className="surface-card p-8 border-l-4 border-red-500 bg-red-50 dark:bg-red-950/20 mb-8 animate-in slide-in-from-top-4">
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="p-3 bg-red-100 text-red-600 rounded-full animate-pulse">
-                            <ShieldAlert size={32} />
+                <div className="ios-card overflow-hidden p-8 border-l-4 border-l-[hsl(var(--admin-danger))] bg-[hsl(var(--admin-danger))/0.05] dark:bg-[hsl(var(--admin-danger))/0.1] mb-8 animate-in slide-in-from-top-4 backdrop-blur-md">
+                    <div className="flex items-center gap-5 mb-6">
+                        <div className="p-4 bg-[hsl(var(--admin-danger))/0.15] text-[hsl(var(--admin-danger))] rounded-[20px] animate-pulse">
+                            <ShieldAlert size={40} />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-bold text-red-700 dark:text-red-400 uppercase tracking-wide">
+                            <h2 className="text-[26px] font-black text-[hsl(var(--admin-danger))] uppercase tracking-wider leading-tight">
                                 {status.type} PROTOCOL ACTIVE
                             </h2>
-                            <p className="font-medium text-red-800 dark:text-red-300">
+                            <p className="text-[16px] font-semibold text-[hsl(var(--admin-danger))]/80 dark:text-[hsl(var(--admin-danger))]/70 mt-1">
                                 {status.message}
                             </p>
                         </div>
                     </div>
 
-                    <div className="flex gap-4 mt-6">
+                    <div className="flex gap-4 mt-8">
                         <button
                             onClick={clearEmergency}
-                            className="bg-black text-white px-6 py-3 rounded-lg font-bold hover:bg-black/80 transition-colors shadow-lg"
+                            className="bg-[hsl(var(--admin-text-main))] text-[hsl(var(--admin-surface))] px-8 py-4 rounded-[16px] font-bold tracking-widest uppercase hover:bg-[hsl(var(--admin-text-main))/0.8] active:scale-95 transition-all shadow-xl hover:shadow-2xl"
                         >
                             DE-ESCALATE / CLEAR ALL CLEAR
                         </button>
@@ -78,19 +78,19 @@ export default function SafetyHub() {
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="surface-card p-6">
-                    <h3 className="font-semibold mb-4 flex items-center gap-2">
-                        <Bell size={20} />
+                <div className="ios-card overflow-hidden">
+                    <h3 className="font-semibold mb-4 flex items-center gap-2 text-[17px] tracking-tight text-[hsl(var(--admin-text-main))]">
+                        <Bell size={20} className="text-[hsl(var(--admin-primary))]" />
                         Recent Alerts
                     </h3>
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                         <AlertLogItem type="Fire Drill" time="2 weeks ago" user="Admin" />
                         <AlertLogItem type="Lockdown Test" time="1 month ago" user="Principal Skinner" />
                     </div>
                 </div>
 
-                <div className="surface-card p-6 bg-secondary/10 border-dashed border-2 border-border/50 flex items-center justify-center">
-                    <p className="text-muted-foreground font-medium">Incident Reporting Graph (Coming Soon)</p>
+                <div className="ios-card bg-[hsl(var(--admin-surface-alt))/0.3] border-dashed border-2 border-[hsl(var(--admin-border))] flex items-center justify-center min-h-[250px] overflow-hidden">
+                    <p className="text-[15px] text-[hsl(var(--admin-text-muted))] font-medium">Incident Reporting Graph (Coming Soon)</p>
                 </div>
             </div>
         </div>
@@ -102,12 +102,12 @@ function PanicButton({ icon: Icon, label, color, onClick, confirming }: any) {
         <button
             onClick={onClick}
             className={`
-                h-40 rounded-2xl flex flex-col items-center justify-center gap-4 text-white shadow-lg transition-all transform hover:scale-[1.02] active:scale-95
-                ${confirming ? 'bg-black animate-pulse' : color}
+                h-44 rounded-[24px] flex flex-col items-center justify-center gap-5 text-white shadow-xl hover:shadow-2xl transition-all transform hover:scale-[1.03] active:scale-95 border border-white/10
+                ${confirming ? 'bg-[hsl(var(--admin-text-main))] animate-pulse' : color}
             `}
         >
-            <Icon size={48} />
-            <span className="font-black tracking-widest text-xl">
+            <Icon size={56} className="drop-shadow-md" />
+            <span className="font-black tracking-widest text-[22px] drop-shadow-md">
                 {confirming ? 'CONFIRM?' : label}
             </span>
         </button>
@@ -116,12 +116,12 @@ function PanicButton({ icon: Icon, label, color, onClick, confirming }: any) {
 
 function AlertLogItem({ type, time, user }: any) {
     return (
-        <div className="flex justify-between items-center p-3 bg-secondary/20 rounded-lg">
+        <div className="flex justify-between items-center p-4 bg-[hsl(var(--admin-surface))] border border-[hsl(var(--admin-border))] rounded-[16px] hover:bg-[hsl(var(--admin-surface-alt))] transition-colors">
             <div>
-                <p className="font-medium text-sm">{type}</p>
-                <p className="text-xs text-muted-foreground">Triggered by {user}</p>
+                <p className="font-semibold text-[15px] text-[hsl(var(--admin-text-main))] tracking-tight">{type}</p>
+                <p className="text-[13px] font-medium text-[hsl(var(--admin-text-sub))] mt-0.5">Triggered by {user}</p>
             </div>
-            <span className="text-xs font-mono text-muted-foreground">{time}</span>
+            <span className="text-[13px] font-bold text-[hsl(var(--admin-text-muted))] bg-[hsl(var(--admin-surface-alt))] px-3 py-1.5 rounded-full">{time}</span>
         </div>
     )
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Circle, Marker, useMapEvents, useMap } from 'react-leaflet';
 // Leaflet CSS must be imported in global CSS or here if strictly client-side
 import 'leaflet/dist/leaflet.css';
@@ -13,7 +13,7 @@ const shadowUrl = 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png
 
 // Only run likely on client
 if (typeof window !== 'undefined') {
-    delete (L.Icon.Default.prototype as any)._getIconUrl;
+    delete (L.Icon.Default.prototype as unknown as { _getIconUrl: unknown })._getIconUrl;
     L.Icon.Default.mergeOptions({
         iconRetinaUrl,
         iconUrl,
@@ -60,9 +60,9 @@ export default function GeoZoneMap({ lat, lng, radius, editable = false, onLocat
     const [position, setPosition] = useState<[number, number]>([lat || -26.2041, lng || 28.0473]); // Default JHB
 
     useEffect(() => {
-        if (lat && lng) {
-            setPosition([lat, lng]);
-        }
+        // if (lat && lng) {
+        //     setPosition([lat, lng]);
+        // }
     }, [lat, lng]);
 
     const handleLocationChange = (newLat: number, newLng: number) => {

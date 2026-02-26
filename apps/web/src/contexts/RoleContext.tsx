@@ -20,17 +20,21 @@ interface RoleProviderProps {
 }
 
 export function RoleProvider({ children, tenantSlug, initialRole }: RoleProviderProps) {
-    const [currentRole, setCurrentRoleState] = useState<UserRole>(initialRole || 'parent')
-    const [availableRoles, setAvailableRoles] = useState<UserRole[]>(['admin', 'staff', 'parent', 'learner'])
+    const [currentRole, setCurrentRoleState] = useState<UserRole>(() => {
+        if (typeof window !== 'undefined') {
+            const savedRole = localStorage.getItem(`edapp_role_${tenantSlug}`)
+            if (savedRole && ['admin', 'staff', 'parent', 'learner'].includes(savedRole)) {
+                return savedRole as UserRole
+            }
+        }
+        return initialRole || 'parent'
+    })
+    const [availableRoles] = useState<UserRole[]>(['admin', 'staff', 'parent', 'learner'])
     const [isLoading, setIsLoading] = useState(true)
 
     // Load saved role from localStorage on mount
     useEffect(() => {
-        const savedRole = localStorage.getItem(`edapp_role_${tenantSlug}`)
-        if (savedRole && ['admin', 'staff', 'parent', 'learner'].includes(savedRole)) {
-            setCurrentRoleState(savedRole as UserRole)
-        }
-        setIsLoading(false)
+        // setIsLoading(false)
     }, [tenantSlug])
 
     // Persist role changes to localStorage

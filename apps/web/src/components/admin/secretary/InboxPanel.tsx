@@ -11,19 +11,19 @@ export default function InboxPanel() {
 
   return (
     <div className="space-y-6 max-w-2xl">
-      <div className="surface-card p-5">
-        <h3 className="font-semibold mb-4 flex items-center gap-2">
-          <Bell size={16} className="text-orange-500" /> Pending Tasks
+      <div className="ios-card p-0 overflow-hidden">
+        <h3 className="font-semibold px-5 py-4 pb-2 flex items-center gap-2 text-[16px] tracking-tight text-[hsl(var(--admin-text-main))] border-b border-[hsl(var(--admin-border))]">
+          <Bell size={18} className="text-orange-500" /> Pending Tasks
         </h3>
-        <div className="space-y-3">
+        <div className="divide-y divide-[hsl(var(--admin-border))]">
           {tasks.map(task => (
-            <div key={task.id} className="flex items-start gap-3 p-3 rounded-xl border border-border hover:bg-muted/20 transition-colors cursor-pointer">
-              <div className={`w-2 h-2 mt-2 rounded-full flex-shrink-0 ${task.urgent ? 'bg-red-500' : 'bg-blue-400'}`} />
+            <div key={task.id} className="flex items-start gap-4 p-4 hover:bg-[hsl(var(--admin-surface-alt))] transition-colors cursor-pointer active:bg-[hsl(var(--admin-surface-alt))/0.8]">
+              <div className={`w-2.5 h-2.5 mt-1.5 rounded-full flex-shrink-0 ${task.urgent ? 'bg-[hsl(var(--admin-danger))]' : 'bg-blue-400'}`} />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium">{task.title}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{task.time}</p>
+                <p className="text-[15px] font-semibold text-[hsl(var(--admin-text-main))] tracking-tight">{task.title}</p>
+                <p className="text-[13px] font-medium text-[hsl(var(--admin-text-sub))] mt-0.5">{task.time}</p>
               </div>
-              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${task.type === 'approval' ? 'bg-amber-50 text-amber-700' : 'bg-blue-50 text-blue-700'}`}>
+              <span className={`text-[11px] px-2.5 py-1 rounded-full font-bold uppercase tracking-wider ${task.type === 'approval' ? 'bg-amber-100/50 text-amber-700' : 'bg-[hsl(var(--admin-primary)/0.1)] text-[hsl(var(--admin-primary))]'}`}>
                 {task.type}
               </span>
             </div>
@@ -31,21 +31,21 @@ export default function InboxPanel() {
         </div>
       </div>
 
-      <div className="surface-card p-5">
-        <h3 className="font-semibold mb-4 flex items-center gap-2">
-          <FileText size={16} className="text-blue-500" /> Approvals Queue
+      <div className="ios-card p-5">
+        <h3 className="font-semibold mb-2 flex items-center gap-2 text-[16px] tracking-tight text-[hsl(var(--admin-text-main))]">
+          <FileText size={18} className="text-blue-500" /> Approvals Queue
         </h3>
-        <p className="text-sm text-muted-foreground">No pending approvals at this time.</p>
+        <p className="text-[14px] text-[hsl(var(--admin-text-sub))] font-medium">No pending approvals at this time.</p>
       </div>
 
-      <div className="surface-card p-5">
-        <h3 className="font-semibold mb-4 flex items-center gap-2">
-          <Clock size={16} className="text-gray-400" /> Recent Activity
+      <div className="ios-card p-5">
+        <h3 className="font-semibold mb-3 flex items-center gap-2 text-[16px] tracking-tight text-[hsl(var(--admin-text-main))]">
+          <Clock size={18} className="text-[hsl(var(--admin-text-sub))]" /> Recent Activity
         </h3>
-        <div className="space-y-2 text-sm text-muted-foreground">
-          <p>• Approved branch profile for Jeppe College (yesterday)</p>
-          <p>• Created new tenant LAK-001 (2 days ago)</p>
-          <p>• Updated dictionary entries (3 days ago)</p>
+        <div className="space-y-3 text-[14px] font-medium text-[hsl(var(--admin-text-sub))]">
+          <p className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--admin-border))]"></span> Approved branch profile for Jeppe College (yesterday)</p>
+          <p className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--admin-border))]"></span> Created new tenant LAK-001 (2 days ago)</p>
+          <p className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--admin-border))]"></span> Updated dictionary entries (3 days ago)</p>
         </div>
       </div>
     </div>

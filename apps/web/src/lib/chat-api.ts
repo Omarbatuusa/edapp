@@ -47,7 +47,7 @@ export interface MessageDto {
         title: string;
         subtitle: string;
         status: 'pending' | 'approved' | 'rejected' | 'acknowledged';
-        metadata?: any;
+        metadata?: unknown;
     };
     reply_to?: {
         id: string;
@@ -78,13 +78,13 @@ export interface CreateThreadRequest {
 export interface SendMessageRequest {
     thread_id: string;
     content: string;
-    attachments?: any[];
+    attachments?: unknown[];
     action_data?: {
         type: 'approval' | 'acknowledgement';
         title: string;
         subtitle: string;
         status: 'pending' | 'approved' | 'rejected' | 'acknowledged';
-        metadata?: any;
+        metadata?: unknown;
     };
     reply_to_id?: string;
 }
@@ -137,7 +137,7 @@ export const chatApi = {
         return response.data;
     },
 
-    async getThreadMembers(threadId: string): Promise<any[]> {
+    async getThreadMembers(threadId: string): Promise<unknown[]> {
         const response = await apiClient.get(`/threads/${threadId}/members`);
         return response.data;
     },
@@ -207,12 +207,12 @@ export const chatApi = {
     // DIRECTORY / CONTACTS
     // ============================================
 
-    async searchContacts(query: string): Promise<any[]> {
+    async searchContacts(query: string): Promise<unknown[]> {
         const response = await apiClient.get(`/users/search?q=${encodeURIComponent(query)}`);
         return response.data;
     },
 
-    async getContactsByRole(role: string): Promise<any[]> {
+    async getContactsByRole(role: string): Promise<unknown[]> {
         const response = await apiClient.get(`/users/by-role/${role}`);
         return response.data;
     },
@@ -224,7 +224,7 @@ export const chatApi = {
     async getNotifications(params?: {
         unread_only?: boolean;
         limit?: number;
-    }): Promise<any[]> {
+    }): Promise<unknown[]> {
         const queryParams = new URLSearchParams();
         if (params?.unread_only) queryParams.append('unread_only', 'true');
         if (params?.limit) queryParams.append('limit', params.limit.toString());
@@ -272,7 +272,7 @@ export const chatApi = {
 
     async getActionRequired(): Promise<{
         unacked_announcements: ThreadDto[];
-        pending_ticket_actions: any[];
+        pending_ticket_actions: unknown[];
     }> {
         const response = await apiClient.get('/threads/action-required');
         return response.data;
@@ -317,17 +317,17 @@ export const chatApi = {
     // TICKET ACTIONS
     // ============================================
 
-    async getTicketActions(threadId: string): Promise<any[]> {
+    async getTicketActions(threadId: string): Promise<unknown[]> {
         const response = await apiClient.get(`/ticket-actions/thread/${threadId}`);
         return response.data;
     },
 
-    async completeTicketAction(actionId: string): Promise<any> {
+    async completeTicketAction(actionId: string): Promise<unknown> {
         const response = await apiClient.patch(`/ticket-actions/${actionId}/complete`);
         return response.data;
     },
 
-    async getPendingActions(): Promise<any[]> {
+    async getPendingActions(): Promise<unknown[]> {
         const response = await apiClient.get('/ticket-actions/pending');
         return response.data;
     },
@@ -336,7 +336,7 @@ export const chatApi = {
     // MESSAGE REPORTS
     // ============================================
 
-    async reportMessage(messageId: string, reason: string, details?: string): Promise<any> {
+    async reportMessage(messageId: string, reason: string, details?: string): Promise<unknown> {
         const response = await apiClient.post('/message-reports', { message_id: messageId, reason, details });
         return response.data;
     },
@@ -345,7 +345,7 @@ export const chatApi = {
     // PARENT-CHILD
     // ============================================
 
-    async getMyChildren(): Promise<any[]> {
+    async getMyChildren(): Promise<unknown[]> {
         const response = await apiClient.get('/parent-children/my-children');
         return response.data;
     },
@@ -354,7 +354,7 @@ export const chatApi = {
     // TICKET ASSIGNMENT
     // ============================================
 
-    async assignTicket(threadId: string, staffUserId: string): Promise<any> {
+    async assignTicket(threadId: string, staffUserId: string): Promise<unknown> {
         const response = await apiClient.post(`/threads/${threadId}/assign`, { staff_user_id: staffUserId });
         return response.data;
     },

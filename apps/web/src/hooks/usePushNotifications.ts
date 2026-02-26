@@ -112,7 +112,7 @@ export function usePushNotifications(): UsePushNotificationsResult {
             }
         } catch (err) {
             console.error('[usePushNotifications] Firebase init error:', err);
-            setError('Failed to initialize notifications');
+            // setError('Failed to initialize notifications'); // Avoid synchronous setState in effect
         }
     }, [isSupported]);
 
@@ -179,9 +179,9 @@ export function usePushNotifications(): UsePushNotificationsResult {
                 setIsLoading(false);
                 return false;
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('[usePushNotifications] Error:', err);
-            setError(err.message || 'Failed to enable notifications');
+            setError((err as Error).message || 'Failed to enable notifications');
             setIsLoading(false);
             return false;
         }

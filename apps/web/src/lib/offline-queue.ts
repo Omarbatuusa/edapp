@@ -12,7 +12,7 @@ export interface PendingMessage {
     id: string;
     thread_id: string;
     content: string;
-    attachments?: any[];
+    attachments?: unknown[];
     reply_to_id?: string;
     created_at: string;
     retries: number;

@@ -39,11 +39,11 @@ export default function AdminDashboard({ params }: Props) {
     const canManageBranches = BRANCH_ROLES.some(r => role.includes(r) || r.includes(role));
 
     return (
-        <div className="p-4 md:p-6 space-y-6">
-            <div className="flex items-center justify-between">
+        <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto space-y-8">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-xl font-bold tracking-tight text-foreground">Admin Dashboard</h1>
-                    <p className="text-sm text-muted-foreground">Overview of school performance and alerts.</p>
+                    <h1 className="text-3xl font-bold tracking-tight text-[hsl(var(--admin-text-main))] leading-tight">Admin Dashboard</h1>
+                    <p className="text-[15px] font-medium text-[hsl(var(--admin-text-sub))] mt-1">Overview of school performance and alerts.</p>
                 </div>
                 <div className="flex gap-2">
                     <button className="h-9 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 transition-colors">
@@ -131,8 +131,8 @@ export default function AdminDashboard({ params }: Props) {
                 {/* Main Content Area */}
                 <div className="lg:col-span-2 space-y-6">
                     {/* Quick Access */}
-                    <div className="surface-card p-6">
-                        <h3 className="font-semibold text-lg mb-4">Quick Actions</h3>
+                    <div className="ios-card">
+                        <h3 className="font-semibold text-lg text-[hsl(var(--admin-text-main))] mb-4 tracking-tight">Quick Actions</h3>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                             <QuickAction icon={Users} label="Add Student" />
                             <QuickAction icon={Calendar} label="Edit Timetable" />
@@ -142,16 +142,16 @@ export default function AdminDashboard({ params }: Props) {
                     </div>
 
                     {/* Chart Placeholder */}
-                    <div className="surface-card p-6 min-h-[300px] flex items-center justify-center bg-secondary/5 border-dashed border-2 border-border">
+                    <div className="ios-card min-h-[300px] flex items-center justify-center bg-secondary/5 border-dashed border-2 border-border">
                         <p className="text-muted-foreground font-medium">Attendance Trends Chart (Coming Soon)</p>
                     </div>
                 </div>
 
                 {/* Sidebar / Feed */}
                 <div className="space-y-6">
-                    <div className="surface-card p-5">
-                        <h3 className="font-semibold mb-4">Urgent Tasks</h3>
-                        <div className="space-y-3">
+                    <div className="ios-card">
+                        <h3 className="font-semibold text-lg text-[hsl(var(--admin-text-main))] mb-4 tracking-tight">Urgent Tasks</h3>
+                        <div className="space-y-1">
                             <TaskItem title="Approve Leave Request" time="2h ago" urgent />
                             <TaskItem title="Review Incident Report #102" time="4h ago" urgent />
                             <TaskItem title="Monthly Fee Reconciliation" time="1d ago" />
@@ -161,8 +161,8 @@ export default function AdminDashboard({ params }: Props) {
                         </button>
                     </div>
 
-                    <div className="surface-card p-5">
-                        <h3 className="font-semibold mb-4">Staff On Leave</h3>
+                    <div className="ios-card">
+                        <h3 className="font-semibold text-lg text-[hsl(var(--admin-text-main))] mb-4 tracking-tight">Staff On Leave</h3>
                         <div className="space-y-3">
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-bold">EK</div>
@@ -181,10 +181,10 @@ export default function AdminDashboard({ params }: Props) {
 
 function StatCard({ title, value, change, trend, icon: Icon, alert }: any) {
     return (
-        <div className="surface-card p-5 hover:shadow-md transition-shadow">
+        <div className="ios-card hover:-translate-y-1 transition-transform group cursor-pointer">
             <div className="flex items-start justify-between mb-4">
-                <div className={`p-2 rounded-lg ${alert ? 'bg-red-100 text-red-600' : 'bg-primary/10 text-primary'}`}>
-                    <Icon size={20} />
+                <div className={`p-2.5 rounded-xl ${alert ? 'bg-red-100/80 text-red-600' : 'bg-[hsl(var(--admin-primary)/0.15)] text-[hsl(var(--admin-primary))]'}`}>
+                    <Icon size={22} className="transition-transform group-hover:scale-110" />
                 </div>
                 <span className={`text-xs font-semibold px-2 py-1 rounded-full ${trend === 'up' ? 'bg-green-100 text-green-700' :
                     trend === 'down' ? 'bg-red-100 text-red-700' : 'bg-secondary text-secondary-foreground'
@@ -202,9 +202,9 @@ function StatCard({ title, value, change, trend, icon: Icon, alert }: any) {
 
 function QuickAction({ icon: Icon, label }: any) {
     return (
-        <button className="flex flex-col items-center justify-center p-4 rounded-xl hover:bg-secondary/50 transition-colors border border-transparent hover:border-border/50 group">
-            <div className="w-12 h-12 rounded-full bg-secondary group-hover:bg-primary/10 group-hover:text-primary flex items-center justify-center transition-colors mb-2">
-                <Icon size={24} />
+        <button className="flex flex-col items-center justify-center p-3 rounded-[16px] hover:bg-secondary/50 active:scale-[0.96] transition-all border border-transparent hover:border-border/50 group">
+            <div className="w-14 h-14 rounded-full bg-[hsl(var(--admin-surface-alt))] group-hover:bg-[hsl(var(--admin-primary)/0.1)] group-hover:text-[hsl(var(--admin-primary))] flex items-center justify-center transition-colors mb-3">
+                <Icon size={26} className="transition-transform group-active:scale-[0.9]" />
             </div>
             <span className="text-sm font-medium text-center">{label}</span>
         </button>
@@ -213,8 +213,8 @@ function QuickAction({ icon: Icon, label }: any) {
 
 function TaskItem({ title, time, urgent }: any) {
     return (
-        <div className="flex items-start gap-3 p-2 rounded-lg hover:bg-secondary/30 transition-colors cursor-pointer">
-            <div className={`w-2 h-2 mt-2 rounded-full flex-shrink-0 ${urgent ? 'bg-red-500' : 'bg-blue-500'}`} />
+        <div className="flex items-start gap-3 p-3 rounded-[12px] hover:bg-secondary/30 active:scale-[0.98] transition-all cursor-pointer">
+            <div className={`w-2.5 h-2.5 mt-1.5 rounded-full flex-shrink-0 ${urgent ? 'bg-[hsl(var(--admin-danger))]' : 'bg-[hsl(var(--admin-primary))]'}`} />
             <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{title}</p>
                 <p className="text-xs text-muted-foreground">{time}</p>
@@ -226,8 +226,8 @@ function TaskItem({ title, time, urgent }: any) {
 
 function NavSection({ title, children }: { title: string; children: React.ReactNode }) {
     return (
-        <div>
-            <h2 className="text-base font-semibold text-slate-700 dark:text-slate-300 mb-3">{title}</h2>
+        <div className="pt-2">
+            <h2 className="text-[17px] font-semibold text-[hsl(var(--admin-text-main))] tracking-tight mb-4 ml-1">{title}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {children}
             </div>
@@ -251,15 +251,15 @@ const COLOR_MAP: Record<string, { bg: string; icon: string }> = {
 function NavCard({ href, label, description, icon, color }: { href: string; label: string; description: string; icon: string; color: string }) {
     const c = COLOR_MAP[color] || COLOR_MAP.blue;
     return (
-        <Link href={href} className="surface-card p-5 flex items-center gap-4 hover:shadow-md hover:border-blue-200 dark:hover:border-blue-700 transition-all group cursor-pointer border border-transparent">
-            <div className={`w-12 h-12 ${c.bg} rounded-2xl flex items-center justify-center flex-shrink-0 transition-colors`}>
-                <span className={`material-symbols-outlined ${c.icon}`}>{icon}</span>
+        <Link href={href} className="ios-card p-4 flex items-center gap-4 hover:-translate-y-0.5 active:scale-[0.98] transition-all group cursor-pointer border border-transparent">
+            <div className={`w-[52px] h-[52px] ${c.bg} rounded-[14px] flex items-center justify-center flex-shrink-0 transition-colors group-hover:scale-105`}>
+                <span className={`material-symbols-outlined text-[26px] ${c.icon}`}>{icon}</span>
             </div>
             <div className="flex-1 min-w-0">
-                <p className="font-semibold text-slate-800 dark:text-slate-100">{label}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
+                <p className="font-semibold text-[16px] text-[hsl(var(--admin-text-main))] tracking-tight">{label}</p>
+                <p className="text-[13px] font-medium text-[hsl(var(--admin-text-sub))] mt-0.5">{description}</p>
             </div>
-            <ArrowRight size={16} className="text-muted-foreground/50 group-hover:text-primary transition-colors flex-shrink-0" />
+            <ArrowRight size={18} className="text-[hsl(var(--admin-text-muted))] group-hover:text-[hsl(var(--admin-primary))] transition-colors flex-shrink-0" />
         </Link>
     );
 }

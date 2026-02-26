@@ -57,6 +57,34 @@ export function useAudioCall(options: AudioCallOptions) {
     const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+    // Definitions moved up
+    const startDurationTimer = useCallback(() => {
+        const startTime = Date.now();
+        timerRef.current = setInterval(() => {
+            setState(prev => ({
+                ...prev,
+                duration: Math.floor((Date.now() - startTime) / 1000),
+            }));
+        }, 1000);
+    }, []);
+
+    const cleanup = useCallback(() => {
+        if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+        }
+
+        if (localStreamRef.current) {
+            localStreamRef.current.getTracks().forEach(track => track.stop());
+            localStreamRef.current = null;
+        }
+
+        if (peerConnectionRef.current) {
+            peerConnectionRef.current.close();
+            peerConnectionRef.current = null;
+        }
+    }, []);
+
     // Initialize signaling socket
     useEffect(() => {
         if (!tenant_id || !user_id) return;
@@ -131,37 +159,9 @@ export function useAudioCall(options: AudioCallOptions) {
             socket.disconnect();
             cleanup();
         };
-    }, [tenant_id, user_id, onIncomingCall, state.callState]);
+    }, [tenant_id, user_id, onIncomingCall, state.callState, cleanup, startDurationTimer]);
 
-    // Start duration timer
-    const startDurationTimer = useCallback(() => {
-        const startTime = Date.now();
-        timerRef.current = setInterval(() => {
-            setState(prev => ({
-                ...prev,
-                duration: Math.floor((Date.now() - startTime) / 1000),
-            }));
-        }, 1000);
-    }, []);
-
-    // Cleanup resources
-    const cleanup = useCallback(() => {
-        if (timerRef.current) {
-            clearInterval(timerRef.current);
-            timerRef.current = null;
-        }
-
-        if (localStreamRef.current) {
-            localStreamRef.current.getTracks().forEach(track => track.stop());
-            localStreamRef.current = null;
-        }
-
-        if (peerConnectionRef.current) {
-            peerConnectionRef.current.close();
-            peerConnectionRef.current = null;
-        }
-    }, []);
-
+    // Initialize signaling socket
     // Start a call
     const startCall = useCallback(async (targetUserId: string, targetUserName?: string) => {
         try {
@@ -216,13 +216,13 @@ export function useAudioCall(options: AudioCallOptions) {
                 offer,
             });
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to start call:', error);
             cleanup();
             setState(prev => ({
                 ...prev,
                 callState: 'idle',
-                error: error.name === 'NotAllowedError'
+                error: (error as Error).name === 'NotAllowedError'
                     ? 'Microphone access denied'
                     : 'Failed to start call',
             }));
@@ -277,13 +277,13 @@ export function useAudioCall(options: AudioCallOptions) {
             setState(prev => ({ ...prev, callState: 'connected' }));
             startDurationTimer();
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to answer call:', error);
             cleanup();
             setState(prev => ({
                 ...prev,
                 callState: 'idle',
-                error: error.name === 'NotAllowedError'
+                error: (error as Error).name === 'NotAllowedError'
                     ? 'Microphone access denied'
                     : 'Failed to answer call',
             }));

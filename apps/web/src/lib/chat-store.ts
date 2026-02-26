@@ -64,8 +64,8 @@ interface ChatState {
     isLoadingMessages: boolean;
 
     // Realtime state
-    typing: Record<string, any[]>;
-    presence: Record<string, any>;
+    typing: Record<string, unknown[]>;
+    presence: Record<string, unknown>;
 
     // UI State
     activeFilter: 'all' | 'unread' | 'groups' | 'staff' | 'grades' | 'support' | 'announcements';
@@ -105,8 +105,7 @@ const mapDtoToMessage = (dto: MessageDto, currentUserId: string): Message => {
         status: 'read',
         is_edited: dto.is_edited ?? false,
         attachments: dto.attachments,
-        actionType: dto.action_data?.type,
-        actionData: dto.action_data,
+        actionData: dto.action_data as Message['actionData'],
     };
 };
 
@@ -200,7 +199,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 thread_id: threadId,
                 content,
                 created_at: new Date().toISOString(),
-            }).catch(() => {});
+            }).catch(() => { });
         }
     },
 

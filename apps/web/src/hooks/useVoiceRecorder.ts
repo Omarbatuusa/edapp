@@ -118,11 +118,11 @@ export function useVoiceRecorder(): VoiceRecorderResult {
                 duration: 0,
                 error: null,
             });
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to start recording:', error);
             setState(prev => ({
                 ...prev,
-                error: error.name === 'NotAllowedError'
+                error: (error as Error).name === 'NotAllowedError'
                     ? 'Microphone access denied'
                     : 'Failed to start recording',
             }));

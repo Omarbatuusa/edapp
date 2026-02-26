@@ -64,19 +64,20 @@ function AdminHeader({ title, subtitle, logoUrl, onThemeToggle, onNotificationCl
         <header className="admin-header">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
+                    {/* iOS style simplified logo / avatar */}
                     {logoUrl ? (
-                        <div className="w-9 h-9 rounded-full overflow-hidden border border-[hsl(var(--admin-border))] bg-[hsl(var(--admin-surface-alt))]">
+                        <div className="w-10 h-10 rounded-full overflow-hidden bg-[hsl(var(--admin-surface-alt))] flex-shrink-0">
                             <img src={logoUrl} alt="" className="w-full h-full object-cover" />
                         </div>
                     ) : (
-                        <div className="w-9 h-9 rounded-full bg-[hsl(var(--primary)/0.1)] flex items-center justify-center text-[hsl(var(--primary))]">
+                        <div className="w-10 h-10 rounded-full bg-[hsl(var(--admin-primary)/0.1)] flex items-center justify-center text-[hsl(var(--admin-primary))] flex-shrink-0">
                             <span className="material-symbols-outlined text-xl">shield</span>
                         </div>
                     )}
-                    <div className="min-w-0">
-                        <h1 className="text-sm font-bold text-[hsl(var(--admin-text-main))] truncate leading-tight">{title}</h1>
+                    <div className="min-w-0 pt-0.5">
+                        <h1 className="text-[22px] font-bold text-[hsl(var(--admin-text-main))] tracking-tight truncate leading-tight">{title}</h1>
                         {subtitle && (
-                            <p className="text-[10px] font-medium text-[hsl(var(--admin-text-sub))] uppercase tracking-wider">{subtitle}</p>
+                            <p className="text-[13px] font-medium text-[hsl(var(--admin-text-sub))] leading-tight mt-0.5">{subtitle}</p>
                         )}
                     </div>
                 </div>
@@ -123,15 +124,15 @@ function AdminBottomNav({ items, basePath }: { items: AdminNavItem[]; basePath: 
                         <a
                             key={item.label}
                             href={basePath + item.href}
-                            className={`flex flex-col items-center justify-center gap-0.5 min-w-[56px] py-1 transition-colors ${active
-                                    ? 'text-[hsl(var(--primary))]'
-                                    : 'text-[hsl(var(--admin-text-muted))] hover:text-[hsl(var(--admin-text-sub))]'
+                            className={`flex flex-col items-center justify-center gap-[2px] min-w-[64px] py-1 transition-all active:scale-[0.92] ${active
+                                ? 'text-[hsl(var(--admin-primary))]'
+                                : 'text-[hsl(var(--admin-text-muted))] hover:text-[hsl(var(--admin-text-sub))]'
                                 }`}
                         >
-                            <span className="material-symbols-outlined text-[22px]" style={active ? { fontVariationSettings: "'FILL' 1" } : undefined}>
+                            <span className="material-symbols-outlined text-[24px]" style={active ? { fontVariationSettings: "'FILL' 1" } : undefined}>
                                 {item.icon}
                             </span>
-                            <span className="text-[10px] font-medium leading-tight">{item.label}</span>
+                            <span className="text-[10px] font-semibold leading-tight">{item.label}</span>
                         </a>
                     );
                 })}
@@ -158,15 +159,15 @@ function AdminNavRail({ items, basePath }: { items: AdminNavItem[]; basePath: st
                     <a
                         key={item.label}
                         href={basePath + item.href}
-                        className={`flex items-center gap-3 rounded-xl transition-all group ${active
-                                ? 'bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))]'
-                                : 'text-[hsl(var(--admin-text-muted))] hover:bg-[hsl(var(--admin-surface))] hover:text-[hsl(var(--admin-text-main))]'
+                        className={`flex items-center gap-3 rounded-xl transition-all active:scale-[0.96] group ${active
+                            ? 'bg-[hsl(var(--admin-primary)/0.1)] text-[hsl(var(--admin-primary))] font-semibold'
+                            : 'text-[hsl(var(--admin-text-muted))] hover:bg-[hsl(var(--admin-surface))] hover:text-[hsl(var(--admin-text-main))] font-medium'
                             }`}
                         /* Tablet: icon-only centered; Desktop: icon + label */
-                        style={{ padding: '10px' }}
+                        style={{ padding: '12px 14px' }}
                     >
                         <span
-                            className="material-symbols-outlined text-[22px] flex-shrink-0 mx-auto lg:mx-0"
+                            className="material-symbols-outlined text-[24px] flex-shrink-0 mx-auto lg:mx-0 transition-transform group-active:scale-[0.95]"
                             style={active ? { fontVariationSettings: "'FILL' 1" } : undefined}
                         >
                             {item.icon}

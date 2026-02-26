@@ -160,8 +160,8 @@ export const useCommunicationStore = create<CommunicationState>((set, get) => ({
             });
             const items = result.threads.map(mapThreadToFeedItem);
             set({ items, nextCursor: result.next_cursor, isLoading: false });
-        } catch (error: any) {
-            set({ error: error.message, isLoading: false });
+        } catch (error: Error | unknown) {
+            set({ error: (error as Error).message, isLoading: false });
         }
     },
 
@@ -190,7 +190,7 @@ export const useCommunicationStore = create<CommunicationState>((set, get) => ({
                 nextCursor: result.next_cursor,
                 isLoadingMore: false,
             }));
-        } catch (error: any) {
+        } catch (error: unknown) {
             set({ isLoadingMore: false });
         }
     },
@@ -198,7 +198,7 @@ export const useCommunicationStore = create<CommunicationState>((set, get) => ({
     fetchChildren: async () => {
         try {
             const links = await chatApi.getMyChildren();
-            const children = links.map((link: any) => ({
+            const children = (links as Array<{ child_user_id: string; child?: { display_name?: string; first_name?: string; grade?: string } }>).map((link) => ({
                 id: link.child_user_id,
                 name: link.child?.display_name || link.child?.first_name || 'Child',
                 grade: link.child?.grade || undefined,

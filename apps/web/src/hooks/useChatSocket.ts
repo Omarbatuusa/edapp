@@ -21,7 +21,7 @@ export interface SocketMessage {
     sender_id: string;
     sender_name?: string;
     content: string;
-    attachments?: any[];
+    attachments?: unknown[];
     created_at: string;
 }
 
@@ -166,7 +166,7 @@ export function useChatSocket(options: ChatSocketOptions) {
     const sendMessage = useCallback(async (
         thread_id: string,
         content: string,
-        attachments?: any[],
+        attachments?: unknown[],
         reply_to_id?: string
     ) => {
         if (!socketRef.current?.connected) {

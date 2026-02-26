@@ -167,7 +167,7 @@ export function EmergencyHub({ tenantSlug, role, onClose, isPanel = false }: Eme
                 /* Description Form */
                 <div className="flex-1 p-4 flex flex-col">
                     <p className="text-sm text-muted-foreground mb-4">
-                        Tell us what's happening. Share as much or as little as you feel comfortable with.
+                        Tell us what&apos;s happening. Share as much or as little as you feel comfortable with.
                     </p>
 
                     <textarea

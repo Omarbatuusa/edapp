@@ -25,7 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         // If auth is not configured, stop loading and skip subscription
         if (!auth) {
-            setLoading(false);
+            // setLoading(false); // Avoid synchronous setState in effect
             return;
         }
 

@@ -69,38 +69,38 @@ export default function PeopleList({ tenantId }: Props) {
     <div className="space-y-4">
       <div className="flex gap-3">
         <div className="relative flex-1">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, email or role..." className="w-full pl-9 pr-4 h-10 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[hsl(var(--admin-text-muted))]" />
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, email or role..." className="w-full pl-9 pr-4 h-10 rounded-[12px] border border-[hsl(var(--admin-border))] bg-[hsl(var(--admin-surface))] text-[15px] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--admin-primary))/0.2]" />
         </div>
-        <button onClick={() => setShowAssign(true)} className="h-10 px-4 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2">
-          <Plus size={16} /> Assign Role
+        <button onClick={() => setShowAssign(true)} className="h-10 px-4 bg-[hsl(var(--admin-primary))] text-white text-[15px] font-semibold rounded-[12px] hover:bg-[hsl(var(--admin-primary))/0.9] active:scale-[0.96] transition-all flex items-center gap-2 shadow-sm">
+          <Plus size={18} /> Assign Role
         </button>
       </div>
 
-      <div className="surface-card overflow-hidden">
+      <div className="ios-card overflow-hidden p-0">
         {loading ? (
-          <div className="p-8 text-center text-muted-foreground text-sm">Loading...</div>
+          <div className="p-8 text-center text-[hsl(var(--admin-text-muted))] text-[15px] font-medium">Loading...</div>
         ) : grouped.length === 0 ? (
-          <div className="p-8 text-center text-muted-foreground text-sm">No people found</div>
+          <div className="p-8 text-center text-[hsl(var(--admin-text-muted))] text-[15px] font-medium">No people found</div>
         ) : (
-          <div className="divide-y divide-border">
-            <div className="grid grid-cols-[2fr_2fr_1fr_auto] gap-4 px-4 py-3 bg-muted/30 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+          <div className="divide-y divide-[hsl(var(--admin-border))]">
+            <div className="grid grid-cols-[2fr_2fr_1fr_auto] gap-4 px-5 py-3 bg-[hsl(var(--admin-surface-alt))] text-[12px] font-semibold text-[hsl(var(--admin-text-sub))] uppercase tracking-wider">
               <span>Name</span><span>Email</span><span>Roles</span><span></span>
             </div>
             {grouped.map(({ user, roles }) => (
-              <div key={user?.id || roles[0].user_id} className="grid grid-cols-[2fr_2fr_1fr_auto] gap-4 px-4 py-3 items-center">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary flex-shrink-0">
+              <div key={user?.id || roles[0].user_id} className="grid grid-cols-[2fr_2fr_1fr_auto] gap-4 px-5 py-3.5 items-center hover:bg-[hsl(var(--admin-surface-alt))/0.5] transition-colors">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-[hsl(var(--admin-primary)/0.1)] flex items-center justify-center text-[13px] font-bold text-[hsl(var(--admin-primary))] flex-shrink-0">
                     {user?.display_name?.[0] || '?'}
                   </div>
-                  <span className="text-sm font-medium truncate">{user?.display_name || 'Unknown'}</span>
+                  <span className="text-[15px] font-semibold text-[hsl(var(--admin-text-main))] truncate tracking-tight">{user?.display_name || 'Unknown'}</span>
                 </div>
-                <span className="text-sm text-muted-foreground truncate">{user?.email || '—'}</span>
-                <div className="flex flex-wrap gap-1">
+                <span className="text-[14px] text-[hsl(var(--admin-text-sub))] truncate">{user?.email || '—'}</span>
+                <div className="flex flex-wrap gap-1.5">
                   {roles.map(r => (
-                    <span key={r.id} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-medium">
+                    <span key={r.id} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[hsl(var(--admin-primary)/0.1)] text-[hsl(var(--admin-primary))] text-[12px] font-semibold tracking-tight">
                       {r.role.toLowerCase().replace(/_/g, ' ')}
-                      <button onClick={() => revokeRole(r.id)} className="hover:text-red-500 transition-colors"><Trash2 size={10} /></button>
+                      <button onClick={() => revokeRole(r.id)} className="hover:text-[hsl(var(--admin-danger))] transition-colors ml-0.5"><Trash2 size={12} /></button>
                     </span>
                   ))}
                 </div>

@@ -18,53 +18,53 @@ export default function AcademicsHub({ params }: PageProps) {
     const { slug } = use(params);
 
     return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-end">
+        <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto space-y-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight mb-2">Academics Hub</h1>
-                    <p className="text-muted-foreground">Manage subjects, assessments, and marks.</p>
+                    <h1 className="text-3xl font-bold tracking-tight text-[hsl(var(--admin-text-main))] mb-1">Academics Hub</h1>
+                    <p className="text-[15px] font-medium text-[hsl(var(--admin-text-sub))]">Manage subjects, assessments, and marks.</p>
                 </div>
-                <button className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-lg font-medium text-sm transition-colors">
+                <button className="bg-[hsl(var(--admin-primary))] text-white hover:bg-[hsl(var(--admin-primary))/0.9] active:scale-[0.96] px-5 py-2.5 rounded-[12px] font-semibold transition-all shadow-sm">
                     + New Subject
                 </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {SUBJECTS.map((subject) => (
-                    <div key={subject.id} className="surface-card p-6 flex flex-col hover:shadow-md transition-shadow">
-                        <div className="flex items-start justify-between mb-4">
-                            <div className={`p-3 rounded-xl ${subject.color}`}>
-                                <subject.icon size={24} />
+                    <div key={subject.id} className="ios-card p-6 flex flex-col hover:border-[hsl(var(--admin-primary))/0.3] transition-all group">
+                        <div className="flex items-start justify-between mb-5">
+                            <div className={`p-3.5 rounded-[16px] shadow-sm ${subject.color}`}>
+                                <subject.icon size={26} />
                             </div>
-                            <span className="px-2 py-1 bg-secondary text-secondary-foreground text-xs font-bold rounded-full">
+                            <span className="px-3 py-1 bg-[hsl(var(--admin-surface-alt))] text-[hsl(var(--admin-text-main))] text-[12px] font-bold rounded-full border border-[hsl(var(--admin-border))] tracking-wide">
                                 {subject.grade}
                             </span>
                         </div>
 
-                        <h3 className="text-lg font-bold mb-1">{subject.name}</h3>
-                        <p className="text-sm text-muted-foreground mb-4">{subject.teacher}</p>
+                        <h3 className="text-[20px] font-bold tracking-tight text-[hsl(var(--admin-text-main))] mb-1.5">{subject.name}</h3>
+                        <p className="text-[14px] font-medium text-[hsl(var(--admin-text-sub))] mb-6">{subject.teacher}</p>
 
-                        <div className="flex items-center gap-4 mb-6 text-sm">
-                            <div className="flex items-center gap-1.5 text-muted-foreground">
-                                <Users size={16} />
-                                {subject.students}
+                        <div className="flex items-center gap-5 mb-8 text-[14px]">
+                            <div className="flex items-center gap-2 font-medium text-[hsl(var(--admin-text-main))]">
+                                <Users size={18} className="text-[hsl(var(--admin-text-muted))]" />
+                                {subject.students} <span className="text-[hsl(var(--admin-text-muted))] font-normal">Students</span>
                             </div>
-                            <div className="flex items-center gap-1.5 font-medium">
-                                <span className={parseInt(subject.average) > 60 ? 'text-green-600' : 'text-orange-600'}>
+                            <div className="flex items-center gap-2 font-bold">
+                                <span className={parseInt(subject.average) > 60 ? 'text-[hsl(var(--admin-success))]' : 'text-[hsl(var(--admin-warning))]'}>
                                     {subject.average}
                                 </span>
-                                Avg
+                                <span className="text-[hsl(var(--admin-text-muted))] font-normal">Avg</span>
                             </div>
                         </div>
 
-                        <div className="mt-auto grid grid-cols-2 gap-3">
+                        <div className="mt-auto grid grid-cols-2 gap-3 pt-4 border-t border-[hsl(var(--admin-border))]">
                             <Link
                                 href={`/tenant/${slug}/academics/gradebook/${subject.id}`}
-                                className="flex items-center justify-center py-2 px-3 rounded-lg bg-primary/10 text-primary font-medium text-sm hover:bg-primary/20 transition-colors"
+                                className="flex items-center justify-center py-2.5 px-4 rounded-[10px] bg-[hsl(var(--admin-primary))/0.1] text-[hsl(var(--admin-primary))] font-bold text-[14px] hover:bg-[hsl(var(--admin-primary))/0.15] active:scale-95 transition-all"
                             >
                                 Gradebook
                             </Link>
-                            <button className="flex items-center justify-center py-2 px-3 rounded-lg border border-border/50 hover:bg-secondary transition-colors text-sm font-medium">
+                            <button className="flex items-center justify-center py-2.5 px-4 rounded-[10px] bg-[hsl(var(--admin-surface))] border border-[hsl(var(--admin-border))] hover:bg-[hsl(var(--admin-surface-alt))] active:scale-95 transition-all text-[14px] font-bold text-[hsl(var(--admin-text-main))]">
                                 Plan
                             </button>
                         </div>

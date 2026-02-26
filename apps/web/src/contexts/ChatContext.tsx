@@ -17,7 +17,7 @@ interface Message {
     timestamp: string;
     date: string;
     status?: 'sending' | 'sent' | 'delivered' | 'read';
-    attachments?: any[];
+    attachments?: unknown[];
 }
 
 interface Thread {
@@ -48,7 +48,7 @@ interface ChatContextValue {
 
     // Messages
     messages: Message[];
-    sendMessage: (content: string, attachments?: any[]) => Promise<void>;
+    sendMessage: (content: string, attachments?: unknown[]) => Promise<void>;
 
     // Typing
     typingUsers: Map<string, string[]>; // thread_id -> user_ids
@@ -247,7 +247,7 @@ export function ChatProvider({ tenantId, userId, children }: ChatProviderProps) 
     }, [currentThreadId, socketLeaveThread]);
 
     // Send message
-    const sendMessage = useCallback(async (content: string, attachments?: any[]) => {
+    const sendMessage = useCallback(async (content: string, attachments?: unknown[]) => {
         if (!currentThreadId) {
             throw new Error('No thread selected');
         }
