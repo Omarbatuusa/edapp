@@ -1,7 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { usePathname } from 'next/navigation';
+import { AdminFooter } from './AdminFooter';
 
 interface AdminNavItem {
     icon: string;
@@ -18,13 +20,15 @@ interface AdminHeaderProps {
     onNotificationClick?: () => void;
     onAvatarClick?: () => void;
     actions?: React.ReactNode;
+    isScrolled?: boolean;
 }
 
 interface AdminShellProps {
     children: React.ReactNode;
     tenantSlug: string;
     adminRole: 'platform' | 'secretary' | 'tenant';
-    headerProps: AdminHeaderProps;
+    headerProps: Omit<AdminHeaderProps, 'isScrolled'>;
+    appVersion?: string;
 }
 
 const PLATFORM_NAV: AdminNavItem[] = [
@@ -58,10 +62,61 @@ function getNavItems(role: string): AdminNavItem[] {
     }
 }
 
-/* ── Admin Header ── */
-function AdminHeader({ title, subtitle, logoUrl, onThemeToggle, onNotificationClick, actions }: AdminHeaderProps) {
+/* ── Tooltip Component ── */
+function RailTooltip({ children, text, enabled }: { children: React.ReactNode, text: string, enabled: boolean }) {
+    const [show, setShow] = useState(false);
+    const [coords, setCoords] = useState({ x: 0, y: 0 });
+    const triggerRef = useRef<HTMLDivElement>(null);
+
+    const handleMouseEnter = () => {
+        if (!enabled) return;
+        if (triggerRef.current) {
+            const rect = triggerRef.current.getBoundingClientRect();
+            setCoords({
+                x: rect.right + 12,
+                y: rect.top + rect.height / 2,
+            });
+            setShow(true);
+        }
+    };
+
+    const handleMouseLeave = () => setShow(false);
+
+    useEffect(() => {
+        if (!enabled) setShow(false);
+    }, [enabled]);
+
     return (
-        <header className="admin-header">
+        <>
+            <div
+                ref={triggerRef}
+                className="w-full flex"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+            >
+                {children}
+            </div>
+            {enabled && show && typeof window !== 'undefined' && createPortal(
+                <div
+                    className="fixed z-[100] px-3 py-1.5 bg-[hsl(var(--admin-text-main))] text-[hsl(var(--admin-surface))] text-[13px] font-semibold rounded-lg shadow-lg pointer-events-none fade-in"
+                    style={{
+                        left: coords.x,
+                        top: coords.y,
+                        transform: 'translateY(-50%)'
+                    }}
+                >
+                    {text}
+                </div>,
+                document.body
+            )}
+        </>
+    );
+}
+
+/* ── Admin Header ── */
+function AdminHeader({ title, subtitle, logoUrl, onThemeToggle, onNotificationClick, actions, isScrolled = false }: AdminHeaderProps) {
+    return (
+        <header className={`admin-header transition-all duration-200 ${isScrolled ? 'is-scrolled' : ''}`}>
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     {/* iOS style simplified logo / avatar */}
@@ -142,7 +197,14 @@ function AdminBottomNav({ items, basePath }: { items: AdminNavItem[]; basePath: 
 }
 
 /* ── Admin Nav Rail (tablet+ only) ── */
-function AdminNavRail({ items, basePath }: { items: AdminNavItem[]; basePath: string }) {
+interface AdminNavRailProps {
+    items: AdminNavItem[];
+    basePath: string;
+    isCollapsed: boolean;
+    onToggleCollapse: () => void;
+}
+
+function AdminNavRail({ items, basePath, isCollapsed, onToggleCollapse }: AdminNavRailProps) {
     const pathname = usePathname();
 
     const isActive = (href: string) => {
@@ -152,48 +214,103 @@ function AdminNavRail({ items, basePath }: { items: AdminNavItem[]; basePath: st
     };
 
     return (
-        <aside className="admin-nav-rail">
-            {items.map((item) => {
-                const active = isActive(item.href);
-                return (
-                    <a
-                        key={item.label}
-                        href={basePath + item.href}
-                        className={`flex items-center gap-3 rounded-xl transition-all active:scale-[0.96] group ${active
-                            ? 'bg-[hsl(var(--admin-primary)/0.1)] text-[hsl(var(--admin-primary))] font-semibold'
-                            : 'text-[hsl(var(--admin-text-muted))] hover:bg-[hsl(var(--admin-surface))] hover:text-[hsl(var(--admin-text-main))] font-medium'
-                            }`}
-                        /* Tablet: icon-only centered; Desktop: icon + label */
-                        style={{ padding: '12px 14px' }}
-                    >
-                        <span
-                            className="material-symbols-outlined text-[24px] flex-shrink-0 mx-auto lg:mx-0 transition-transform group-active:scale-[0.95]"
-                            style={active ? { fontVariationSettings: "'FILL' 1" } : undefined}
+        <aside className={`admin-nav-rail flex flex-col justify-between ${isCollapsed ? 'is-collapsed' : ''}`}>
+            <div className="flex flex-col gap-1 w-full">
+                {items.map((item) => {
+                    const active = isActive(item.href);
+                    const linkContent = (
+                        <a
+                            key={item.label}
+                            href={basePath + item.href}
+                            className={`flex items-center gap-3 rounded-xl transition-all active:scale-[0.96] group w-full ${active
+                                ? 'bg-[hsl(var(--admin-primary)/0.1)] text-[hsl(var(--admin-primary))] font-semibold'
+                                : 'text-[hsl(var(--admin-text-muted))] hover:bg-[hsl(var(--admin-surface))] hover:text-[hsl(var(--admin-text-main))] font-medium'
+                                }`}
+                            style={{ padding: isCollapsed ? '12px' : '12px 14px', justifyContent: isCollapsed ? 'center' : 'flex-start' }}
                         >
-                            {item.icon}
+                            <span
+                                className="material-symbols-outlined text-[24px] flex-shrink-0 mx-auto lg:mx-0 transition-transform group-active:scale-[0.95]"
+                                style={active ? { fontVariationSettings: "'FILL' 1" } : undefined}
+                            >
+                                {item.icon}
+                            </span>
+                            {!isCollapsed && <span className="hidden lg:inline text-sm font-medium truncate">{item.label}</span>}
+                        </a>
+                    );
+
+                    return (
+                        <RailTooltip key={item.label} text={item.label} enabled={isCollapsed}>
+                            {linkContent}
+                        </RailTooltip>
+                    );
+                })}
+            </div>
+
+            {/* Collapse Toggle */}
+            <div className="hidden lg:flex w-full mt-auto pt-4 border-t border-[hsl(var(--admin-border)/0.5)]">
+                <RailTooltip text="Expand" enabled={isCollapsed}>
+                    <button
+                        onClick={onToggleCollapse}
+                        className="flex items-center gap-3 rounded-xl transition-all active:scale-[0.96] w-full text-[hsl(var(--admin-text-muted))] hover:bg-[hsl(var(--admin-surface))] hover:text-[hsl(var(--admin-text-main))] font-medium group"
+                        style={{ padding: isCollapsed ? '12px' : '12px 14px', justifyContent: isCollapsed ? 'center' : 'flex-start' }}
+                    >
+                        <span className="material-symbols-outlined text-[24px] flex-shrink-0 mx-auto lg:mx-0 transition-transform group-active:scale-[0.95]">
+                            {isCollapsed ? 'dock_to_right' : 'keyboard_double_arrow_left'}
                         </span>
-                        {/* Label only on desktop */}
-                        <span className="hidden lg:inline text-sm font-medium truncate">{item.label}</span>
-                    </a>
-                );
-            })}
+                        {!isCollapsed && <span className="hidden lg:inline text-sm font-medium truncate">Collapse sidebar</span>}
+                    </button>
+                </RailTooltip>
+            </div>
         </aside>
     );
 }
 
 /* ── Admin Shell (main export) ── */
-export function AdminShell({ children, tenantSlug, adminRole, headerProps }: AdminShellProps) {
+export function AdminShell({ children, tenantSlug, adminRole, headerProps, appVersion = '1.0.0' }: AdminShellProps) {
     const basePath = `/tenant/${tenantSlug}/admin`;
     const navItems = getNavItems(adminRole);
+
+    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
+    const mainRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const stored = localStorage.getItem('admin_sidebar_collapsed');
+        if (stored === 'true') setIsCollapsed(true);
+    }, []);
+
+    const toggleCollapse = () => {
+        const next = !isCollapsed;
+        setIsCollapsed(next);
+        localStorage.setItem('admin_sidebar_collapsed', String(next));
+    };
+
+    const handleScroll = () => {
+        if (mainRef.current) {
+            setIsScrolled(mainRef.current.scrollTop > 10);
+        }
+    };
 
     return (
         <div className="admin-app-outer">
             <div className="admin-app-container">
-                <AdminHeader {...headerProps} />
+                <AdminHeader {...headerProps} isScrolled={isScrolled} />
                 <div className="admin-body">
-                    <AdminNavRail items={navItems} basePath={basePath} />
-                    <main className="admin-main">
-                        {children}
+                    <AdminNavRail
+                        items={navItems}
+                        basePath={basePath}
+                        isCollapsed={isCollapsed}
+                        onToggleCollapse={toggleCollapse}
+                    />
+                    <main
+                        className="admin-main relative flex flex-col"
+                        ref={mainRef}
+                        onScroll={handleScroll}
+                    >
+                        <div className="flex-1">
+                            {children}
+                        </div>
+                        <AdminFooter version={appVersion} />
                     </main>
                 </div>
                 <AdminBottomNav items={navItems} basePath={basePath} />

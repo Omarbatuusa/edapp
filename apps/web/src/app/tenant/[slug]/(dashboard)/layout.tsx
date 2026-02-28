@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { RoleProvider } from '@/contexts/RoleContext';
 import { Shell } from '@/components/layout/Shell';
 import { AdminShell } from '@/components/admin/layout/AdminShell';
+import pkg from '../../../../../package.json';
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -113,6 +114,7 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
                 <AdminShell
                     tenantSlug={slug}
                     adminRole={adminRole}
+                    appVersion={pkg.version}
                     headerProps={{
                         title: slug.toUpperCase(),
                         subtitle: adminRole === 'platform' ? 'Platform Admin'
