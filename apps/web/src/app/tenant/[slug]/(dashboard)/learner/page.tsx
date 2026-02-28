@@ -1,28 +1,50 @@
 'use client';
 
-import { BookOpen, Star, Trophy, Clock } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { BookOpen, Star, Trophy, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import AttendanceCapture from '../../../../../components/attendance/AttendanceCapture';
+import { apiClient } from '../../../../../lib/api-client';
 
 export default function LearnerDashboard() {
     const params = useParams();
     const slug = params.slug as string;
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+    const [attendance, setAttendance] = useState<any>(null);
+
+    useEffect(() => {
+        apiClient.get('/attendance/staff/today').then(res => {
+            if (res.data?.status === 'success') setAttendance(res.data);
+        }).catch(() => {});
+    }, []);
 
     return (
         <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 md:space-y-8">
             <div className="flex flex-col md:flex-row gap-6">
                 <div className="flex-1 p-8 bg-[hsl(var(--admin-primary))] rounded-[24px] text-white shadow-lg relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                    <h1 className="text-[28px] font-bold tracking-tight mb-2 relative z-10">Welcome back, Bart!</h1>
+                    <h1 className="text-[28px] font-bold tracking-tight mb-2 relative z-10">Welcome back!</h1>
                     <p className="text-[16px] font-medium text-white/80 relative z-10">You have 3 assignments due this week.</p>
                 </div>
                 <div className="flex items-center">
-                    <AttendanceCapture
-                        endpoint={`${API_URL}/attendance/learner/mark`}
-                        headers={{ 'x-tenant-id': slug }}
-                        label="Mark Attendance"
-                    />
+                    <div className="ios-card text-center p-6">
+                        {attendance?.checked_in ? (
+                            <div className="flex items-center gap-2 text-green-600">
+                                <CheckCircle size={24} />
+                                <div>
+                                    <p className="font-bold text-sm">Checked In</p>
+                                    <p className="text-xs text-gray-500">
+                                        {attendance.check_in_time
+                                            ? new Date(attendance.check_in_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                                            : ''}
+                                    </p>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-2 text-gray-400">
+                                <XCircle size={24} />
+                                <p className="font-bold text-sm">Not Checked In</p>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 

@@ -51,6 +51,15 @@ import { SubjectOffering } from './admin/entities/subject-offering.entity';
 import { SubjectStream } from './admin/entities/subject-stream.entity';
 import { AdmissionsProcessCard } from './admin/entities/admissions-process-card.entity';
 import { AuditEvent } from './admin/entities/audit-event.entity';
+import { Attendance } from './attendance/attendance.entity';
+import { AttendanceEvent } from './attendance/entities/attendance-event.entity';
+import { AttendanceDailySummary } from './attendance/entities/attendance-daily-summary.entity';
+import { AttendanceWeeklySummary } from './attendance/entities/attendance-weekly-summary.entity';
+import { AttendancePolicy } from './attendance/entities/attendance-policy.entity';
+import { KioskDevice } from './attendance/entities/kiosk-device.entity';
+import { EarlyLeaveRequest } from './attendance/entities/early-leave-request.entity';
+import { ClassRegister } from './attendance/entities/class-register.entity';
+import { SchoolClass } from './attendance/entities/class.entity';
 
 // Modules
 import { BrandsModule } from './brands/brands.module';
@@ -72,12 +81,14 @@ import { AdminModule } from './admin/admin.module';
 import { AdminPlatformModule } from './admin/admin-platform.module';
 
 import { BullModule } from '@nestjs/bullmq';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ScheduleModule.forRoot(),
     BullModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -139,6 +150,15 @@ import { BullModule } from '@nestjs/bullmq';
           SubjectStream,
           AdmissionsProcessCard,
           AuditEvent,
+          Attendance,
+          AttendanceEvent,
+          AttendanceDailySummary,
+          AttendanceWeeklySummary,
+          AttendancePolicy,
+          KioskDevice,
+          EarlyLeaveRequest,
+          ClassRegister,
+          SchoolClass,
         ],
         autoLoadEntities: true,
         synchronize: true, // DEV only, set to false in prod
@@ -156,7 +176,6 @@ import { BullModule } from '@nestjs/bullmq';
     StorageModule,
     PoliciesModule,
     CommunicationModule,
-    NotificationsModule,
     NotificationsModule,
     TranslationModule,
     SecurityModule,

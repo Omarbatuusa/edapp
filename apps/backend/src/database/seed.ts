@@ -28,6 +28,10 @@ import { AuditEvent } from '../admin/entities/audit-event.entity';
 import { TenantPhaseLink } from '../admin/entities/tenant-phase-link.entity';
 import { TenantGradeLink } from '../admin/entities/tenant-grade-link.entity';
 import { SubjectOffering } from '../admin/entities/subject-offering.entity';
+import { SchoolClass } from '../attendance/entities/class.entity';
+import { AttendancePolicy } from '../attendance/entities/attendance-policy.entity';
+import { KioskDevice, ScanPointType } from '../attendance/entities/kiosk-device.entity';
+import { AttendanceEvent, SubjectType, AttendanceEventType, AttendanceSourceType, EventPolicyDecision } from '../attendance/entities/attendance-event.entity';
 
 const AppDataSource = new DataSource({
     type: 'postgres',
@@ -40,6 +44,7 @@ const AppDataSource = new DataSource({
         DictSalutation, DictReligion, Subject, TenantFeature,
         AdmissionsProcessCard, SubjectStream, AuditEvent,
         TenantPhaseLink, TenantGradeLink, SubjectOffering,
+        SchoolClass, AttendancePolicy, KioskDevice, AttendanceEvent,
     ],
     synchronize: true,
     logging: false,
@@ -394,6 +399,145 @@ async function seed() {
     ]);
     console.log('   ✅ Seeded 8 Lakewood admissions cards');
 
+    // ========== 13. ATTENDANCE MODULE — Classes, Policies, Devices ==========
+    console.log('\n📋 Seeding attendance module...');
+
+    const lakBranch = allBranches.find(b => b.branch_code === 'LAK-MAIN')!;
+    const allSdnBranch = allBranches.find(b => b.branch_code === 'ALL-SDN')!;
+
+    // School classes
+    const classRepo = AppDataSource.getRepository(SchoolClass);
+    const lakClass10A = await classRepo.save({
+        tenant_id: lak.id,
+        branch_id: lakBranch.id,
+        grade_id: 'GR_10',
+        section_name: 'Grade 10A',
+        class_code: 'LAK-10A',
+        class_teacher_id: lakewoodTeacher.id,
+        academic_year: '2026',
+        learner_user_ids: [lakewoodStudent.id],
+        is_active: true,
+    });
+    const lakClass9A = await classRepo.save({
+        tenant_id: lak.id,
+        branch_id: lakBranch.id,
+        grade_id: 'GR_9',
+        section_name: 'Grade 9A',
+        class_code: 'LAK-9A',
+        class_teacher_id: lakewoodTeacher.id,
+        academic_year: '2026',
+        learner_user_ids: [],
+        is_active: true,
+    });
+    await classRepo.save({
+        tenant_id: allSdn.id,
+        branch_id: allSdnBranch.id,
+        grade_id: 'GR_10',
+        section_name: 'Grade 10',
+        class_code: 'ALL-10',
+        class_teacher_id: alliedStaff.id,
+        academic_year: '2026',
+        learner_user_ids: [alliedLearner.id],
+        is_active: true,
+    });
+    console.log('   ✅ Created 3 school classes');
+
+    // Attendance policies
+    const policyRepo = AppDataSource.getRepository(AttendancePolicy);
+    await policyRepo.save({
+        tenant_id: lak.id,
+        branch_id: lakBranch.id,
+        working_days: ['MON', 'TUE', 'WED', 'THU', 'FRI'],
+        school_start_time: '07:30',
+        school_end_time: '14:30',
+        staff_shift_start: '07:00',
+        staff_shift_end: '16:00',
+        grace_minutes: 10,
+        overtime_grace_minutes: 15,
+        late_threshold_minutes: 0,
+        missing_checkout_cutoff_minutes: 480,
+        anti_passback_minutes: 5,
+        alert_routing: { chain: ['TENANT_ADMIN', 'PRINCIPAL', 'DEPUTY_PRINCIPAL'], escalation_minutes: 30 },
+        is_active: true,
+    });
+    await policyRepo.save({
+        tenant_id: allSdn.id,
+        branch_id: allSdnBranch.id,
+        working_days: ['MON', 'TUE', 'WED', 'THU', 'FRI'],
+        school_start_time: '07:45',
+        school_end_time: '14:00',
+        staff_shift_start: '07:15',
+        staff_shift_end: '15:30',
+        grace_minutes: 15,
+        overtime_grace_minutes: 10,
+        late_threshold_minutes: 0,
+        missing_checkout_cutoff_minutes: 480,
+        anti_passback_minutes: 5,
+        alert_routing: { chain: ['TENANT_ADMIN'], escalation_minutes: 60 },
+        is_active: true,
+    });
+    console.log('   ✅ Created 2 attendance policies');
+
+    // Kiosk devices
+    const kioskRepo = AppDataSource.getRepository(KioskDevice);
+    await kioskRepo.save({
+        tenant_id: lak.id,
+        branch_id: lakBranch.id,
+        device_code: 'LAK-GATE-01',
+        device_name: 'Main Gate Tablet',
+        location_label: 'Main Gate',
+        scan_point_type: ScanPointType.GATE,
+        is_active: true,
+        registered_by_user_id: lakewoodAdmin.id,
+    });
+    await kioskRepo.save({
+        tenant_id: lak.id,
+        branch_id: lakBranch.id,
+        device_code: 'LAK-REC-01',
+        device_name: 'Reception Scanner',
+        location_label: 'Reception',
+        scan_point_type: ScanPointType.RECEPTION,
+        is_active: true,
+        registered_by_user_id: lakewoodAdmin.id,
+    });
+    console.log('   ✅ Created 2 kiosk devices');
+
+    // Sample attendance events (today)
+    const eventRepo = AppDataSource.getRepository(AttendanceEvent);
+    const todayAt = (h: number, m: number) => {
+        const d = new Date();
+        d.setHours(h, m, 0, 0);
+        return d;
+    };
+
+    await eventRepo.save({
+        tenant_id: lak.id,
+        branch_id: lakBranch.id,
+        subject_type: SubjectType.STAFF,
+        subject_user_id: lakewoodTeacher.id,
+        event_type: AttendanceEventType.CHECK_IN,
+        source: AttendanceSourceType.PWA_GEO,
+        captured_at_device: todayAt(7, 5),
+        captured_at_server: todayAt(7, 5),
+        policy_decision: EventPolicyDecision.ALLOW,
+        idempotency_key: 'seed-staff-checkin-teacher-1',
+        is_offline_synced: false,
+    });
+    await eventRepo.save({
+        tenant_id: lak.id,
+        branch_id: lakBranch.id,
+        subject_type: SubjectType.LEARNER,
+        subject_user_id: lakewoodStudent.id,
+        event_type: AttendanceEventType.CHECK_IN,
+        source: AttendanceSourceType.KIOSK_SCAN,
+        captured_at_device: todayAt(7, 25),
+        captured_at_server: todayAt(7, 25),
+        policy_decision: EventPolicyDecision.ALLOW,
+        idempotency_key: 'seed-learner-checkin-bart-1',
+        is_offline_synced: false,
+    });
+    console.log('   ✅ Created 2 sample attendance events');
+
     // ========== SUMMARY ==========
     console.log('\n✨ Seed completed successfully!\n');
     console.log('📊 Summary:');
@@ -403,6 +547,10 @@ async function seed() {
     console.log(`   - Phases: 6, Grades: 17, Languages HL+FAL: 11 each`);
     console.log(`   - Platform subjects: 18`);
     console.log(`   - Admissions cards (Lakewood): 8`);
+    console.log(`   - School classes: 3`);
+    console.log(`   - Attendance policies: 2`);
+    console.log(`   - Kiosk devices: 2`);
+    console.log(`   - Attendance events: 2`);
     console.log('\n🔐 Admin Credentials:');
     console.log('   - umarbatuusa@gmail.com / Janat@2000 (PLATFORM_SUPER_ADMIN)');
     console.log('   - admin@edapp.co.za / Janat@2000 (PLATFORM_SUPER_ADMIN)');
