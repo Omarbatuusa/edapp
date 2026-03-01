@@ -16,7 +16,7 @@ export class SessionTokenService {
 
     constructor(private configService: ConfigService) {
         this.secret = this.configService.get<string>('SESSION_JWT_SECRET') || 'edapp-session-secret-change-in-production';
-        this.defaultExpiresIn = '1h';
+        this.defaultExpiresIn = '24h';
     }
 
     sign(payload: Omit<SessionTokenPayload, 'type'>, expiresIn?: string): string {
