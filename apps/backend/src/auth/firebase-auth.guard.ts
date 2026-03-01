@@ -2,12 +2,14 @@ import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AuthService } from './auth.service';
+import { SessionTokenService } from './session-token.service';
 import { User } from '../users/user.entity';
 
 @Injectable()
 export class FirebaseAuthGuard implements CanActivate {
     constructor(
         private authService: AuthService,
+        private sessionTokenService: SessionTokenService,
         @InjectRepository(User)
         private userRepo: Repository<User>,
     ) {}
@@ -21,6 +23,26 @@ export class FirebaseAuthGuard implements CanActivate {
         }
 
         const token = authHeader.split(' ')[1];
+
+        // 1. Try session token (custom JWT from handoff auth flow)
+        try {
+            const payload = this.sessionTokenService.verify(token);
+            if (payload.type === 'session') {
+                const dbUser = await this.userRepo.findOne({ where: { id: payload.sub } });
+                request.user = {
+                    uid: payload.sub,
+                    dbUserId: payload.sub,
+                    role: payload.role,
+                    tenant: payload.tenant,
+                    customClaims: { role: payload.role },
+                };
+                return true;
+            }
+        } catch {
+            // Not a valid session token — try Firebase next
+        }
+
+        // 2. Try Firebase ID token
         try {
             const decoded = await this.authService.verifyToken(token);
 
