@@ -7,7 +7,7 @@ import { Repository } from 'typeorm';
 import { Branch } from '../branches/branch.entity';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 
-const ALLOWED_ROLES = ['TENANT_ADMIN', 'MAIN_BRANCH_ADMIN', 'BRANCH_ADMIN', 'platform_admin', 'PLATFORM_SUPER_ADMIN'];
+const ALLOWED_ROLES = ['tenant_admin', 'main_branch_admin', 'branch_admin', 'platform_super_admin'];
 
 @Controller('admin/branches')
 @UseGuards(FirebaseAuthGuard)

@@ -8,7 +8,7 @@ import { Brand } from '../brands/brand.entity';
 import { Branch } from '../branches/branch.entity';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 
-const BRAND_ROLES = ['platform_admin', 'PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN'];
+const BRAND_ROLES = ['platform_super_admin', 'brand_admin'];
 
 @Controller('admin/brands')
 @UseGuards(FirebaseAuthGuard)

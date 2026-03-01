@@ -6,7 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { FirebaseAuthGuard } from '../../auth/firebase-auth.guard';
 import { AuditEvent, AuditAction } from '../entities/audit-event.entity';
-const PLATFORM_ROLES = ['PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN', 'platform_admin'];
+const PLATFORM_ROLES = ['platform_super_admin', 'brand_admin'];
 
 const DICT_TABLE_MAP: Record<string, string> = {
   phases: 'dict_phases',

@@ -8,8 +8,8 @@ import { FirebaseAuthGuard } from '../../auth/firebase-auth.guard';
 import { AdmissionsProcessCard } from '../entities/admissions-process-card.entity';
 import { AuditEvent, AuditAction } from '../entities/audit-event.entity';
 
-const PLATFORM_ROLES = ['PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN', 'platform_admin'];
-const CAN_MANAGE = ['PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN', 'platform_admin', 'TENANT_ADMIN', 'ADMISSIONS_OFFICER'];
+const PLATFORM_ROLES = ['platform_super_admin', 'brand_admin'];
+const CAN_MANAGE = ['platform_super_admin', 'brand_admin', 'tenant_admin', 'admissions_officer'];
 
 @UseGuards(FirebaseAuthGuard)
 @Controller('admin/tenants/:tenantId/admissions')

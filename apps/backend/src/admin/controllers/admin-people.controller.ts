@@ -9,8 +9,8 @@ import { RoleAssignment, UserRole } from '../../users/role-assignment.entity';
 import { User } from '../../users/user.entity';
 import { AuditEvent, AuditAction } from '../entities/audit-event.entity';
 
-const PLATFORM_ROLES = ['PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN', 'platform_admin'];
-const CAN_MANAGE = ['PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN', 'platform_admin', 'TENANT_ADMIN', 'MAIN_BRANCH_ADMIN'];
+const PLATFORM_ROLES = ['platform_super_admin', 'brand_admin'];
+const CAN_MANAGE = ['platform_super_admin', 'brand_admin', 'tenant_admin', 'main_branch_admin'];
 
 @UseGuards(FirebaseAuthGuard)
 @Controller('admin/tenants/:tenantId/people')

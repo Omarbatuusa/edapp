@@ -7,8 +7,8 @@ import { Repository } from 'typeorm';
 import { FirebaseAuthGuard } from '../../auth/firebase-auth.guard';
 import { Subject } from '../entities/subject.entity';
 
-const PLATFORM_ROLES = ['PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN', 'platform_admin'];
-const TENANT_ROLES = ['TENANT_ADMIN', 'MAIN_BRANCH_ADMIN'];
+const PLATFORM_ROLES = ['platform_super_admin', 'brand_admin'];
+const TENANT_ROLES = ['tenant_admin', 'main_branch_admin'];
 
 @UseGuards(FirebaseAuthGuard)
 @Controller('admin/subjects')

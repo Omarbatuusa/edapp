@@ -9,8 +9,8 @@ import { TenantFeature } from '../entities/tenant-feature.entity';
 import { AuditEvent, AuditAction } from '../entities/audit-event.entity';
 import { Tenant } from '../../tenants/tenant.entity';
 
-const PLATFORM_ROLES = ['PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN', 'platform_admin'];
-const TENANT_ROLES = ['TENANT_ADMIN'];
+const PLATFORM_ROLES = ['platform_super_admin', 'brand_admin'];
+const TENANT_ROLES = ['tenant_admin'];
 
 function detectFinanceConflict(features: TenantFeature[]): { conflict: boolean; conflicting_features: string[] } {
   const fm = features.find(f => f.feature_key === 'FINANCE_MODE');

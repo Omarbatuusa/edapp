@@ -9,8 +9,8 @@ import { Tenant, TenantStatus } from '../../tenants/tenant.entity';
 import { TenantFeature } from '../entities/tenant-feature.entity';
 import { AuditEvent, AuditAction } from '../entities/audit-event.entity';
 
-const PLATFORM_ROLES = ['PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN', 'platform_admin'];
-const SECRETARY_ROLES = ['PLATFORM_SECRETARY'];
+const PLATFORM_ROLES = ['platform_super_admin', 'brand_admin'];
+const SECRETARY_ROLES = ['platform_secretary'];
 
 function getRole(req: any): string {
   return req.user?.role || req.user?.customClaims?.role || '';
