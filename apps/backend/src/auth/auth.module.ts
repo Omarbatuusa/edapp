@@ -15,6 +15,7 @@ import { TenantSettings } from '../tenants/tenant-settings.entity';
 import { RoleAssignment } from '../users/role-assignment.entity';
 import { HandoffController } from './handoff.controller';
 import { HandoffService } from './handoff.service';
+import { AdminLoginController } from './admin-login.controller';
 
 @Global()
 @Module({
@@ -22,7 +23,7 @@ import { HandoffService } from './handoff.service';
         ConfigModule,
         TypeOrmModule.forFeature([User, Tenant, TenantSettings, RoleAssignment]),
     ],
-    controllers: [AuthController, HandoffController, EmailAuthController],
+    controllers: [AuthController, HandoffController, EmailAuthController, AdminLoginController],
     providers: [
         AuthService,
         EnhancedAuthService,

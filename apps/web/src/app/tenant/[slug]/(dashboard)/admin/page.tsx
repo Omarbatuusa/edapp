@@ -6,10 +6,11 @@ import { Users, TrendingUp, AlertTriangle, Calendar, ArrowRight, Search } from '
 
 interface Props { params: Promise<{ slug: string }> }
 
-const PLATFORM_ROLES = ['PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN', 'platform_admin'];
-const SECRETARY_ROLES = ['PLATFORM_SECRETARY'];
-const TENANT_ROLES = ['TENANT_ADMIN', 'MAIN_BRANCH_ADMIN'];
-const BRANCH_ROLES = ['TENANT_ADMIN', 'MAIN_BRANCH_ADMIN', 'BRANCH_ADMIN', 'PLATFORM_SUPER_ADMIN', 'platform_admin'];
+const PLATFORM_ROLES = ['platform_super_admin', 'brand_admin'];
+const SECRETARY_ROLES = ['platform_secretary'];
+const TENANT_ROLES = ['tenant_admin', 'main_branch_admin'];
+const BRANCH_ROLES = ['tenant_admin', 'main_branch_admin', 'branch_admin', 'platform_super_admin'];
+const ADMISSIONS_ROLES = ['platform_super_admin', 'brand_admin', 'tenant_admin', 'admissions_officer'];
 
 function useAdminRole(slug: string) {
     const [role, setRole] = useState('');
@@ -25,10 +26,12 @@ function useAdminRole(slug: string) {
 export default function AdminDashboard({ params }: Props) {
     const { slug } = use(params);
     const role = useAdminRole(slug);
-    const isPlatform = PLATFORM_ROLES.some(r => role.includes(r) || r.includes(role));
-    const isSecretary = SECRETARY_ROLES.some(r => role.includes(r) || r.includes(role));
-    const isTenantAdmin = TENANT_ROLES.some(r => role.includes(r) || r.includes(role));
-    const canManageBranches = BRANCH_ROLES.some(r => role.includes(r) || r.includes(role));
+    const isPlatform = PLATFORM_ROLES.includes(role);
+    const isSecretary = SECRETARY_ROLES.includes(role);
+    const isTenantAdmin = TENANT_ROLES.includes(role);
+    const canManageBranches = BRANCH_ROLES.includes(role);
+    const canManageAdmissions = ADMISSIONS_ROLES.includes(role);
+    const isBranchAdmin = role === 'branch_admin';
 
     return (
         <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
@@ -48,6 +51,8 @@ export default function AdminDashboard({ params }: Props) {
                     <NavCard href={`/tenant/${slug}/admin/tenants`} label="Tenants" description="View and manage all school tenants" icon="domain" color="indigo" />
                     <NavCard href={`/tenant/${slug}/admin/brands`} label="Brand Management" description="Manage school brands and groups" icon="category" color="purple" />
                     <NavCard href={`/tenant/${slug}/admin/dictionaries`} label="Dictionaries" description="Phases, grades, subjects, languages" icon="menu_book" color="violet" />
+                    <NavCard href={`/tenant/${slug}/admin/people`} label="People & Roles" description="Manage users and role assignments" icon="group" color="teal" />
+                    <NavCard href={`/tenant/${slug}/admin/audit`} label="Audit Log" description="View platform activity and changes" icon="history" color="gray" />
                 </NavSection>
             )}
 
@@ -63,16 +68,30 @@ export default function AdminDashboard({ params }: Props) {
                     <NavCard href={`/tenant/${slug}/admin/inbox`} label="Inbox / Tasks" description="View pending tasks and approvals" icon="inbox" color="orange" />
                     <NavCard href={`/tenant/${slug}/admin/tenants`} label="Tenants Lookup" description="Search tenants by school code" icon="search" color="gray" />
                     <NavCard href={`/tenant/${slug}/admin/approvals`} label="Approvals" description="Process pending approvals" icon="task_alt" color="teal" />
+                    <NavCard href={`/tenant/${slug}/admin/people`} label="People Lookup" description="Search users across tenants" icon="person_search" color="blue" />
                 </NavSection>
             )}
 
             {isTenantAdmin && (
                 <NavSection title="School Administration">
                     <NavCard href={`/tenant/${slug}/admin/control`} label="Control Dashboard" description="School overview and quick links" icon="dashboard" color="blue" />
-                    <NavCard href={`/tenant/${slug}/admin/integrations`} label="Integrations & Features" description="Feature flags and external systems" icon="integration_instructions" color="amber" />
-                    <NavCard href={`/tenant/${slug}/admin/people`} label="People & Roles" description="Manage users and role assignments" icon="group" color="teal" />
                     <NavCard href={`/tenant/${slug}/admin/school-data`} label="School Data" description="Phases, grades and subject offerings" icon="school" color="green" />
+                    <NavCard href={`/tenant/${slug}/admin/people`} label="People & Roles" description="Manage users and role assignments" icon="group" color="teal" />
                     <NavCard href={`/tenant/${slug}/admin/admissions`} label="Admissions Builder" description="Design your admissions process" icon="assignment" color="rose" />
+                    <NavCard href={`/tenant/${slug}/admin/integrations`} label="Integrations & Features" description="Feature flags and external systems" icon="integration_instructions" color="amber" />
+                </NavSection>
+            )}
+
+            {canManageAdmissions && !isPlatform && !isTenantAdmin && (
+                <NavSection title="Admissions">
+                    <NavCard href={`/tenant/${slug}/admin/admissions`} label="Admissions Builder" description="Design your admissions process" icon="assignment" color="rose" />
+                </NavSection>
+            )}
+
+            {isBranchAdmin && !canManageBranches && (
+                <NavSection title="Branch Administration">
+                    <NavCard href={`/tenant/${slug}/admin/branches`} label="My Branch" description="Manage your branch settings" icon="location_city" color="green" />
+                    <NavCard href={`/tenant/${slug}/admin/people`} label="People & Roles" description="Manage branch staff and roles" icon="group" color="teal" />
                 </NavSection>
             )}
 

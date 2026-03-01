@@ -20,10 +20,16 @@ export default function AdminLoginPage() {
     const [rememberDuration, setRememberDuration] = useState('30')
 
     useEffect(() => {
-        if (user) {
-            router.push('/admin/dashboard')
+        // If already has a session token, redirect to admin UI
+        if (typeof window !== 'undefined') {
+            const sessionToken = localStorage.getItem('session_token')
+            const userRole = localStorage.getItem('user_role')
+            if (sessionToken && userRole) {
+                const slug = localStorage.getItem('admin_tenant_slug') || 'edapp'
+                router.push(`/tenant/${slug}/admin`)
+            }
         }
-    }, [user, router])
+    }, [router])
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -31,7 +37,42 @@ export default function AdminLoginPage() {
         setError("")
 
         try {
+            // 1. Firebase auth
             await login(email, password)
+
+            // 2. Get Firebase ID token
+            const { auth } = await import('@/lib/firebase')
+            const idToken = await auth?.currentUser?.getIdToken()
+            if (!idToken) throw new Error('Failed to get authentication token')
+
+            // 3. Call backend to resolve role + create session JWT
+            const res = await fetch('/v1/auth/admin-login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: idToken }),
+            })
+
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}))
+                throw new Error(data.message || 'Login failed. Ensure you have an admin role.')
+            }
+
+            const data = await res.json()
+
+            // 4. Store session data
+            localStorage.setItem('session_token', data.sessionToken)
+            localStorage.setItem('user_id', data.userId)
+            localStorage.setItem('user_role', data.role)
+            localStorage.setItem('admin_tenant_slug', data.tenantSlug || 'edapp')
+
+            const slug = data.tenantSlug || 'edapp'
+            localStorage.setItem(`edapp_role_${slug}`, data.role)
+            if (data.tenantSlug && data.tenantSlug !== 'edapp') {
+                localStorage.setItem(`edapp_tenant_id_${slug}`, data.tenantSlug)
+            }
+
+            // 5. Redirect to admin UI
+            router.push(`/tenant/${slug}/admin`)
         } catch (err: any) {
             setError(err.message || "Invalid credentials")
         } finally {

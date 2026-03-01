@@ -15,11 +15,12 @@ export function middleware(request: NextRequest) {
             return NextResponse.next();
         }
     } else if (hostname.startsWith('admin.')) {
-        // admin.edapp.co.za -> Platform Admin Login
-        if (!url.pathname.startsWith('/admin') && url.pathname === '/') {
+        // admin.edapp.co.za -> Platform Admin
+        if (url.pathname === '/' || url.pathname === '/login') {
             url.pathname = '/admin/login';
             return NextResponse.rewrite(url);
         }
+        // All other paths (including /tenant/edapp/admin/*) pass through to Next.js
     } else if (hostname.startsWith('auth.')) {
         // auth.edapp.co.za -> Central Auth Broker
         // Rewrite requests to /auth-broker internal route

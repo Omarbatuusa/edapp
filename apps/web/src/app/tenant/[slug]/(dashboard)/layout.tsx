@@ -13,8 +13,8 @@ interface DashboardLayoutProps {
     params: Promise<{ slug: string }>;
 }
 
-const PLATFORM_ROLES = ['PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN', 'platform_admin'];
-const SECRETARY_ROLES = ['PLATFORM_SECRETARY'];
+const PLATFORM_ROLES = ['platform_super_admin', 'brand_admin'];
+const SECRETARY_ROLES = ['platform_secretary'];
 
 /** Maps URL path segments to allowed roles */
 const ROUTE_ROLE_MAP: Record<string, string[]> = {
@@ -125,8 +125,8 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
     const getAdminRoleType = (): 'platform' | 'secretary' | 'tenant' => {
         if (typeof window !== 'undefined') {
             const r = localStorage.getItem(`edapp_role_${slug}`) || localStorage.getItem('user_role') || '';
-            if (PLATFORM_ROLES.some(pr => r.includes(pr) || pr.includes(r))) return 'platform';
-            if (SECRETARY_ROLES.some(sr => r.includes(sr) || sr.includes(r))) return 'secretary';
+            if (PLATFORM_ROLES.includes(r)) return 'platform';
+            if (SECRETARY_ROLES.includes(r)) return 'secretary';
         }
         return 'tenant';
     };

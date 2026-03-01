@@ -36,6 +36,8 @@ const PLATFORM_NAV: AdminNavItem[] = [
     { icon: 'domain', label: 'Tenants', href: '/tenants' },
     { icon: 'sell', label: 'Brands', href: '/brands' },
     { icon: 'dictionary', label: 'Dictionaries', href: '/dictionaries' },
+    { icon: 'group', label: 'People', href: '/people' },
+    { icon: 'history', label: 'Audit Log', href: '/audit' },
     { icon: 'settings', label: 'Settings', href: '/control' },
 ];
 
@@ -43,14 +45,18 @@ const SECRETARY_NAV: AdminNavItem[] = [
     { icon: 'inbox', label: 'Inbox', href: '/inbox' },
     { icon: 'domain', label: 'Tenants', href: '/tenants' },
     { icon: 'approval', label: 'Approvals', href: '/approvals' },
+    { icon: 'group', label: 'People', href: '/people' },
     { icon: 'settings', label: 'Settings', href: '/control' },
 ];
 
 const TENANT_NAV: AdminNavItem[] = [
     { icon: 'dashboard', label: 'Dashboard', href: '' },
-    { icon: 'database', label: 'Data', href: '/school-data' },
+    { icon: 'database', label: 'School Data', href: '/school-data' },
+    { icon: 'location_city', label: 'Branches', href: '/branches' },
     { icon: 'group', label: 'People', href: '/people' },
-    { icon: 'settings', label: 'Settings', href: '/integrations' },
+    { icon: 'assignment', label: 'Admissions', href: '/admissions' },
+    { icon: 'toggle_on', label: 'Features', href: '/integrations' },
+    { icon: 'settings', label: 'Settings', href: '/control' },
 ];
 
 function getNavItems(role: string): AdminNavItem[] {
