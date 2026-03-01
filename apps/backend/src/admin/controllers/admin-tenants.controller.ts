@@ -27,7 +27,7 @@ const DEFAULT_FEATURES = [
 ];
 
 @UseGuards(FirebaseAuthGuard)
-@Controller('v1/admin/tenants')
+@Controller('admin/tenants')
 export class AdminTenantsController {
   constructor(
     @InjectRepository(Tenant) private tenantRepo: Repository<Tenant>,

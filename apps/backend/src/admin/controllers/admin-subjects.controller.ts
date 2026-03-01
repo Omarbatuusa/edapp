@@ -11,7 +11,7 @@ const PLATFORM_ROLES = ['PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN', 'platform_admin']
 const TENANT_ROLES = ['TENANT_ADMIN', 'MAIN_BRANCH_ADMIN'];
 
 @UseGuards(FirebaseAuthGuard)
-@Controller('v1/admin/subjects')
+@Controller('admin/subjects')
 export class AdminSubjectsController {
   constructor(
     @InjectRepository(Subject) private subjectRepo: Repository<Subject>,

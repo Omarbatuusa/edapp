@@ -9,7 +9,7 @@ import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 
 const ALLOWED_ROLES = ['TENANT_ADMIN', 'MAIN_BRANCH_ADMIN', 'BRANCH_ADMIN', 'platform_admin', 'PLATFORM_SUPER_ADMIN'];
 
-@Controller('v1/admin/branches')
+@Controller('admin/branches')
 @UseGuards(FirebaseAuthGuard)
 export class AdminBranchesController {
     constructor(

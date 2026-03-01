@@ -10,7 +10,7 @@ import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 
 const BRAND_ROLES = ['platform_admin', 'PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN'];
 
-@Controller('v1/admin/brands')
+@Controller('admin/brands')
 @UseGuards(FirebaseAuthGuard)
 export class AdminBrandsController {
     constructor(

@@ -11,7 +11,7 @@ const PLATFORM_ROLES = ['PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN', 'platform_admin']
 const TENANT_ROLES = ['TENANT_ADMIN'];
 
 @UseGuards(FirebaseAuthGuard)
-@Controller('v1/admin/audit-events')
+@Controller('admin/audit-events')
 export class AdminAuditController {
   constructor(
     @InjectRepository(AuditEvent) private auditRepo: Repository<AuditEvent>,

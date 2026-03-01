@@ -55,7 +55,7 @@ const DICT_TABLE_MAP: Record<string, string> = {
 };
 
 @UseGuards(FirebaseAuthGuard)
-@Controller('v1/admin/dict')
+@Controller('admin/dict')
 export class AdminDictController {
   constructor(
     private dataSource: DataSource,

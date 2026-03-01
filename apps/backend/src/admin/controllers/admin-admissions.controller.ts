@@ -12,7 +12,7 @@ const PLATFORM_ROLES = ['PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN', 'platform_admin']
 const CAN_MANAGE = ['PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN', 'platform_admin', 'TENANT_ADMIN', 'ADMISSIONS_OFFICER'];
 
 @UseGuards(FirebaseAuthGuard)
-@Controller('v1/admin/tenants/:tenantId/admissions')
+@Controller('admin/tenants/:tenantId/admissions')
 export class AdminAdmissionsController {
   constructor(
     @InjectRepository(AdmissionsProcessCard) private cardRepo: Repository<AdmissionsProcessCard>,

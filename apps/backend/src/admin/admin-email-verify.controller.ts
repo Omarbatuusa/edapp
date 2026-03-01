@@ -6,7 +6,7 @@ import { Repository } from 'typeorm';
 import { AdminDraft } from './admin-draft.entity';
 import Redis from 'ioredis';
 
-@Controller('v1/admin/email-verify')
+@Controller('admin/email-verify')
 export class AdminEmailVerifyController {
     private readonly sesClient: SESClient;
     private readonly redis: Redis;

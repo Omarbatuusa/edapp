@@ -1,7 +1,7 @@
 import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
 import { parsePhoneNumber, isValidPhoneNumber, CountryCode } from 'libphonenumber-js';
 
-@Controller('v1/admin/phone')
+@Controller('admin/phone')
 export class AdminPhoneController {
     @Post('validate')
     validate(@Body() body: { phone: string; country_iso2: string }) {

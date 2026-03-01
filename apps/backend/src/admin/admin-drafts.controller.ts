@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { AdminDraft, DraftFormType } from './admin-draft.entity';
 import { DeepPartial } from 'typeorm';
 
-@Controller('v1/admin/drafts')
+@Controller('admin/drafts')
 export class AdminDraftsController {
     constructor(
         @InjectRepository(AdminDraft)

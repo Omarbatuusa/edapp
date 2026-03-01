@@ -13,7 +13,7 @@ const PLATFORM_ROLES = ['PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN', 'platform_admin']
 const CAN_MANAGE = ['PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN', 'platform_admin', 'TENANT_ADMIN', 'MAIN_BRANCH_ADMIN'];
 
 @UseGuards(FirebaseAuthGuard)
-@Controller('v1/admin/tenants/:tenantId/people')
+@Controller('admin/tenants/:tenantId/people')
 export class AdminPeopleController {
   constructor(
     @InjectRepository(RoleAssignment) private roleRepo: Repository<RoleAssignment>,

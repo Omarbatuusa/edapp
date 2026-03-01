@@ -14,7 +14,7 @@ const PLATFORM_ROLES = ['PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN', 'platform_admin']
 const TENANT_ROLES = ['TENANT_ADMIN', 'MAIN_BRANCH_ADMIN'];
 
 @UseGuards(FirebaseAuthGuard)
-@Controller('v1/admin/tenants/:tenantId/school-data')
+@Controller('admin/tenants/:tenantId/school-data')
 export class AdminSchoolDataController {
   constructor(
     @InjectRepository(TenantPhaseLink) private phaseRepo: Repository<TenantPhaseLink>,

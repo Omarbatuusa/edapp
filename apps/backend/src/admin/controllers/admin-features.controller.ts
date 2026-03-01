@@ -29,7 +29,7 @@ function detectFinanceConflict(features: TenantFeature[]): { conflict: boolean; 
 }
 
 @UseGuards(FirebaseAuthGuard)
-@Controller('v1/admin/tenants/:tenantId/features')
+@Controller('admin/tenants/:tenantId/features')
 export class AdminFeaturesController {
   constructor(
     @InjectRepository(TenantFeature) private featureRepo: Repository<TenantFeature>,
