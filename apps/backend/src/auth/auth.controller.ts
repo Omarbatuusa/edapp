@@ -1,16 +1,21 @@
-import { Controller, Post, Body, Req, UnauthorizedException, NotImplementedException } from '@nestjs/common';
+import { Controller, Post, Body, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { EnhancedAuthService } from './enhanced-auth.service';
+import { LearnerAuthService } from './learner-auth.service';
+import { RateLimitGuard, RateLimit } from './rate-limit.guard';
 import type { Request } from 'express';
 
 /**
  * Auth Controller
- * 
+ *
  * Handles authentication endpoints for the EdApp platform.
- * Uses Firebase Auth for token verification.
+ * Uses Firebase Auth for token verification and session tokens for learner PIN login.
  */
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: EnhancedAuthService) { }
+    constructor(
+        private authService: EnhancedAuthService,
+        private learnerAuthService: LearnerAuthService,
+    ) { }
 
     /**
      * Verify Firebase token and return user info
@@ -47,27 +52,23 @@ export class AuthController {
     }
 
     /**
-     * Learner PIN login - Stub Implementation
-     * 
-     * TODO: Full implementation requires:
-     * 1. Adding tenant_id and role to User entity
-     * 2. Implementing validateStudentPin in EnhancedAuthService
+     * Learner PIN login
+     *
+     * Authenticates learners via student number + PIN.
+     * Returns a session JWT (not Firebase) for non-Firebase auth flows.
      */
     @Post('learner/login')
+    @UseGuards(RateLimitGuard)
+    @RateLimit(5, 15)
     async learnerLogin(
         @Body('studentNumber') studentNumber: string,
         @Body('pin') pin: string,
         @Body('tenantSlug') tenantSlug: string,
-        @Req() req: Request,
     ) {
         if (!studentNumber || !pin || !tenantSlug) {
             throw new UnauthorizedException('Student number, PIN, and tenant slug are required');
         }
 
-        // Stub: Learner PIN login not fully implemented yet
-        // This requires User entity to have tenant_id and role fields
-        throw new NotImplementedException(
-            'Learner PIN login is not yet available. Please use Firebase authentication.'
-        );
+        return this.learnerAuthService.validateLearner(studentNumber, pin, tenantSlug);
     }
 }

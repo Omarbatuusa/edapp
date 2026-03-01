@@ -3,18 +3,93 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Check, X, GripVertical } from 'lucide-react';
 
-const DICTS = [
-  { key: 'phases', label: 'Phases', icon: 'school' },
-  { key: 'grades', label: 'Grades', icon: 'grade' },
-  { key: 'class_genders', label: 'Class Genders', icon: 'wc' },
-  { key: 'subject_categories', label: 'Subject Categories', icon: 'category' },
-  { key: 'subject_types', label: 'Subject Types', icon: 'menu_book' },
-  { key: 'language_levels', label: 'Language Levels', icon: 'translate' },
-  { key: 'languages_hl', label: 'Languages (HL)', icon: 'language' },
-  { key: 'languages_fal', label: 'Languages (FAL)', icon: 'language' },
-  { key: 'salutations', label: 'Salutations', icon: 'badge' },
-  { key: 'religions', label: 'Religions', icon: 'church' },
+interface DictGroup {
+  group: string;
+  items: { key: string; label: string; icon: string }[];
+}
+
+const DICT_GROUPS: DictGroup[] = [
+  {
+    group: 'School Structure',
+    items: [
+      { key: 'phases', label: 'Phases', icon: 'school' },
+      { key: 'grades', label: 'Grades', icon: 'grade' },
+      { key: 'class_genders', label: 'Class Genders', icon: 'wc' },
+      { key: 'academic_year_structures', label: 'Academic Year Structure', icon: 'calendar_month' },
+      { key: 'programme_types', label: 'Programme Type', icon: 'view_agenda' },
+      { key: 'teaching_levels', label: 'Teaching Level', icon: 'stairs' },
+    ],
+  },
+  {
+    group: 'Subjects & Curriculum',
+    items: [
+      { key: 'subjects', label: 'Subjects', icon: 'auto_stories' },
+      { key: 'compulsory_subjects', label: 'Compulsory Subjects', icon: 'rule' },
+      { key: 'subject_categories', label: 'Subject Categories', icon: 'category' },
+      { key: 'subject_types', label: 'Subject Types', icon: 'menu_book' },
+      { key: 'subject_groups', label: 'Subject Groups', icon: 'workspaces' },
+      { key: 'subject_language_levels', label: 'Subject Language Level', icon: 'translate' },
+      { key: 'assessment_models', label: 'Assessment Models', icon: 'assignment' },
+      { key: 'curriculum_names', label: 'Curriculum Name', icon: 'library_books' },
+      { key: 'curriculum_authorities', label: 'Curriculum Authorities', icon: 'account_balance' },
+      { key: 'exam_bodies', label: 'Examination Bodies', icon: 'quiz' },
+    ],
+  },
+  {
+    group: 'Languages',
+    items: [
+      { key: 'language_levels', label: 'Language Levels', icon: 'translate' },
+      { key: 'languages_hl', label: 'Languages (HL)', icon: 'language' },
+      { key: 'languages_fal', label: 'Languages (FAL)', icon: 'language' },
+      { key: 'home_languages', label: 'Home Languages', icon: 'home' },
+    ],
+  },
+  {
+    group: 'Staff & Roles',
+    items: [
+      { key: 'teaching_leadership_staff', label: 'Teaching & Leadership', icon: 'supervisor_account' },
+      { key: 'non_teaching_support_staff', label: 'Non-Teaching & Support', icon: 'support_agent' },
+      { key: 'optional_admin_roles', label: 'Optional/Admin Roles', icon: 'admin_panel_settings' },
+    ],
+  },
+  {
+    group: 'Qualifications & Certification',
+    items: [
+      { key: 'certification_types', label: 'Certification Types', icon: 'verified' },
+      { key: 'academic_documents', label: 'Academic Documents', icon: 'description' },
+      { key: 'reqv_levels', label: 'REQV Levels', icon: 'bar_chart' },
+      { key: 'qualification_pathways', label: 'Qualification Pathways', icon: 'route' },
+      { key: 'cert_subject_providers', label: 'Certificate Providers', icon: 'workspace_premium' },
+    ],
+  },
+  {
+    group: 'Personal Details',
+    items: [
+      { key: 'salutations', label: 'Salutations', icon: 'badge' },
+      { key: 'religions', label: 'Religions', icon: 'diversity_3' },
+      { key: 'citizenship_types', label: 'Citizenship Types', icon: 'public' },
+      { key: 'marital_statuses', label: 'Marital Status', icon: 'favorite' },
+      { key: 'parent_rights', label: 'Parent Rights', icon: 'family_restroom' },
+      { key: 'emergency_relationships', label: 'Emergency Relationships', icon: 'emergency' },
+      { key: 'blood_types', label: 'Blood Types', icon: 'bloodtype' },
+      { key: 'months', label: 'Months of the Year', icon: 'event' },
+    ],
+  },
+  {
+    group: 'Health & Support',
+    items: [
+      { key: 'medical_aid_providers', label: 'Medical Aid Providers', icon: 'local_hospital' },
+      { key: 'medical_disabilities', label: 'Medical Disabilities', icon: 'accessible' },
+      { key: 'school_allergies', label: 'School Allergies', icon: 'healing' },
+      { key: 'psychological_issues', label: 'Psychological Issues', icon: 'psychology' },
+      { key: 'educational_disabilities', label: 'Educational Disabilities', icon: 'accessibility_new' },
+      { key: 'support_profiles', label: 'Support Profiles', icon: 'support' },
+      { key: 'therapy_types', label: 'Therapy Types', icon: 'spa' },
+    ],
+  },
 ];
+
+const DICTS = DICT_GROUPS.flatMap(g => g.items);
 
 interface Entry {
   id: string; code: string; label: string; is_active: boolean;
@@ -100,19 +175,28 @@ export default function DictionaryManager() {
         </div>
       </div>
 
-      {/* Desktop: sidebar */}
-      <div className="hidden md:flex flex-col w-52 flex-shrink-0">
-        <div className="ios-card p-1.5 space-y-0.5">
-          {DICTS.map(d => (
-            <button type="button" key={d.key} onClick={() => setActiveDict(d.key)}
-              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-[10px] text-[14px] font-semibold transition-all ${
-                activeDict === d.key
-                  ? 'bg-[hsl(var(--admin-primary))] text-white'
-                  : 'text-[hsl(var(--admin-text-sub))] hover:bg-[hsl(var(--admin-surface-alt))]'
-              }`}>
-              <span className="material-symbols-outlined text-[17px]">{d.icon}</span>
-              {d.label}
-            </button>
+      {/* Desktop: sidebar with groups */}
+      <div className="hidden md:flex flex-col w-64 flex-shrink-0 max-h-[calc(100vh-180px)] overflow-y-auto">
+        <div className="ios-card p-1.5 space-y-2">
+          {DICT_GROUPS.map(group => (
+            <div key={group.group}>
+              <p className="px-3 pt-2 pb-1 text-[10px] font-bold uppercase tracking-widest text-[hsl(var(--admin-text-muted))]">
+                {group.group}
+              </p>
+              <div className="space-y-0.5">
+                {group.items.map(d => (
+                  <button type="button" key={d.key} onClick={() => setActiveDict(d.key)}
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-[10px] text-[13px] font-semibold text-left transition-all ${
+                      activeDict === d.key
+                        ? 'bg-[hsl(var(--admin-primary))] text-white'
+                        : 'text-[hsl(var(--admin-text-sub))] hover:bg-[hsl(var(--admin-surface-alt))]'
+                    }`}>
+                    <span className="material-symbols-outlined text-[16px] flex-shrink-0">{d.icon}</span>
+                    <span className="truncate">{d.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       </div>

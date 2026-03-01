@@ -10,14 +10,14 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children, redirectTo = '/admin/login' }: ProtectedRouteProps) {
-    const { user, loading } = useAuth();
+    const { isAuthenticated, loading } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
-        if (!loading && !user) {
+        if (!loading && !isAuthenticated) {
             router.push(redirectTo);
         }
-    }, [user, loading, router, redirectTo]);
+    }, [isAuthenticated, loading, router, redirectTo]);
 
     if (loading) {
         return (
@@ -30,7 +30,7 @@ export function ProtectedRoute({ children, redirectTo = '/admin/login' }: Protec
         );
     }
 
-    if (!user) {
+    if (!isAuthenticated) {
         return null;
     }
 

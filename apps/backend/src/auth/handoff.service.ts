@@ -1,64 +1,119 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException, OnModuleInit, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { randomBytes } from 'crypto';
+import Redis from 'ioredis';
 
 interface HandoffData {
     sessionToken: string;
     userId: string;
     tenantSlug: string;
     role: string;
-    expiresAt: number;
+    rememberDevice?: boolean;
+    rememberDuration?: number;
 }
 
+const HANDOFF_PREFIX = 'handoff:';
+const TTL_SECONDS = 60;
+
 @Injectable()
-export class HandoffService {
-    // In-memory storage for MVP (Production should use Redis)
-    private readonly codes = new Map<string, HandoffData>();
-    private readonly TTL_MS = 60 * 1000; // 60 seconds
+export class HandoffService implements OnModuleInit {
+    private readonly logger = new Logger(HandoffService.name);
+    private redis: Redis | null = null;
 
-    createCode(sessionToken: string, userId: string, tenantSlug: string, role: string): string {
+    // Fallback in-memory store when Redis is unavailable
+    private readonly codes = new Map<string, { data: HandoffData; expiresAt: number }>();
+
+    constructor(private configService: ConfigService) {}
+
+    onModuleInit() {
+        const redisUrl = this.configService.get<string>('REDIS_URL');
+        if (redisUrl) {
+            try {
+                this.redis = new Redis(redisUrl, {
+                    maxRetriesPerRequest: 3,
+                    lazyConnect: true,
+                });
+                this.redis.connect().then(() => {
+                    this.logger.log('Handoff service connected to Redis');
+                }).catch((err) => {
+                    this.logger.warn(`Redis connection failed, using in-memory fallback: ${err.message}`);
+                    this.redis = null;
+                });
+            } catch {
+                this.logger.warn('Failed to initialize Redis, using in-memory fallback');
+                this.redis = null;
+            }
+        } else {
+            this.logger.warn('REDIS_URL not configured, handoff codes stored in-memory (not suitable for production)');
+        }
+    }
+
+    async createCode(
+        sessionToken: string,
+        userId: string,
+        tenantSlug: string,
+        role: string,
+        rememberDevice?: boolean,
+        rememberDuration?: number,
+    ): Promise<string> {
         const code = randomBytes(32).toString('hex');
-        const expiresAt = Date.now() + this.TTL_MS;
+        const data: HandoffData = { sessionToken, userId, tenantSlug, role, rememberDevice, rememberDuration };
 
-        this.codes.set(code, {
-            sessionToken,
-            userId,
-            tenantSlug,
-            role,
-            expiresAt,
-        });
+        if (this.redis) {
+            await this.redis.set(
+                `${HANDOFF_PREFIX}${code}`,
+                JSON.stringify(data),
+                'EX',
+                TTL_SECONDS,
+            );
+        } else {
+            this.codes.set(code, {
+                data,
+                expiresAt: Date.now() + TTL_SECONDS * 1000,
+            });
+        }
 
-        // Cleanup expired codes periodically could be done here or via cron
-        // For MVP, valid-on-read is sufficient
         return code;
     }
 
-    exchangeCode(code: string, expectedTenantSlug: string): { sessionToken: string; userId: string; role: string } {
-        const data = this.codes.get(code);
+    async exchangeCode(
+        code: string,
+        expectedTenantSlug: string,
+    ): Promise<{ sessionToken: string; userId: string; role: string; rememberDevice?: boolean; rememberDuration?: number }> {
+        let data: HandoffData | null = null;
+
+        if (this.redis) {
+            // Atomic GET + DEL (single-use)
+            const raw = await this.redis.get(`${HANDOFF_PREFIX}${code}`);
+            if (raw) {
+                await this.redis.del(`${HANDOFF_PREFIX}${code}`);
+                data = JSON.parse(raw);
+            }
+        } else {
+            const entry = this.codes.get(code);
+            if (entry) {
+                this.codes.delete(code);
+                if (Date.now() <= entry.expiresAt) {
+                    data = entry.data;
+                }
+            }
+        }
 
         if (!data) {
             throw new NotFoundException('Invalid or expired handoff code');
         }
 
-        // Check expiration
-        if (Date.now() > data.expiresAt) {
-            this.codes.delete(code);
-            throw new UnauthorizedException('Handoff code expired');
-        }
-
         // Enforce tenant isolation
         if (data.tenantSlug !== expectedTenantSlug) {
-            // Security event: Attempt to redeem code on wrong tenant
-            this.codes.delete(code);
             throw new UnauthorizedException('Tenant mismatch for handoff code');
         }
-
-        // Single-use: delete immediately
-        this.codes.delete(code);
 
         return {
             sessionToken: data.sessionToken,
             userId: data.userId,
-            role: data.role
+            role: data.role,
+            rememberDevice: data.rememberDevice,
+            rememberDuration: data.rememberDuration,
         };
     }
 }

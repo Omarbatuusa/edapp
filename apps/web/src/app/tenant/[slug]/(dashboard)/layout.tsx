@@ -16,11 +16,73 @@ interface DashboardLayoutProps {
 const PLATFORM_ROLES = ['PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN', 'platform_admin'];
 const SECRETARY_ROLES = ['PLATFORM_SECRETARY'];
 
+/** Maps URL path segments to allowed roles */
+const ROUTE_ROLE_MAP: Record<string, string[]> = {
+    '/admin': [
+        'admin', 'principal', 'deputy_principal', 'tenant_admin', 'main_branch_admin',
+        'branch_admin', 'brand_admin', 'smt', 'hod', 'platform_super_admin',
+        'platform_secretary', 'platform_support', 'admissions_officer',
+        'finance_officer', 'hr_admin', 'reception', 'it_admin',
+    ],
+    '/staff': [
+        'staff', 'teacher', 'class_teacher', 'subject_teacher', 'hod', 'grade_head',
+        'phase_head', 'counsellor', 'nurse', 'transport', 'aftercare', 'security',
+        'caretaker',
+    ],
+    '/learner': ['learner', 'student'],
+    '/parent': ['parent', 'guardian'],
+};
+
+/** Given a user role, return the correct dashboard path segment */
+function getDashboardForRole(role: string): string {
+    switch (role) {
+        case 'learner':
+        case 'student':
+            return '/learner';
+        case 'parent':
+        case 'guardian':
+            return '/parent';
+        case 'staff':
+        case 'teacher':
+        case 'class_teacher':
+        case 'subject_teacher':
+        case 'grade_head':
+        case 'phase_head':
+        case 'counsellor':
+        case 'nurse':
+        case 'transport':
+        case 'aftercare':
+        case 'security':
+        case 'caretaker':
+            return '/staff';
+        case 'admin':
+        case 'principal':
+        case 'deputy_principal':
+        case 'tenant_admin':
+        case 'main_branch_admin':
+        case 'branch_admin':
+        case 'brand_admin':
+        case 'smt':
+        case 'hod':
+        case 'platform_super_admin':
+        case 'platform_secretary':
+        case 'platform_support':
+        case 'admissions_officer':
+        case 'finance_officer':
+        case 'hr_admin':
+        case 'reception':
+        case 'it_admin':
+            return '/admin';
+        default:
+            return '';
+    }
+}
+
 export default function DashboardLayout({ children, params }: DashboardLayoutProps) {
     const { slug } = use(params);
     const router = useRouter();
     const pathname = usePathname();
-    const { user, loading: authLoading } = useAuth();
+    const { user, isAuthenticated, loading: authLoading } = useAuth();
     const [sessionChecked, setSessionChecked] = useState(false);
     const [hasSession, setHasSession] = useState(false);
     const [userRole, setUserRole] = useState<string>('parent');
@@ -77,6 +139,28 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
             }
         }
     }, [user, authLoading, sessionChecked, hasSession, router, slug]);
+
+    // Role-based route enforcement
+    useEffect(() => {
+        if (!authLoading && sessionChecked && (user || hasSession) && pathname) {
+            const currentRole = localStorage.getItem('user_role') || userRole;
+
+            // Determine which route segment the user is on
+            for (const [routeSegment, allowedRoles] of Object.entries(ROUTE_ROLE_MAP)) {
+                if (pathname.includes(routeSegment)) {
+                    // Check if user's role is allowed on this route
+                    if (!allowedRoles.includes(currentRole)) {
+                        // Redirect to the correct dashboard for their role
+                        const correctPath = getDashboardForRole(currentRole);
+                        if (correctPath) {
+                            router.replace(`/tenant/${slug}${correctPath}`);
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }, [authLoading, sessionChecked, user, hasSession, pathname, router, slug, userRole]);
 
     // Loading state
     if (authLoading || !sessionChecked) {

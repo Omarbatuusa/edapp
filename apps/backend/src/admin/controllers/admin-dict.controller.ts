@@ -6,17 +6,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { FirebaseAuthGuard } from '../../auth/firebase-auth.guard';
 import { AuditEvent, AuditAction } from '../entities/audit-event.entity';
-import { DictPhase } from '../entities/dict-phase.entity';
-import { DictGrade } from '../entities/dict-grade.entity';
-import { DictClassGender } from '../entities/dict-class-gender.entity';
-import { DictSubjectCategory } from '../entities/dict-subject-category.entity';
-import { DictSubjectType } from '../entities/dict-subject-type.entity';
-import { DictLanguageLevel } from '../entities/dict-language-level.entity';
-import { DictLanguageHL } from '../entities/dict-language-hl.entity';
-import { DictLanguageFAL } from '../entities/dict-language-fal.entity';
-import { DictSalutation } from '../entities/dict-salutation.entity';
-import { DictReligion } from '../entities/dict-religion.entity';
-
 const PLATFORM_ROLES = ['PLATFORM_SUPER_ADMIN', 'BRAND_ADMIN', 'platform_admin'];
 
 const DICT_TABLE_MAP: Record<string, string> = {
@@ -30,6 +19,39 @@ const DICT_TABLE_MAP: Record<string, string> = {
   languages_fal: 'dict_languages_fal',
   salutations: 'dict_salutations',
   religions: 'dict_religions',
+  teaching_leadership_staff: 'dict_teaching_leadership_staff',
+  non_teaching_support_staff: 'dict_non_teaching_support_staff',
+  optional_admin_roles: 'dict_optional_admin_roles',
+  curriculum_authorities: 'dict_curriculum_authorities',
+  certification_types: 'dict_certification_types',
+  academic_documents: 'dict_academic_documents',
+  reqv_levels: 'dict_reqv_levels',
+  citizenship_types: 'dict_citizenship_types',
+  medical_aid_providers: 'dict_medical_aid_providers',
+  emergency_relationships: 'dict_emergency_relationships',
+  marital_statuses: 'dict_marital_statuses',
+  cert_subject_providers: 'dict_cert_subject_providers',
+  teaching_levels: 'dict_teaching_levels',
+  academic_year_structures: 'dict_academic_year_structures',
+  qualification_pathways: 'dict_qualification_pathways',
+  exam_bodies: 'dict_exam_bodies',
+  curriculum_names: 'dict_curriculum_names',
+  medical_disabilities: 'dict_medical_disabilities',
+  school_allergies: 'dict_school_allergies',
+  psychological_issues: 'dict_psychological_issues',
+  educational_disabilities: 'dict_educational_disabilities',
+  support_profiles: 'dict_support_profiles',
+  therapy_types: 'dict_therapy_types',
+  blood_types: 'dict_blood_types',
+  months: 'dict_months',
+  programme_types: 'dict_programme_types',
+  subject_language_levels: 'dict_subject_language_levels',
+  assessment_models: 'dict_assessment_models',
+  subject_groups: 'dict_subject_groups',
+  home_languages: 'dict_home_languages',
+  parent_rights: 'dict_parent_rights',
+  compulsory_subjects: 'dict_compulsory_subjects',
+  subjects: 'dict_subjects',
 };
 
 @UseGuards(FirebaseAuthGuard)

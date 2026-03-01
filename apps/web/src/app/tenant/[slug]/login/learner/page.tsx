@@ -7,7 +7,13 @@ export default function LearnerLoginRedirect({ params }: { params: Promise<{ slu
 
     useEffect(() => {
         const protocol = window.location.protocol;
-        const brokerHost = 'auth.edapp.co.za';
+        const host = window.location.host;
+        let brokerHost = 'auth.edapp.co.za';
+
+        if (host.includes('localhost')) {
+            brokerHost = host;
+        }
+
         const returnUrl = encodeURIComponent(window.location.href);
 
         // Force role=learner

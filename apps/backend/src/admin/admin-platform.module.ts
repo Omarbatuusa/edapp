@@ -15,6 +15,39 @@ import { DictLanguageHL } from './entities/dict-language-hl.entity';
 import { DictLanguageFAL } from './entities/dict-language-fal.entity';
 import { DictSalutation } from './entities/dict-salutation.entity';
 import { DictReligion } from './entities/dict-religion.entity';
+import { DictTeachingLeadershipStaff } from './entities/dict-teaching-leadership-staff.entity';
+import { DictNonTeachingSupportStaff } from './entities/dict-non-teaching-support-staff.entity';
+import { DictOptionalAdminRole } from './entities/dict-optional-admin-role.entity';
+import { DictCurriculumAuthority } from './entities/dict-curriculum-authority.entity';
+import { DictCertificationType } from './entities/dict-certification-type.entity';
+import { DictAcademicDocument } from './entities/dict-academic-document.entity';
+import { DictReqvLevel } from './entities/dict-reqv-level.entity';
+import { DictCitizenshipType } from './entities/dict-citizenship-type.entity';
+import { DictMedicalAidProvider } from './entities/dict-medical-aid-provider.entity';
+import { DictEmergencyRelationship } from './entities/dict-emergency-relationship.entity';
+import { DictMaritalStatus } from './entities/dict-marital-status.entity';
+import { DictCertSubjectProvider } from './entities/dict-cert-subject-provider.entity';
+import { DictTeachingLevel } from './entities/dict-teaching-level.entity';
+import { DictAcademicYearStructure } from './entities/dict-academic-year-structure.entity';
+import { DictQualificationPathway } from './entities/dict-qualification-pathway.entity';
+import { DictExamBody } from './entities/dict-exam-body.entity';
+import { DictCurriculumName } from './entities/dict-curriculum-name.entity';
+import { DictMedicalDisability } from './entities/dict-medical-disability.entity';
+import { DictSchoolAllergy } from './entities/dict-school-allergy.entity';
+import { DictPsychologicalIssue } from './entities/dict-psychological-issue.entity';
+import { DictEducationalDisability } from './entities/dict-educational-disability.entity';
+import { DictSupportProfile } from './entities/dict-support-profile.entity';
+import { DictTherapyType } from './entities/dict-therapy-type.entity';
+import { DictBloodType } from './entities/dict-blood-type.entity';
+import { DictMonth } from './entities/dict-month.entity';
+import { DictProgrammeType } from './entities/dict-programme-type.entity';
+import { DictSubjectLanguageLevel } from './entities/dict-subject-language-level.entity';
+import { DictAssessmentModel } from './entities/dict-assessment-model.entity';
+import { DictSubjectGroup } from './entities/dict-subject-group.entity';
+import { DictHomeLanguage } from './entities/dict-home-language.entity';
+import { DictParentRight } from './entities/dict-parent-right.entity';
+import { DictCompulsorySubject } from './entities/dict-compulsory-subject.entity';
+import { DictSubject } from './entities/dict-subject.entity';
 import { Subject } from './entities/subject.entity';
 import { TenantFeature } from './entities/tenant-feature.entity';
 import { TenantPhaseLink } from './entities/tenant-phase-link.entity';
@@ -49,6 +82,39 @@ import { AdminAuditController } from './controllers/admin-audit.controller';
       DictLanguageFAL,
       DictSalutation,
       DictReligion,
+      DictTeachingLeadershipStaff,
+      DictNonTeachingSupportStaff,
+      DictOptionalAdminRole,
+      DictCurriculumAuthority,
+      DictCertificationType,
+      DictAcademicDocument,
+      DictReqvLevel,
+      DictCitizenshipType,
+      DictMedicalAidProvider,
+      DictEmergencyRelationship,
+      DictMaritalStatus,
+      DictCertSubjectProvider,
+      DictTeachingLevel,
+      DictAcademicYearStructure,
+      DictQualificationPathway,
+      DictExamBody,
+      DictCurriculumName,
+      DictMedicalDisability,
+      DictSchoolAllergy,
+      DictPsychologicalIssue,
+      DictEducationalDisability,
+      DictSupportProfile,
+      DictTherapyType,
+      DictBloodType,
+      DictMonth,
+      DictProgrammeType,
+      DictSubjectLanguageLevel,
+      DictAssessmentModel,
+      DictSubjectGroup,
+      DictHomeLanguage,
+      DictParentRight,
+      DictCompulsorySubject,
+      DictSubject,
       Subject,
       TenantFeature,
       TenantPhaseLink,

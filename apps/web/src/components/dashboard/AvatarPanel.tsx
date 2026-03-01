@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
+import { useAuth } from '@/contexts/AuthContext';
 import {
     X,
     Moon,
@@ -92,15 +93,10 @@ export function AvatarPanel({
     // Current role info
     const roleMeta = currentRole ? getRoleMetadata(currentRole.role) : null;
 
-    // Sign out handler
+    // Unified sign out via AuthContext
+    const { logout } = useAuth();
     const handleSignOut = async () => {
-        // Clear all session data
-        localStorage.removeItem('session_token');
-        localStorage.removeItem('user_id');
-        localStorage.removeItem('user_role');
-        localStorage.removeItem(`edapp_role_${tenantSlug}`);
-
-        // Redirect to login
+        await logout();
         router.push(`/tenant/${tenantSlug}/login`);
     };
 

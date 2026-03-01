@@ -7,14 +7,30 @@ export class HandoffController {
 
     // Called by Broker to create a handoff code after successful auth
     @Post('create')
-    async createHandoff(@Body() body: { sessionToken: string; userId: string; tenantSlug: string; role: string }) {
+    async createHandoff(
+        @Body() body: {
+            sessionToken: string;
+            userId: string;
+            tenantSlug: string;
+            role: string;
+            rememberDevice?: boolean;
+            rememberDuration?: number;
+        },
+    ) {
         if (!body.sessionToken || !body.tenantSlug || !body.role) {
             throw new BadRequestException('Missing required fields');
         }
         // Generate mock userId if missing (for dev compatibility)
         const userId = body.userId || `user-${Date.now()}`;
 
-        const code = this.handoffService.createCode(body.sessionToken, userId, body.tenantSlug, body.role);
+        const code = await this.handoffService.createCode(
+            body.sessionToken,
+            userId,
+            body.tenantSlug,
+            body.role,
+            body.rememberDevice,
+            body.rememberDuration,
+        );
         return { code };
     }
 
@@ -35,7 +51,7 @@ export class HandoffController {
             throw new BadRequestException('Missing tenant context');
         }
 
-        const result = this.handoffService.exchangeCode(body.code, tenantSlug);
-        return result; // { sessionToken, userId, role }
+        const result = await this.handoffService.exchangeCode(body.code, tenantSlug);
+        return result;
     }
 }

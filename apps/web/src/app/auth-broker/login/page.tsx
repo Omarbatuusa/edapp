@@ -121,7 +121,14 @@ function BrokerLoginContent() {
             const res = await fetch('/v1/auth/handoff/create', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sessionToken, userId, tenantSlug, role })
+                body: JSON.stringify({
+                    sessionToken,
+                    userId,
+                    tenantSlug,
+                    role,
+                    rememberDevice,
+                    rememberDuration: rememberDevice ? parseInt(rememberDuration, 10) : undefined,
+                })
             });
 
             if (!res.ok) throw new Error('Handoff creation failed');
@@ -226,10 +233,32 @@ function BrokerLoginContent() {
         e.preventDefault();
         if (!studentNumber || pin.length < 4) return;
 
-        // TODO: Replace with actual learner auth API call
-        const mockUserId = `learner-${studentNumber}`;
-        const mockSessionToken = `mock_learner_session_${Date.now()}`;
-        await completeHandoff(mockSessionToken, mockUserId);
+        try {
+            setLoading(true);
+            setError(null);
+
+            const res = await fetch('/v1/auth/learner/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    studentNumber,
+                    pin,
+                    tenantSlug,
+                }),
+            });
+
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.message || 'Login failed');
+            }
+
+            const { sessionToken, userId } = await res.json();
+            await completeHandoff(sessionToken, userId);
+        } catch (err: any) {
+            console.error('Learner login error:', err);
+            setError(err.message || 'Login failed. Please try again.');
+            setLoading(false);
+        }
     };
 
     const handleBack = () => {
