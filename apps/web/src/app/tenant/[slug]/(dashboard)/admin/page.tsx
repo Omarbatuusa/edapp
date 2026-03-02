@@ -2,7 +2,8 @@
 
 import { use, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Users, TrendingUp, AlertTriangle, Calendar, ArrowRight, Search } from 'lucide-react';
+import { Users, TrendingUp, AlertTriangle, Calendar, ArrowRight, Search, CheckCircle, UserX, Clock } from 'lucide-react';
+import { apiClient } from '../../../../../lib/api-client';
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -32,6 +33,36 @@ export default function AdminDashboard({ params }: Props) {
     const canManageBranches = BRANCH_ROLES.includes(role);
     const canManageAdmissions = ADMISSIONS_ROLES.includes(role);
     const isBranchAdmin = role === 'branch_admin';
+
+    const [branchId, setBranchId] = useState('');
+    const [attendanceStats, setAttendanceStats] = useState<{ total: number; present: number; absent: number; late: number } | null>(null);
+
+    useEffect(() => {
+        apiClient.get('/auth/me').then(res => {
+            if (res.data?.branch_id) setBranchId(res.data.branch_id);
+        }).catch(() => {});
+    }, []);
+
+    useEffect(() => {
+        if (!branchId) return;
+        const today = new Date().toISOString().split('T')[0];
+        apiClient.get(`/attendance/learner/branch?branch_id=${branchId}&date=${today}`)
+            .then(res => {
+                if (res.data?.status === 'success') {
+                    const learners = res.data.learners || [];
+                    setAttendanceStats({
+                        total: learners.length,
+                        present: learners.filter((l: any) => l.status === 'PRESENT' || l.status === 'LATE').length,
+                        absent: learners.filter((l: any) => l.status === 'ABSENT' || l.status === 'UNKNOWN').length,
+                        late: learners.filter((l: any) => l.status === 'LATE').length,
+                    });
+                }
+            }).catch(() => {});
+    }, [branchId]);
+
+    const attendanceRate = attendanceStats && attendanceStats.total > 0
+        ? Math.round((attendanceStats.present / attendanceStats.total) * 100)
+        : null;
 
     return (
         <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
@@ -75,7 +106,8 @@ export default function AdminDashboard({ params }: Props) {
             {isTenantAdmin && (
                 <NavSection title="School Administration">
                     <NavCard href={`/tenant/${slug}/admin/control`} label="Control Dashboard" description="School overview and quick links" icon="dashboard" color="blue" />
-                    <NavCard href={`/tenant/${slug}/admin/school-data`} label="School Data" description="Phases, grades and subject offerings" icon="school" color="green" />
+                    <NavCard href={`/tenant/${slug}/admin/attendance`} label="Attendance" description="Daily learner & staff attendance tracking" icon="event_available" color="green" />
+                    <NavCard href={`/tenant/${slug}/admin/school-data`} label="School Data" description="Phases, grades and subject offerings" icon="school" color="indigo" />
                     <NavCard href={`/tenant/${slug}/admin/people`} label="People & Roles" description="Manage users and role assignments" icon="group" color="teal" />
                     <NavCard href={`/tenant/${slug}/admin/admissions`} label="Admissions Builder" description="Design your admissions process" icon="assignment" color="rose" />
                     <NavCard href={`/tenant/${slug}/admin/integrations`} label="Integrations & Features" description="Feature flags and external systems" icon="integration_instructions" color="amber" />
@@ -98,7 +130,15 @@ export default function AdminDashboard({ params }: Props) {
             {/* Stats Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
                 <StatCard title="Total Students" value="1,240" change="+12%" trend="up" icon={Users} />
-                <StatCard title="Attendance" value="94%" change="-2%" trend="down" icon={Calendar} />
+                <Link href={`/tenant/${slug}/admin/attendance`} className="block">
+                    <StatCard
+                        title="Attendance"
+                        value={attendanceRate !== null ? `${attendanceRate}%` : '—'}
+                        change={attendanceRate !== null ? (attendanceRate >= 90 ? 'On track' : 'Needs attention') : 'Loading…'}
+                        trend={attendanceRate !== null ? (attendanceRate >= 90 ? 'up' : 'down') : 'neutral'}
+                        icon={Calendar}
+                    />
+                </Link>
                 <StatCard title="Incidents" value="3" change="Low" trend="neutral" icon={AlertTriangle} alert />
                 <StatCard title="Revenue" value="R 840k" change="+5%" trend="up" icon={TrendingUp} />
             </div>
@@ -110,13 +150,63 @@ export default function AdminDashboard({ params }: Props) {
                         <h3 className="font-semibold text-lg text-[hsl(var(--admin-text-main))] mb-4 tracking-tight">Quick Actions</h3>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                             <QuickAction icon={Users} label="Add Student" />
-                            <QuickAction icon={Calendar} label="Edit Timetable" />
+                            <Link href={`/tenant/${slug}/admin/attendance`} className="contents">
+                                <QuickAction icon={Calendar} label="Attendance" />
+                            </Link>
                             <QuickAction icon={AlertTriangle} label="Log Incident" />
                             <QuickAction icon={Search} label="Search Records" />
                         </div>
                     </div>
-                    <div className="ios-card min-h-[300px] flex items-center justify-center bg-secondary/5 border-dashed border-2 border-border">
-                        <p className="text-muted-foreground font-medium">Attendance Trends Chart (Coming Soon)</p>
+
+                    {/* Live Attendance Overview */}
+                    <div className="ios-card">
+                        <div className="flex items-center justify-between mb-5">
+                            <h3 className="font-semibold text-lg text-[hsl(var(--admin-text-main))] tracking-tight">
+                                Today&apos;s Attendance
+                            </h3>
+                            <Link
+                                href={`/tenant/${slug}/admin/attendance`}
+                                className="text-sm font-semibold text-[hsl(var(--admin-primary))] hover:underline flex items-center gap-1"
+                            >
+                                Full Dashboard <ArrowRight size={14} />
+                            </Link>
+                        </div>
+
+                        {/* Rate badge */}
+                        <div className="flex items-center justify-between mb-4 p-3 bg-secondary/20 rounded-xl">
+                            <span className="text-sm font-medium text-muted-foreground">Attendance Rate</span>
+                            <span className={`text-2xl font-bold ${attendanceRate !== null && attendanceRate >= 90 ? 'text-green-600' : attendanceRate !== null ? 'text-amber-600' : 'text-muted-foreground'}`}>
+                                {attendanceRate !== null ? `${attendanceRate}%` : '—'}
+                            </span>
+                        </div>
+
+                        {/* Breakdown */}
+                        <div className="grid grid-cols-3 gap-3">
+                            <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                                <CheckCircle size={18} className="text-green-600 mx-auto mb-1" />
+                                <p className="text-xl font-bold text-green-600">{attendanceStats?.present ?? '—'}</p>
+                                <p className="text-xs text-muted-foreground font-medium">Present</p>
+                            </div>
+                            <div className="text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-xl">
+                                <UserX size={18} className="text-red-500 mx-auto mb-1" />
+                                <p className="text-xl font-bold text-red-500">{attendanceStats?.absent ?? '—'}</p>
+                                <p className="text-xs text-muted-foreground font-medium">Absent</p>
+                            </div>
+                            <div className="text-center p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
+                                <Clock size={18} className="text-amber-600 mx-auto mb-1" />
+                                <p className="text-xl font-bold text-amber-600">{attendanceStats?.late ?? '—'}</p>
+                                <p className="text-xs text-muted-foreground font-medium">Late</p>
+                            </div>
+                        </div>
+
+                        {!branchId && (
+                            <p className="text-xs text-muted-foreground text-center mt-4">
+                                Branch data loads after sign-in.{' '}
+                                <Link href={`/tenant/${slug}/admin/attendance`} className="text-[hsl(var(--admin-primary))] hover:underline font-semibold">
+                                    Go to Attendance →
+                                </Link>
+                            </p>
+                        )}
                     </div>
                 </div>
                 <div className="space-y-6">

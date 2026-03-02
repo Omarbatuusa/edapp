@@ -53,6 +53,7 @@ const TENANT_NAV: AdminNavItem[] = [
     { icon: 'dashboard', label: 'Dashboard', href: '' },
     { icon: 'how_to_reg', label: 'Enrollment', href: '/enrollment' },
     { icon: 'badge', label: 'Staff', href: '/staff' },
+    { icon: 'event_available', label: 'Attendance', href: '/attendance' },
     { icon: 'database', label: 'School Data', href: '/school-data' },
     { icon: 'school', label: 'Curriculum', href: '/curriculum' },
     { icon: 'class', label: 'Grades & Classes', href: '/grades-classes' },
