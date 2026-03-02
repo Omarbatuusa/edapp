@@ -84,6 +84,26 @@ import { SubjectOffering } from './admin/entities/subject-offering.entity';
 import { SubjectStream } from './admin/entities/subject-stream.entity';
 import { AdmissionsProcessCard } from './admin/entities/admissions-process-card.entity';
 import { AuditEvent } from './admin/entities/audit-event.entity';
+import { EnrollmentApplication } from './admin/entities/enrollment-application.entity';
+import { LearnerProfile } from './admin/entities/learner-profile.entity';
+import { GuardianProfile } from './admin/entities/guardian-profile.entity';
+import { StaffProfile } from './admin/entities/staff-profile.entity';
+import { Curriculum } from './admin/entities/curriculum.entity';
+import { FamilyDoctor } from './admin/entities/family-doctor.entity';
+import { EmergencyContact } from './admin/entities/emergency-contact.entity';
+import { Family } from './admin/entities/family.entity';
+import { EldestLearner } from './admin/entities/eldest-learner.entity';
+import { DictGender } from './admin/entities/dict-gender.entity';
+import { DictRace } from './admin/entities/dict-race.entity';
+import { DictCountry } from './admin/entities/dict-country.entity';
+import { DictPermitType } from './admin/entities/dict-permit-type.entity';
+import { DictTypicalAge } from './admin/entities/dict-typical-age.entity';
+import { DictOfferingRole } from './admin/entities/dict-offering-role.entity';
+import { DictSelectionGroup } from './admin/entities/dict-selection-group.entity';
+import { DictExtracurricularActivity } from './admin/entities/dict-extracurricular-activity.entity';
+import { DictParentType } from './admin/entities/dict-parent-type.entity';
+import { DictPaymentOption } from './admin/entities/dict-payment-option.entity';
+import { DictEmploymentType } from './admin/entities/dict-employment-type.entity';
 import { Attendance } from './attendance/attendance.entity';
 import { AttendanceEvent } from './attendance/entities/attendance-event.entity';
 import { AttendanceDailySummary } from './attendance/entities/attendance-daily-summary.entity';
@@ -216,6 +236,26 @@ import { ScheduleModule } from '@nestjs/schedule';
           SubjectStream,
           AdmissionsProcessCard,
           AuditEvent,
+          EnrollmentApplication,
+          LearnerProfile,
+          GuardianProfile,
+          StaffProfile,
+          Curriculum,
+          FamilyDoctor,
+          EmergencyContact,
+          Family,
+          EldestLearner,
+          DictGender,
+          DictRace,
+          DictCountry,
+          DictPermitType,
+          DictTypicalAge,
+          DictOfferingRole,
+          DictSelectionGroup,
+          DictExtracurricularActivity,
+          DictParentType,
+          DictPaymentOption,
+          DictEmploymentType,
           Attendance,
           AttendanceEvent,
           AttendanceDailySummary,

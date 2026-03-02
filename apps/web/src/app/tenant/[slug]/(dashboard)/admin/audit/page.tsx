@@ -29,6 +29,16 @@ const ACTION_LABELS: Record<string, { label: string; color: string }> = {
     ROLE_REVOKE: { label: 'Role Revoked', color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' },
     ADMISSIONS_PUBLISH: { label: 'Admissions Published', color: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400' },
     FEATURE_TOGGLE: { label: 'Feature Toggled', color: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400' },
+    ENROLLMENT_SUBMIT: { label: 'Enrollment Submitted', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' },
+    ENROLLMENT_APPROVE: { label: 'Enrollment Approved', color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
+    ENROLLMENT_REJECT: { label: 'Enrollment Rejected', color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' },
+    STAFF_CREATE: { label: 'Staff Created', color: 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400' },
+    STAFF_EDIT: { label: 'Staff Edited', color: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400' },
+    CURRICULUM_CREATE: { label: 'Curriculum Created', color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' },
+    CURRICULUM_EDIT: { label: 'Curriculum Edited', color: 'bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-900/30 dark:text-fuchsia-400' },
+    FAMILY_CREATE: { label: 'Family Created', color: 'bg-lime-100 text-lime-700 dark:bg-lime-900/30 dark:text-lime-400' },
+    CLASS_CREATE: { label: 'Class Created', color: 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400' },
+    CLASS_EDIT: { label: 'Class Edited', color: 'bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-400' },
 };
 
 const ALL_ACTIONS = Object.keys(ACTION_LABELS);

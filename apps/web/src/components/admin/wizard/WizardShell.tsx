@@ -20,7 +20,7 @@ export interface WizardStep {
 
 interface WizardShellProps {
     steps: WizardStep[];
-    formType: 'MAIN_BRANCH' | 'BRANCH' | 'BRAND';
+    formType: string;
     tenantId?: string;
     submitLabel?: string;
     onComplete: (data: Record<string, any>) => Promise<void>;

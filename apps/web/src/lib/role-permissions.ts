@@ -34,6 +34,10 @@ export const FEATURE_PERMISSIONS: Record<string, { view: string[]; manage: strin
         view: ['platform_super_admin', 'brand_admin', 'tenant_admin', 'admissions_officer'],
         manage: ['platform_super_admin', 'brand_admin', 'tenant_admin', 'admissions_officer'],
     },
+    enrollment: {
+        view: ['platform_super_admin', 'brand_admin', 'tenant_admin', 'admissions_officer'],
+        manage: ['platform_super_admin', 'brand_admin', 'tenant_admin', 'admissions_officer'],
+    },
     integrations: {
         view: ['platform_super_admin', 'brand_admin', 'tenant_admin'],
         manage: ['platform_super_admin', 'brand_admin', 'tenant_admin'],
@@ -49,6 +53,10 @@ export const FEATURE_PERMISSIONS: Record<string, { view: string[]; manage: strin
     approvals: {
         view: ['platform_secretary'],
         manage: ['platform_secretary'],
+    },
+    staff: {
+        view: ['platform_super_admin', 'brand_admin', 'tenant_admin', 'main_branch_admin'],
+        manage: ['platform_super_admin', 'brand_admin', 'tenant_admin', 'main_branch_admin'],
     },
     control: {
         view: ['platform_super_admin', 'brand_admin', 'tenant_admin', 'main_branch_admin'],

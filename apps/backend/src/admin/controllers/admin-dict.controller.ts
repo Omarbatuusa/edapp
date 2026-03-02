@@ -52,6 +52,17 @@ const DICT_TABLE_MAP: Record<string, string> = {
   parent_rights: 'dict_parent_rights',
   compulsory_subjects: 'dict_compulsory_subjects',
   subjects: 'dict_subjects',
+  genders: 'dict_genders',
+  races: 'dict_races',
+  countries: 'dict_countries',
+  permit_types: 'dict_permit_types',
+  typical_ages: 'dict_typical_ages',
+  offering_roles: 'dict_offering_roles',
+  selection_groups: 'dict_selection_groups',
+  extracurricular_activities: 'dict_extracurricular_activities',
+  parent_types: 'dict_parent_types',
+  payment_options: 'dict_payment_options',
+  employment_types: 'dict_employment_types',
 };
 
 @UseGuards(FirebaseAuthGuard)

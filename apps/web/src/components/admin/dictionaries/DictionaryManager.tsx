@@ -41,6 +41,9 @@ const DICT_GROUPS: DictGroup[] = [
       { key: 'curriculum_names', label: 'Curriculum Name', icon: 'library_books', codePlaceholder: 'CAPS', labelPlaceholder: 'CAPS' },
       { key: 'curriculum_authorities', label: 'Curriculum Authorities', icon: 'account_balance', codePlaceholder: 'DBE', labelPlaceholder: 'Department of Basic Education' },
       { key: 'exam_bodies', label: 'Examination Bodies', icon: 'quiz', codePlaceholder: 'IEB', labelPlaceholder: 'Independent Examinations Board' },
+      { key: 'offering_roles', label: 'Offering Roles', icon: 'school', codePlaceholder: 'COMPULSORY', labelPlaceholder: 'Compulsory' },
+      { key: 'selection_groups', label: 'Selection Groups', icon: 'checklist', codePlaceholder: 'GROUP_A', labelPlaceholder: 'Group A' },
+      { key: 'typical_ages', label: 'Typical Ages', icon: 'cake', codePlaceholder: 'AGE_7', labelPlaceholder: 'Age 7' },
     ],
   },
   {
@@ -58,6 +61,7 @@ const DICT_GROUPS: DictGroup[] = [
       { key: 'teaching_leadership_staff', label: 'Teaching & Leadership', icon: 'supervisor_account', codePlaceholder: 'HOD', labelPlaceholder: 'Head of Department' },
       { key: 'non_teaching_support_staff', label: 'Non-Teaching & Support', icon: 'support_agent', codePlaceholder: 'ADMIN_CLERK', labelPlaceholder: 'Administrative Clerk' },
       { key: 'optional_admin_roles', label: 'Optional/Admin Roles', icon: 'admin_panel_settings', codePlaceholder: 'EXAM_OFFICER', labelPlaceholder: 'Exam Officer' },
+      { key: 'employment_types', label: 'Employment Types', icon: 'work', codePlaceholder: 'PERMANENT', labelPlaceholder: 'Permanent' },
     ],
   },
   {
@@ -79,6 +83,12 @@ const DICT_GROUPS: DictGroup[] = [
       { key: 'marital_statuses', label: 'Marital Status', icon: 'favorite', codePlaceholder: 'MARRIED', labelPlaceholder: 'Married' },
       { key: 'parent_rights', label: 'Parent Rights', icon: 'family_restroom', codePlaceholder: 'FULL_CUSTODY', labelPlaceholder: 'Full Custody' },
       { key: 'emergency_relationships', label: 'Emergency Relationships', icon: 'emergency', codePlaceholder: 'MOTHER', labelPlaceholder: 'Mother' },
+      { key: 'genders', label: 'Genders', icon: 'wc', codePlaceholder: 'MALE', labelPlaceholder: 'Male' },
+      { key: 'races', label: 'Races', icon: 'groups', codePlaceholder: 'BLACK', labelPlaceholder: 'Black African' },
+      { key: 'countries', label: 'Countries', icon: 'flag', codePlaceholder: 'ZA', labelPlaceholder: 'South Africa' },
+      { key: 'permit_types', label: 'Permit Types', icon: 'description', codePlaceholder: 'WORK', labelPlaceholder: 'Work Permit' },
+      { key: 'parent_types', label: 'Parent Types', icon: 'family_restroom', codePlaceholder: 'BIOLOGICAL', labelPlaceholder: 'Biological Parent' },
+      { key: 'payment_options', label: 'Payment Options', icon: 'payments', codePlaceholder: 'MONTHLY', labelPlaceholder: 'Monthly' },
       { key: 'blood_types', label: 'Blood Types', icon: 'bloodtype', codePlaceholder: 'O_POS', labelPlaceholder: 'O+' },
       { key: 'months', label: 'Months of the Year', icon: 'event', codePlaceholder: 'JAN', labelPlaceholder: 'January' },
     ],
@@ -93,6 +103,7 @@ const DICT_GROUPS: DictGroup[] = [
       { key: 'educational_disabilities', label: 'Educational Disabilities', icon: 'accessibility_new', codePlaceholder: 'ADHD', labelPlaceholder: 'ADHD' },
       { key: 'support_profiles', label: 'Support Profiles', icon: 'support', codePlaceholder: 'MODERATE', labelPlaceholder: 'Moderate Support Needs' },
       { key: 'therapy_types', label: 'Therapy Types', icon: 'spa', codePlaceholder: 'SPEECH', labelPlaceholder: 'Speech Therapy' },
+      { key: 'extracurricular_activities', label: 'Extracurricular Activities', icon: 'sports_soccer', codePlaceholder: 'SOCCER', labelPlaceholder: 'Soccer' },
     ],
   },
 ];

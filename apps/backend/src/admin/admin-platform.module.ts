@@ -57,6 +57,30 @@ import { SubjectStream } from './entities/subject-stream.entity';
 import { AdmissionsProcessCard } from './entities/admissions-process-card.entity';
 import { AuditEvent } from './entities/audit-event.entity';
 
+// New domain entities
+import { EnrollmentApplication } from './entities/enrollment-application.entity';
+import { LearnerProfile } from './entities/learner-profile.entity';
+import { GuardianProfile } from './entities/guardian-profile.entity';
+import { StaffProfile } from './entities/staff-profile.entity';
+import { Curriculum } from './entities/curriculum.entity';
+import { FamilyDoctor } from './entities/family-doctor.entity';
+import { EmergencyContact } from './entities/emergency-contact.entity';
+import { Family } from './entities/family.entity';
+import { EldestLearner } from './entities/eldest-learner.entity';
+
+// New dictionary entities
+import { DictGender } from './entities/dict-gender.entity';
+import { DictRace } from './entities/dict-race.entity';
+import { DictCountry } from './entities/dict-country.entity';
+import { DictPermitType } from './entities/dict-permit-type.entity';
+import { DictTypicalAge } from './entities/dict-typical-age.entity';
+import { DictOfferingRole } from './entities/dict-offering-role.entity';
+import { DictSelectionGroup } from './entities/dict-selection-group.entity';
+import { DictExtracurricularActivity } from './entities/dict-extracurricular-activity.entity';
+import { DictParentType } from './entities/dict-parent-type.entity';
+import { DictPaymentOption } from './entities/dict-payment-option.entity';
+import { DictEmploymentType } from './entities/dict-employment-type.entity';
+
 import { AdminTenantsController } from './controllers/admin-tenants.controller';
 import { AdminDictController } from './controllers/admin-dict.controller';
 import { AdminSubjectsController } from './controllers/admin-subjects.controller';
@@ -65,6 +89,15 @@ import { AdminPeopleController } from './controllers/admin-people.controller';
 import { AdminSchoolDataController } from './controllers/admin-school-data.controller';
 import { AdminAdmissionsController } from './controllers/admin-admissions.controller';
 import { AdminAuditController } from './controllers/admin-audit.controller';
+import { AdminEnrollmentController } from './controllers/admin-enrollment.controller';
+import { AdminStaffController } from './controllers/admin-staff.controller';
+import { AdminCurriculaController } from './controllers/admin-curricula.controller';
+import { AdminGradesClassesController } from './controllers/admin-grades-classes.controller';
+import { AdminFamilyDoctorsController } from './controllers/admin-family-doctors.controller';
+import { AdminEmergencyContactsController } from './controllers/admin-emergency-contacts.controller';
+import { AdminFamiliesController } from './controllers/admin-families.controller';
+import { ParentChildLink } from '../communication/parent-child-link.entity';
+import { SchoolClass } from '../attendance/entities/class.entity';
 
 @Module({
   imports: [
@@ -123,6 +156,28 @@ import { AdminAuditController } from './controllers/admin-audit.controller';
       SubjectStream,
       AdmissionsProcessCard,
       AuditEvent,
+      EnrollmentApplication,
+      LearnerProfile,
+      GuardianProfile,
+      StaffProfile,
+      Curriculum,
+      FamilyDoctor,
+      EmergencyContact,
+      Family,
+      EldestLearner,
+      DictGender,
+      DictRace,
+      DictCountry,
+      DictPermitType,
+      DictTypicalAge,
+      DictOfferingRole,
+      DictSelectionGroup,
+      DictExtracurricularActivity,
+      DictParentType,
+      DictPaymentOption,
+      DictEmploymentType,
+      ParentChildLink,
+      SchoolClass,
     ]),
     AuthModule,
   ],
@@ -135,6 +190,13 @@ import { AdminAuditController } from './controllers/admin-audit.controller';
     AdminSchoolDataController,
     AdminAdmissionsController,
     AdminAuditController,
+    AdminEnrollmentController,
+    AdminStaffController,
+    AdminCurriculaController,
+    AdminGradesClassesController,
+    AdminFamilyDoctorsController,
+    AdminEmergencyContactsController,
+    AdminFamiliesController,
   ],
 })
 export class AdminPlatformModule {}

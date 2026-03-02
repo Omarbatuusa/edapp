@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-export function useWizardAutosave(formType: 'MAIN_BRANCH' | 'BRANCH' | 'BRAND', tenantId?: string) {
+export function useWizardAutosave(formType: string, tenantId?: string) {
     const [draftId, setDraftId] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
     const debounceRef = useRef<NodeJS.Timeout | null>(null);

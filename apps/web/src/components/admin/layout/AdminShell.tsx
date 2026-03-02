@@ -51,9 +51,14 @@ const SECRETARY_NAV: AdminNavItem[] = [
 
 const TENANT_NAV: AdminNavItem[] = [
     { icon: 'dashboard', label: 'Dashboard', href: '' },
+    { icon: 'how_to_reg', label: 'Enrollment', href: '/enrollment' },
+    { icon: 'badge', label: 'Staff', href: '/staff' },
     { icon: 'database', label: 'School Data', href: '/school-data' },
+    { icon: 'school', label: 'Curriculum', href: '/curriculum' },
+    { icon: 'class', label: 'Grades & Classes', href: '/grades-classes' },
     { icon: 'location_city', label: 'Branches', href: '/branches' },
     { icon: 'group', label: 'People', href: '/people' },
+    { icon: 'family_restroom', label: 'Families', href: '/families' },
     { icon: 'assignment', label: 'Admissions', href: '/admissions' },
     { icon: 'toggle_on', label: 'Features', href: '/integrations' },
     { icon: 'settings', label: 'Settings', href: '/control' },
