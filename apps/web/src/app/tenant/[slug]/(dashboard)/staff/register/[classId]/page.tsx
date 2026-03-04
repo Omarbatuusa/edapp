@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Check, X, Clock, Users, Send, CheckCircle } from 'lucide-react';
+import { Check, X, Clock, Users, Send, CheckCircle } from 'lucide-react';
 import { apiClient } from '../../../../../../../lib/api-client';
 
 type MarkStatus = 'PRESENT' | 'ABSENT' | 'LATE';
@@ -148,18 +148,13 @@ export default function ClassRegisterPage() {
     return (
         <div className="app-content-padding max-w-4xl mx-auto space-y-6">
             {/* Header */}
-            <div className="flex items-center gap-3">
-                <button type="button" onClick={() => router.back()} className="p-2 hover:bg-gray-100 rounded-xl transition-colors" title="Go back">
-                    <ArrowLeft size={20} />
-                </button>
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-[hsl(var(--admin-text-main))]">
-                        Class Register
-                    </h1>
-                    <p className="text-sm text-[hsl(var(--admin-text-sub))]">
-                        {classInfo?.section_name || classInfo?.class_code} &bull; {today}
-                    </p>
-                </div>
+            <div>
+                <h1 className="text-2xl font-bold tracking-tight text-[hsl(var(--admin-text-main))]">
+                    Class Register
+                </h1>
+                <p className="text-sm text-[hsl(var(--admin-text-sub))]">
+                    {classInfo?.section_name || classInfo?.class_code} &bull; {today}
+                </p>
             </div>
 
             {/* Stats */}

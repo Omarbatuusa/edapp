@@ -50,7 +50,7 @@ function ChildCard({ child, tenantSlug }: { child: Child; tenantSlug: string }) 
                     <h3 className="font-semibold text-base truncate">{child.name}</h3>
                     <p className="text-xs text-muted-foreground">{child.grade} • {child.class}</p>
 
-                    {/* Status Badge - Clean design */}
+                    {/* Status Badge + Attendance % */}
                     <div className="mt-1.5 flex items-center gap-1.5">
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium rounded-full ${isPresent
                             ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
@@ -62,6 +62,15 @@ function ChildCard({ child, tenantSlug }: { child: Child; tenantSlug: string }) 
                                 }`} />
                             {isPresent ? 'At School' : isAbsent ? 'Absent' : 'Late'}
                         </span>
+                        {child.attendancePercentage != null && (
+                            <span className={`text-[11px] font-semibold ${
+                                child.attendancePercentage >= 90 ? 'text-emerald-600 dark:text-emerald-400' :
+                                child.attendancePercentage >= 75 ? 'text-amber-600 dark:text-amber-400' :
+                                'text-red-600 dark:text-red-400'
+                            }`}>
+                                {child.attendancePercentage}%
+                            </span>
+                        )}
                     </div>
                 </div>
             </div>

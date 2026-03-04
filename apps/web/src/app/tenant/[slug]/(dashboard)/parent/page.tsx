@@ -21,7 +21,7 @@ export default function ParentDashboard() {
     const tenantSlug = params.slug as string;
 
     return (
-        <div className="space-y-4 pb-20">
+        <div className="app-content-padding space-y-4 pb-20">
             {/* Welcome Header + Codes */}
             <div className="flex items-start justify-between">
                 <div>

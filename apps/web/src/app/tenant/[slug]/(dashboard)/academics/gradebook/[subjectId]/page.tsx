@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowLeft, Save, Download, Calculator } from 'lucide-react';
-import Link from 'next/link';
+import { Save, Download, Calculator } from 'lucide-react';
 
 // Mock Data
 const STUDENTS = [
@@ -31,17 +30,9 @@ export default function GradebookPage({ params }: { params: { slug: string, subj
     return (
         <div className="h-[calc(100vh-100px)] flex flex-col">
             <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-4">
-                    <Link
-                        href={`/tenant/${params.slug}/academics`}
-                        className="p-2 rounded-full hover:bg-secondary/50 transition-colors"
-                    >
-                        <ArrowLeft size={20} />
-                    </Link>
-                    <div>
-                        <h1 className="text-2xl font-bold tracking-tight">Mathematics Grade 10</h1>
-                        <p className="text-muted-foreground text-sm">Term 1 Assessment Record</p>
-                    </div>
+                <div>
+                    <h1 className="text-2xl font-bold tracking-tight">Mathematics Grade 10</h1>
+                    <p className="text-muted-foreground text-sm">Term 1 Assessment Record</p>
                 </div>
                 <div className="flex gap-2">
                     <button className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border/50 hover:bg-secondary/50 text-sm font-medium">

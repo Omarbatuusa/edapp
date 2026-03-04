@@ -48,7 +48,12 @@ api.interceptors.request.use(async (config) => {
     return config;
 });
 
-// 401 response interceptor — refresh token or redirect to login
+// 401 response interceptor — refresh token or silently reject.
+// Only redirect to login for core auth endpoints (/auth/*).
+// Other 401s (e.g. chat, translate, missing endpoints) just reject
+// so the UI can handle errors gracefully without logging the user out.
+let isRedirecting = false;
+
 api.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -70,16 +75,21 @@ api.interceptors.response.use(
                     // Firebase refresh failed
                 }
 
-                // No Firebase user or refresh failed — clear session and redirect to login
-                localStorage.removeItem('session_token');
-                localStorage.removeItem('user_id');
-                localStorage.removeItem('user_role');
+                // Only clear session + redirect for core auth endpoints
+                const url = originalRequest?.url || '';
+                const isAuthEndpoint = url.includes('/auth/') || url.includes('/login');
 
-                // Extract tenant slug from current URL for redirect
-                const pathMatch = window.location.pathname.match(/\/tenant\/([^/]+)/);
-                const tenantSlug = pathMatch?.[1];
-                if (tenantSlug) {
-                    window.location.href = `/tenant/${tenantSlug}/login`;
+                if (isAuthEndpoint && !isRedirecting) {
+                    isRedirecting = true;
+                    localStorage.removeItem('session_token');
+                    localStorage.removeItem('user_id');
+                    localStorage.removeItem('user_role');
+
+                    const pathMatch = window.location.pathname.match(/\/tenant\/([^/]+)/);
+                    const tenantSlug = pathMatch?.[1];
+                    if (tenantSlug) {
+                        window.location.href = `/tenant/${tenantSlug}/login`;
+                    }
                 }
             }
         }

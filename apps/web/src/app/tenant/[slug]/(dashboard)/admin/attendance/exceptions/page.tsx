@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { ArrowLeft, AlertTriangle, CheckCircle, Clock, Flag, Search } from 'lucide-react';
-import Link from 'next/link';
+import { AlertTriangle, CheckCircle, Clock, Flag, Search } from 'lucide-react';
 import { apiClient } from '../../../../../../../lib/api-client';
 
 interface ExceptionItem {
@@ -85,18 +84,13 @@ export default function ExceptionsPage() {
     return (
         <div className="app-content-padding max-w-5xl mx-auto space-y-6">
             {/* Header */}
-            <div className="flex items-center gap-3">
-                <Link href={`/tenant/${slug}/admin/attendance`} className="p-2 hover:bg-gray-100 rounded-xl transition-colors">
-                    <ArrowLeft size={20} />
-                </Link>
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-[hsl(var(--admin-text-main))]">
-                        Attendance Exceptions
-                    </h1>
-                    <p className="text-sm text-[hsl(var(--admin-text-sub))]">
-                        Flagged events requiring review
-                    </p>
-                </div>
+            <div>
+                <h1 className="text-2xl font-bold tracking-tight text-[hsl(var(--admin-text-main))]">
+                    Attendance Exceptions
+                </h1>
+                <p className="text-sm text-[hsl(var(--admin-text-sub))]">
+                    Flagged events requiring review
+                </p>
             </div>
 
             {/* Filter tabs */}

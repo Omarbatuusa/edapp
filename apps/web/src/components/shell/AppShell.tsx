@@ -139,18 +139,21 @@ export function AppShell({
             <div className="admin-app-outer">
                 <div className="admin-app-container">
                     <EmergencyBanner />
-                    <AppHeader
-                        title={tenantName}
-                        subtitle={headerSubtitle}
-                        logoUrl={tenantLogo}
-                        isScrolled={isScrolled}
-                        onSearch={() => setSearchSheetOpen(true)}
-                        onEmergency={handleEmergency}
-                        onNotificationClick={() => setNotificationPanelOpen(true)}
-                        onAvatarClick={() => setAvatarPanelOpen(true)}
-                        notificationsCount={notificationsCount}
-                        user={user}
-                    />
+                    {/* One Top Bar rule: AppHeader on tab roots only */}
+                    {!isSubpage && (
+                        <AppHeader
+                            title={tenantName}
+                            subtitle={headerSubtitle}
+                            logoUrl={tenantLogo}
+                            isScrolled={isScrolled}
+                            onSearch={() => setSearchSheetOpen(true)}
+                            onEmergency={handleEmergency}
+                            onNotificationClick={() => setNotificationPanelOpen(true)}
+                            onAvatarClick={() => setAvatarPanelOpen(true)}
+                            notificationsCount={notificationsCount}
+                            user={user}
+                        />
+                    )}
                     <div className="admin-body">
                         <AppNavRail
                             items={navConfig.allItems}
@@ -163,6 +166,7 @@ export function AppShell({
                             ref={mainRef}
                             onScroll={handleScroll}
                         >
+                            {/* Subpage takeover: only SubpageBar, no AppHeader */}
                             {isSubpage && <SubpageBar />}
                             <div className="flex-1">
                                 {children}
@@ -170,6 +174,7 @@ export function AppShell({
                             <AppFooter version={appVersion} />
                         </main>
                     </div>
+                    {/* Bottom nav only on tab roots */}
                     {!isSubpage && (
                         <AppBottomNav
                             items={navConfig.bottomTabs}

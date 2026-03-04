@@ -17,9 +17,14 @@ interface AppHeaderProps {
 }
 
 /**
- * Universal header for ALL roles.
- * Merges AdminHeader's iOS-premium styling with ShellHeader's action buttons.
- * Uses the `admin-header` CSS class for backdrop blur + scroll shadow.
+ * Facebook-style 2-row header for ALL roles.
+ *
+ * Row 1 (mobile): Logo + Tenant Name (full) + action icons (search, emergency, bell, avatar)
+ * Row 2 (mobile): Subtitle/scope line (e.g. "Main Campus · Parent Dashboard")
+ *
+ * Desktop: Single row with more space, same structure.
+ *
+ * Uses `admin-header` CSS class for backdrop blur + scroll shadow.
  */
 export function AppHeader({
     title,
@@ -39,47 +44,38 @@ export function AppHeader({
 
     return (
         <header className={`admin-header transition-all duration-200 ${isScrolled ? 'is-scrolled' : ''}`}>
+            {/* Row 1: Logo + Tenant Name + Action Icons */}
             <div className="flex items-center justify-between">
-                {/* Left: Logo + Title */}
-                <div className="flex items-center gap-3">
+                {/* Left: Logo + Tenant Name */}
+                <div className="flex items-center gap-2.5 min-w-0 flex-1">
                     {logoUrl ? (
-                        <div className="w-10 h-10 rounded-full overflow-hidden bg-[hsl(var(--admin-surface-alt))] flex-shrink-0">
+                        <div className="w-9 h-9 rounded-full overflow-hidden bg-[hsl(var(--admin-surface-alt))] flex-shrink-0">
                             <img src={logoUrl} alt="" className="w-full h-full object-cover" />
                         </div>
                     ) : (
-                        <div className="w-10 h-10 rounded-full bg-[hsl(var(--admin-primary)/0.1)] flex items-center justify-center text-[hsl(var(--admin-primary))] flex-shrink-0">
-                            <span className="material-symbols-outlined text-xl">school</span>
+                        <div className="w-9 h-9 rounded-full bg-[hsl(var(--admin-primary)/0.1)] flex items-center justify-center text-[hsl(var(--admin-primary))] flex-shrink-0">
+                            <span className="material-symbols-outlined text-lg">school</span>
                         </div>
                     )}
-                    <div className="min-w-0 pt-0.5">
-                        <h1 className="text-[22px] font-bold text-[hsl(var(--admin-text-main))] tracking-tight truncate leading-tight">
-                            {title}
-                        </h1>
-                        {subtitle && (
-                            <p className="text-[13px] font-medium text-[hsl(var(--admin-text-sub))] leading-tight mt-0.5">
-                                {subtitle}
-                            </p>
-                        )}
-                    </div>
+                    <h1 className="text-[17px] sm:text-[20px] font-bold text-[hsl(var(--admin-text-main))] tracking-tight truncate leading-tight">
+                        {title}
+                    </h1>
                 </div>
 
-                {/* Right: Actions */}
-                <div className="flex items-center gap-1">
-                    {/* Custom actions */}
+                {/* Right: Action Icons */}
+                <div className="flex items-center gap-0.5 flex-shrink-0">
                     {actions}
 
-                    {/* Search */}
                     {onSearch && (
                         <button
                             onClick={onSearch}
                             className="w-9 h-9 flex items-center justify-center rounded-full text-[hsl(var(--admin-text-sub))] hover:bg-[hsl(var(--admin-surface-alt))] transition-colors"
                             aria-label="Search"
                         >
-                            <span className="material-symbols-outlined text-xl">search</span>
+                            <span className="material-symbols-outlined text-[20px]">search</span>
                         </button>
                     )}
 
-                    {/* Emergency */}
                     {onEmergency && (
                         <button
                             onClick={onEmergency}
@@ -90,14 +86,13 @@ export function AppHeader({
                         </button>
                     )}
 
-                    {/* Notifications */}
                     {onNotificationClick && (
                         <button
                             onClick={onNotificationClick}
                             className="relative w-9 h-9 flex items-center justify-center rounded-full text-[hsl(var(--admin-text-sub))] hover:bg-[hsl(var(--admin-surface-alt))] transition-colors"
                             aria-label="Notifications"
                         >
-                            <span className="material-symbols-outlined text-xl">notifications</span>
+                            <span className="material-symbols-outlined text-[20px]">notifications</span>
                             {notificationsCount > 0 && (
                                 <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center border-2 border-[hsl(var(--admin-background))]">
                                     {notificationsCount > 9 ? '9+' : notificationsCount}
@@ -106,11 +101,10 @@ export function AppHeader({
                         </button>
                     )}
 
-                    {/* Avatar */}
                     {onAvatarClick && (
                         <button
                             onClick={onAvatarClick}
-                            className="w-9 h-9 rounded-full overflow-hidden bg-[hsl(var(--admin-surface-alt))] border border-[hsl(var(--admin-border)/0.5)] hover:ring-2 hover:ring-[hsl(var(--admin-primary)/0.2)] transition-all flex items-center justify-center flex-shrink-0"
+                            className="w-9 h-9 rounded-full overflow-hidden bg-[hsl(var(--admin-surface-alt))] border border-[hsl(var(--admin-border)/0.5)] hover:ring-2 hover:ring-[hsl(var(--admin-primary)/0.2)] transition-all flex items-center justify-center flex-shrink-0 ml-0.5"
                             aria-label="Account"
                         >
                             {user?.photoURL ? (
@@ -124,6 +118,13 @@ export function AppHeader({
                     )}
                 </div>
             </div>
+
+            {/* Row 2: Scope/Subtitle line */}
+            {subtitle && (
+                <p className="text-[12px] font-medium text-[hsl(var(--admin-text-muted))] leading-tight mt-1 pl-[46px] sm:pl-[46px] truncate">
+                    {subtitle}
+                </p>
+            )}
         </header>
     );
 }

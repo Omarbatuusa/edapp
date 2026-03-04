@@ -15,6 +15,7 @@ export interface Child {
     class: string;
     branch?: string;
     status: AttendanceStatus;
+    attendancePercentage?: number;
     lastSeen?: {
         location: string;
         time: string;
@@ -145,6 +146,7 @@ export const MOCK_CHILDREN: Child[] = [
         grade: 'Grade 4',
         class: 'Ormonde Campus',
         status: 'present',
+        attendancePercentage: 92,
         lastSeen: {
             location: 'Gate 1',
             time: '07:45 AM',
@@ -157,6 +159,7 @@ export const MOCK_CHILDREN: Child[] = [
         grade: 'Grade 6',
         class: 'Ormonde Campus',
         status: 'present',
+        attendancePercentage: 98,
         lastSeen: {
             location: 'Library',
             time: '08:15 AM',
