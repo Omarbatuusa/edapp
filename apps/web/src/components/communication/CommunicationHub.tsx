@@ -13,7 +13,6 @@ import { CreateChannelView } from './CreateChannelView';
 import { LanguageSheet } from './LanguageSheet';
 import { ScreenStackDetail } from './ScreenStack';
 import { ChatThreadView } from './messaging/ChatThreadView';
-import { MessagesLayout } from './messaging/MessagesLayout';
 import { ChatSocketManager } from './ChatSocketManager';
 import { CallOverlay } from './CallOverlay';
 import { useAudioCall } from '../../hooks/useAudioCall';
@@ -74,8 +73,23 @@ class CommunicationErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoun
 }
 
 // ============================================================
-// COMMUNICATION HUB COMPONENT (CONTROLLER)
+// COMMUNICATION HUB — WHATSAPP-STYLE 3-PANE LAYOUT
 // ============================================================
+//
+// Desktop (md+):
+// ┌─────────────────┬──────────────────────────────┐
+// │  LEFT PANEL     │  RIGHT PANEL                 │
+// │  Thread list    │  Conversation / Detail        │
+// │  (380px)        │  (flex-1)                    │
+// │                 │                              │
+// │  - Header       │  - Thread header             │
+// │  - Tabs         │  - Messages                  │
+// │  - Search       │  - Composer                  │
+// │  - Thread rows  │                              │
+// └─────────────────┴──────────────────────────────┘
+//
+// Mobile (<md):
+// Single-pane stack — Feed OR Detail, state-controlled
 
 interface CommunicationHubProps {
     officeHours?: string;
@@ -114,22 +128,13 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
     const handleOpenItem = (item: FeedItem) => {
         setSelectedItem(item);
         if (item.type === 'message') setActiveView('thread');
-        else if (item.type === 'support') setActiveView('thread'); // Support also goes to thread now
+        else if (item.type === 'support') setActiveView('thread');
         else if (item.type === 'announcement' || item.type === 'urgent') setActiveView('announcement');
-        else if (item.type === 'action') {
-            // Check if it's a specific action or just open action center?
-            // For now, let's open action center if type action, or maybe detailed view?
-            // The item click usually opens detail.
-            // But action items might not have a detail view yet.
-            // Let's assume action items open the Action Center focused on that item (mock).
-            setActiveView('action-center');
-        }
+        else if (item.type === 'action') setActiveView('action-center');
     };
 
     const handleBack = () => {
         setActiveView('feed');
-        // Don't clear selectedItem — keep cached to prevent white flash during transition
-        // It gets replaced when user opens a new item via handleOpenItem
     };
 
     const handleLanguageSelect = (langCode: string) => {
@@ -138,14 +143,12 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
         if (typeof window !== 'undefined') {
             localStorage.setItem('preferred_language', langCode);
         }
-        // Persist to backend
         translateApi.savePreferences({ preferred_language: langCode }).catch(() => {});
     };
 
     // Derive tenant and user from URL path and localStorage
     const pathname = usePathname();
     const tenantSlug = useMemo(() => {
-        // Extract tenant slug from /tenant/[slug]/... path
         const match = pathname?.match(/\/tenant\/([^\/]+)/);
         return match?.[1] || '';
     }, [pathname]);
@@ -168,10 +171,10 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
         remoteAudioRef,
     } = useAudioCall({ tenant_id: tenantId, user_id: currentUserId });
 
+    const hasDetailView = activeView !== 'feed';
+
     return (
-        <MessagesLayout
-            className="md:border-x md:border-border/50 md:shadow-sm md:max-w-4xl md:mx-auto"
-        >
+        <>
             <ChatSocketManager tenantId={tenantId} userId={currentUserId} />
 
             {/* Audio Call Overlay */}
@@ -186,9 +189,18 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
                 remoteAudioRef={remoteAudioRef}
             />
 
-            {/* Main Content — only the active view renders */}
-            <div className="relative w-full flex-1 flex flex-col min-h-0">
-                {activeView === 'feed' && (
+            {/* ===== WHATSAPP 3-PANE LAYOUT ===== */}
+            <div className="flex h-[100dvh] md:h-full w-full overflow-hidden">
+
+                {/* ─── LEFT PANEL: Thread List ─────────────────────
+                    Mobile: full-width, shown only when activeView === 'feed'
+                    Desktop: 380px sidebar, always visible */}
+                <div className={`
+                    ${activeView === 'feed' ? 'flex' : 'hidden'} md:flex
+                    flex-col w-full md:w-[380px] md:min-w-[380px] md:max-w-[380px]
+                    md:border-r md:border-border/50
+                    h-full overflow-hidden bg-background
+                `}>
                     <FeedView
                         onItemClick={handleOpenItem}
                         officeHours={officeHours}
@@ -200,49 +212,79 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
                         onOpenActionCenter={() => setActiveView('action-center')}
                         onOpenLanguage={() => setShowLanguageSheet(true)}
                     />
-                )}
+                </div>
 
-                {activeView === 'thread' && selectedItem && (
-                    <ChatThreadView
-                        item={selectedItem}
-                        onBack={handleBack}
-                        onAction={() => setActiveView('channel-info')}
-                        onCall={selectedItem.type === 'message' ? () => {
-                            startCall(selectedItem.threadId || selectedItem.id, selectedItem.title);
-                        } : undefined}
-                    />
-                )}
+                {/* ─── RIGHT PANEL: Detail / Conversation ─────────
+                    Mobile: full-width, shown only when activeView !== 'feed'
+                    Desktop: flex-1, always visible */}
+                <div className={`
+                    ${hasDetailView ? 'flex' : 'hidden'} md:flex
+                    flex-col flex-1 min-w-0 h-full overflow-hidden
+                `}>
+                    {/* Empty state — desktop only, when no conversation selected */}
+                    {!hasDetailView && (
+                        <div className="hidden md:flex flex-col items-center justify-center h-full text-center p-8 bg-slate-50 dark:bg-[#0B1120]">
+                            <div className="w-28 h-28 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-6">
+                                <span className="material-symbols-outlined text-[56px] text-slate-300 dark:text-slate-600">forum</span>
+                            </div>
+                            <h2 className="text-2xl font-bold text-foreground mb-2">EdApp Messages</h2>
+                            <p className="text-[15px] text-muted-foreground max-w-sm leading-relaxed">
+                                Select a conversation to start messaging, or create a new one.
+                            </p>
+                            <div className="mt-6 flex items-center gap-2 text-[13px] text-muted-foreground/60">
+                                <span className="material-symbols-outlined text-[14px]">lock</span>
+                                <span>End-to-end encrypted</span>
+                            </div>
+                        </div>
+                    )}
 
-                {activeView === 'channel-info' && selectedItem && (
-                    <ChannelInfoView item={selectedItem} onClose={() => setActiveView('thread')} />
-                )}
+                    {/* Thread view */}
+                    {activeView === 'thread' && selectedItem && (
+                        <ChatThreadView
+                            item={selectedItem}
+                            onBack={handleBack}
+                            onAction={() => setActiveView('channel-info')}
+                            onCall={selectedItem.type === 'message' ? () => {
+                                startCall(selectedItem.threadId || selectedItem.id, selectedItem.title);
+                            } : undefined}
+                        />
+                    )}
 
-                {activeView === 'new-chat' && (
-                    <NewChatView
-                        onBack={handleBack}
-                        onStartChat={(item) => {
-                            setSelectedItem(item);
-                            // 'support' type → TicketDetailView; 'message' → ChatThreadView
-                            setActiveView(item.type === 'support' ? 'ticket' : 'thread');
-                        }}
-                        onCreateChannel={() => setActiveView('create-channel')}
-                    />
-                )}
+                    {/* Channel info */}
+                    {activeView === 'channel-info' && selectedItem && (
+                        <ChannelInfoView item={selectedItem} onClose={() => setActiveView('thread')} />
+                    )}
 
-                {activeView === 'action-center' && (
-                    <ActionRequiredView onClose={() => setActiveView('feed')} />
-                )}
+                    {/* New chat */}
+                    {activeView === 'new-chat' && (
+                        <NewChatView
+                            onBack={handleBack}
+                            onStartChat={(item) => {
+                                setSelectedItem(item);
+                                setActiveView(item.type === 'support' ? 'ticket' : 'thread');
+                            }}
+                            onCreateChannel={() => setActiveView('create-channel')}
+                        />
+                    )}
 
-                {activeView === 'create-channel' && (
-                    <CreateChannelView onClose={() => setActiveView('feed')} />
-                )}
+                    {/* Action center */}
+                    {activeView === 'action-center' && (
+                        <ActionRequiredView onClose={() => setActiveView('feed')} />
+                    )}
 
-                {(activeView === 'ticket' || activeView === 'announcement') && (
-                    <ScreenStackDetail onBack={handleBack}>
-                        {activeView === 'ticket' && <TicketDetailView item={selectedItem} isTranslated={isTranslated} onBack={handleBack} />}
-                        {activeView === 'announcement' && <AnnouncementDetailView item={selectedItem} isTranslated={isTranslated} />}
-                    </ScreenStackDetail>
-                )}
+                    {/* Create channel */}
+                    {activeView === 'create-channel' && (
+                        <CreateChannelView onClose={() => setActiveView('feed')} />
+                    )}
+
+                    {/* Ticket / Announcement */}
+                    {(activeView === 'ticket' || activeView === 'announcement') && (
+                        <ScreenStackDetail onBack={handleBack}>
+                            {activeView === 'ticket' && <TicketDetailView item={selectedItem} isTranslated={isTranslated} onBack={handleBack} />}
+                            {activeView === 'announcement' && <AnnouncementDetailView item={selectedItem} isTranslated={isTranslated} />}
+                        </ScreenStackDetail>
+                    )}
+                </div>
             </div>
 
             {/* Language Sheet */}
@@ -254,7 +296,7 @@ function CommunicationHubInner({ officeHours = "Mon-Fri, 8 AM - 3 PM" }: Communi
                     onSelectLanguage={handleLanguageSelect}
                 />
             )}
-        </MessagesLayout >
+        </>
     );
 }
 
@@ -268,4 +310,3 @@ export function CommunicationHub(props: CommunicationHubProps) {
 }
 
 export default CommunicationHub;
-

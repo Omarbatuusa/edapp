@@ -31,7 +31,7 @@ export default function NewSupportTicketPage() {
         <SubPageWrapper>
             <SubPageHeader
                 title="New Support Ticket"
-                backHref={`/tenant/${tenantSlug}/parent/chat`}
+                showBackButton
             />
 
             <form onSubmit={handleSubmit} className="space-y-6">

@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { SubPageWrapper } from '@/components/parent/SubPageHeader';
 
@@ -94,14 +93,16 @@ export default function NewChatPage() {
 
     return (
         <SubPageWrapper>
-            {/* Header */}
+            {/* Header with back button (fullscreen mode — no shell SubpageBar) */}
             <div className="flex items-center gap-3 mb-6">
-                <Link
-                    href={`/tenant/${tenantSlug}/parent/chat`}
-                    className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-secondary transition-colors -ml-2"
+                <button
+                    type="button"
+                    onClick={() => router.back()}
+                    className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-secondary transition-colors -ml-1"
+                    aria-label="Go back"
                 >
-                    <ChevronLeft size={24} />
-                </Link>
+                    <ChevronLeft size={22} />
+                </button>
                 <div>
                     <h1 className="text-xl font-bold">
                         {selectedCategory ? 'Select Contact' : 'New Chat'}

@@ -76,8 +76,8 @@
 
     /* ── Admin Design Tokens (iOS Premium) ── */
     --admin-max-width-mobile: 100%;
-    --admin-max-width-tablet: 860px;
-    --admin-max-width-desktop: 1120px;
+    --admin-max-width-tablet: 100%;
+    --admin-max-width-desktop: 100%;
     --admin-nav-height: 84px;
     --admin-rail-width-tablet: 72px;
     --admin-rail-width-desktop: 240px;
@@ -267,10 +267,7 @@
 @media (min-width: 641px) {
   .admin-app-container {
     max-width: var(--admin-max-width-tablet);
-    margin: 12px auto;
-    height: calc(100dvh - 24px);
-    border-radius: 20px;
-    box-shadow: 0 20px 60px -12px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);
+    height: 100dvh;
   }
 }
 

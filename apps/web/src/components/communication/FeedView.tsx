@@ -2,7 +2,6 @@
 
 import { useCommunicationStore } from '../../lib/communication-store';
 import React, { useState, useMemo } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 // ScreenStackBase removed - using simple flex container instead
 import { FeedItem } from './types';
@@ -24,11 +23,9 @@ export interface FeedViewProps {
 }
 
 export function FeedView({ onItemClick, officeHours, selectedChildId, setSelectedChildId, isTranslated, setIsTranslated, onNewChat, onOpenActionCenter, onOpenLanguage }: FeedViewProps) {
-    const router = useRouter();
-    const pathname = usePathname();
     const t = useTranslations();
     const [activeTab, setActiveTab] = useState<'all' | 'announcements' | 'classes' | 'direct' | 'support'>('all');
-    const [isOffline, setIsOffline] = useState(false); // Mock offline state
+    const [isOffline, setIsOffline] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [sort, setSort] = useState<'newest' | 'priority' | 'oldest'>('newest');
     const [showOfficeHours, setShowOfficeHours] = useState(true);
@@ -47,17 +44,6 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
     const filteredChildren = children.filter(child =>
         child.name.toLowerCase().includes(childSearchQuery.toLowerCase())
     );
-
-    // Close handler - navigate to parent dashboard
-    const handleClose = () => {
-        if (pathname) {
-            // Replace /chat with empty to go back to role dashboard
-            const dashboardPath = pathname.replace('/chat', '');
-            router.push(dashboardPath);
-        } else {
-            router.back();
-        }
-    };
 
     // Store hooks
     const storeItems = useCommunicationStore(state => state.items);
@@ -301,53 +287,38 @@ export function FeedView({ onItemClick, officeHours, selectedChildId, setSelecte
                     </div>
                 )}
 
+                {/* WhatsApp-style header: bold title left, actions right */}
                 <div className="flex items-center px-4 h-14 gap-3">
+                    <h1 className="text-[20px] font-bold text-foreground tracking-tight">Messages</h1>
+
+                    <div className="flex-1" />
+
+                    {/* Child filter chip */}
                     <button
-                        onClick={handleClose}
-                        className="w-10 h-10 flex items-center justify-center -ml-2 rounded-full hover:bg-secondary/80 transition-colors"
+                        onClick={() => setShowChildSelector(true)}
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-secondary/60 hover:bg-secondary transition-colors"
                     >
-                        <span className="material-symbols-outlined text-foreground">close</span>
+                        {selectedChild?.id !== 'all' && selectedChild?.avatar && (
+                            <img src={selectedChild.avatar} className="w-5 h-5 rounded-full" alt="" />
+                        )}
+                        <span className="text-xs font-semibold max-w-[80px] truncate">
+                            {selectedChildId === 'all' ? 'All' : selectedChild?.name}
+                        </span>
+                        <span className="material-symbols-outlined text-[14px] text-muted-foreground">expand_more</span>
                     </button>
 
-                    {/* Title / Child Selector Trigger */}
-                    <div className="flex-1 flex justify-center">
-                        <button
-                            onClick={() => setShowChildSelector(true)}
-                            className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-secondary/50 transition-colors"
-                        >
-                            {selectedChild?.id !== 'all' && selectedChild?.avatar && (
-                                <img src={selectedChild.avatar} className="w-5 h-5 rounded-full" alt="" />
-                            )}
-                            <span className="text-sm font-bold">{selectedChild?.name || 'All Children'}</span>
-                            {selectedChildId !== 'all' ? (
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); setSelectedChildId('all'); }}
-                                    className="w-5 h-5 rounded-full bg-muted-foreground/20 flex items-center justify-center hover:bg-muted-foreground/40 transition-colors"
-                                >
-                                    <svg className="w-3 h-3 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
-                                        <path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                </button>
-                            ) : (
-                                <span className="material-symbols-outlined text-[16px]">expand_more</span>
-                            )}
-                        </button>
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                        <button
-                            onClick={onOpenLanguage}
-                            className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors ${isTranslated ? 'bg-primary text-primary-foreground' : 'bg-secondary/50 text-muted-foreground hover:bg-secondary'}`}
-                        >
-                            <span className="material-symbols-outlined text-[18px]">translate</span>
-                        </button>
-                        <button
-                            onClick={onNewChat}
-                            className="w-9 h-9 rounded-full flex items-center justify-center bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
-                        >
-                            <span className="material-symbols-outlined text-[18px]">edit_square</span>
-                        </button>
-                    </div>
+                    <button
+                        onClick={onOpenLanguage}
+                        className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors ${isTranslated ? 'bg-primary text-primary-foreground' : 'bg-secondary/50 text-muted-foreground hover:bg-secondary'}`}
+                    >
+                        <span className="material-symbols-outlined text-[18px]">translate</span>
+                    </button>
+                    <button
+                        onClick={onNewChat}
+                        className="w-9 h-9 rounded-full flex items-center justify-center bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
+                    >
+                        <span className="material-symbols-outlined text-[18px]">edit_square</span>
+                    </button>
                 </div>
 
                 {/* TABS */}
