@@ -110,7 +110,7 @@ export default function ClassRegisterPage() {
 
     if (loading) {
         return (
-            <div className="p-4 md:p-6 lg:p-8 max-w-4xl mx-auto">
+            <div className="app-content-padding max-w-4xl mx-auto">
                 <div className="animate-pulse space-y-4">
                     <div className="h-8 bg-gray-200 rounded w-1/3"></div>
                     <div className="h-4 bg-gray-200 rounded w-1/2"></div>
@@ -124,7 +124,7 @@ export default function ClassRegisterPage() {
 
     if (submitted) {
         return (
-            <div className="p-4 md:p-6 lg:p-8 max-w-4xl mx-auto text-center py-20">
+            <div className="app-content-padding max-w-4xl mx-auto text-center py-20">
                 <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <CheckCircle size={40} className="text-green-600" />
                 </div>
@@ -146,7 +146,7 @@ export default function ClassRegisterPage() {
     }
 
     return (
-        <div className="p-4 md:p-6 lg:p-8 max-w-4xl mx-auto space-y-6">
+        <div className="app-content-padding max-w-4xl mx-auto space-y-6">
             {/* Header */}
             <div className="flex items-center gap-3">
                 <button type="button" onClick={() => router.back()} className="p-2 hover:bg-gray-100 rounded-xl transition-colors" title="Go back">

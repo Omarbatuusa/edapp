@@ -4,17 +4,14 @@ import { use, useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { RoleProvider } from '@/contexts/RoleContext';
-import { Shell } from '@/components/layout/Shell';
-import { AdminShell } from '@/components/admin/layout/AdminShell';
+import { AppShell } from '@/components/shell/AppShell';
+import { getNavConfig, getAdminRoleType } from '@/config/navigation';
 import pkg from '../../../../../package.json';
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
     params: Promise<{ slug: string }>;
 }
-
-const PLATFORM_ROLES = ['platform_super_admin', 'brand_admin'];
-const SECRETARY_ROLES = ['platform_secretary'];
 
 /** Maps URL path segments to allowed roles */
 const ROUTE_ROLE_MAP: Record<string, string[]> = {
@@ -78,6 +75,28 @@ function getDashboardForRole(role: string): string {
     }
 }
 
+/** Generate a human-friendly header subtitle from the full role string */
+function getHeaderSubtitle(role: string): string {
+    const adminType = getAdminRoleType(role);
+    if (adminType === 'platform') return 'Platform Admin';
+    if (adminType === 'secretary') return 'Secretary';
+
+    const SUBTITLES: Record<string, string> = {
+        admin: 'School Admin', tenant_admin: 'School Admin', main_branch_admin: 'School Admin',
+        branch_admin: 'Branch Admin', principal: 'Principal', deputy_principal: 'Deputy Principal',
+        smt: 'Senior Management', hod: 'Head of Department', grade_head: 'Grade Head',
+        phase_head: 'Phase Head', teacher: 'Teacher', class_teacher: 'Class Teacher',
+        subject_teacher: 'Subject Teacher', counsellor: 'Counsellor', nurse: 'School Nurse',
+        transport: 'Transport', aftercare: 'Aftercare', security: 'Security',
+        caretaker: 'Caretaker', staff: 'Staff', reception: 'Reception',
+        admissions_officer: 'Admissions', finance_officer: 'Finance', hr_admin: 'Human Resources',
+        it_admin: 'IT Admin', parent: 'Parent', guardian: 'Guardian',
+        learner: 'Learner', student: 'Student', applicant: 'Applicant',
+        alumni: 'Alumni', sgb_member: 'SGB Member', parent_association: 'PTA',
+    };
+    return SUBTITLES[role] || 'Dashboard';
+}
+
 export default function DashboardLayout({ children, params }: DashboardLayoutProps) {
     const { slug } = use(params);
     const router = useRouter();
@@ -105,7 +124,15 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
         }
     }, [slug]);
 
-    // Get initial role from URL path or local storage
+    // Get the full role string (31-value) from localStorage
+    const getFullRole = (): string => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem(`edapp_role_${slug}`) || localStorage.getItem('user_role') || userRole;
+        }
+        return userRole;
+    };
+
+    // Get simplified 4-role bucket for RoleProvider backward compat
     const getInitialRole = () => {
         if (typeof window !== 'undefined') {
             if (pathname.includes('/admin')) return 'admin';
@@ -119,16 +146,6 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
             }
         }
         return 'parent';
-    };
-
-    // Determine admin role type for AdminShell
-    const getAdminRoleType = (): 'platform' | 'secretary' | 'tenant' => {
-        if (typeof window !== 'undefined') {
-            const r = localStorage.getItem(`edapp_role_${slug}`) || localStorage.getItem('user_role') || '';
-            if (PLATFORM_ROLES.includes(r)) return 'platform';
-            if (SECRETARY_ROLES.includes(r)) return 'secretary';
-        }
-        return 'tenant';
     };
 
     // Redirect to login if not authenticated
@@ -145,12 +162,9 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
         if (!authLoading && sessionChecked && (user || hasSession) && pathname) {
             const currentRole = localStorage.getItem('user_role') || userRole;
 
-            // Determine which route segment the user is on
             for (const [routeSegment, allowedRoles] of Object.entries(ROUTE_ROLE_MAP)) {
                 if (pathname.includes(routeSegment)) {
-                    // Check if user's role is allowed on this route
                     if (!allowedRoles.includes(currentRole)) {
-                        // Redirect to the correct dashboard for their role
                         const correctPath = getDashboardForRole(currentRole);
                         if (correctPath) {
                             router.replace(`/tenant/${slug}${correctPath}`);
@@ -165,10 +179,10 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
     // Loading state
     if (authLoading || !sessionChecked) {
         return (
-            <div className="min-h-screen min-h-[100dvh] flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+            <div className="min-h-screen min-h-[100dvh] flex items-center justify-center bg-[hsl(var(--admin-background))]">
                 <div className="flex flex-col items-center gap-3">
-                    <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
-                    <p className="text-sm text-muted-foreground animate-pulse">Initializing secure workspace...</p>
+                    <div className="w-10 h-10 border-4 border-[hsl(var(--admin-primary)/0.3)] border-t-[hsl(var(--admin-primary))] rounded-full animate-spin" />
+                    <p className="text-sm text-[hsl(var(--admin-text-muted))] animate-pulse">Initializing secure workspace...</p>
                 </div>
             </div>
         );
@@ -187,42 +201,24 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
         photoURL: null,
     };
 
-    // Determine if this is an admin route
-    const isAdminRoute = pathname?.includes('/admin');
-
-    // Admin routes → AdminShell; Everything else → Parent/Learner Shell
-    if (isAdminRoute) {
-        const adminRole = getAdminRoleType();
-        return (
-            <RoleProvider tenantSlug={slug} initialRole={getInitialRole()}>
-                <AdminShell
-                    tenantSlug={slug}
-                    adminRole={adminRole}
-                    appVersion={pkg.version}
-                    headerProps={{
-                        title: slug.toUpperCase(),
-                        subtitle: adminRole === 'platform' ? 'Platform Admin'
-                            : adminRole === 'secretary' ? 'Secretary'
-                                : 'School Admin',
-                        logoUrl: `https://ui-avatars.com/api/?name=${slug}&background=random`,
-                    }}
-                >
-                    {children}
-                </AdminShell>
-            </RoleProvider>
-        );
-    }
+    // Universal AppShell for ALL roles
+    const fullRole = getFullRole();
+    const navConfig = getNavConfig(fullRole);
 
     return (
         <RoleProvider tenantSlug={slug} initialRole={getInitialRole()}>
-            <Shell
+            <AppShell
+                tenantSlug={slug}
                 tenantName={slug.toUpperCase()}
                 tenantLogo={`https://ui-avatars.com/api/?name=${slug}&background=random`}
-                user={displayUser as any}
-                role={getInitialRole()}
+                user={displayUser}
+                role={fullRole}
+                navConfig={navConfig}
+                appVersion={pkg.version}
+                headerSubtitle={getHeaderSubtitle(fullRole)}
             >
                 {children}
-            </Shell>
+            </AppShell>
         </RoleProvider>
     );
 }

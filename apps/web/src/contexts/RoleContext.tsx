@@ -1,14 +1,20 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { getNavConfig } from '@/config/navigation'
 
 export type UserRole = 'admin' | 'staff' | 'parent' | 'learner'
 
 interface RoleContextType {
+    /** Simplified 4-bucket role (admin | staff | parent | learner) */
     currentRole: UserRole
+    /** The full 31-value role string (e.g. 'tenant_admin', 'class_teacher') */
+    fullRole: string
     availableRoles: UserRole[]
     setCurrentRole: (role: UserRole) => void
     isLoading: boolean
+    /** Returns the dashboard base path for the current full role */
+    getDashboardPath: () => string
 }
 
 const RoleContext = createContext<RoleContextType | undefined>(undefined)
@@ -29,12 +35,23 @@ export function RoleProvider({ children, tenantSlug, initialRole }: RoleProvider
         }
         return initialRole || 'parent'
     })
+
+    const [fullRole, setFullRole] = useState<string>(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('user_role') || localStorage.getItem(`edapp_role_${tenantSlug}`) || initialRole || 'parent'
+        }
+        return initialRole || 'parent'
+    })
+
     const [availableRoles] = useState<UserRole[]>(['admin', 'staff', 'parent', 'learner'])
     const [isLoading, setIsLoading] = useState(true)
 
     // Load saved role from localStorage on mount
     useEffect(() => {
-        // setIsLoading(false)
+        if (typeof window !== 'undefined') {
+            const stored = localStorage.getItem('user_role') || localStorage.getItem(`edapp_role_${tenantSlug}`)
+            if (stored) setFullRole(stored)
+        }
     }, [tenantSlug])
 
     // Persist role changes to localStorage
@@ -43,8 +60,13 @@ export function RoleProvider({ children, tenantSlug, initialRole }: RoleProvider
         localStorage.setItem(`edapp_role_${tenantSlug}`, role)
     }
 
+    const getDashboardPath = () => {
+        const navConfig = getNavConfig(fullRole)
+        return navConfig.getBasePath(tenantSlug)
+    }
+
     return (
-        <RoleContext.Provider value={{ currentRole, availableRoles, setCurrentRole, isLoading }}>
+        <RoleContext.Provider value={{ currentRole, fullRole, availableRoles, setCurrentRole, isLoading, getDashboardPath }}>
             {children}
         </RoleContext.Provider>
     )

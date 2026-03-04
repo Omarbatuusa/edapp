@@ -110,7 +110,7 @@ export default function AdminAttendancePage() {
         : 0;
 
     return (
-        <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
+        <div className="app-content-padding max-w-7xl mx-auto space-y-6">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>

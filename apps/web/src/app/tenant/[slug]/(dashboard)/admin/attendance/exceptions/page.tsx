@@ -83,7 +83,7 @@ export default function ExceptionsPage() {
     };
 
     return (
-        <div className="p-4 md:p-6 lg:p-8 max-w-5xl mx-auto space-y-6">
+        <div className="app-content-padding max-w-5xl mx-auto space-y-6">
             {/* Header */}
             <div className="flex items-center gap-3">
                 <Link href={`/tenant/${slug}/admin/attendance`} className="p-2 hover:bg-gray-100 rounded-xl transition-colors">

@@ -397,6 +397,23 @@
   @apply bg-[hsl(var(--admin-surface))] rounded-[20px] p-5 ios-shadow;
 }
 
+/* Universal content padding (responsive) */
+.app-content-padding {
+  padding: 16px;
+}
+
+@media (min-width: 641px) {
+  .app-content-padding {
+    padding: 20px;
+  }
+}
+
+@media (min-width: 1025px) {
+  .app-content-padding {
+    padding: 28px;
+  }
+}
+
 /* ═══════════════════════════════════════════════════════
    SURFACE & COMPONENT UTILITIES
    ═══════════════════════════════════════════════════════ */

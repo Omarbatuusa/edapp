@@ -65,7 +65,7 @@ export default function AdminDashboard({ params }: Props) {
         : null;
 
     return (
-        <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
+        <div className="app-content-padding max-w-7xl mx-auto space-y-6">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight text-[hsl(var(--admin-text-main))] leading-tight">Admin Dashboard</h1>
