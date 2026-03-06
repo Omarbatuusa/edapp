@@ -52,7 +52,6 @@ export function AdminShell({ children, tenantSlug, adminRole, headerProps, appVe
             role={roleForNav}
             navConfig={navConfig}
             appVersion={appVersion}
-            headerSubtitle={headerProps.subtitle}
         >
             {children}
         </AppShell>

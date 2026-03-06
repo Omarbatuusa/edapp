@@ -4,8 +4,10 @@ import { use, useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { RoleProvider } from '@/contexts/RoleContext';
+import { TenantProvider, useTenant } from '@/contexts/TenantContext';
 import { AppShell } from '@/components/shell/AppShell';
-import { getNavConfig, getAdminRoleType } from '@/config/navigation';
+import { getNavConfig } from '@/config/navigation';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import pkg from '../../../../../package.json';
 
 interface DashboardLayoutProps {
@@ -75,36 +77,32 @@ function getDashboardForRole(role: string): string {
     }
 }
 
-/** Generate a human-friendly header subtitle from the full role string */
-function getHeaderSubtitle(role: string): string {
-    const adminType = getAdminRoleType(role);
-    if (adminType === 'platform') return 'Platform Admin';
-    if (adminType === 'secretary') return 'Secretary';
-
-    const SUBTITLES: Record<string, string> = {
-        admin: 'School Admin', tenant_admin: 'School Admin', main_branch_admin: 'School Admin',
-        branch_admin: 'Branch Admin', principal: 'Principal', deputy_principal: 'Deputy Principal',
-        smt: 'Senior Management', hod: 'Head of Department', grade_head: 'Grade Head',
-        phase_head: 'Phase Head', teacher: 'Teacher', class_teacher: 'Class Teacher',
-        subject_teacher: 'Subject Teacher', counsellor: 'Counsellor', nurse: 'School Nurse',
-        transport: 'Transport', aftercare: 'Aftercare', security: 'Security',
-        caretaker: 'Caretaker', staff: 'Staff', reception: 'Reception',
-        admissions_officer: 'Admissions', finance_officer: 'Finance', hr_admin: 'Human Resources',
-        it_admin: 'IT Admin', parent: 'Parent', guardian: 'Guardian',
-        learner: 'Learner', student: 'Student', applicant: 'Applicant',
-        alumni: 'Alumni', sgb_member: 'SGB Member', parent_association: 'PTA',
-    };
-    return SUBTITLES[role] || 'Dashboard';
-}
-
 export default function DashboardLayout({ children, params }: DashboardLayoutProps) {
     const { slug } = use(params);
+
+    return (
+        <TenantProvider slug={slug}>
+            <DashboardLayoutInner slug={slug}>
+                {children}
+            </DashboardLayoutInner>
+        </TenantProvider>
+    );
+}
+
+/** Inner component — hooks must be inside TenantProvider tree */
+function DashboardLayoutInner({ slug, children }: { slug: string; children: React.ReactNode }) {
     const router = useRouter();
     const pathname = usePathname();
-    const { user, isAuthenticated, loading: authLoading } = useAuth();
+    const { user, loading: authLoading } = useAuth();
     const [sessionChecked, setSessionChecked] = useState(false);
     const [hasSession, setHasSession] = useState(false);
     const [userRole, setUserRole] = useState<string>('parent');
+
+    // Tenant data from context
+    const { tenantDisplayName, tenantLogoUrl, branches, scope, scopeLabel, setScope } = useTenant();
+
+    // User profile + role data
+    const { currentRole, allRoles, switchRole, displayName } = useUserProfile(slug);
 
     // Check for session token in localStorage (from handoff flow)
     useEffect(() => {
@@ -160,12 +158,12 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
     // Role-based route enforcement
     useEffect(() => {
         if (!authLoading && sessionChecked && (user || hasSession) && pathname) {
-            const currentRole = localStorage.getItem('user_role') || userRole;
+            const storedRole = localStorage.getItem('user_role') || userRole;
 
             for (const [routeSegment, allowedRoles] of Object.entries(ROUTE_ROLE_MAP)) {
                 if (pathname.includes(routeSegment)) {
-                    if (!allowedRoles.includes(currentRole)) {
-                        const correctPath = getDashboardForRole(currentRole);
+                    if (!allowedRoles.includes(storedRole)) {
+                        const correctPath = getDashboardForRole(storedRole);
                         if (correctPath) {
                             router.replace(`/tenant/${slug}${correctPath}`);
                         }
@@ -193,29 +191,45 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
         return null;
     }
 
-    // Create a mock user if we only have session
-    const displayUser = user || {
+    // Create user object with profile data merged in
+    const baseUser = user || {
         uid: localStorage.getItem('user_id') || '',
         email: null,
         displayName: null,
         photoURL: null,
     };
 
+    // Spread to a plain object so we can override displayName
+    const displayUser = {
+        ...baseUser,
+        displayName: baseUser.displayName || displayName || null,
+    };
+
     // Universal AppShell for ALL roles
     const fullRole = getFullRole();
     const navConfig = getNavConfig(fullRole);
+
+    // Show scope chip only when there are multiple branches
+    const showScopeChip = branches.length > 1;
 
     return (
         <RoleProvider tenantSlug={slug} initialRole={getInitialRole()}>
             <AppShell
                 tenantSlug={slug}
-                tenantName={slug.toUpperCase()}
-                tenantLogo={`https://ui-avatars.com/api/?name=${slug}&background=random`}
+                tenantName={tenantDisplayName}
+                tenantLogo={tenantLogoUrl}
                 user={displayUser}
                 role={fullRole}
                 navConfig={navConfig}
                 appVersion={pkg.version}
-                headerSubtitle={getHeaderSubtitle(fullRole)}
+                scopeLabel={scopeLabel}
+                showScopeChip={showScopeChip}
+                branches={branches}
+                currentScope={scope}
+                onScopeChange={setScope}
+                currentRole={currentRole || undefined}
+                allRoles={allRoles}
+                onRoleSwitch={switchRole}
             >
                 {children}
             </AppShell>

@@ -40,7 +40,6 @@ export function Shell({ children, tenantName, tenantSlug, tenantLogo, user, role
             user={user}
             role={role}
             navConfig={navConfig}
-            headerSubtitle={subtitles[role] || 'Dashboard'}
         >
             {children}
         </AppShell>

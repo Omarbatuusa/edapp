@@ -4,8 +4,7 @@ import React from 'react';
 
 interface AppHeaderProps {
     title: string;
-    subtitle?: string;
-    logoUrl?: string;
+    logoUrl?: string | null;
     isScrolled?: boolean;
     onSearch?: () => void;
     onNotificationClick?: () => void;
@@ -13,20 +12,20 @@ interface AppHeaderProps {
     onEmergency?: () => void;
     notificationsCount?: number;
     user?: any;
-    actions?: React.ReactNode;
+    /** Scope chip */
+    scopeLabel?: string;
+    onScopeClick?: () => void;
+    showScopeChip?: boolean;
 }
 
 /**
  * Facebook-style 2-row header.
  *
  * Row 1: Logo + bold tenant name (left) | icon buttons in filled circles (right)
- * Row 2: Role/scope subtitle
- *
- * Matches Facebook mobile: big bold brand on left, circular icon buttons on right.
+ * Row 2: Scope chip (left) | Emergency SOS chip (right)
  */
 export function AppHeader({
     title,
-    subtitle,
     logoUrl,
     isScrolled = false,
     onSearch,
@@ -35,7 +34,9 @@ export function AppHeader({
     onEmergency,
     notificationsCount = 0,
     user,
-    actions,
+    scopeLabel = 'All campuses',
+    onScopeClick,
+    showScopeChip = true,
 }: AppHeaderProps) {
     const displayName = user?.display_name || user?.first_name || user?.displayName || 'User';
     const displayInitial = displayName.charAt(0);
@@ -55,15 +56,13 @@ export function AppHeader({
                             <span className="material-symbols-outlined text-white text-xl">school</span>
                         </div>
                     )}
-                    <h1 className="text-[22px] sm:text-[26px] font-extrabold text-[hsl(var(--admin-text-main))] tracking-tight truncate leading-none">
+                    <h1 className="text-[20px] sm:text-[24px] font-extrabold text-[hsl(var(--admin-text-main))] tracking-tight leading-tight line-clamp-2 min-w-0">
                         {title}
                     </h1>
                 </div>
 
                 {/* Right: Facebook-style circular icon buttons */}
                 <div className="flex items-center gap-1.5 flex-shrink-0">
-                    {actions}
-
                     {onSearch && (
                         <button
                             onClick={onSearch}
@@ -71,16 +70,6 @@ export function AppHeader({
                             aria-label="Search"
                         >
                             <span className="material-symbols-outlined text-[22px]">search</span>
-                        </button>
-                    )}
-
-                    {onEmergency && (
-                        <button
-                            onClick={onEmergency}
-                            className="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
-                            aria-label="Emergency Hub"
-                        >
-                            <span className="material-symbols-outlined text-[20px]">shield</span>
                         </button>
                     )}
 
@@ -117,12 +106,34 @@ export function AppHeader({
                 </div>
             </div>
 
-            {/* Row 2: Scope/role subtitle */}
-            {subtitle && (
-                <p className="text-[13px] font-medium text-[hsl(var(--admin-text-muted))] leading-tight mt-1.5 pl-[52px]">
-                    {subtitle}
-                </p>
-            )}
+            {/* Row 2: Scope chip + Emergency chip */}
+            <div className="flex items-center gap-2 mt-1.5">
+                {/* Scope chip */}
+                {showScopeChip && onScopeClick && (
+                    <button
+                        onClick={onScopeClick}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[hsl(var(--admin-surface-alt))] hover:bg-[hsl(var(--admin-border))] text-[hsl(var(--admin-text-muted))] transition-colors max-w-[200px]"
+                    >
+                        <span className="material-symbols-outlined text-[16px]">location_on</span>
+                        <span className="text-[12px] font-medium truncate">{scopeLabel}</span>
+                        <span className="material-symbols-outlined text-[14px]">expand_more</span>
+                    </button>
+                )}
+
+                {/* Spacer */}
+                <div className="flex-1" />
+
+                {/* Emergency SOS chip */}
+                {onEmergency && (
+                    <button
+                        onClick={onEmergency}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                    >
+                        <span className="material-symbols-outlined text-[16px]">shield</span>
+                        <span className="text-[12px] font-bold">SOS</span>
+                    </button>
+                )}
+            </div>
         </header>
     );
 }

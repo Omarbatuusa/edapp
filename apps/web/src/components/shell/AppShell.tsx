@@ -11,49 +11,43 @@ import { useSubpageDetection } from '@/hooks/useSubpageDetection';
 import { AvatarPanel } from '@/components/dashboard/AvatarPanel';
 import { NotificationPanel } from '@/components/dashboard/NotificationPanel';
 import { SearchSheet } from '@/components/dashboard/SearchSheet';
+import { ScopeSelectorSheet } from '@/components/dashboard/ScopeSelectorSheet';
 import { EmergencyProvider } from '@/contexts/EmergencyContext';
 import { EmergencyBanner } from '@/components/safety/EmergencyBanner';
 import { MOCK_NOTIFICATIONS, countUnread } from '@/lib/notifications';
 import type { RoleNavConfig } from '@/config/navigation';
+import type { UserRoleAssignment } from '@/components/dashboard/RoleSwitcher';
 
 interface AppShellProps {
     children: React.ReactNode;
     tenantSlug: string;
     tenantName: string;
-    tenantLogo?: string;
+    tenantLogo?: string | null;
     user?: any;
     role: string;
     navConfig: RoleNavConfig;
     appVersion?: string;
-    /** Subtitle shown in header (e.g. "Platform Admin", "Parent Dashboard") */
-    headerSubtitle?: string;
+    /** Scope chip label (e.g. "Midrand Branch", "All campuses") */
+    scopeLabel?: string;
+    /** Whether to show the scope chip in header Row 2 */
+    showScopeChip?: boolean;
+    /** Branches for scope selector */
+    branches?: Array<{ id: string; branch_name: string; branch_code: string; is_main_branch: boolean }>;
+    /** Currently selected scope (branch_id or null) */
+    currentScope?: string | null;
+    /** Callback when scope changes */
+    onScopeChange?: (branchId: string | null) => void;
+    /** Current user role assignment for AvatarPanel */
+    currentRole?: UserRoleAssignment;
+    /** All user role assignments for role switching */
+    allRoles?: UserRoleAssignment[];
+    /** Callback when user switches role */
+    onRoleSwitch?: (role: UserRoleAssignment) => void;
 }
 
 /**
  * Universal AppShell — one shell for ALL 31 roles.
- * Based on AdminShell's exact layout, reusing all `admin-*` CSS classes.
- *
- * Layout:
- * ```
- * <EmergencyProvider>
- *   <div.admin-app-outer>
- *     <div.admin-app-container>
- *       <EmergencyBanner />
- *       <AppHeader />
- *       <div.admin-body>
- *         <AppNavRail />
- *         <main.admin-main>
- *           {isSubpage && <SubpageBar />}
- *           {children}
- *           <AppFooter />
- *         </main>
- *       </div>
- *       {!isSubpage && !isFullscreen && <AppBottomNav />}
- *     </div>
- *   </div>
- *   <AvatarPanel /> <NotificationPanel /> <SearchSheet />
- * </EmergencyProvider>
- * ```
+ * Facebook-style 2-row header with scope chip + emergency chip.
  */
 export function AppShell({
     children,
@@ -64,7 +58,14 @@ export function AppShell({
     role,
     navConfig,
     appVersion = '1.0.0',
-    headerSubtitle,
+    scopeLabel = 'All campuses',
+    showScopeChip = true,
+    branches = [],
+    currentScope = null,
+    onScopeChange,
+    currentRole,
+    allRoles = [],
+    onRoleSwitch,
 }: AppShellProps) {
     const router = useRouter();
     const basePath = navConfig.getBasePath(tenantSlug);
@@ -78,6 +79,7 @@ export function AppShell({
     const [avatarPanelOpen, setAvatarPanelOpen] = useState(false);
     const [notificationPanelOpen, setNotificationPanelOpen] = useState(false);
     const [searchSheetOpen, setSearchSheetOpen] = useState(false);
+    const [scopeSelectorOpen, setScopeSelectorOpen] = useState(false);
 
     // Subpage detection
     const { isSubpage, isFullscreen } = useSubpageDetection(navConfig.bottomTabs, basePath);
@@ -143,7 +145,6 @@ export function AppShell({
                     {!isSubpage && (
                         <AppHeader
                             title={tenantName}
-                            subtitle={headerSubtitle}
                             logoUrl={tenantLogo}
                             isScrolled={isScrolled}
                             onSearch={() => setSearchSheetOpen(true)}
@@ -152,6 +153,9 @@ export function AppShell({
                             onAvatarClick={() => setAvatarPanelOpen(true)}
                             notificationsCount={notificationsCount}
                             user={user}
+                            scopeLabel={scopeLabel}
+                            onScopeClick={() => setScopeSelectorOpen(true)}
+                            showScopeChip={showScopeChip}
                         />
                     )}
                     <div className="admin-body">
@@ -191,6 +195,9 @@ export function AppShell({
                 user={user}
                 tenantName={tenantName}
                 tenantSlug={tenantSlug}
+                currentRole={currentRole}
+                allRoles={allRoles}
+                onRoleSwitch={onRoleSwitch}
             />
             <NotificationPanel
                 isOpen={notificationPanelOpen}
@@ -202,6 +209,13 @@ export function AppShell({
                 onClose={() => setSearchSheetOpen(false)}
                 tenantSlug={tenantSlug}
                 currentRole={role}
+            />
+            <ScopeSelectorSheet
+                isOpen={scopeSelectorOpen}
+                onClose={() => setScopeSelectorOpen(false)}
+                branches={branches}
+                currentScope={currentScope}
+                onSelect={(branchId) => onScopeChange?.(branchId)}
             />
         </EmergencyProvider>
     );
