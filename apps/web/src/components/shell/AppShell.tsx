@@ -7,8 +7,9 @@ import { AppBottomNav } from './AppBottomNav';
 import { AppNavRail } from './AppNavRail';
 import { AppFooter } from './AppFooter';
 import { SubpageBar } from './SubpageBar';
+import { ProfileSheet } from './ProfileSheet';
+import { EmergencySheet } from './EmergencySheet';
 import { useSubpageDetection } from '@/hooks/useSubpageDetection';
-import { AvatarPanel } from '@/components/dashboard/AvatarPanel';
 import { NotificationPanel } from '@/components/dashboard/NotificationPanel';
 import { SearchSheet } from '@/components/dashboard/SearchSheet';
 import { ScopeSelectorSheet } from '@/components/dashboard/ScopeSelectorSheet';
@@ -37,7 +38,7 @@ interface AppShellProps {
     currentScope?: string | null;
     /** Callback when scope changes */
     onScopeChange?: (branchId: string | null) => void;
-    /** Current user role assignment for AvatarPanel */
+    /** Current user role assignment for ProfileSheet */
     currentRole?: UserRoleAssignment;
     /** All user role assignments for role switching */
     allRoles?: UserRoleAssignment[];
@@ -48,6 +49,7 @@ interface AppShellProps {
 /**
  * Universal AppShell — one shell for ALL 31 roles.
  * Facebook-style 2-row header with scope chip + emergency chip.
+ * Uses chrome flag: "default" | "takeover" | "modal".
  */
 export function AppShell({
     children,
@@ -76,13 +78,14 @@ export function AppShell({
     const mainRef = useRef<HTMLDivElement>(null);
 
     // Overlay panels
-    const [avatarPanelOpen, setAvatarPanelOpen] = useState(false);
+    const [profileSheetOpen, setProfileSheetOpen] = useState(false);
     const [notificationPanelOpen, setNotificationPanelOpen] = useState(false);
     const [searchSheetOpen, setSearchSheetOpen] = useState(false);
     const [scopeSelectorOpen, setScopeSelectorOpen] = useState(false);
+    const [emergencySheetOpen, setEmergencySheetOpen] = useState(false);
 
-    // Subpage detection
-    const { isSubpage, isFullscreen } = useSubpageDetection(navConfig.bottomTabs, basePath);
+    // Subpage detection + chrome flag
+    const { isSubpage, isFullscreen, chrome } = useSubpageDetection(navConfig.bottomTabs, basePath);
 
     // Notification count
     const notificationsCount = countUnread(MOCK_NOTIFICATIONS);
@@ -117,12 +120,8 @@ export function AppShell({
         }
     };
 
-    const handleEmergency = () => {
-        router.push(`/tenant/${tenantSlug}/${role}/emergency`);
-    };
-
     // Fullscreen mode — hide shell chrome (used by chat routes)
-    if (isFullscreen) {
+    if (chrome === 'modal') {
         return (
             <EmergencyProvider>
                 <div className="admin-app-outer">
@@ -141,21 +140,23 @@ export function AppShell({
             <div className="admin-app-outer">
                 <div className="admin-app-container">
                     <EmergencyBanner />
-                    {/* One Top Bar rule: AppHeader on tab roots only */}
-                    {!isSubpage && (
+                    {/* AppHeader on tab roots only (chrome === "default") */}
+                    {chrome === 'default' && (
                         <AppHeader
                             title={tenantName}
+                            tenantSlug={tenantSlug}
                             logoUrl={tenantLogo}
                             isScrolled={isScrolled}
                             onSearch={() => setSearchSheetOpen(true)}
-                            onEmergency={handleEmergency}
+                            onEmergency={() => setEmergencySheetOpen(true)}
                             onNotificationClick={() => setNotificationPanelOpen(true)}
-                            onAvatarClick={() => setAvatarPanelOpen(true)}
+                            onAvatarClick={() => setProfileSheetOpen(true)}
                             notificationsCount={notificationsCount}
                             user={user}
                             scopeLabel={scopeLabel}
                             onScopeClick={() => setScopeSelectorOpen(true)}
                             showScopeChip={showScopeChip}
+                            onTenantNameClick={() => setScopeSelectorOpen(true)}
                         />
                     )}
                     <div className="admin-body">
@@ -171,7 +172,7 @@ export function AppShell({
                             onScroll={handleScroll}
                         >
                             {/* Subpage takeover: only SubpageBar, no AppHeader */}
-                            {isSubpage && <SubpageBar />}
+                            {chrome === 'takeover' && <SubpageBar />}
                             <div className="flex-1">
                                 {children}
                             </div>
@@ -179,7 +180,7 @@ export function AppShell({
                         </main>
                     </div>
                     {/* Bottom nav only on tab roots */}
-                    {!isSubpage && (
+                    {chrome === 'default' && (
                         <AppBottomNav
                             items={navConfig.bottomTabs}
                             basePath={basePath}
@@ -189,9 +190,9 @@ export function AppShell({
             </div>
 
             {/* Overlay panels */}
-            <AvatarPanel
-                isOpen={avatarPanelOpen}
-                onClose={() => setAvatarPanelOpen(false)}
+            <ProfileSheet
+                isOpen={profileSheetOpen}
+                onClose={() => setProfileSheetOpen(false)}
                 user={user}
                 tenantName={tenantName}
                 tenantSlug={tenantSlug}
@@ -216,6 +217,12 @@ export function AppShell({
                 branches={branches}
                 currentScope={currentScope}
                 onSelect={(branchId) => onScopeChange?.(branchId)}
+                tenantName={tenantName}
+            />
+            <EmergencySheet
+                isOpen={emergencySheetOpen}
+                onClose={() => setEmergencySheetOpen(false)}
+                tenantName={tenantName}
             />
         </EmergencyProvider>
     );
