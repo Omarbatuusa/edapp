@@ -172,6 +172,20 @@ export default function RoleSelectionPage({ params }: { params: Promise<{ slug: 
                             )
                         })}
                     </div>
+
+                    {/* Apply Now link */}
+                    <div className="mt-8 text-center">
+                        <p className="text-sm text-muted-foreground">
+                            Not a current learner or parent?
+                        </p>
+                        <button
+                            type="button"
+                            onClick={() => router.push(`/tenant/${correctSlug}/apply`)}
+                            className="mt-1 text-sm font-semibold text-primary hover:underline"
+                        >
+                            Apply Now
+                        </button>
+                    </div>
                 </div>
             </main>
 
