@@ -22,6 +22,29 @@ interface SignedUrlResponseDto {
     objectKey: string;
 }
 
+const CATEGORY_RULES: Record<string, { mimeTypes: string[]; maxSizeMB: number }> = {
+    documents: {
+        mimeTypes: ['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+        maxSizeMB: 10,
+    },
+    avatars: {
+        mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+        maxSizeMB: 5,
+    },
+    logos: {
+        mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'],
+        maxSizeMB: 5,
+    },
+    reports: {
+        mimeTypes: ['application/pdf', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/csv'],
+        maxSizeMB: 20,
+    },
+    attachments: {
+        mimeTypes: ['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/csv'],
+        maxSizeMB: 20,
+    },
+};
+
 @Controller('storage')
 export class StorageController {
     constructor(private readonly storageService: StorageService) { }
@@ -59,11 +82,20 @@ export class StorageController {
             );
         }
 
+        // Validate MIME type against category rules
+        const contentType = body.contentType || 'application/octet-stream';
+        const rules = CATEGORY_RULES[body.category];
+        if (rules && !rules.mimeTypes.includes(contentType)) {
+            throw new BadRequestException(
+                `File type "${contentType}" is not allowed for category "${body.category}". Allowed types: ${rules.mimeTypes.join(', ')}`,
+            );
+        }
+
         return this.storageService.generateSignedUploadUrl(
             tenantSlug,
             body.category,
             body.filename,
-            body.contentType || 'application/octet-stream',
+            contentType,
         );
     }
 

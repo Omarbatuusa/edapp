@@ -25,6 +25,12 @@ export class StaffProfile {
     date_of_birth: string;
 
     @Column({ nullable: true })
+    full_name: string;
+
+    @Column({ type: 'int', nullable: true })
+    age: number;
+
+    @Column({ nullable: true })
     gender_code: string;
 
     @Column({ nullable: true })

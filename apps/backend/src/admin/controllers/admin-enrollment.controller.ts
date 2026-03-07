@@ -7,6 +7,9 @@ import { Repository, DataSource } from 'typeorm';
 import { FirebaseAuthGuard } from '../../auth/firebase-auth.guard';
 
 import { EnrollmentApplication, EnrollmentStatus } from '../entities/enrollment-application.entity';
+import { UpdateEnrollmentDraftDto } from '../dto/enrollment.dto';
+import { SubmitEnrollmentDto } from '../dto/enrollment.dto';
+import { RejectEnrollmentDto } from '../dto/enrollment.dto';
 import { LearnerProfile } from '../entities/learner-profile.entity';
 import { GuardianProfile } from '../entities/guardian-profile.entity';
 import { User } from '../../users/user.entity';
@@ -69,7 +72,7 @@ export class AdminEnrollmentController {
   @Put(':id')
   async updateDraft(
     @Param('id') id: string,
-    @Body() body: Partial<EnrollmentApplication>,
+    @Body() body: UpdateEnrollmentDraftDto,
   ) {
     const application = await this.enrollmentRepo.findOne({ where: { id } });
     if (!application) throw new NotFoundException('Application not found');
@@ -81,6 +84,7 @@ export class AdminEnrollmentController {
       'placement_data', 'learner_data', 'academic_data', 'subjects_data',
       'aftercare_data', 'medical_data', 'guardians_data', 'emergency_contacts',
       'uploaded_documents', 'current_step', 'document_checklist_ack', 'acceptance_ack',
+      'branch_id', 'brand_id', 'main_branch_id',
     ];
     for (const field of updatableFields) {
       if ((body as any)[field] !== undefined) {
@@ -104,7 +108,7 @@ export class AdminEnrollmentController {
   async submit(
     @Param('tenantId') tenantId: string,
     @Param('id') id: string,
-    @Body() body: { submitted_by_email?: string; submitted_by_phone?: string },
+    @Body() body: SubmitEnrollmentDto,
   ) {
     const application = await this.enrollmentRepo.findOne({ where: { id } });
     if (!application) throw new NotFoundException('Application not found');
@@ -186,6 +190,25 @@ export class AdminEnrollmentController {
       const medicalData = application.medical_data || {};
       const placementData = application.placement_data || {};
 
+      // Compute derived fields
+      const fullName = [learnerData.first_name, learnerData.last_name].filter(Boolean).join(' ') || undefined;
+      let computedAge: number | null = null;
+      if (learnerData.date_of_birth) {
+        const dob = new Date(learnerData.date_of_birth);
+        const now = new Date();
+        computedAge = now.getFullYear() - dob.getFullYear();
+        const monthDiff = now.getMonth() - dob.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < dob.getDate())) computedAge--;
+      }
+      let permitStatus: string | null = null;
+      let permitDaysToExpiry: number | null = null;
+      if (learnerData.permit_expiry_date) {
+        const expiry = new Date(learnerData.permit_expiry_date);
+        const now = new Date();
+        permitDaysToExpiry = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        permitStatus = permitDaysToExpiry > 0 ? 'valid' : 'expired';
+      }
+
       const learnerEmail = (guardiansData[0]?.email) ||
         `learner_${application.id.substring(0, 8)}@placeholder.local`;
 
@@ -193,7 +216,7 @@ export class AdminEnrollmentController {
         email: learnerEmail,
         first_name: learnerData.first_name || undefined,
         last_name: learnerData.last_name || undefined,
-        display_name: [learnerData.first_name, learnerData.last_name].filter(Boolean).join(' ') || undefined,
+        display_name: fullName,
       } as any);
       const savedLearnerUser = await manager.save(User, learnerUser);
 
@@ -226,7 +249,11 @@ export class AdminEnrollmentController {
         support_profile_code: medicalData.support_profile_code || null,
         educational_disabilities: medicalData.educational_disabilities || [],
         medical: medicalData || null,
-      });
+        full_name: fullName || null,
+        age: computedAge,
+        permit_status: permitStatus,
+        permit_days_to_expiry: permitDaysToExpiry,
+      } as any);
       await manager.save(LearnerProfile, learnerProfile);
 
       // 3. Create RoleAssignment for learner
@@ -353,7 +380,7 @@ export class AdminEnrollmentController {
     @Req() req: any,
     @Param('tenantId') tenantId: string,
     @Param('id') id: string,
-    @Body() body: { reason: string },
+    @Body() body: RejectEnrollmentDto,
   ) {
     if (!this.canEnrollmentAction(req)) {
       throw new ForbiddenException('Insufficient permissions');

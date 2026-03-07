@@ -96,6 +96,8 @@ import { AdminGradesClassesController } from './controllers/admin-grades-classes
 import { AdminFamilyDoctorsController } from './controllers/admin-family-doctors.controller';
 import { AdminEmergencyContactsController } from './controllers/admin-emergency-contacts.controller';
 import { AdminFamiliesController } from './controllers/admin-families.controller';
+import { AdminCalendarController } from './controllers/admin-calendar.controller';
+import { AcademicCalendarDay } from './entities/academic-calendar-day.entity';
 import { ParentChildLink } from '../communication/parent-child-link.entity';
 import { SchoolClass } from '../attendance/entities/class.entity';
 
@@ -178,6 +180,7 @@ import { SchoolClass } from '../attendance/entities/class.entity';
       DictEmploymentType,
       ParentChildLink,
       SchoolClass,
+      AcademicCalendarDay,
     ]),
     AuthModule,
   ],
@@ -197,6 +200,7 @@ import { SchoolClass } from '../attendance/entities/class.entity';
     AdminFamilyDoctorsController,
     AdminEmergencyContactsController,
     AdminFamiliesController,
+    AdminCalendarController,
   ],
 })
 export class AdminPlatformModule {}

@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { FirebaseAuthGuard } from '../../auth/firebase-auth.guard';
 import { StaffProfile } from '../entities/staff-profile.entity';
+import { CreateStaffDto, UpdateStaffDto } from '../dto/staff.dto';
 import { User } from '../../users/user.entity';
 import { RoleAssignment, UserRole } from '../../users/role-assignment.entity';
 import { AuditEvent, AuditAction } from '../entities/audit-event.entity';
@@ -165,13 +166,9 @@ export class AdminStaffController {
   async create(
     @Req() req: any,
     @Param('tenantId') tenantId: string,
-    @Body() body: any,
+    @Body() body: CreateStaffDto,
   ) {
     this.ensureAccess(req);
-
-    if (!body.email || !body.first_name || !body.last_name) {
-      throw new BadRequestException('email, first_name, and last_name are required');
-    }
 
     const result = await this.dataSource.transaction(async (manager) => {
       // 1. Create User
@@ -183,13 +180,26 @@ export class AdminStaffController {
       });
       const savedUser = await manager.save(User, user);
 
-      // 2. Create StaffProfile
+      // 2. Compute derived fields
+      const staffFullName = `${body.first_name} ${body.last_name}`;
+      let staffAge: number | null = null;
+      if (body.date_of_birth) {
+        const dob = new Date(body.date_of_birth);
+        const now = new Date();
+        staffAge = now.getFullYear() - dob.getFullYear();
+        const md = now.getMonth() - dob.getMonth();
+        if (md < 0 || (md === 0 && now.getDate() < dob.getDate())) staffAge--;
+      }
+
+      // 3. Create StaffProfile
       const profile = manager.create(StaffProfile, {
         tenant_id: tenantId,
         user_id: savedUser.id,
         branch_id: body.branch_id || null,
         title_code: body.title_code || null,
         date_of_birth: body.date_of_birth || null,
+        full_name: staffFullName,
+        age: staffAge,
         gender_code: body.gender_code || null,
         citizenship_type_code: body.citizenship_type_code || null,
         id_number: body.id_number || null,
@@ -259,7 +269,7 @@ export class AdminStaffController {
     @Req() req: any,
     @Param('tenantId') tenantId: string,
     @Param('id') id: string,
-    @Body() body: any,
+    @Body() body: UpdateStaffDto,
   ) {
     this.ensureAccess(req);
 

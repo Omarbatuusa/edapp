@@ -46,6 +46,18 @@ export class LearnerProfile {
     permit_type_code: string;
 
     @Column({ nullable: true })
+    full_name: string;
+
+    @Column({ type: 'int', nullable: true })
+    age: number;
+
+    @Column({ nullable: true })
+    permit_status: string;
+
+    @Column({ type: 'int', nullable: true })
+    permit_days_to_expiry: number;
+
+    @Column({ nullable: true })
     photo_url: string;
 
     @Column({ type: 'jsonb', nullable: true })

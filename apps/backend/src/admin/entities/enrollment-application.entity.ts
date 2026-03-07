@@ -22,6 +22,12 @@ export class EnrollmentApplication {
     @Column({ type: 'uuid', nullable: true })
     branch_id: string;
 
+    @Column({ type: 'uuid', nullable: true })
+    brand_id: string;
+
+    @Column({ type: 'uuid', nullable: true })
+    main_branch_id: string;
+
     @Column({ type: 'enum', enum: EnrollmentStatus, default: EnrollmentStatus.DRAFT })
     status: EnrollmentStatus;
 
