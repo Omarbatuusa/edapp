@@ -19,13 +19,11 @@ export default function ApplicantPortalPage({ params }: { params: Promise<{ slug
     const [showHelp, setShowHelp] = useState(false)
 
     const handleStartApplication = () => {
-        // Navigate to application form
-        alert(`Starting application for ${slug}`)
+        router.push(`/tenant/${slug}/apply/new`)
     }
 
     const handleViewDrafts = () => {
-        // Navigate to saved drafts
-        alert("View saved drafts")
+        router.push(`/tenant/${slug}/apply/new`)
     }
 
     const handleBack = () => {

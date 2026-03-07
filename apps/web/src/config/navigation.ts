@@ -611,6 +611,7 @@ const PARENT_CONFIG: RoleNavConfig = {
         { id: 'accounts', icon: 'receipt_long', label: 'Accounts', href: '/accounts' },
         { id: 'announcements', icon: 'campaign', label: 'Announcements', href: '/announcements' },
         { id: 'calendar', icon: 'calendar_today', label: 'Calendar', href: '/calendar' },
+        { id: 'report-absence', icon: 'event_busy', label: 'Report Absence', href: '/report-absence' },
         { id: 'settings', icon: 'settings', label: 'Settings', href: '/settings' },
     ],
     menuSections: [
@@ -620,6 +621,7 @@ const PARENT_CONFIG: RoleNavConfig = {
                 { id: 'accounts', icon: 'receipt_long', label: 'Accounts', href: '/accounts' },
                 { id: 'announcements', icon: 'campaign', label: 'Announcements', href: '/announcements' },
                 { id: 'calendar', icon: 'calendar_today', label: 'Calendar', href: '/calendar' },
+                { id: 'report-absence', icon: 'event_busy', label: 'Report Absence', href: '/report-absence' },
             ],
         },
         {

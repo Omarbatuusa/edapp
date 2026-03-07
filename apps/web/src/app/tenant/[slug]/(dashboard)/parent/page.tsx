@@ -7,7 +7,7 @@ import { ParentHome } from '@/components/parent/ParentHome';
 const MOCK_TENANT = {
     name: 'Lakewood International Academy',
     slug: 'lia',
-    logo: undefined, // Will use initials fallback
+    logo: undefined,
 };
 
 const MOCK_USER = {
@@ -22,19 +22,17 @@ export default function ParentDashboard() {
 
     return (
         <div className="app-content-padding space-y-4 pb-20">
-            {/* Welcome Header + Codes */}
-            <div className="flex items-start justify-between">
-                <div>
-                    <p className="text-muted-foreground text-sm">Welcome back</p>
-                    <h1 className="text-xl font-bold">{MOCK_USER.name}</h1>
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
-                        <p className="text-xs text-muted-foreground">
-                            Parent: <span className="font-mono text-foreground">{MOCK_USER.parentCode}</span>
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                            Family: <span className="font-mono text-foreground">{MOCK_USER.familyCode}</span>
-                        </p>
-                    </div>
+            {/* Welcome Header */}
+            <div className="max-w-3xl mx-auto">
+                <p className="text-xs font-medium text-[hsl(var(--admin-text-muted))]">Welcome back</p>
+                <h1 className="text-xl font-bold text-[hsl(var(--admin-text-main))] tracking-tight">{MOCK_USER.name}</h1>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-0.5">
+                    <p className="text-[10px] text-[hsl(var(--admin-text-muted))]">
+                        Parent: <span className="font-mono font-semibold text-[hsl(var(--admin-text-sub))]">{MOCK_USER.parentCode}</span>
+                    </p>
+                    <p className="text-[10px] text-[hsl(var(--admin-text-muted))]">
+                        Family: <span className="font-mono font-semibold text-[hsl(var(--admin-text-sub))]">{MOCK_USER.familyCode}</span>
+                    </p>
                 </div>
             </div>
 

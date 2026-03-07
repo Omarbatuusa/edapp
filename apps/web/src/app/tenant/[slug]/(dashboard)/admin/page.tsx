@@ -107,10 +107,18 @@ export default function AdminDashboard({ params }: Props) {
                 <NavSection title="School Administration">
                     <NavCard href={`/tenant/${slug}/admin/control`} label="Control Dashboard" description="School overview and quick links" icon="dashboard" color="blue" />
                     <NavCard href={`/tenant/${slug}/admin/attendance`} label="Attendance" description="Daily learner & staff attendance tracking" icon="event_available" color="green" />
+                    <NavCard href={`/tenant/${slug}/admin/enrollment`} label="Enrollment" description="View and manage enrollment applications" icon="person_add" color="rose" />
+                    <NavCard href={`/tenant/${slug}/admin/staff`} label="Staff Management" description="Manage staff profiles and roles" icon="badge" color="purple" />
                     <NavCard href={`/tenant/${slug}/admin/school-data`} label="School Data" description="Phases, grades and subject offerings" icon="school" color="indigo" />
                     <NavCard href={`/tenant/${slug}/admin/people`} label="People & Roles" description="Manage users and role assignments" icon="group" color="teal" />
+                    <NavCard href={`/tenant/${slug}/admin/calendar`} label="Academic Calendar" description="Manage school days, holidays, exams" icon="calendar_month" color="orange" />
+                    <NavCard href={`/tenant/${slug}/admin/curriculum`} label="Curriculum" description="Manage curricula and subject offerings" icon="menu_book" color="violet" />
+                    <NavCard href={`/tenant/${slug}/admin/grades-classes`} label="Grades &amp; Classes" description="Configure grades and class groups" icon="class" color="green" />
+                    <NavCard href={`/tenant/${slug}/admin/families`} label="Families" description="Manage family records and links" icon="family_restroom" color="teal" />
+                    <NavCard href={`/tenant/${slug}/admin/family-doctors`} label="Family Doctors" description="Manage family doctor records" icon="medical_services" color="rose" />
+                    <NavCard href={`/tenant/${slug}/admin/emergency-contacts`} label="Emergency Contacts" description="Manage emergency contact records" icon="contact_emergency" color="amber" />
                     <NavCard href={`/tenant/${slug}/admin/admissions`} label="Admissions Builder" description="Design your admissions process" icon="assignment" color="rose" />
-                    <NavCard href={`/tenant/${slug}/admin/integrations`} label="Integrations & Features" description="Feature flags and external systems" icon="integration_instructions" color="amber" />
+                    <NavCard href={`/tenant/${slug}/admin/integrations`} label="Integrations &amp; Features" description="Feature flags and external systems" icon="integration_instructions" color="amber" />
                 </NavSection>
             )}
 
