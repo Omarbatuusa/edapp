@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { X } from 'lucide-react';
 
 interface ReportsHubSheetProps {
     isOpen: boolean;
@@ -14,9 +13,6 @@ interface ReportsHubSheetProps {
     onOpenEmergency?: () => void;
 }
 
-/* ────────────────────────────────────────────────────────── */
-/*  Report categories — consistent outlined icon set         */
-/* ────────────────────────────────────────────────────────── */
 const REPORT_CATEGORIES = [
     {
         id: 'incidents',
@@ -57,7 +53,6 @@ const STAFF_SHORTCUT = {
     href: '/safety',
 };
 
-/* Mock recent reports */
 const MOCK_RECENT: Array<{
     id: string;
     type: string;
@@ -76,6 +71,11 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; label: string }>
     closed: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-300', label: 'Closed' },
 };
 
+/**
+ * Reports Hub takeover screen.
+ * Mobile: fullwidth. Tablet/Desktop: centered panel.
+ * Single close icon (X) — no duplicate back/X.
+ */
 export function ReportsHubSheet({
     isOpen,
     onClose,
@@ -131,7 +131,7 @@ export function ReportsHubSheet({
         <>
             {/* Backdrop */}
             <div
-                className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm md:backdrop-blur-sm"
+                className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
                 onClick={onClose}
                 aria-hidden="true"
             />
@@ -144,30 +144,25 @@ export function ReportsHubSheet({
                     md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2
                     md:w-[min(560px,calc(100vw-48px))] md:h-[min(80vh,720px)]
                     md:rounded-2xl md:shadow-2xl md:overflow-hidden
-                    animate-in slide-in-from-bottom duration-300 md:fade-in md:zoom-in-95
+                    animate-in slide-in-from-bottom duration-300
                 "
                 role="dialog"
                 aria-modal="true"
                 aria-label="Reports Hub"
             >
-                {/* Header */}
-                <div
-                    className="flex items-center gap-3 px-4 py-3 border-b border-[hsl(var(--admin-border)/0.5)] bg-[hsl(var(--admin-background))] flex-shrink-0"
-                    style={{ paddingTop: 'max(12px, env(safe-area-inset-top, 12px))' }}
-                >
+                {/* Header — single X close button */}
+                <div className="flex items-center gap-3 px-4 py-3 border-b border-[hsl(var(--admin-border)/0.5)] bg-[hsl(var(--admin-background))] flex-shrink-0 safe-area-top">
                     <button
+                        type="button"
                         onClick={onClose}
-                        className="w-10 h-10 flex items-center justify-center rounded-full text-[hsl(var(--admin-text-sub))] hover:bg-[hsl(var(--admin-surface-alt))] transition-colors active:scale-[0.92] flex-shrink-0"
+                        className="w-9 h-9 flex items-center justify-center rounded-full text-[hsl(var(--admin-text-sub))] hover:bg-[hsl(var(--admin-surface-alt))] transition-colors active:scale-[0.92] flex-shrink-0"
                         aria-label="Close"
                     >
-                        <span className="material-symbols-outlined text-[22px] md:hidden">arrow_back</span>
-                        <X size={20} className="hidden md:block" />
+                        <span className="material-symbols-outlined text-[22px]">close</span>
                     </button>
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                        <span className="material-symbols-outlined text-xl text-[hsl(var(--admin-primary))]">description</span>
-                        <h2 className="text-[17px] font-semibold text-[hsl(var(--admin-text-main))] truncate">
-                            Reports
-                        </h2>
+                        <span className="material-symbols-outlined text-xl text-[hsl(var(--admin-primary))]">fact_check</span>
+                        <h2 className="text-[17px] font-semibold text-[hsl(var(--admin-text-main))] truncate">Reports</h2>
                     </div>
                 </div>
 
@@ -184,7 +179,7 @@ export function ReportsHubSheet({
                                     key={cat.id}
                                     type="button"
                                     onClick={() => handleCategoryClick(cat)}
-                                    className="flex items-center gap-3 p-3.5 rounded-2xl bg-[hsl(var(--admin-surface))] hover:bg-[hsl(var(--admin-surface-alt))] transition-colors text-left active:scale-[0.97] ios-shadow"
+                                    className="flex items-center gap-3 p-3 rounded-2xl bg-[hsl(var(--admin-surface))] hover:bg-[hsl(var(--admin-surface-alt))] transition-colors text-left active:scale-[0.97] ios-shadow"
                                 >
                                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
                                         cat.id === 'emergency-report'
@@ -200,32 +195,27 @@ export function ReportsHubSheet({
                                         </span>
                                     </div>
                                     <div className="min-w-0 flex-1">
-                                        <p className="text-[13px] font-semibold text-[hsl(var(--admin-text-main))] leading-tight">
-                                            {cat.label}
-                                        </p>
-                                        <p className="text-[11px] text-[hsl(var(--admin-text-muted))] leading-tight mt-0.5 line-clamp-1">
-                                            {cat.description}
-                                        </p>
+                                        <p className="text-[13px] font-semibold text-[hsl(var(--admin-text-main))] leading-tight">{cat.label}</p>
+                                        <p className="text-[11px] text-[hsl(var(--admin-text-muted))] leading-tight mt-0.5 line-clamp-1">{cat.description}</p>
                                     </div>
                                 </button>
                             ))}
                         </div>
                     </div>
 
-                    {/* Staff shortcut: Safeguarding Queue */}
+                    {/* Staff shortcut */}
                     {isStaff && (
                         <div className="px-4 pb-3">
                             <button
+                                type="button"
                                 onClick={() => {
                                     onClose();
                                     router.push(`${basePath}${STAFF_SHORTCUT.href}`);
                                 }}
-                                className="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-[hsl(var(--admin-surface))] hover:bg-[hsl(var(--admin-surface-alt))] transition-colors ios-shadow"
+                                className="w-full flex items-center gap-3 p-3 rounded-2xl bg-[hsl(var(--admin-surface))] hover:bg-[hsl(var(--admin-surface-alt))] transition-colors ios-shadow"
                             >
                                 <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center flex-shrink-0">
-                                    <span className="material-symbols-outlined text-xl text-purple-600 dark:text-purple-400">
-                                        {STAFF_SHORTCUT.icon}
-                                    </span>
+                                    <span className="material-symbols-outlined text-xl text-purple-600 dark:text-purple-400">{STAFF_SHORTCUT.icon}</span>
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="text-[13px] font-semibold text-[hsl(var(--admin-text-main))]">{STAFF_SHORTCUT.label}</p>
@@ -236,16 +226,13 @@ export function ReportsHubSheet({
                         </div>
                     )}
 
-                    {/* Divider */}
                     <div className="h-[0.5px] bg-[hsl(var(--admin-border)/0.5)] mx-4" />
 
                     {/* Recent reports */}
                     <div className="p-4">
-                        <div className="flex items-center justify-between mb-3">
-                            <h3 className="text-[11px] font-semibold text-[hsl(var(--admin-text-muted))] uppercase tracking-wider">
-                                Your Recent Reports
-                            </h3>
-                        </div>
+                        <h3 className="text-[11px] font-semibold text-[hsl(var(--admin-text-muted))] uppercase tracking-wider mb-3">
+                            Your Recent Reports
+                        </h3>
 
                         {/* Filter chips */}
                         <div className="flex gap-1.5 mb-3 overflow-x-auto scrollbar-hide">
@@ -256,6 +243,7 @@ export function ReportsHubSheet({
                                 { key: 'closed' as const, label: 'Closed' },
                             ]).map(({ key, label }) => (
                                 <button
+                                    type="button"
                                     key={key}
                                     onClick={() => setFilter(key)}
                                     className={`px-3 py-1.5 rounded-full text-[12px] font-medium whitespace-nowrap transition-colors ${
@@ -269,13 +257,13 @@ export function ReportsHubSheet({
                             ))}
                         </div>
 
-                        {/* Report list */}
                         {filteredRecent.length > 0 ? (
                             <div className="space-y-1.5">
                                 {filteredRecent.map((report) => {
                                     const status = STATUS_STYLES[report.status];
                                     return (
                                         <button
+                                            type="button"
                                             key={report.id}
                                             onClick={() => {
                                                 onClose();
@@ -284,18 +272,12 @@ export function ReportsHubSheet({
                                             className="w-full flex items-center gap-3 p-3 rounded-xl bg-[hsl(var(--admin-surface))] hover:bg-[hsl(var(--admin-surface-alt))] transition-colors text-left"
                                         >
                                             <div className="w-9 h-9 rounded-lg bg-[hsl(var(--admin-surface-alt))] flex items-center justify-center flex-shrink-0">
-                                                <span className="material-symbols-outlined text-lg text-[hsl(var(--admin-text-muted))]">
-                                                    {report.icon}
-                                                </span>
+                                                <span className="material-symbols-outlined text-lg text-[hsl(var(--admin-text-muted))]">{report.icon}</span>
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-[13px] font-medium text-[hsl(var(--admin-text-main))] truncate">
-                                                    {report.title}
-                                                </p>
+                                                <p className="text-[13px] font-medium text-[hsl(var(--admin-text-main))] truncate">{report.title}</p>
                                                 <div className="flex items-center gap-2 mt-0.5">
-                                                    <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium ${status.bg} ${status.text}`}>
-                                                        {status.label}
-                                                    </span>
+                                                    <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium ${status.bg} ${status.text}`}>{status.label}</span>
                                                     <span className="text-[11px] text-[hsl(var(--admin-text-muted))]">{report.time}</span>
                                                 </div>
                                             </div>
@@ -307,14 +289,13 @@ export function ReportsHubSheet({
                         ) : (
                             <div className="text-center py-8">
                                 <div className="w-12 h-12 rounded-full bg-[hsl(var(--admin-surface-alt))] flex items-center justify-center mx-auto mb-2">
-                                    <span className="material-symbols-outlined text-[24px] text-[hsl(var(--admin-text-muted))]">description</span>
+                                    <span className="material-symbols-outlined text-[24px] text-[hsl(var(--admin-text-muted))]">fact_check</span>
                                 </div>
                                 <p className="text-[13px] text-[hsl(var(--admin-text-muted))]">No reports matching this filter</p>
                             </div>
                         )}
                     </div>
 
-                    {/* Footer */}
                     <div className="text-center px-4 pb-4">
                         <p className="text-[11px] text-[hsl(var(--admin-text-muted))]">
                             All reports are confidential and reviewed by {tenantName} staff.

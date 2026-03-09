@@ -401,6 +401,11 @@
   @apply bg-[hsl(var(--admin-surface))] rounded-[20px] p-5 ios-shadow;
 }
 
+/* Safe area top padding for takeover screens */
+.safe-area-top {
+  padding-top: max(12px, env(safe-area-inset-top, 12px));
+}
+
 /* Universal content padding (responsive) */
 .app-content-padding {
   padding: 16px;

@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import { X } from 'lucide-react';
 
 interface EmergencySheetProps {
     isOpen: boolean;
@@ -10,11 +9,9 @@ interface EmergencySheetProps {
 }
 
 /**
- * Emergency takeover screen — accessible from header shield icon.
- * Mobile: fullwidth edge-to-edge.
- * Tablet/Desktop: centered panel within Admin container width.
- *
- * Calm, reassuring UI. Red only for urgent elements.
+ * Emergency takeover screen.
+ * Mobile: fullwidth. Tablet/Desktop: centered panel.
+ * Single close icon (X) — no duplicate back/X.
  */
 export function EmergencySheet({
     isOpen,
@@ -54,31 +51,25 @@ export function EmergencySheet({
                     md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2
                     md:w-[min(480px,calc(100vw-48px))] md:h-[min(75vh,640px)]
                     md:rounded-2xl md:shadow-2xl md:overflow-hidden
-                    animate-in slide-in-from-bottom duration-300 md:fade-in md:zoom-in-95
+                    animate-in slide-in-from-bottom duration-300
                 "
                 role="dialog"
                 aria-modal="true"
                 aria-label="Emergency"
             >
-                {/* Header */}
-                <div
-                    className="flex items-center gap-3 px-4 py-3 border-b border-[hsl(var(--admin-border)/0.5)] bg-[hsl(var(--admin-background))] flex-shrink-0"
-                    style={{ paddingTop: 'max(12px, env(safe-area-inset-top, 12px))' }}
-                >
+                {/* Header — single X close button */}
+                <div className="flex items-center gap-3 px-4 py-3 border-b border-[hsl(var(--admin-border)/0.5)] bg-[hsl(var(--admin-background))] flex-shrink-0 safe-area-top">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="w-10 h-10 flex items-center justify-center rounded-full text-[hsl(var(--admin-text-sub))] hover:bg-[hsl(var(--admin-surface-alt))] transition-colors active:scale-[0.92] flex-shrink-0"
+                        className="w-9 h-9 flex items-center justify-center rounded-full text-[hsl(var(--admin-text-sub))] hover:bg-[hsl(var(--admin-surface-alt))] transition-colors active:scale-[0.92] flex-shrink-0"
                         aria-label="Close"
                     >
-                        <span className="material-symbols-outlined text-[22px] md:hidden">arrow_back</span>
-                        <X size={20} className="hidden md:block" />
+                        <span className="material-symbols-outlined text-[22px]">close</span>
                     </button>
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                         <span className="material-symbols-outlined text-xl text-red-600 dark:text-red-400">shield</span>
-                        <h2 className="text-[17px] font-semibold text-[hsl(var(--admin-text-main))] truncate">
-                            Emergency
-                        </h2>
+                        <h2 className="text-[17px] font-semibold text-[hsl(var(--admin-text-main))] truncate">Emergency</h2>
                     </div>
                 </div>
 
@@ -116,7 +107,6 @@ export function EmergencySheet({
                             </button>
                         </div>
 
-                        {/* Report emergency button */}
                         <button
                             type="button"
                             className="w-full mt-3 flex items-center justify-center gap-2 p-3.5 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-semibold text-[14px] transition-colors active:scale-[0.97]"
@@ -175,7 +165,7 @@ export function EmergencySheet({
                         </button>
                     </div>
 
-                    {/* Footer hint */}
+                    {/* Footer */}
                     <div className="text-center pb-2">
                         <p className="text-[11px] text-[hsl(var(--admin-text-muted))] leading-relaxed">
                             Emergency contacts and medical info are managed by {tenantName} administrators.
