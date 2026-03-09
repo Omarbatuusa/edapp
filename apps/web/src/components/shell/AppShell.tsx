@@ -9,6 +9,7 @@ import { AppFooter } from './AppFooter';
 import { SubpageBar } from './SubpageBar';
 import { ProfileSheet } from './ProfileSheet';
 import { EmergencySheet } from './EmergencySheet';
+import { ReportsHubSheet } from './ReportsHubSheet';
 import { useSubpageDetection } from '@/hooks/useSubpageDetection';
 import { NotificationPanel } from '@/components/dashboard/NotificationPanel';
 import { SearchSheet } from '@/components/dashboard/SearchSheet';
@@ -83,6 +84,7 @@ export function AppShell({
     const [searchSheetOpen, setSearchSheetOpen] = useState(false);
     const [scopeSelectorOpen, setScopeSelectorOpen] = useState(false);
     const [emergencySheetOpen, setEmergencySheetOpen] = useState(false);
+    const [reportsHubOpen, setReportsHubOpen] = useState(false);
 
     // Subpage detection + chrome flag
     const { isSubpage, isFullscreen, chrome } = useSubpageDetection(navConfig.bottomTabs, basePath);
@@ -157,6 +159,7 @@ export function AppShell({
                             onScopeClick={() => setScopeSelectorOpen(true)}
                             showScopeChip={showScopeChip}
                             onTenantNameClick={() => setScopeSelectorOpen(true)}
+                            onReportsClick={() => setReportsHubOpen(true)}
                         />
                     )}
                     <div className="admin-body">
@@ -223,6 +226,18 @@ export function AppShell({
                 isOpen={emergencySheetOpen}
                 onClose={() => setEmergencySheetOpen(false)}
                 tenantName={tenantName}
+            />
+            <ReportsHubSheet
+                isOpen={reportsHubOpen}
+                onClose={() => setReportsHubOpen(false)}
+                tenantSlug={tenantSlug}
+                role={role}
+                basePath={basePath}
+                tenantName={tenantName}
+                onOpenEmergency={() => {
+                    setReportsHubOpen(false);
+                    setEmergencySheetOpen(true);
+                }}
             />
         </EmergencyProvider>
     );
