@@ -101,6 +101,15 @@ import { AcademicCalendarDay } from './entities/academic-calendar-day.entity';
 import { ParentChildLink } from '../communication/parent-child-link.entity';
 import { SchoolClass } from '../attendance/entities/class.entity';
 
+// Incident + Emergency entities
+import { Incident } from './entities/incident.entity';
+import { EmergencyAlert } from './entities/emergency-alert.entity';
+import { EmergencyAcknowledgement } from './entities/emergency-acknowledgement.entity';
+import { EmergencyRollCall } from './entities/emergency-roll-call.entity';
+import { EmergencyTask } from './entities/emergency-task.entity';
+import { AdminIncidentsController } from './controllers/admin-incidents.controller';
+import { AdminEmergenciesController } from './controllers/admin-emergencies.controller';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -181,6 +190,11 @@ import { SchoolClass } from '../attendance/entities/class.entity';
       ParentChildLink,
       SchoolClass,
       AcademicCalendarDay,
+      Incident,
+      EmergencyAlert,
+      EmergencyAcknowledgement,
+      EmergencyRollCall,
+      EmergencyTask,
     ]),
     AuthModule,
   ],
@@ -201,6 +215,8 @@ import { SchoolClass } from '../attendance/entities/class.entity';
     AdminEmergencyContactsController,
     AdminFamiliesController,
     AdminCalendarController,
+    AdminIncidentsController,
+    AdminEmergenciesController,
   ],
 })
 export class AdminPlatformModule {}

@@ -128,7 +128,7 @@ export function AppHeader({
                 </div>
 
                 {/* Right: Desktop full icon cluster | Mobile: Bell + Emergency only */}
-                <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
+                <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                     {/* Search — desktop only in Row 1 */}
                     {onSearch && (
                         <button
@@ -166,10 +166,10 @@ export function AppHeader({
                     {onNotificationClick && (
                         <button
                             onClick={onNotificationClick}
-                            className="relative w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-[hsl(var(--admin-surface-alt))] text-[hsl(var(--admin-text-main))] hover:bg-[hsl(var(--admin-border))] transition-colors"
+                            className="relative w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center rounded-full bg-[hsl(var(--admin-surface-alt))] text-[hsl(var(--admin-text-main))] hover:bg-[hsl(var(--admin-border))] transition-colors"
                             aria-label="Notifications"
                         >
-                            <span className="material-symbols-outlined text-[20px] sm:text-[22px]">notifications</span>
+                            <span className="material-symbols-outlined text-[22px] sm:text-[24px]">notifications</span>
                             {notificationsCount > 0 && (
                                 <span className="absolute top-0 right-0 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center border-2 border-[hsl(var(--admin-background))]">
                                     {notificationsCount > 9 ? '9+' : notificationsCount}
@@ -182,10 +182,10 @@ export function AppHeader({
                     {onEmergency && (
                         <button
                             onClick={onEmergency}
-                            className="flex lg:hidden w-9 h-9 sm:w-10 sm:h-10 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                            className="flex lg:hidden w-10 h-10 sm:w-11 sm:h-11 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
                             aria-label="Emergency"
                         >
-                            <span className="material-symbols-outlined text-[20px] sm:text-[22px]">shield</span>
+                            <span className="material-symbols-outlined text-[22px] sm:text-[24px]">shield</span>
                         </button>
                     )}
 
@@ -193,7 +193,7 @@ export function AppHeader({
                     {onAvatarClick && (
                         <button
                             onClick={onAvatarClick}
-                            className="hidden lg:flex w-10 h-10 rounded-full overflow-hidden bg-[hsl(var(--admin-surface-alt))] border-2 border-[hsl(var(--admin-border)/0.5)] hover:border-[hsl(var(--admin-primary)/0.4)] transition-all items-center justify-center flex-shrink-0"
+                            className="hidden lg:flex w-11 h-11 rounded-full overflow-hidden bg-[hsl(var(--admin-surface-alt))] border-2 border-[hsl(var(--admin-border)/0.5)] hover:border-[hsl(var(--admin-primary)/0.4)] transition-all items-center justify-center flex-shrink-0"
                             aria-label="Account"
                         >
                             {user?.photoURL ? (
@@ -209,16 +209,16 @@ export function AppHeader({
             </div>
 
             {/* ═══ Row 2: Reports | Search pill | Avatar (mobile/tablet only) ═══ */}
-            <div className="flex items-center gap-2 mt-2 lg:hidden">
+            <div className="flex items-center gap-2.5 mt-2.5 lg:hidden">
                 {/* Left: Reports icon */}
                 {onReportsClick && (
                     <button
                         type="button"
                         onClick={onReportsClick}
-                        className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-[hsl(var(--admin-surface-alt))] text-[hsl(var(--admin-text-main))] hover:bg-[hsl(var(--admin-border))] transition-colors flex-shrink-0"
+                        className="w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center rounded-full bg-[hsl(var(--admin-surface-alt))] text-[hsl(var(--admin-text-main))] hover:bg-[hsl(var(--admin-border))] transition-colors flex-shrink-0"
                         aria-label="Reports"
                     >
-                        <span className="material-symbols-outlined text-[20px] sm:text-[22px]">summarize</span>
+                        <span className="material-symbols-outlined text-[22px] sm:text-[24px]">summarize</span>
                     </button>
                 )}
 
@@ -227,10 +227,10 @@ export function AppHeader({
                     <button
                         type="button"
                         onClick={onSearch}
-                        className="flex-1 max-w-[320px] mx-auto flex items-center gap-2 px-3.5 py-2 rounded-full bg-[hsl(var(--admin-surface-alt))] hover:bg-[hsl(var(--admin-border))] transition-colors"
+                        className="flex-1 max-w-[320px] mx-auto flex items-center gap-2 px-4 py-2.5 rounded-full bg-[hsl(var(--admin-surface-alt))] hover:bg-[hsl(var(--admin-border))] transition-colors"
                         aria-label="Search"
                     >
-                        <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-text-muted))]">search</span>
+                        <span className="material-symbols-outlined text-[20px] text-[hsl(var(--admin-text-muted))]">search</span>
                         <span className="text-[13px] text-[hsl(var(--admin-text-muted))] font-medium">Search</span>
                     </button>
                 )}
@@ -240,7 +240,7 @@ export function AppHeader({
                     <button
                         type="button"
                         onClick={onAvatarClick}
-                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden bg-[hsl(var(--admin-surface-alt))] border-2 border-[hsl(var(--admin-border)/0.5)] hover:border-[hsl(var(--admin-primary)/0.4)] transition-all flex items-center justify-center flex-shrink-0"
+                        className="w-10 h-10 sm:w-11 sm:h-11 rounded-full overflow-hidden bg-[hsl(var(--admin-surface-alt))] border-2 border-[hsl(var(--admin-border)/0.5)] hover:border-[hsl(var(--admin-primary)/0.4)] transition-all flex items-center justify-center flex-shrink-0"
                         aria-label="Account"
                     >
                         {user?.photoURL ? (

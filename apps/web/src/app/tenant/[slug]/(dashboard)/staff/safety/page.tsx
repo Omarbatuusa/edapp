@@ -1,13 +1,8 @@
 'use client';
+import { use } from 'react';
+import { SafeguardingInbox } from '@/components/safety/SafeguardingInbox';
 
-export default function SafetyPage() {
-    return (
-        <div className="app-content-padding space-y-6">
-            <div className="ios-card text-center py-16">
-                <span className="material-symbols-outlined text-5xl text-[hsl(var(--admin-text-muted))] mb-4 block">shield</span>
-                <h1 className="text-2xl font-bold text-[hsl(var(--admin-text-main))] mb-2">Safety</h1>
-                <p className="text-[15px] text-[hsl(var(--admin-text-sub))]">This feature is coming soon.</p>
-            </div>
-        </div>
-    );
+export default function StaffSafetyPage({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = use(params);
+    return <SafeguardingInbox tenantSlug={slug} tenantId={slug} basePath={`/tenant/${slug}/staff`} />;
 }

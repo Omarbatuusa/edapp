@@ -113,6 +113,11 @@ import { KioskDevice } from './attendance/entities/kiosk-device.entity';
 import { EarlyLeaveRequest } from './attendance/entities/early-leave-request.entity';
 import { ClassRegister } from './attendance/entities/class-register.entity';
 import { SchoolClass } from './attendance/entities/class.entity';
+import { Incident } from './admin/entities/incident.entity';
+import { EmergencyAlert } from './admin/entities/emergency-alert.entity';
+import { EmergencyAcknowledgement } from './admin/entities/emergency-acknowledgement.entity';
+import { EmergencyRollCall } from './admin/entities/emergency-roll-call.entity';
+import { EmergencyTask } from './admin/entities/emergency-task.entity';
 
 // Modules
 import { BrandsModule } from './brands/brands.module';
@@ -265,6 +270,11 @@ import { ScheduleModule } from '@nestjs/schedule';
           EarlyLeaveRequest,
           ClassRegister,
           SchoolClass,
+          Incident,
+          EmergencyAlert,
+          EmergencyAcknowledgement,
+          EmergencyRollCall,
+          EmergencyTask,
         ],
         autoLoadEntities: true,
         synchronize: true, // DEV only, set to false in prod

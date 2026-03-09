@@ -21,7 +21,7 @@ const CATEGORIES = [
         label: 'Incidents',
         description: 'Report or view incidents',
         color: 'amber',
-        href: '/incidents',
+        href: '/safety/new?category=SAFETY_CONCERN',
     },
     {
         id: 'bullying',
@@ -29,7 +29,7 @@ const CATEGORIES = [
         label: 'Bullying',
         description: 'Report bullying or harassment',
         color: 'red',
-        href: '/safety',
+        href: '/safety/new?category=BULLYING',
     },
     {
         id: 'emergency',
@@ -45,7 +45,7 @@ const CATEGORIES = [
         label: 'Silent Help',
         description: 'Discreet request for support',
         color: 'purple',
-        href: '/safety',
+        href: '/safety/new?category=CHILD_PROTECTION',
         learnerOnly: true,
     },
 ];
@@ -172,9 +172,9 @@ export function ReportsHubSheet({
                                     onClick={() => handleCategoryClick(cat)}
                                     className={`flex flex-col items-center gap-2.5 p-4 rounded-2xl ${colors.bg} ${colors.hoverBg} transition-colors active:scale-[0.97]`}
                                 >
-                                    <div className="w-12 h-12 rounded-full bg-white/80 dark:bg-white/10 flex items-center justify-center">
+                                    <div className="w-14 h-14 rounded-full bg-white/80 dark:bg-white/10 flex items-center justify-center">
                                         <span
-                                            className={`material-symbols-outlined text-2xl ${colors.icon}`}
+                                            className={`material-symbols-outlined text-3xl ${colors.icon}`}
                                         >
                                             {cat.icon}
                                         </span>
