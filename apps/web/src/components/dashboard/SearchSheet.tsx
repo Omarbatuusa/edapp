@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { X, ArrowLeft, Clock, Trash2 } from 'lucide-react';
+import { X } from 'lucide-react';
 import {
     SearchScope,
     SearchResult,
@@ -21,6 +21,11 @@ interface SearchSheetProps {
     currentRole?: string;
 }
 
+/**
+ * Search takeover screen.
+ * Mobile: fullwidth edge-to-edge.
+ * Tablet/Desktop: centered panel within Admin container width.
+ */
 export function SearchSheet({
     isOpen,
     onClose,
@@ -35,35 +40,30 @@ export function SearchSheet({
     const [results, setResults] = useState<SearchResult[]>([]);
     const [isSearching, setIsSearching] = useState(false);
 
-    // Get scopes for current role
     const scopes = getSearchScopesForRole(currentRole);
 
-    // Set default scope on mount
     useEffect(() => {
         if (scopes.length > 0 && !activeScope) {
             setActiveScope(scopes[0].id);
         }
     }, [scopes, activeScope]);
 
-    // Load recent searches
     useEffect(() => {
         if (isOpen) {
             setRecentSearches(getRecentSearches(tenantSlug));
         }
     }, [isOpen, tenantSlug]);
 
-    // Auto-focus input when opened
     useEffect(() => {
         if (isOpen) {
-            // Small delay for animation
-            const timer = setTimeout(() => {
-                inputRef.current?.focus();
-            }, 100);
+            const timer = setTimeout(() => inputRef.current?.focus(), 150);
             return () => clearTimeout(timer);
+        } else {
+            setQuery('');
+            setResults([]);
         }
     }, [isOpen]);
 
-    // Close on escape key
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onClose();
@@ -78,32 +78,26 @@ export function SearchSheet({
         };
     }, [isOpen, onClose]);
 
-    // Search handler with debounce
     useEffect(() => {
         if (!query.trim()) {
             setResults([]);
             return;
         }
-
         setIsSearching(true);
         const timer = setTimeout(() => {
             const searchResults = searchMock(query, activeScope);
             setResults(searchResults);
             setIsSearching(false);
         }, 200);
-
         return () => clearTimeout(timer);
     }, [query, activeScope]);
 
-    // Handle search submit
     const handleSearch = useCallback(() => {
         if (!query.trim()) return;
         addRecentSearch(tenantSlug, query, activeScope);
         setRecentSearches(getRecentSearches(tenantSlug));
-        // In a real app, this would navigate to search results page
     }, [query, activeScope, tenantSlug]);
 
-    // Handle result click
     const handleResultClick = (result: SearchResult) => {
         addRecentSearch(tenantSlug, query, activeScope);
         onClose();
@@ -112,50 +106,57 @@ export function SearchSheet({
         }
     };
 
-    // Handle recent search click
     const handleRecentClick = (recent: RecentSearch) => {
         setQuery(recent.query);
         setActiveScope(recent.scope);
     };
 
-    // Clear recent searches
     const handleClearRecent = () => {
         clearRecentSearches(tenantSlug);
         setRecentSearches([]);
     };
 
-    // Get current scope info
     const currentScope = scopes.find(s => s.id === activeScope) || scopes[0];
 
     if (!isOpen) return null;
 
     return (
         <>
-            {/* Backdrop */}
+            {/* Backdrop — tablet/desktop only */}
             <div
-                className="fixed inset-0 bg-black/60 z-50 backdrop-blur-sm animate-in fade-in duration-200"
+                className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden md:block"
                 onClick={onClose}
                 aria-hidden="true"
             />
 
-            {/* Search Sheet */}
+            {/* Search panel */}
             <div
-                className="fixed inset-0 z-50 bg-background animate-in slide-in-from-bottom duration-300 md:inset-4 md:rounded-2xl md:shadow-2xl overflow-hidden flex flex-col"
+                className="
+                    fixed inset-0 z-50 flex flex-col
+                    bg-[hsl(var(--admin-background))]
+                    md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2
+                    md:w-[min(600px,calc(100vw-48px))] md:h-[min(80vh,720px)]
+                    md:rounded-2xl md:shadow-2xl md:overflow-hidden
+                    animate-in slide-in-from-bottom duration-300 md:fade-in md:zoom-in-95
+                "
                 role="dialog"
                 aria-modal="true"
                 aria-label="Search"
             >
-                {/* Header */}
-                <div className="flex items-center gap-3 p-4 border-b border-border/50 bg-background/95 backdrop-blur-xl">
+                {/* Search header */}
+                <div
+                    className="flex items-center gap-3 px-4 py-3 border-b border-[hsl(var(--admin-border)/0.5)] bg-[hsl(var(--admin-background))] flex-shrink-0"
+                    style={{ paddingTop: 'max(12px, env(safe-area-inset-top, 12px))' }}
+                >
                     <button
                         onClick={onClose}
-                        className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-secondary/60 transition-colors shrink-0"
+                        className="w-10 h-10 flex items-center justify-center rounded-full text-[hsl(var(--admin-text-sub))] hover:bg-[hsl(var(--admin-surface-alt))] transition-colors active:scale-[0.92] flex-shrink-0"
                         aria-label="Close search"
                     >
-                        <ArrowLeft size={22} />
+                        <span className="material-symbols-outlined text-[22px] md:hidden">arrow_back</span>
+                        <X size={20} className="hidden md:block" />
                     </button>
 
-                    {/* Search Input */}
                     <div className="flex-1 relative">
                         <input
                             ref={inputRef}
@@ -164,115 +165,113 @@ export function SearchSheet({
                             onChange={(e) => setQuery(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                             placeholder={currentScope?.placeholder || 'Search...'}
-                            className="w-full h-11 pl-4 pr-10 rounded-xl bg-secondary/50 border border-border/50 text-base placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
+                            className="w-full h-11 pl-4 pr-10 rounded-xl bg-[hsl(var(--admin-surface-alt))] border border-[hsl(var(--admin-border)/0.5)] text-[15px] text-[hsl(var(--admin-text-main))] placeholder:text-[hsl(var(--admin-text-muted))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--admin-primary)/0.4)] transition-all"
                         />
                         {query && (
                             <button
                                 onClick={() => setQuery('')}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-secondary hover:bg-secondary/80 flex items-center justify-center transition-colors"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[hsl(var(--admin-surface-alt))] hover:bg-[hsl(var(--admin-border))] flex items-center justify-center transition-colors"
                             >
-                                <X size={14} />
+                                <X size={14} className="text-[hsl(var(--admin-text-muted))]" />
                             </button>
                         )}
                     </div>
                 </div>
 
-                {/* Scope Tabs */}
-                <div className="flex gap-2 px-4 py-3 border-b border-border/30 overflow-x-auto scrollbar-hide">
+                {/* Scope tabs */}
+                <div className="flex gap-1.5 px-4 py-2.5 border-b border-[hsl(var(--admin-border)/0.3)] overflow-x-auto scrollbar-hide flex-shrink-0">
                     {scopes.map((scope) => (
                         <button
                             key={scope.id}
                             onClick={() => setActiveScope(scope.id)}
                             className={`
-                                flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap shrink-0
+                                flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-medium transition-all whitespace-nowrap shrink-0
                                 ${activeScope === scope.id
-                                    ? 'bg-primary text-white shadow-sm'
-                                    : 'bg-secondary/50 text-muted-foreground hover:text-foreground hover:bg-secondary'
+                                    ? 'bg-[hsl(var(--admin-primary))] text-white'
+                                    : 'bg-[hsl(var(--admin-surface-alt))] text-[hsl(var(--admin-text-muted))] hover:text-[hsl(var(--admin-text-main))] hover:bg-[hsl(var(--admin-border))]'
                                 }
                             `}
                         >
-                            <span className="material-symbols-outlined text-base">{scope.icon}</span>
+                            <span className="material-symbols-outlined text-[15px]">{scope.icon}</span>
                             {scope.label}
                         </button>
                     ))}
                 </div>
 
-                {/* Content Area */}
+                {/* Content */}
                 <div className="flex-1 overflow-y-auto">
-                    {/* Loading State */}
+                    {/* Loading */}
                     {isSearching && (
                         <div className="flex items-center justify-center py-12">
-                            <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                            <div className="w-6 h-6 border-2 border-[hsl(var(--admin-primary)/0.3)] border-t-[hsl(var(--admin-primary))] rounded-full animate-spin" />
                         </div>
                     )}
 
                     {/* Results */}
                     {!isSearching && query && results.length > 0 && (
-                        <div className="divide-y divide-border/30">
+                        <div className="divide-y divide-[hsl(var(--admin-border)/0.3)]">
                             {results.map((result) => (
                                 <button
                                     key={result.id}
                                     onClick={() => handleResultClick(result)}
-                                    className="w-full flex items-center gap-3 p-4 text-left hover:bg-secondary/30 transition-colors"
+                                    className="w-full flex items-center gap-3 p-4 text-left hover:bg-[hsl(var(--admin-surface-alt)/0.5)] transition-colors"
                                 >
-                                    <div className="w-10 h-10 rounded-xl bg-secondary/80 flex items-center justify-center shrink-0">
-                                        <span className="material-symbols-outlined text-xl text-muted-foreground">
+                                    <div className="w-10 h-10 rounded-xl bg-[hsl(var(--admin-surface-alt))] flex items-center justify-center shrink-0">
+                                        <span className="material-symbols-outlined text-xl text-[hsl(var(--admin-text-muted))]">
                                             {result.icon}
                                         </span>
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <h4 className="text-sm font-medium truncate">{result.title}</h4>
+                                        <h4 className="text-[14px] font-medium text-[hsl(var(--admin-text-main))] truncate">{result.title}</h4>
                                         {result.subtitle && (
-                                            <p className="text-xs text-muted-foreground truncate">
+                                            <p className="text-[12px] text-[hsl(var(--admin-text-muted))] truncate">
                                                 {result.subtitle}
                                             </p>
                                         )}
                                     </div>
+                                    <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-text-muted))]">chevron_right</span>
                                 </button>
                             ))}
                         </div>
                     )}
 
-                    {/* No Results */}
+                    {/* No results */}
                     {!isSearching && query && results.length === 0 && (
                         <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-                            <div className="w-16 h-16 rounded-full bg-secondary/50 flex items-center justify-center mb-4">
-                                <span className="material-symbols-outlined text-3xl text-muted-foreground">
-                                    search_off
-                                </span>
+                            <div className="w-14 h-14 rounded-full bg-[hsl(var(--admin-surface-alt))] flex items-center justify-center mb-3">
+                                <span className="material-symbols-outlined text-[28px] text-[hsl(var(--admin-text-muted))]">search_off</span>
                             </div>
-                            <h3 className="font-medium text-foreground mb-1">No results found</h3>
-                            <p className="text-sm text-muted-foreground">
+                            <h3 className="text-[15px] font-medium text-[hsl(var(--admin-text-main))] mb-1">No results found</h3>
+                            <p className="text-[13px] text-[hsl(var(--admin-text-muted))]">
                                 Try a different search term or category
                             </p>
                         </div>
                     )}
 
-                    {/* Recent Searches (when no query) */}
+                    {/* Recent searches */}
                     {!query && recentSearches.length > 0 && (
                         <div className="p-4">
                             <div className="flex items-center justify-between mb-3">
-                                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                <h4 className="text-[11px] font-semibold text-[hsl(var(--admin-text-muted))] uppercase tracking-wider">
                                     Recent Searches
                                 </h4>
                                 <button
                                     onClick={handleClearRecent}
-                                    className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+                                    className="text-[12px] text-[hsl(var(--admin-primary))] font-medium hover:underline"
                                 >
-                                    <Trash2 size={12} />
                                     Clear
                                 </button>
                             </div>
-                            <div className="space-y-1">
+                            <div className="space-y-0.5">
                                 {recentSearches.map((recent, idx) => (
                                     <button
                                         key={idx}
                                         onClick={() => handleRecentClick(recent)}
-                                        className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/50 transition-colors text-left"
+                                        className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-[hsl(var(--admin-surface-alt)/0.5)] transition-colors text-left"
                                     >
-                                        <Clock size={16} className="text-muted-foreground shrink-0" />
-                                        <span className="text-sm truncate">{recent.query}</span>
-                                        <span className="text-xs text-muted-foreground ml-auto capitalize shrink-0">
+                                        <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-text-muted))]">history</span>
+                                        <span className="text-[14px] text-[hsl(var(--admin-text-main))] truncate flex-1">{recent.query}</span>
+                                        <span className="text-[11px] text-[hsl(var(--admin-text-muted))] capitalize shrink-0">
                                             {recent.scope}
                                         </span>
                                     </button>
@@ -281,30 +280,28 @@ export function SearchSheet({
                         </div>
                     )}
 
-                    {/* Empty State (no query, no recent) */}
+                    {/* Empty state */}
                     {!query && recentSearches.length === 0 && (
                         <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-                            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                                <span className="material-symbols-outlined text-3xl text-primary">
-                                    search
-                                </span>
+                            <div className="w-14 h-14 rounded-full bg-[hsl(var(--admin-primary)/0.1)] flex items-center justify-center mb-3">
+                                <span className="material-symbols-outlined text-[28px] text-[hsl(var(--admin-primary))]">search</span>
                             </div>
-                            <h3 className="font-medium text-foreground mb-1">Search EdApp</h3>
-                            <p className="text-sm text-muted-foreground max-w-xs">
+                            <h3 className="text-[15px] font-medium text-[hsl(var(--admin-text-main))] mb-1">Search EdApp</h3>
+                            <p className="text-[13px] text-[hsl(var(--admin-text-muted))] max-w-[260px]">
                                 Find {currentScope?.label.toLowerCase()}, announcements, events, and more
                             </p>
                         </div>
                     )}
                 </div>
 
-                {/* Footer Hint */}
-                <div className="hidden md:flex items-center justify-center gap-4 p-3 border-t border-border/30 bg-secondary/20 text-xs text-muted-foreground">
+                {/* Desktop footer hint */}
+                <div className="hidden md:flex items-center justify-center gap-4 p-3 border-t border-[hsl(var(--admin-border)/0.3)] bg-[hsl(var(--admin-surface-alt)/0.3)] text-[11px] text-[hsl(var(--admin-text-muted))] flex-shrink-0">
                     <span className="flex items-center gap-1.5">
-                        <kbd className="px-1.5 py-0.5 rounded bg-secondary border border-border text-[10px] font-mono">↵</kbd>
+                        <kbd className="px-1.5 py-0.5 rounded bg-[hsl(var(--admin-surface))] border border-[hsl(var(--admin-border))] text-[10px] font-mono">Enter</kbd>
                         to search
                     </span>
                     <span className="flex items-center gap-1.5">
-                        <kbd className="px-1.5 py-0.5 rounded bg-secondary border border-border text-[10px] font-mono">esc</kbd>
+                        <kbd className="px-1.5 py-0.5 rounded bg-[hsl(var(--admin-surface))] border border-[hsl(var(--admin-border))] text-[10px] font-mono">Esc</kbd>
                         to close
                     </span>
                 </div>

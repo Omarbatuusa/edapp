@@ -277,7 +277,7 @@
   }
 }
 
-/* Admin header */
+/* Admin header — 2-line collapsing on mobile */
 .admin-header {
   position: sticky;
   top: 0;
@@ -287,15 +287,22 @@
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   border-bottom: 0.5px solid transparent;
-  padding: max(20px, env(safe-area-inset-top, 20px)) 20px 14px 20px;
+  padding: max(16px, env(safe-area-inset-top, 16px)) 16px 10px 16px;
   flex-shrink: 0;
-  transition: background-color 0.2s ease, border-bottom-color 0.2s ease, box-shadow 0.2s ease;
+  transition: background-color 0.2s ease, border-bottom-color 0.2s ease, box-shadow 0.2s ease, padding 0.2s ease;
+}
+
+@media (min-width: 641px) {
+  .admin-header {
+    padding: max(16px, env(safe-area-inset-top, 16px)) 20px 12px 20px;
+  }
 }
 
 .admin-header.is-scrolled {
   background-color: hsl(var(--admin-surface));
   border-bottom-color: hsl(var(--admin-border));
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  padding-bottom: 10px;
 }
 
 /* Admin body — flex row for rail + content */
