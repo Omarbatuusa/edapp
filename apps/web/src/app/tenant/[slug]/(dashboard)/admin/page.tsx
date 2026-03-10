@@ -4,6 +4,7 @@ import { use, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Users, TrendingUp, AlertTriangle, Calendar, ArrowRight, Search, CheckCircle, UserX, Clock } from 'lucide-react';
 import { apiClient } from '../../../../../lib/api-client';
+import { SafetyQuickAccess } from '@/components/dashboard/SafetyQuickAccess';
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -134,6 +135,9 @@ export default function AdminDashboard({ params }: Props) {
                     <NavCard href={`/tenant/${slug}/admin/people`} label="People & Roles" description="Manage branch staff and roles" icon="group" color="teal" />
                 </NavSection>
             )}
+
+            {/* Safety & Reports quick access */}
+            <SafetyQuickAccess />
 
             {/* Stats Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">

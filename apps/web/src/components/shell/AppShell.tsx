@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { AppHeader } from './AppHeader';
 import { AppBottomNav } from './AppBottomNav';
@@ -15,6 +15,7 @@ import { NotificationPanel } from '@/components/dashboard/NotificationPanel';
 import { SearchSheet } from '@/components/dashboard/SearchSheet';
 import { ScopeSelectorSheet } from '@/components/dashboard/ScopeSelectorSheet';
 import { EmergencyProvider } from '@/contexts/EmergencyContext';
+import { ShellActionsProvider } from '@/contexts/ShellActionsContext';
 import { EmergencyBanner } from '@/components/safety/EmergencyBanner';
 import { MOCK_NOTIFICATIONS, countUnread } from '@/lib/notifications';
 import { getHeaderFeatures } from '@/config/navigation';
@@ -32,7 +33,7 @@ interface AppShellProps {
     appVersion?: string;
     /** Scope chip label (e.g. "Midrand Branch", "All campuses") */
     scopeLabel?: string;
-    /** Whether to show the scope chip in header Row 2 */
+    /** Whether to show the scope chip in header */
     showScopeChip?: boolean;
     /** Branches for scope selector */
     branches?: Array<{ id: string; branch_name: string; branch_code: string; is_main_branch: boolean }>;
@@ -50,7 +51,7 @@ interface AppShellProps {
 
 /**
  * Universal AppShell — one shell for ALL 31 roles.
- * Facebook-style 2-row header with scope chip + emergency chip.
+ * Facebook-style header with always-on bg/shadow.
  * Uses chrome flag: "default" | "takeover" | "modal".
  */
 export function AppShell({
@@ -93,6 +94,16 @@ export function AppShell({
     // Notification count
     const notificationsCount = countUnread(MOCK_NOTIFICATIONS);
 
+    // Header feature flags
+    const hf = getHeaderFeatures(role);
+
+    // Shell actions context — lets dashboard pages open overlays
+    const shellActions = useMemo(() => ({
+        openEmergency: () => setEmergencySheetOpen(true),
+        openReportsHub: () => setReportsHubOpen(true),
+        openSearch: () => setSearchSheetOpen(true),
+    }), []);
+
     // Restore sidebar collapse preference
     useEffect(() => {
         const stored = localStorage.getItem('app_sidebar_collapsed');
@@ -127,122 +138,118 @@ export function AppShell({
     if (chrome === 'modal') {
         return (
             <EmergencyProvider>
-                <div className="admin-app-outer">
-                    <div className="admin-app-container">
-                        <main className="admin-main relative flex flex-col flex-1">
-                            {children}
-                        </main>
+                <ShellActionsProvider value={shellActions}>
+                    <div className="admin-app-outer">
+                        <div className="admin-app-container">
+                            <main className="admin-main relative flex flex-col flex-1">
+                                {children}
+                            </main>
+                        </div>
                     </div>
-                </div>
+                </ShellActionsProvider>
             </EmergencyProvider>
         );
     }
 
     return (
         <EmergencyProvider>
-            <div className="admin-app-outer">
-                <div className="admin-app-container">
-                    <EmergencyBanner />
-                    {/* AppHeader on tab roots only (chrome === "default") */}
-                    {chrome === 'default' && (() => {
-                        const hf = getHeaderFeatures(role);
-                        return (
+            <ShellActionsProvider value={shellActions}>
+                <div className="admin-app-outer">
+                    <div className="admin-app-container">
+                        <EmergencyBanner />
+                        {/* AppHeader on tab roots only (chrome === "default") */}
+                        {chrome === 'default' && (
                             <AppHeader
                                 title={tenantName}
                                 logoUrl={tenantLogo}
-                                isScrolled={isScrolled}
                                 onSearch={() => setSearchSheetOpen(true)}
-                                onEmergency={hf.showEmergency ? () => setEmergencySheetOpen(true) : undefined}
                                 onNotificationClick={() => setNotificationPanelOpen(true)}
                                 onAvatarClick={() => setProfileSheetOpen(true)}
                                 notificationsCount={notificationsCount}
                                 user={user}
                                 scopeLabel={scopeLabel}
                                 onScopeClick={hf.showScope && showScopeChip ? () => setScopeSelectorOpen(true) : undefined}
-                                onReportsClick={hf.showReports ? () => setReportsHubOpen(true) : undefined}
-                                showEmergency={hf.showEmergency}
                                 showScope={hf.showScope && showScopeChip}
-                                showReports={hf.showReports}
                             />
-                        );
-                    })()}
-                    <div className="admin-body">
-                        <AppNavRail
-                            items={navConfig.allItems}
-                            basePath={basePath}
-                            isCollapsed={isCollapsed}
-                            onToggleCollapse={toggleCollapse}
-                        />
-                        <main
-                            className="admin-main relative flex flex-col"
-                            ref={mainRef}
-                            onScroll={handleScroll}
-                        >
-                            {/* Subpage takeover: only SubpageBar, no AppHeader */}
-                            {chrome === 'takeover' && <SubpageBar />}
-                            <div className="flex-1">
-                                {children}
-                            </div>
-                            <AppFooter version={appVersion} />
-                        </main>
+                        )}
+                        <div className="admin-body">
+                            <AppNavRail
+                                items={navConfig.allItems}
+                                basePath={basePath}
+                                isCollapsed={isCollapsed}
+                                onToggleCollapse={toggleCollapse}
+                            />
+                            <main
+                                className="admin-main relative flex flex-col"
+                                ref={mainRef}
+                                onScroll={handleScroll}
+                            >
+                                {/* Subpage takeover: only SubpageBar, no AppHeader */}
+                                {chrome === 'takeover' && <SubpageBar />}
+                                <div className="flex-1">
+                                    {children}
+                                </div>
+                                <AppFooter version={appVersion} />
+                            </main>
+                        </div>
+                        {/* Bottom nav only on tab roots */}
+                        {chrome === 'default' && (
+                            <AppBottomNav
+                                items={navConfig.bottomTabs}
+                                basePath={basePath}
+                            />
+                        )}
                     </div>
-                    {/* Bottom nav only on tab roots */}
-                    {chrome === 'default' && (
-                        <AppBottomNav
-                            items={navConfig.bottomTabs}
-                            basePath={basePath}
-                        />
-                    )}
                 </div>
-            </div>
 
-            {/* Overlay panels */}
-            <ProfileSheet
-                isOpen={profileSheetOpen}
-                onClose={() => setProfileSheetOpen(false)}
-                user={user}
-                tenantName={tenantName}
-                tenantSlug={tenantSlug}
-                currentRole={currentRole}
-                allRoles={allRoles}
-                onRoleSwitch={onRoleSwitch}
-            />
-            <NotificationPanel
-                isOpen={notificationPanelOpen}
-                onClose={() => setNotificationPanelOpen(false)}
-                tenantSlug={tenantSlug}
-            />
-            <SearchSheet
-                isOpen={searchSheetOpen}
-                onClose={() => setSearchSheetOpen(false)}
-                tenantSlug={tenantSlug}
-                currentRole={role}
-            />
-            <ScopeSelectorSheet
-                isOpen={scopeSelectorOpen}
-                onClose={() => setScopeSelectorOpen(false)}
-                branches={branches}
-                currentScope={currentScope}
-                onSelect={(branchId) => onScopeChange?.(branchId)}
-                tenantName={tenantName}
-            />
-            <EmergencySheet
-                isOpen={emergencySheetOpen}
-                onClose={() => setEmergencySheetOpen(false)}
-                tenantName={tenantName}
-            />
-            <ReportsHubSheet
-                isOpen={reportsHubOpen}
-                onClose={() => setReportsHubOpen(false)}
-                tenantSlug={tenantSlug}
-                role={role}
-                basePath={basePath}
-                tenantName={tenantName}
-                onOpenEmergency={() => {
-                    setReportsHubOpen(false);
-                    setEmergencySheetOpen(true);
-                }}
-            />
+                {/* Overlay panels */}
+                <ProfileSheet
+                    isOpen={profileSheetOpen}
+                    onClose={() => setProfileSheetOpen(false)}
+                    user={user}
+                    tenantName={tenantName}
+                    tenantSlug={tenantSlug}
+                    currentRole={currentRole}
+                    allRoles={allRoles}
+                    onRoleSwitch={onRoleSwitch}
+                />
+                <NotificationPanel
+                    isOpen={notificationPanelOpen}
+                    onClose={() => setNotificationPanelOpen(false)}
+                    tenantSlug={tenantSlug}
+                />
+                <SearchSheet
+                    isOpen={searchSheetOpen}
+                    onClose={() => setSearchSheetOpen(false)}
+                    tenantSlug={tenantSlug}
+                    currentRole={role}
+                />
+                <ScopeSelectorSheet
+                    isOpen={scopeSelectorOpen}
+                    onClose={() => setScopeSelectorOpen(false)}
+                    branches={branches}
+                    currentScope={currentScope}
+                    onSelect={(branchId) => onScopeChange?.(branchId)}
+                    tenantName={tenantName}
+                />
+                <EmergencySheet
+                    isOpen={emergencySheetOpen}
+                    onClose={() => setEmergencySheetOpen(false)}
+                    tenantName={tenantName}
+                />
+                <ReportsHubSheet
+                    isOpen={reportsHubOpen}
+                    onClose={() => setReportsHubOpen(false)}
+                    tenantSlug={tenantSlug}
+                    role={role}
+                    basePath={basePath}
+                    tenantName={tenantName}
+                    onOpenEmergency={() => {
+                        setReportsHubOpen(false);
+                        setEmergencySheetOpen(true);
+                    }}
+                />
+            </ShellActionsProvider>
         </EmergencyProvider>
     );
 }

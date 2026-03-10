@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import StaffAttendanceCard from '../../../../../components/attendance/StaffAttendanceCard';
 import { apiClient } from '../../../../../lib/api-client';
+import { SafetyQuickAccess } from '@/components/dashboard/SafetyQuickAccess';
 
 export default function StaffDashboard() {
     const params = useParams();
@@ -37,6 +38,8 @@ export default function StaffDashboard() {
                     <p className="text-[15px] font-medium text-[hsl(var(--admin-text-sub))]">Quick overview of your schedule and classes.</p>
                 </div>
             </div>
+
+            <SafetyQuickAccess />
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Attendance Card */}

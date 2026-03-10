@@ -9,42 +9,34 @@ interface AppHeaderProps {
     onSearch?: () => void;
     onNotificationClick?: () => void;
     onAvatarClick?: () => void;
-    onEmergency?: () => void;
-    onReportsClick?: () => void;
     notificationsCount?: number;
     user?: any;
     scopeLabel?: string;
     onScopeClick?: () => void;
-    showEmergency?: boolean;
     showScope?: boolean;
-    showReports?: boolean;
 }
 
 /**
- * Universal AppHeader — minimal single-line layout.
+ * Facebook-style AppHeader — clean single-line layout.
  *
- * Mobile:   [Logo] [Title + scope] ··· [Emergency?] [Bell] [Avatar]
- * Tablet:   [Logo] [Title + scope] ··· [Search] [Emergency?] [Bell] [Avatar]
- * Desktop:  [Logo] [Title + scope] ··· [Search] [Reports?] [Emergency?] [Bell] [Avatar]
+ * Mobile:   [Logo] [Title + scope] ··· [Bell] [Avatar ▾]
+ * Tablet:   [Logo] [Title + scope] ··· [Search] [Bell] [Avatar ▾]
+ * Desktop:  [Logo] [Title + scope] ··· [Search] [Bell] [Avatar ▾]
  *
- * Role-aware: showEmergency, showScope, showReports control visibility.
+ * Always-on background + shadow (no scroll-dependent change).
+ * Avatar has Facebook-style chevron badge for role switching.
  */
 export function AppHeader({
     title,
     logoUrl,
-    isScrolled = false,
     onSearch,
     onNotificationClick,
     onAvatarClick,
-    onEmergency,
-    onReportsClick,
     notificationsCount = 0,
     user,
     scopeLabel = 'All campuses',
     onScopeClick,
-    showEmergency = false,
     showScope = false,
-    showReports = false,
 }: AppHeaderProps) {
     const displayName = user?.display_name || user?.first_name || user?.displayName || 'User';
     const displayInitial = displayName.charAt(0).toUpperCase();
@@ -56,10 +48,7 @@ export function AppHeader({
         : {};
 
     return (
-        <header
-            className={`admin-header ${isScrolled ? 'is-scrolled' : ''}`}
-            id="app-header"
-        >
+        <header className="admin-header" id="app-header">
             <div className="flex items-center justify-between gap-2.5">
                 {/* Left: Logo + Title/Scope */}
                 <div className="flex items-center gap-2.5 min-w-0 flex-1">
@@ -104,30 +93,6 @@ export function AppHeader({
                         </button>
                     )}
 
-                    {/* Reports — desktop only + role-gated */}
-                    {showReports && onReportsClick && (
-                        <button
-                            type="button"
-                            onClick={onReportsClick}
-                            className="hidden lg:flex w-9 h-9 items-center justify-center rounded-full bg-[hsl(var(--admin-surface-alt))] text-[hsl(var(--admin-text-sub))] hover:bg-[hsl(var(--admin-border))] transition-colors"
-                            aria-label="Reports"
-                        >
-                            <span className="material-symbols-outlined text-[18px]">fact_check</span>
-                        </button>
-                    )}
-
-                    {/* Emergency — role-gated */}
-                    {showEmergency && onEmergency && (
-                        <button
-                            type="button"
-                            onClick={onEmergency}
-                            className="w-9 h-9 flex items-center justify-center rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-                            aria-label="Emergency"
-                        >
-                            <span className="material-symbols-outlined text-[18px]">shield</span>
-                        </button>
-                    )}
-
                     {/* Notifications — always */}
                     {onNotificationClick && (
                         <button
@@ -138,28 +103,34 @@ export function AppHeader({
                         >
                             <span className="material-symbols-outlined text-[18px]">notifications</span>
                             {notificationsCount > 0 && (
-                                <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-0.5 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center border-[1.5px] border-[hsl(var(--admin-background))]">
+                                <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-0.5 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center border-[1.5px] border-[hsl(var(--admin-surface))]">
                                     {notificationsCount > 9 ? '9+' : notificationsCount}
                                 </span>
                             )}
                         </button>
                     )}
 
-                    {/* Avatar — always */}
+                    {/* Avatar with Facebook-style chevron — always */}
                     {onAvatarClick && (
                         <button
                             type="button"
                             onClick={onAvatarClick}
-                            className="w-8 h-8 rounded-full overflow-hidden bg-[hsl(var(--admin-surface-alt))] border-[1.5px] border-[hsl(var(--admin-border)/0.5)] hover:border-[hsl(var(--admin-primary)/0.4)] transition-all flex items-center justify-center flex-shrink-0"
+                            className="relative flex-shrink-0"
                             aria-label="Account"
                         >
-                            {user?.photoURL ? (
-                                <img src={user.photoURL} alt={displayName} className="w-full h-full object-cover" />
-                            ) : (
-                                <span className="text-[11px] font-bold text-[hsl(var(--admin-primary))]">
-                                    {displayInitial}
-                                </span>
-                            )}
+                            <div className="w-9 h-9 rounded-full overflow-hidden bg-[hsl(var(--admin-surface-alt))] border-[1.5px] border-[hsl(var(--admin-border)/0.5)] hover:border-[hsl(var(--admin-primary)/0.4)] transition-all flex items-center justify-center">
+                                {user?.photoURL ? (
+                                    <img src={user.photoURL} alt={displayName} className="w-full h-full object-cover" />
+                                ) : (
+                                    <span className="text-[13px] font-bold text-[hsl(var(--admin-primary))]">
+                                        {displayInitial}
+                                    </span>
+                                )}
+                            </div>
+                            {/* Chevron badge */}
+                            <div className="absolute -bottom-[1px] -right-[1px] w-[14px] h-[14px] rounded-full bg-[hsl(var(--admin-surface-alt))] border border-[hsl(var(--admin-surface))] flex items-center justify-center">
+                                <span className="material-symbols-outlined text-[10px] text-[hsl(var(--admin-text-sub))]">expand_more</span>
+                            </div>
                         </button>
                     )}
                 </div>

@@ -836,12 +836,17 @@ export function getAdminRoleType(role: string): 'platform' | 'secretary' | 'tena
 // ════════════════════════════════════════════════════════════════════════════
 
 export interface HeaderFeatureFlags {
-    showEmergency: boolean;
     showScope: boolean;
-    showReports: boolean;
 }
 
-const EMERGENCY_ROLES = new Set([
+const SCOPE_ROLES = new Set([
+    'tenant_admin', 'main_branch_admin', 'branch_admin',
+    'admissions_officer', 'finance_officer', 'hr_admin', 'reception', 'it_admin',
+    'principal', 'deputy_principal', 'smt', 'hod', 'grade_head', 'phase_head',
+]);
+
+/** Roles that see the SafetyQuickAccess card on their dashboard */
+export const SAFETY_CARD_ROLES = new Set([
     'tenant_admin', 'main_branch_admin', 'branch_admin',
     'admissions_officer', 'finance_officer', 'hr_admin', 'reception', 'it_admin',
     'principal', 'deputy_principal', 'smt', 'hod', 'grade_head', 'phase_head',
@@ -850,24 +855,15 @@ const EMERGENCY_ROLES = new Set([
     'parent', 'guardian', 'learner', 'student',
 ]);
 
-const SCOPE_ROLES = new Set([
+/** Staff roles that see the Safeguarding Queue shortcut in the safety card */
+export const SAFEGUARDING_STAFF_ROLES = new Set([
     'tenant_admin', 'main_branch_admin', 'branch_admin',
-    'admissions_officer', 'finance_officer', 'hr_admin', 'reception', 'it_admin',
-    'principal', 'deputy_principal', 'smt', 'hod', 'grade_head', 'phase_head',
-]);
-
-const REPORTS_ROLES = new Set([
-    'tenant_admin', 'main_branch_admin', 'branch_admin',
-    'finance_officer', 'hr_admin',
-    'principal', 'deputy_principal', 'smt', 'hod', 'grade_head', 'phase_head',
-    'class_teacher', 'subject_teacher', 'teacher',
+    'principal', 'deputy_principal', 'smt', 'hod',
     'counsellor', 'staff',
 ]);
 
 export function getHeaderFeatures(role: string): HeaderFeatureFlags {
     return {
-        showEmergency: EMERGENCY_ROLES.has(role),
         showScope: SCOPE_ROLES.has(role),
-        showReports: REPORTS_ROLES.has(role),
     };
 }
