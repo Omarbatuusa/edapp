@@ -62,45 +62,35 @@ export function AppHeader({
                         </div>
                     )}
 
-                    {/* Title + branch subtitle — tappable with chevron if scope switching enabled */}
-                    {showScope && onScopeClick ? (
-                        <button
-                            type="button"
-                            onClick={onScopeClick}
-                            aria-label="Change campus"
-                            className="min-w-0 flex-1 text-left flex items-center gap-0.5"
-                        >
-                            <div className="min-w-0 flex flex-col justify-center">
-                                <h1 className="text-[15px] sm:text-[16px] lg:text-[18px] font-semibold text-[hsl(var(--admin-text-main))] tracking-tight leading-tight truncate">
-                                    {title}
-                                </h1>
-                                {scopeLabel && (
-                                    <span className="flex items-center gap-px mt-0">
-                                        <span className="material-symbols-outlined text-[8px] text-[hsl(var(--admin-text-muted))] leading-none">location_on</span>
-                                        <span className="text-[9px] text-[hsl(var(--admin-text-muted))] leading-none truncate max-w-[140px] lg:max-w-[200px]">
-                                            {scopeLabel}
-                                        </span>
-                                        <span className="material-symbols-outlined text-[8px] text-[hsl(var(--admin-text-muted))] leading-none">expand_more</span>
+                    {/* Title + branch subtitle */}
+                    <div className="min-w-0 flex-1 flex flex-col justify-center">
+                        <h1 className="text-[15px] sm:text-[16px] lg:text-[18px] font-semibold text-[hsl(var(--admin-text-main))] tracking-tight leading-tight truncate">
+                            {title}
+                        </h1>
+                        {scopeLabel && (
+                            showScope && onScopeClick ? (
+                                <button
+                                    type="button"
+                                    onClick={onScopeClick}
+                                    aria-label="Change campus"
+                                    className="flex items-center gap-[2px] mt-[1px] hover:opacity-80 transition-opacity"
+                                >
+                                    <span className="material-symbols-outlined text-[7px] text-[hsl(var(--admin-text-muted))]">location_on</span>
+                                    <span className="text-[10px] text-[hsl(var(--admin-text-muted))] leading-none truncate max-w-[140px] lg:max-w-[200px]">
+                                        {scopeLabel}
                                     </span>
-                                )}
-                            </div>
-                        </button>
-                    ) : (
-                        <div className="min-w-0 flex-1 text-left flex flex-col justify-center">
-                            <h1 className="text-[15px] sm:text-[16px] lg:text-[18px] font-semibold text-[hsl(var(--admin-text-main))] tracking-tight leading-tight truncate">
-                                {title}
-                            </h1>
-                            {/* Always show branch/scope label when provided */}
-                            {scopeLabel && (
-                                <span className="flex items-center gap-px mt-0">
-                                    <span className="material-symbols-outlined text-[8px] text-[hsl(var(--admin-text-muted))] leading-none">location_on</span>
-                                    <span className="text-[9px] text-[hsl(var(--admin-text-muted))] leading-none truncate max-w-[140px] lg:max-w-[200px]">
+                                    <span className="material-symbols-outlined text-[9px] text-[hsl(var(--admin-text-muted))]">expand_more</span>
+                                </button>
+                            ) : (
+                                <span className="flex items-center gap-[2px] mt-[1px]">
+                                    <span className="material-symbols-outlined text-[7px] text-[hsl(var(--admin-text-muted))]">location_on</span>
+                                    <span className="text-[10px] text-[hsl(var(--admin-text-muted))] leading-none truncate max-w-[140px] lg:max-w-[200px]">
                                         {scopeLabel}
                                     </span>
                                 </span>
-                            )}
-                        </div>
-                    )}
+                            )
+                        )}
+                    </div>
                 </div>
 
                 {/* Right: Icon cluster */}
