@@ -17,6 +17,7 @@ import { ScopeSelectorSheet } from '@/components/dashboard/ScopeSelectorSheet';
 import { EmergencyProvider } from '@/contexts/EmergencyContext';
 import { EmergencyBanner } from '@/components/safety/EmergencyBanner';
 import { MOCK_NOTIFICATIONS, countUnread } from '@/lib/notifications';
+import { getHeaderFeatures } from '@/config/navigation';
 import type { RoleNavConfig } from '@/config/navigation';
 import type { UserRoleAssignment } from '@/components/dashboard/RoleSwitcher';
 
@@ -143,25 +144,28 @@ export function AppShell({
                 <div className="admin-app-container">
                     <EmergencyBanner />
                     {/* AppHeader on tab roots only (chrome === "default") */}
-                    {chrome === 'default' && (
-                        <AppHeader
-                            title={tenantName}
-                            tenantSlug={tenantSlug}
-                            logoUrl={tenantLogo}
-                            isScrolled={isScrolled}
-                            onSearch={() => setSearchSheetOpen(true)}
-                            onEmergency={() => setEmergencySheetOpen(true)}
-                            onNotificationClick={() => setNotificationPanelOpen(true)}
-                            onAvatarClick={() => setProfileSheetOpen(true)}
-                            notificationsCount={notificationsCount}
-                            user={user}
-                            scopeLabel={scopeLabel}
-                            onScopeClick={() => setScopeSelectorOpen(true)}
-                            showScopeChip={showScopeChip}
-                            onTenantNameClick={() => setScopeSelectorOpen(true)}
-                            onReportsClick={() => setReportsHubOpen(true)}
-                        />
-                    )}
+                    {chrome === 'default' && (() => {
+                        const hf = getHeaderFeatures(role);
+                        return (
+                            <AppHeader
+                                title={tenantName}
+                                logoUrl={tenantLogo}
+                                isScrolled={isScrolled}
+                                onSearch={() => setSearchSheetOpen(true)}
+                                onEmergency={hf.showEmergency ? () => setEmergencySheetOpen(true) : undefined}
+                                onNotificationClick={() => setNotificationPanelOpen(true)}
+                                onAvatarClick={() => setProfileSheetOpen(true)}
+                                notificationsCount={notificationsCount}
+                                user={user}
+                                scopeLabel={scopeLabel}
+                                onScopeClick={hf.showScope && showScopeChip ? () => setScopeSelectorOpen(true) : undefined}
+                                onReportsClick={hf.showReports ? () => setReportsHubOpen(true) : undefined}
+                                showEmergency={hf.showEmergency}
+                                showScope={hf.showScope && showScopeChip}
+                                showReports={hf.showReports}
+                            />
+                        );
+                    })()}
                     <div className="admin-body">
                         <AppNavRail
                             items={navConfig.allItems}
