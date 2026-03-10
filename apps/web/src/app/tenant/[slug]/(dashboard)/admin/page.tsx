@@ -4,6 +4,13 @@ import { use, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Users, TrendingUp, AlertTriangle, Calendar, ArrowRight, Search, CheckCircle, UserX, Clock } from 'lucide-react';
 import { apiClient } from '../../../../../lib/api-client';
+import { MOCK_ADMIN_EVENTS } from '../../../../../lib/calendar-events';
+import { DashboardLayout } from '../../../../../components/dashboard/DashboardLayout';
+import { MiniCalendar } from '../../../../../components/dashboard/MiniCalendar';
+import { WeeklyPlanner } from '../../../../../components/dashboard/WeeklyPlanner';
+import { QuickChat } from '../../../../../components/dashboard/QuickChat';
+import { QuickAddFAB } from '../../../../../components/dashboard/QuickAddFAB';
+import { AddEventSheet } from '../../../../../components/dashboard/AddEventSheet';
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -36,6 +43,8 @@ export default function AdminDashboard({ params }: Props) {
 
     const [branchId, setBranchId] = useState('');
     const [attendanceStats, setAttendanceStats] = useState<{ total: number; present: number; absent: number; late: number } | null>(null);
+    const [eventSheetOpen, setEventSheetOpen] = useState(false);
+    const [preselectedDate, setPreselectedDate] = useState<string>();
 
     useEffect(() => {
         apiClient.get('/auth/me').then(res => {
@@ -64,81 +73,96 @@ export default function AdminDashboard({ params }: Props) {
         ? Math.round((attendanceStats.present / attendanceStats.total) * 100)
         : null;
 
-    return (
-        <div className="app-content-padding max-w-7xl mx-auto space-y-6">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-[hsl(var(--admin-text-main))] leading-tight">Admin Dashboard</h1>
-                    <p className="text-[15px] font-medium text-[hsl(var(--admin-text-sub))] mt-1">Overview of school performance and alerts.</p>
+    const basePath = `/tenant/${slug}/admin`;
+
+    const fabItems = [
+        { icon: 'event', label: 'Add Event', onClick: () => setEventSheetOpen(true) },
+        { icon: 'person_add', label: 'Add Student', onClick: () => {} },
+        { icon: 'warning', label: 'Log Incident', onClick: () => {} },
+    ];
+
+    const sidebar = (
+        <>
+            <MiniCalendar
+                events={MOCK_ADMIN_EVENTS}
+                onAddEvent={(date) => { setPreselectedDate(date); setEventSheetOpen(true); }}
+            />
+
+            {/* Urgent Tasks */}
+            <div className="ios-card">
+                <h3 className="font-semibold text-[15px] text-[hsl(var(--admin-text-main))] mb-3 tracking-tight flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-danger))]">priority_high</span>
+                    Urgent Tasks
+                </h3>
+                <div className="space-y-1">
+                    <TaskItem title="Approve Leave Request" time="2h ago" urgent />
+                    <TaskItem title="Review Incident Report #102" time="4h ago" urgent />
+                    <TaskItem title="Monthly Fee Reconciliation" time="1d ago" />
                 </div>
-                <div className="flex gap-2">
-                    <button type="button" className="h-9 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 transition-colors">Generate Report</button>
-                    <button type="button" className="h-9 px-4 rounded-lg bg-secondary text-secondary-foreground font-medium text-sm hover:bg-secondary/80 transition-colors">Settings</button>
+                <button type="button" className="w-full mt-3 py-2 text-[12px] text-[hsl(var(--admin-primary))] font-semibold hover:bg-[hsl(var(--admin-primary)/0.05)] rounded-lg transition-colors">
+                    View All Tasks
+                </button>
+            </div>
+
+            <QuickChat basePath={basePath} />
+
+            {/* Staff On Leave */}
+            <div className="ios-card">
+                <h3 className="font-semibold text-[15px] text-[hsl(var(--admin-text-main))] mb-3 tracking-tight flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-text-muted))]">person_off</span>
+                    Staff On Leave
+                </h3>
+                <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-bold">EK</div>
+                    <div>
+                        <p className="text-[13px] font-semibold text-[hsl(var(--admin-text-main))]">Edna Krabappel</p>
+                        <p className="text-[11px] text-[hsl(var(--admin-text-muted))]">Sick Leave</p>
+                    </div>
                 </div>
             </div>
 
-            {isPlatform && (
-                <NavSection title="Platform Management">
-                    <NavCard href={`/tenant/${slug}/admin/tenants`} label="Tenants" description="View and manage all school tenants" icon="domain" color="indigo" />
-                    <NavCard href={`/tenant/${slug}/admin/brands`} label="Brand Management" description="Manage school brands and groups" icon="category" color="purple" />
-                    <NavCard href={`/tenant/${slug}/admin/dictionaries`} label="Dictionaries" description="Phases, grades, subjects, languages" icon="menu_book" color="violet" />
-                    <NavCard href={`/tenant/${slug}/admin/people`} label="People & Roles" description="Manage users and role assignments" icon="group" color="teal" />
-                    <NavCard href={`/tenant/${slug}/admin/audit`} label="Audit Log" description="View platform activity and changes" icon="history" color="gray" />
-                </NavSection>
-            )}
+            {/* Notifications */}
+            <div className="ios-card">
+                <h3 className="font-semibold text-[15px] text-[hsl(var(--admin-text-main))] mb-3 tracking-tight flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-primary))]">notifications</span>
+                    Recent Notifications
+                </h3>
+                <div className="space-y-2">
+                    <NotifItem icon="person_add" text="New enrollment application received" time="10m ago" />
+                    <NotifItem icon="event_available" text="Staff meeting confirmed for tomorrow" time="1h ago" />
+                    <NotifItem icon="payments" text="3 fee payments processed" time="2h ago" />
+                </div>
+            </div>
+        </>
+    );
 
-            {canManageBranches && (
-                <NavSection title="School Setup">
-                    <NavCard href={`/tenant/${slug}/admin/main-branch`} label="Main Branch Setup" description="Configure your primary school profile" icon="account_balance" color="blue" />
-                    <NavCard href={`/tenant/${slug}/admin/branches`} label="Branch Management" description="Manage campuses and branches" icon="location_city" color="green" />
-                </NavSection>
-            )}
-
-            {isSecretary && (
-                <NavSection title="Secretary Tools">
-                    <NavCard href={`/tenant/${slug}/admin/inbox`} label="Inbox / Tasks" description="View pending tasks and approvals" icon="inbox" color="orange" />
-                    <NavCard href={`/tenant/${slug}/admin/tenants`} label="Tenants Lookup" description="Search tenants by school code" icon="search" color="gray" />
-                    <NavCard href={`/tenant/${slug}/admin/approvals`} label="Approvals" description="Process pending approvals" icon="task_alt" color="teal" />
-                    <NavCard href={`/tenant/${slug}/admin/people`} label="People Lookup" description="Search users across tenants" icon="person_search" color="blue" />
-                </NavSection>
-            )}
-
-            {isTenantAdmin && (
-                <NavSection title="School Administration">
-                    <NavCard href={`/tenant/${slug}/admin/control`} label="Control Dashboard" description="School overview and quick links" icon="dashboard" color="blue" />
-                    <NavCard href={`/tenant/${slug}/admin/attendance`} label="Attendance" description="Daily learner & staff attendance tracking" icon="event_available" color="green" />
-                    <NavCard href={`/tenant/${slug}/admin/enrollment`} label="Enrollment" description="View and manage enrollment applications" icon="person_add" color="rose" />
-                    <NavCard href={`/tenant/${slug}/admin/staff`} label="Staff Management" description="Manage staff profiles and roles" icon="badge" color="purple" />
-                    <NavCard href={`/tenant/${slug}/admin/school-data`} label="School Data" description="Phases, grades and subject offerings" icon="school" color="indigo" />
-                    <NavCard href={`/tenant/${slug}/admin/people`} label="People & Roles" description="Manage users and role assignments" icon="group" color="teal" />
-                    <NavCard href={`/tenant/${slug}/admin/calendar`} label="Academic Calendar" description="Manage school days, holidays, exams" icon="calendar_month" color="orange" />
-                    <NavCard href={`/tenant/${slug}/admin/curriculum`} label="Curriculum" description="Manage curricula and subject offerings" icon="menu_book" color="violet" />
-                    <NavCard href={`/tenant/${slug}/admin/grades-classes`} label="Grades &amp; Classes" description="Configure grades and class groups" icon="class" color="green" />
-                    <NavCard href={`/tenant/${slug}/admin/families`} label="Families" description="Manage family records and links" icon="family_restroom" color="teal" />
-                    <NavCard href={`/tenant/${slug}/admin/family-doctors`} label="Family Doctors" description="Manage family doctor records" icon="medical_services" color="rose" />
-                    <NavCard href={`/tenant/${slug}/admin/emergency-contacts`} label="Emergency Contacts" description="Manage emergency contact records" icon="contact_emergency" color="amber" />
-                    <NavCard href={`/tenant/${slug}/admin/admissions`} label="Admissions Builder" description="Design your admissions process" icon="assignment" color="rose" />
-                    <NavCard href={`/tenant/${slug}/admin/integrations`} label="Integrations &amp; Features" description="Feature flags and external systems" icon="integration_instructions" color="amber" />
-                </NavSection>
-            )}
-
-            {canManageAdmissions && !isPlatform && !isTenantAdmin && (
-                <NavSection title="Admissions">
-                    <NavCard href={`/tenant/${slug}/admin/admissions`} label="Admissions Builder" description="Design your admissions process" icon="assignment" color="rose" />
-                </NavSection>
-            )}
-
-            {isBranchAdmin && !canManageBranches && (
-                <NavSection title="Branch Administration">
-                    <NavCard href={`/tenant/${slug}/admin/branches`} label="My Branch" description="Manage your branch settings" icon="location_city" color="green" />
-                    <NavCard href={`/tenant/${slug}/admin/people`} label="People & Roles" description="Manage branch staff and roles" icon="group" color="teal" />
-                </NavSection>
-            )}
+    return (
+        <DashboardLayout
+            sidebar={sidebar}
+            fab={
+                <>
+                    <QuickAddFAB items={fabItems} />
+                    <AddEventSheet isOpen={eventSheetOpen} onClose={() => setEventSheetOpen(false)} preselectedDate={preselectedDate} />
+                </>
+            }
+        >
+            {/* Header */}
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-[24px] sm:text-[28px] font-bold tracking-tight text-[hsl(var(--admin-text-main))] leading-tight">Dashboard</h1>
+                    <p className="text-[14px] font-medium text-[hsl(var(--admin-text-sub))] mt-0.5">Overview of school performance and alerts.</p>
+                </div>
+                <div className="flex gap-2">
+                    <button type="button" className="h-9 px-4 rounded-xl bg-[hsl(var(--admin-primary))] text-white font-semibold text-[13px] hover:opacity-90 transition-opacity shadow-sm">
+                        Generate Report
+                    </button>
+                </div>
+            </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 <StatCard title="Total Students" value="1,240" change="+12%" trend="up" icon={Users} />
-                <Link href={`/tenant/${slug}/admin/attendance`} className="block">
+                <Link href={`${basePath}/attendance`} className="block">
                     <StatCard
                         title="Attendance"
                         value={attendanceRate !== null ? `${attendanceRate}%` : '—'}
@@ -151,116 +175,136 @@ export default function AdminDashboard({ params }: Props) {
                 <StatCard title="Revenue" value="R 840k" change="+5%" trend="up" icon={TrendingUp} />
             </div>
 
-            {/* Quick Actions & Activity */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2 space-y-6">
-                    <div className="ios-card">
-                        <h3 className="font-semibold text-lg text-[hsl(var(--admin-text-main))] mb-4 tracking-tight">Quick Actions</h3>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                            <QuickAction icon={Users} label="Add Student" />
-                            <Link href={`/tenant/${slug}/admin/attendance`} className="contents">
-                                <QuickAction icon={Calendar} label="Attendance" />
-                            </Link>
-                            <QuickAction icon={AlertTriangle} label="Log Incident" />
-                            <QuickAction icon={Search} label="Search Records" />
-                        </div>
+            {/* Nav Sections */}
+            {isPlatform && (
+                <NavSection title="Platform Management">
+                    <NavCard href={`${basePath}/tenants`} label="Tenants" description="View and manage all school tenants" icon="domain" color="indigo" />
+                    <NavCard href={`${basePath}/brands`} label="Brand Management" description="Manage school brands and groups" icon="category" color="purple" />
+                    <NavCard href={`${basePath}/dictionaries`} label="Dictionaries" description="Phases, grades, subjects, languages" icon="menu_book" color="violet" />
+                    <NavCard href={`${basePath}/people`} label="People & Roles" description="Manage users and role assignments" icon="group" color="teal" />
+                    <NavCard href={`${basePath}/audit`} label="Audit Log" description="View platform activity and changes" icon="history" color="gray" />
+                </NavSection>
+            )}
+            {canManageBranches && (
+                <NavSection title="School Setup">
+                    <NavCard href={`${basePath}/main-branch`} label="Main Branch Setup" description="Configure your primary school profile" icon="account_balance" color="blue" />
+                    <NavCard href={`${basePath}/branches`} label="Branch Management" description="Manage campuses and branches" icon="location_city" color="green" />
+                </NavSection>
+            )}
+            {isSecretary && (
+                <NavSection title="Secretary Tools">
+                    <NavCard href={`${basePath}/inbox`} label="Inbox / Tasks" description="View pending tasks and approvals" icon="inbox" color="orange" />
+                    <NavCard href={`${basePath}/tenants`} label="Tenants Lookup" description="Search tenants by school code" icon="search" color="gray" />
+                    <NavCard href={`${basePath}/approvals`} label="Approvals" description="Process pending approvals" icon="task_alt" color="teal" />
+                    <NavCard href={`${basePath}/people`} label="People Lookup" description="Search users across tenants" icon="person_search" color="blue" />
+                </NavSection>
+            )}
+            {isTenantAdmin && (
+                <NavSection title="School Administration">
+                    <NavCard href={`${basePath}/control`} label="Control Dashboard" description="School overview and quick links" icon="dashboard" color="blue" />
+                    <NavCard href={`${basePath}/attendance`} label="Attendance" description="Daily learner & staff attendance tracking" icon="event_available" color="green" />
+                    <NavCard href={`${basePath}/enrollment`} label="Enrollment" description="View and manage enrollment applications" icon="person_add" color="rose" />
+                    <NavCard href={`${basePath}/staff`} label="Staff Management" description="Manage staff profiles and roles" icon="badge" color="purple" />
+                    <NavCard href={`${basePath}/school-data`} label="School Data" description="Phases, grades and subject offerings" icon="school" color="indigo" />
+                    <NavCard href={`${basePath}/people`} label="People & Roles" description="Manage users and role assignments" icon="group" color="teal" />
+                    <NavCard href={`${basePath}/calendar`} label="Academic Calendar" description="Manage school days, holidays, exams" icon="calendar_month" color="orange" />
+                    <NavCard href={`${basePath}/curriculum`} label="Curriculum" description="Manage curricula and subject offerings" icon="menu_book" color="violet" />
+                    <NavCard href={`${basePath}/grades-classes`} label="Grades &amp; Classes" description="Configure grades and class groups" icon="class" color="green" />
+                    <NavCard href={`${basePath}/families`} label="Families" description="Manage family records and links" icon="family_restroom" color="teal" />
+                    <NavCard href={`${basePath}/family-doctors`} label="Family Doctors" description="Manage family doctor records" icon="medical_services" color="rose" />
+                    <NavCard href={`${basePath}/emergency-contacts`} label="Emergency Contacts" description="Manage emergency contact records" icon="contact_emergency" color="amber" />
+                    <NavCard href={`${basePath}/admissions`} label="Admissions Builder" description="Design your admissions process" icon="assignment" color="rose" />
+                    <NavCard href={`${basePath}/integrations`} label="Integrations &amp; Features" description="Feature flags and external systems" icon="integration_instructions" color="amber" />
+                </NavSection>
+            )}
+            {canManageAdmissions && !isPlatform && !isTenantAdmin && (
+                <NavSection title="Admissions">
+                    <NavCard href={`${basePath}/admissions`} label="Admissions Builder" description="Design your admissions process" icon="assignment" color="rose" />
+                </NavSection>
+            )}
+            {isBranchAdmin && !canManageBranches && (
+                <NavSection title="Branch Administration">
+                    <NavCard href={`${basePath}/branches`} label="My Branch" description="Manage your branch settings" icon="location_city" color="green" />
+                    <NavCard href={`${basePath}/people`} label="People & Roles" description="Manage branch staff and roles" icon="group" color="teal" />
+                </NavSection>
+            )}
+
+            {/* Weekly Planner */}
+            <WeeklyPlanner
+                events={MOCK_ADMIN_EVENTS}
+                onAddClick={(date) => { setPreselectedDate(date); setEventSheetOpen(true); }}
+            />
+
+            {/* Today's Attendance */}
+            <div className="ios-card">
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold text-[16px] text-[hsl(var(--admin-text-main))] tracking-tight">
+                        Today&apos;s Attendance
+                    </h3>
+                    <Link
+                        href={`${basePath}/attendance`}
+                        className="text-[12px] font-semibold text-[hsl(var(--admin-primary))] hover:underline flex items-center gap-1"
+                    >
+                        Full Dashboard <ArrowRight size={14} />
+                    </Link>
+                </div>
+                <div className="flex items-center justify-between mb-4 p-3 bg-secondary/20 rounded-xl">
+                    <span className="text-[13px] font-medium text-muted-foreground">Attendance Rate</span>
+                    <span className={`text-2xl font-bold ${attendanceRate !== null && attendanceRate >= 90 ? 'text-green-600' : attendanceRate !== null ? 'text-amber-600' : 'text-muted-foreground'}`}>
+                        {attendanceRate !== null ? `${attendanceRate}%` : '—'}
+                    </span>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                    <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                        <CheckCircle size={18} className="text-green-600 mx-auto mb-1" />
+                        <p className="text-xl font-bold text-green-600">{attendanceStats?.present ?? '—'}</p>
+                        <p className="text-[11px] text-muted-foreground font-medium">Present</p>
                     </div>
-
-                    {/* Live Attendance Overview */}
-                    <div className="ios-card">
-                        <div className="flex items-center justify-between mb-5">
-                            <h3 className="font-semibold text-lg text-[hsl(var(--admin-text-main))] tracking-tight">
-                                Today&apos;s Attendance
-                            </h3>
-                            <Link
-                                href={`/tenant/${slug}/admin/attendance`}
-                                className="text-sm font-semibold text-[hsl(var(--admin-primary))] hover:underline flex items-center gap-1"
-                            >
-                                Full Dashboard <ArrowRight size={14} />
-                            </Link>
-                        </div>
-
-                        {/* Rate badge */}
-                        <div className="flex items-center justify-between mb-4 p-3 bg-secondary/20 rounded-xl">
-                            <span className="text-sm font-medium text-muted-foreground">Attendance Rate</span>
-                            <span className={`text-2xl font-bold ${attendanceRate !== null && attendanceRate >= 90 ? 'text-green-600' : attendanceRate !== null ? 'text-amber-600' : 'text-muted-foreground'}`}>
-                                {attendanceRate !== null ? `${attendanceRate}%` : '—'}
-                            </span>
-                        </div>
-
-                        {/* Breakdown */}
-                        <div className="grid grid-cols-3 gap-3">
-                            <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-xl">
-                                <CheckCircle size={18} className="text-green-600 mx-auto mb-1" />
-                                <p className="text-xl font-bold text-green-600">{attendanceStats?.present ?? '—'}</p>
-                                <p className="text-xs text-muted-foreground font-medium">Present</p>
-                            </div>
-                            <div className="text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-xl">
-                                <UserX size={18} className="text-red-500 mx-auto mb-1" />
-                                <p className="text-xl font-bold text-red-500">{attendanceStats?.absent ?? '—'}</p>
-                                <p className="text-xs text-muted-foreground font-medium">Absent</p>
-                            </div>
-                            <div className="text-center p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
-                                <Clock size={18} className="text-amber-600 mx-auto mb-1" />
-                                <p className="text-xl font-bold text-amber-600">{attendanceStats?.late ?? '—'}</p>
-                                <p className="text-xs text-muted-foreground font-medium">Late</p>
-                            </div>
-                        </div>
-
-                        {!branchId && (
-                            <p className="text-xs text-muted-foreground text-center mt-4">
-                                Branch data loads after sign-in.{' '}
-                                <Link href={`/tenant/${slug}/admin/attendance`} className="text-[hsl(var(--admin-primary))] hover:underline font-semibold">
-                                    Go to Attendance →
-                                </Link>
-                            </p>
-                        )}
+                    <div className="text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-xl">
+                        <UserX size={18} className="text-red-500 mx-auto mb-1" />
+                        <p className="text-xl font-bold text-red-500">{attendanceStats?.absent ?? '—'}</p>
+                        <p className="text-[11px] text-muted-foreground font-medium">Absent</p>
+                    </div>
+                    <div className="text-center p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
+                        <Clock size={18} className="text-amber-600 mx-auto mb-1" />
+                        <p className="text-xl font-bold text-amber-600">{attendanceStats?.late ?? '—'}</p>
+                        <p className="text-[11px] text-muted-foreground font-medium">Late</p>
                     </div>
                 </div>
-                <div className="space-y-6">
-                    <div className="ios-card">
-                        <h3 className="font-semibold text-lg text-[hsl(var(--admin-text-main))] mb-4 tracking-tight">Urgent Tasks</h3>
-                        <div className="space-y-1">
-                            <TaskItem title="Approve Leave Request" time="2h ago" urgent />
-                            <TaskItem title="Review Incident Report #102" time="4h ago" urgent />
-                            <TaskItem title="Monthly Fee Reconciliation" time="1d ago" />
-                        </div>
-                        <button type="button" className="w-full mt-4 py-2 text-sm text-primary font-medium hover:bg-primary/5 rounded-lg transition-colors">View All Tasks</button>
-                    </div>
-                    <div className="ios-card">
-                        <h3 className="font-semibold text-lg text-[hsl(var(--admin-text-main))] mb-4 tracking-tight">Staff On Leave</h3>
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-bold">EK</div>
-                            <div>
-                                <p className="text-sm font-medium">Edna Krabappel</p>
-                                <p className="text-xs text-muted-foreground">Sick Leave</p>
-                            </div>
-                        </div>
-                    </div>
+                {!branchId && (
+                    <p className="text-[11px] text-muted-foreground text-center mt-4">
+                        Branch data loads after sign-in.{' '}
+                        <Link href={`${basePath}/attendance`} className="text-[hsl(var(--admin-primary))] hover:underline font-semibold">
+                            Go to Attendance →
+                        </Link>
+                    </p>
+                )}
+            </div>
+
+            {/* Quick Actions */}
+            <div className="ios-card">
+                <h3 className="font-semibold text-[16px] text-[hsl(var(--admin-text-main))] mb-4 tracking-tight">Quick Actions</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <QuickAction icon={Users} label="Add Student" />
+                    <Link href={`${basePath}/attendance`} className="contents">
+                        <QuickAction icon={Calendar} label="Attendance" />
+                    </Link>
+                    <QuickAction icon={AlertTriangle} label="Log Incident" />
+                    <QuickAction icon={Search} label="Search Records" />
                 </div>
             </div>
-        </div>
+        </DashboardLayout>
     );
 }
 
-// ─── Nav Section ────────────────────────────────────────────────────────────
-// Mobile: iOS Settings-style grouped list  |  Desktop: card grid
+// ─── Sub-components ──────────────────────────────────────────────────────────
 
 function NavSection({ title, children }: { title: string; children: React.ReactNode }) {
     return (
         <div>
-            {/* Section label */}
             <p className="text-[11px] font-bold uppercase tracking-wider text-[hsl(var(--admin-text-muted))] mb-2 ml-1 px-1">{title}</p>
-
-            {/* Mobile: grouped list inside one rounded card */}
-            <div className="sm:hidden ios-card p-0 overflow-hidden divide-y divide-[hsl(var(--admin-border))]">
-                {children}
-            </div>
-
-            {/* Desktop: grid of cards */}
-            <div className="hidden sm:grid grid-cols-2 lg:grid-cols-3 gap-4">
-                {children}
-            </div>
+            <div className="sm:hidden ios-card p-0 overflow-hidden divide-y divide-[hsl(var(--admin-border))]">{children}</div>
+            <div className="hidden sm:grid grid-cols-2 lg:grid-cols-3 gap-4">{children}</div>
         </div>
     );
 }
@@ -282,7 +326,6 @@ function NavCard({ href, label, description, icon, color }: { href: string; labe
     const c = COLOR_MAP[color] || COLOR_MAP.blue;
     return (
         <Link href={href} className="group block active:opacity-70 transition-opacity">
-            {/* Mobile row — rendered inside the grouped ios-card from NavSection */}
             <div className="sm:hidden flex items-center gap-3 px-4 py-4 hover:bg-[hsl(var(--admin-surface-alt))] active:bg-[hsl(var(--admin-surface-alt))] transition-colors">
                 <div className={`w-9 h-9 ${c.bg} rounded-[10px] flex items-center justify-center flex-shrink-0`}>
                     <span className={`material-symbols-outlined text-[19px] ${c.icon}`}>{icon}</span>
@@ -293,8 +336,6 @@ function NavCard({ href, label, description, icon, color }: { href: string; labe
                 </div>
                 <span className="material-symbols-outlined text-[20px] text-[hsl(var(--admin-text-muted))] group-hover:text-[hsl(var(--admin-primary))] transition-colors">chevron_right</span>
             </div>
-
-            {/* Desktop card — shown in the grid */}
             <div className="hidden sm:flex ios-card p-4 items-center gap-4 hover:-translate-y-0.5 active:scale-[0.98] transition-all border border-transparent group-hover:border-[hsl(var(--admin-border))]">
                 <div className={`w-[52px] h-[52px] ${c.bg} rounded-[14px] flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform`}>
                     <span className={`material-symbols-outlined text-[26px] ${c.icon}`}>{icon}</span>
@@ -309,8 +350,6 @@ function NavCard({ href, label, description, icon, color }: { href: string; labe
     );
 }
 
-// ─── Stat / Quick / Task helpers ────────────────────────────────────────────
-
 function StatCard({ title, value, change, trend, icon: Icon, alert }: any) {
     return (
         <div className="ios-card hover:-translate-y-1 transition-transform group cursor-pointer">
@@ -318,11 +357,11 @@ function StatCard({ title, value, change, trend, icon: Icon, alert }: any) {
                 <div className={`p-2.5 rounded-xl ${alert ? 'bg-red-100/80 text-red-600' : 'bg-[hsl(var(--admin-primary)/0.15)] text-[hsl(var(--admin-primary))]'}`}>
                     <Icon size={22} className="transition-transform group-hover:scale-110" />
                 </div>
-                <span className={`text-xs font-semibold px-2 py-1 rounded-full ${trend === 'up' ? 'bg-green-100 text-green-700' : trend === 'down' ? 'bg-red-100 text-red-700' : 'bg-secondary text-secondary-foreground'}`}>
+                <span className={`text-[11px] font-semibold px-2 py-1 rounded-full ${trend === 'up' ? 'bg-green-100 text-green-700' : trend === 'down' ? 'bg-red-100 text-red-700' : 'bg-secondary text-secondary-foreground'}`}>
                     {change}
                 </span>
             </div>
-            <p className="text-sm text-muted-foreground font-medium">{title}</p>
+            <p className="text-[12px] text-muted-foreground font-medium">{title}</p>
             <h3 className="text-2xl font-bold tracking-tight mt-1">{value}</h3>
         </div>
     );
@@ -334,20 +373,31 @@ function QuickAction({ icon: Icon, label }: any) {
             <div className="w-14 h-14 rounded-full bg-[hsl(var(--admin-surface-alt))] group-hover:bg-[hsl(var(--admin-primary)/0.1)] group-hover:text-[hsl(var(--admin-primary))] flex items-center justify-center transition-colors mb-3">
                 <Icon size={26} />
             </div>
-            <span className="text-sm font-medium text-center">{label}</span>
+            <span className="text-[13px] font-medium text-center">{label}</span>
         </button>
     );
 }
 
 function TaskItem({ title, time, urgent }: any) {
     return (
-        <div className="flex items-start gap-3 p-3 rounded-[12px] hover:bg-secondary/30 active:scale-[0.98] transition-all cursor-pointer">
-            <div className={`w-2.5 h-2.5 mt-1.5 rounded-full flex-shrink-0 ${urgent ? 'bg-[hsl(var(--admin-danger))]' : 'bg-[hsl(var(--admin-primary))]'}`} />
+        <div className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-secondary/30 active:scale-[0.98] transition-all cursor-pointer">
+            <div className={`w-2 h-2 mt-1.5 rounded-full flex-shrink-0 ${urgent ? 'bg-[hsl(var(--admin-danger))]' : 'bg-[hsl(var(--admin-primary))]'}`} />
             <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{title}</p>
-                <p className="text-xs text-muted-foreground">{time}</p>
+                <p className="text-[12px] font-semibold truncate text-[hsl(var(--admin-text-main))]">{title}</p>
+                <p className="text-[10px] text-[hsl(var(--admin-text-muted))]">{time}</p>
             </div>
-            <ArrowRight size={14} className="mt-1 text-muted-foreground/50" />
+        </div>
+    );
+}
+
+function NotifItem({ icon, text, time }: { icon: string; text: string; time: string }) {
+    return (
+        <div className="flex items-start gap-2.5 p-2 rounded-xl hover:bg-[hsl(var(--admin-surface-alt))] transition-colors cursor-pointer">
+            <span className="material-symbols-outlined text-[16px] text-[hsl(var(--admin-primary))] mt-0.5">{icon}</span>
+            <div className="flex-1 min-w-0">
+                <p className="text-[12px] font-medium text-[hsl(var(--admin-text-main))] leading-snug">{text}</p>
+                <p className="text-[10px] text-[hsl(var(--admin-text-muted))]">{time}</p>
+            </div>
         </div>
     );
 }

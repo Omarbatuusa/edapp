@@ -1,20 +1,28 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { BookOpen, Calendar, Clock, ChevronRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { BookOpen, ChevronRight } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import StaffAttendanceCard from '../../../../../components/attendance/StaffAttendanceCard';
 import { apiClient } from '../../../../../lib/api-client';
+import { MOCK_STAFF_EVENTS } from '../../../../../lib/calendar-events';
+import { DashboardLayout } from '../../../../../components/dashboard/DashboardLayout';
+import { MiniCalendar } from '../../../../../components/dashboard/MiniCalendar';
+import { WeeklyPlanner } from '../../../../../components/dashboard/WeeklyPlanner';
+import { QuickChat } from '../../../../../components/dashboard/QuickChat';
+import { QuickAddFAB } from '../../../../../components/dashboard/QuickAddFAB';
+import { AddEventSheet } from '../../../../../components/dashboard/AddEventSheet';
 
 export default function StaffDashboard() {
     const params = useParams();
     const slug = params.slug as string;
     const [branchId, setBranchId] = useState<string>('');
     const [classes, setClasses] = useState<any[]>([]);
+    const [eventSheetOpen, setEventSheetOpen] = useState(false);
+    const [preselectedDate, setPreselectedDate] = useState<string>();
 
     useEffect(() => {
-        // Get branch from user context
         apiClient.get('/auth/me').then(res => {
             if (res.data?.branch_id) setBranchId(res.data.branch_id);
         }).catch(() => {});
@@ -23,51 +31,107 @@ export default function StaffDashboard() {
     useEffect(() => {
         if (!branchId) return;
         apiClient.get('/attendance/register/my-classes').then(res => {
-            if (res.data?.status === 'success') {
-                setClasses(res.data.classes || []);
-            }
+            if (res.data?.status === 'success') setClasses(res.data.classes || []);
         }).catch(() => {});
     }, [branchId]);
 
-    return (
-        <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-[hsl(var(--admin-text-main))] mb-1">Staff Dashboard</h1>
-                    <p className="text-[15px] font-medium text-[hsl(var(--admin-text-sub))]">Quick overview of your schedule and classes.</p>
+    const basePath = `/tenant/${slug}/staff`;
+
+    const fabItems = [
+        { icon: 'event', label: 'Add Event', onClick: () => setEventSheetOpen(true) },
+        { icon: 'assignment', label: 'Assign Homework', onClick: () => {} },
+        { icon: 'fact_check', label: 'Take Attendance', onClick: () => {} },
+    ];
+
+    const sidebar = (
+        <>
+            <MiniCalendar
+                events={MOCK_STAFF_EVENTS}
+                onAddEvent={(date) => { setPreselectedDate(date); setEventSheetOpen(true); }}
+            />
+
+            <QuickChat basePath={basePath} />
+
+            {/* My Tasks */}
+            <div className="ios-card">
+                <h3 className="font-semibold text-[15px] text-[hsl(var(--admin-text-main))] mb-3 tracking-tight flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-primary))]">checklist</span>
+                    My Tasks
+                </h3>
+                <div className="space-y-2">
+                    <TaskRow label="Grade 10 homework to mark" count={12} color="text-amber-600" />
+                    <TaskRow label="Term reports due" count={3} color="text-red-500" />
+                    <TaskRow label="Parent queries to respond" count={2} color="text-blue-500" />
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Attendance Card */}
+            {/* Notifications */}
+            <div className="ios-card">
+                <h3 className="font-semibold text-[15px] text-[hsl(var(--admin-text-main))] mb-3 tracking-tight flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-primary))]">notifications</span>
+                    Notifications
+                </h3>
+                <div className="space-y-2">
+                    <NotifRow icon="campaign" text="Staff meeting moved to 14:00" time="30m ago" />
+                    <NotifRow icon="assignment_turned_in" text="Grade 11 homework submitted" time="1h ago" />
+                    <NotifRow icon="event" text="Parent evening next Friday" time="3h ago" />
+                </div>
+            </div>
+        </>
+    );
+
+    return (
+        <DashboardLayout
+            sidebar={sidebar}
+            fab={
+                <>
+                    <QuickAddFAB items={fabItems} />
+                    <AddEventSheet isOpen={eventSheetOpen} onClose={() => setEventSheetOpen(false)} preselectedDate={preselectedDate} />
+                </>
+            }
+        >
+            {/* Header */}
+            <div>
+                <h1 className="text-[24px] sm:text-[28px] font-bold tracking-tight text-[hsl(var(--admin-text-main))] leading-tight">Dashboard</h1>
+                <p className="text-[14px] font-medium text-[hsl(var(--admin-text-sub))] mt-0.5">Your schedule, classes and tasks at a glance.</p>
+            </div>
+
+            {/* Attendance + Classes row */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="col-span-1">
                     {branchId && <StaffAttendanceCard branchId={branchId} />}
+                    {!branchId && (
+                        <div className="ios-card">
+                            <div className="flex items-center gap-3 mb-3">
+                                <span className="material-symbols-outlined text-[22px] text-[hsl(var(--admin-primary))]">check_circle</span>
+                                <h3 className="font-semibold text-[15px] text-[hsl(var(--admin-text-main))] tracking-tight">Attendance</h3>
+                            </div>
+                            <p className="text-[13px] text-[hsl(var(--admin-text-muted))]">Sign in to view attendance.</p>
+                        </div>
+                    )}
                 </div>
 
-                {/* My Classes */}
                 <div className="ios-card col-span-1 md:col-span-2">
-                    <h2 className="font-semibold mb-4 flex items-center gap-2 text-[17px] tracking-tight text-[hsl(var(--admin-text-main))]">
+                    <h2 className="font-semibold mb-4 flex items-center gap-2 text-[16px] tracking-tight text-[hsl(var(--admin-text-main))]">
                         <BookOpen size={20} className="text-[hsl(var(--admin-primary))]" />
                         My Classes
                     </h2>
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                         {classes.length === 0 && (
-                            <p className="text-sm text-[hsl(var(--admin-text-sub))]">No classes assigned yet.</p>
+                            <p className="text-[13px] text-[hsl(var(--admin-text-sub))]">No classes assigned yet.</p>
                         )}
                         {classes.map((cls: any) => (
                             <Link
                                 key={cls.id}
                                 href={`/tenant/${slug}/staff/register/${cls.id}`}
-                                className="p-4 bg-[hsl(var(--admin-surface))] hover:bg-[hsl(var(--admin-surface-alt))] transition-colors border border-[hsl(var(--admin-border))] rounded-[16px] flex justify-between items-center gap-2"
+                                className="p-3.5 bg-[hsl(var(--admin-surface))] hover:bg-[hsl(var(--admin-surface-alt))] transition-colors border border-[hsl(var(--admin-border))] rounded-xl flex justify-between items-center gap-2"
                             >
                                 <div>
-                                    <span className="font-semibold text-[15px] text-[hsl(var(--admin-text-main))]">
+                                    <span className="font-semibold text-[14px] text-[hsl(var(--admin-text-main))]">
                                         {cls.section_name || cls.class_code}
                                     </span>
                                     {cls.grade_id && (
-                                        <span className="ml-2 text-[13px] text-[hsl(var(--admin-text-sub))]">
-                                            Grade {cls.grade_id}
-                                        </span>
+                                        <span className="ml-2 text-[12px] text-[hsl(var(--admin-text-sub))]">Grade {cls.grade_id}</span>
                                     )}
                                 </div>
                                 <ChevronRight size={18} className="text-[hsl(var(--admin-text-sub))]" />
@@ -77,24 +141,31 @@ export default function StaffDashboard() {
                 </div>
             </div>
 
-            {/* Upcoming */}
-            <div className="ios-card overflow-hidden">
-                <h2 className="font-semibold mb-4 flex items-center gap-2 text-[17px] tracking-tight text-[hsl(var(--admin-text-main))]">
-                    <Calendar size={20} className="text-[hsl(var(--admin-primary))]" />
-                    Upcoming
-                </h2>
-                <div className="space-y-4">
-                    <div className="flex gap-4 p-4 rounded-[16px] bg-[hsl(var(--admin-surface))] border border-[hsl(var(--admin-border))] hover:bg-[hsl(var(--admin-surface-alt))] transition-colors cursor-pointer group">
-                        <div className="w-12 text-center flex-shrink-0 flex flex-col items-center justify-center bg-[hsl(var(--admin-primary))/0.1] rounded-[12px] p-2 transition-colors">
-                            <span className="block text-[11px] font-bold text-[hsl(var(--admin-primary))] uppercase tracking-wider mb-0.5">Today</span>
-                            <span className="block text-[16px] font-bold text-[hsl(var(--admin-text-main))] tracking-tight">09:00</span>
-                        </div>
-                        <div className="flex flex-col justify-center">
-                            <p className="text-[15px] font-semibold text-[hsl(var(--admin-text-main))] tracking-tight group-hover:text-[hsl(var(--admin-primary))] transition-colors w-full">Department Meeting</p>
-                            <p className="text-[13px] font-medium text-[hsl(var(--admin-text-sub))]">Staff Room 1</p>
-                        </div>
-                    </div>
-                </div>
+            {/* Weekly Planner */}
+            <WeeklyPlanner
+                events={MOCK_STAFF_EVENTS}
+                onAddClick={(date) => { setPreselectedDate(date); setEventSheetOpen(true); }}
+            />
+        </DashboardLayout>
+    );
+}
+
+function TaskRow({ label, count, color }: { label: string; count: number; color: string }) {
+    return (
+        <div className="flex items-center justify-between p-2 rounded-lg hover:bg-[hsl(var(--admin-surface-alt))] transition-colors cursor-pointer">
+            <span className="text-[12px] font-medium text-[hsl(var(--admin-text-main))]">{label}</span>
+            <span className={`text-[12px] font-bold ${color} bg-[hsl(var(--admin-surface-alt))] px-2 py-0.5 rounded-full`}>{count}</span>
+        </div>
+    );
+}
+
+function NotifRow({ icon, text, time }: { icon: string; text: string; time: string }) {
+    return (
+        <div className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-[hsl(var(--admin-surface-alt))] transition-colors cursor-pointer">
+            <span className="material-symbols-outlined text-[16px] text-[hsl(var(--admin-primary))] mt-0.5">{icon}</span>
+            <div className="flex-1 min-w-0">
+                <p className="text-[12px] font-medium text-[hsl(var(--admin-text-main))] leading-snug">{text}</p>
+                <p className="text-[10px] text-[hsl(var(--admin-text-muted))]">{time}</p>
             </div>
         </div>
     );
