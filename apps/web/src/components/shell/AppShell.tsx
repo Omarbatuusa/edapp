@@ -10,6 +10,7 @@ import { SubpageBar } from './SubpageBar';
 import { ProfileSheet } from './ProfileSheet';
 import { EmergencySheet } from './EmergencySheet';
 import { ReportsHubSheet } from './ReportsHubSheet';
+import { SafetyChooserSheet } from './SafetyChooserSheet';
 import { useSubpageDetection } from '@/hooks/useSubpageDetection';
 import { NotificationPanel } from '@/components/dashboard/NotificationPanel';
 import { SearchSheet } from '@/components/dashboard/SearchSheet';
@@ -18,7 +19,7 @@ import { EmergencyProvider } from '@/contexts/EmergencyContext';
 import { ShellActionsProvider } from '@/contexts/ShellActionsContext';
 import { EmergencyBanner } from '@/components/safety/EmergencyBanner';
 import { MOCK_NOTIFICATIONS, countUnread } from '@/lib/notifications';
-import { getHeaderFeatures } from '@/config/navigation';
+import { getHeaderFeatures, SAFETY_CARD_ROLES } from '@/config/navigation';
 import type { RoleNavConfig } from '@/config/navigation';
 import type { UserRoleAssignment } from '@/components/dashboard/RoleSwitcher';
 
@@ -87,6 +88,7 @@ export function AppShell({
     const [scopeSelectorOpen, setScopeSelectorOpen] = useState(false);
     const [emergencySheetOpen, setEmergencySheetOpen] = useState(false);
     const [reportsHubOpen, setReportsHubOpen] = useState(false);
+    const [safetyChooserOpen, setSafetyChooserOpen] = useState(false);
 
     // Subpage detection + chrome flag
     const { isSubpage, isFullscreen, chrome } = useSubpageDetection(navConfig.bottomTabs, basePath);
@@ -96,6 +98,7 @@ export function AppShell({
 
     // Header feature flags
     const hf = getHeaderFeatures(role);
+    const showSafety = SAFETY_CARD_ROLES.has(role);
 
     // Shell actions context — lets dashboard pages open overlays
     const shellActions = useMemo(() => ({
@@ -163,6 +166,7 @@ export function AppShell({
                                 title={tenantName}
                                 logoUrl={tenantLogo}
                                 onSearch={() => setSearchSheetOpen(true)}
+                                onSafetyClick={showSafety ? () => setSafetyChooserOpen(true) : undefined}
                                 onNotificationClick={() => setNotificationPanelOpen(true)}
                                 onAvatarClick={() => setProfileSheetOpen(true)}
                                 notificationsCount={notificationsCount}
@@ -170,6 +174,7 @@ export function AppShell({
                                 scopeLabel={scopeLabel}
                                 onScopeClick={hf.showScope && showScopeChip ? () => setScopeSelectorOpen(true) : undefined}
                                 showScope={hf.showScope && showScopeChip}
+                                showSafety={showSafety}
                             />
                         )}
                         <div className="admin-body">
@@ -231,6 +236,12 @@ export function AppShell({
                     currentScope={currentScope}
                     onSelect={(branchId) => onScopeChange?.(branchId)}
                     tenantName={tenantName}
+                />
+                <SafetyChooserSheet
+                    isOpen={safetyChooserOpen}
+                    onClose={() => setSafetyChooserOpen(false)}
+                    onChooseEmergency={() => setEmergencySheetOpen(true)}
+                    onChooseReports={() => setReportsHubOpen(true)}
                 />
                 <EmergencySheet
                     isOpen={emergencySheetOpen}

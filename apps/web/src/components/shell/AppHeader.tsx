@@ -9,22 +9,25 @@ interface AppHeaderProps {
     onSearch?: () => void;
     onNotificationClick?: () => void;
     onAvatarClick?: () => void;
+    onSafetyClick?: () => void;
     notificationsCount?: number;
     user?: any;
     scopeLabel?: string;
     onScopeClick?: () => void;
     showScope?: boolean;
+    showSafety?: boolean;
 }
 
 /**
  * Facebook-style AppHeader — clean single-line layout.
  *
- * Mobile:   [Logo] [Title + scope] ··· [Bell] [Avatar ▾]
- * Tablet:   [Logo] [Title + scope] ··· [Search] [Bell] [Avatar ▾]
- * Desktop:  [Logo] [Title + scope] ··· [Search] [Bell] [Avatar ▾]
+ * Mobile:   [Logo] [Title + branch ▾] ··· [Safety] [Bell] [Avatar ▾]
+ * Tablet:   [Logo] [Title + branch ▾] ··· [Search] [Safety] [Bell] [Avatar ▾]
+ * Desktop:  [Logo] [Title + branch ▾] ··· [Search] [Safety] [Bell] [Avatar ▾]
  *
- * Always-on background + shadow (no scroll-dependent change).
- * Avatar has Facebook-style chevron badge for role switching.
+ * Always-on background + shadow.
+ * Avatar has small chevron badge for role switching.
+ * Safety icon opens emergency/incident chooser.
  */
 export function AppHeader({
     title,
@@ -32,25 +35,21 @@ export function AppHeader({
     onSearch,
     onNotificationClick,
     onAvatarClick,
+    onSafetyClick,
     notificationsCount = 0,
     user,
     scopeLabel = 'All campuses',
     onScopeClick,
     showScope = false,
+    showSafety = false,
 }: AppHeaderProps) {
     const displayName = user?.display_name || user?.first_name || user?.displayName || 'User';
     const displayInitial = displayName.charAt(0).toUpperCase();
 
-    // Title area: tappable if scope is enabled (opens scope selector)
-    const TitleWrapper = showScope && onScopeClick ? 'button' : 'div';
-    const titleProps = showScope && onScopeClick
-        ? { type: 'button' as const, onClick: onScopeClick, 'aria-label': 'Change campus' }
-        : {};
-
     return (
         <header className="admin-header" id="app-header">
             <div className="flex items-center justify-between gap-2.5">
-                {/* Left: Logo + Title/Scope */}
+                {/* Left: Logo + Title/Branch */}
                 <div className="flex items-center gap-2.5 min-w-0 flex-1">
                     {/* Logo */}
                     {logoUrl ? (
@@ -63,20 +62,44 @@ export function AppHeader({
                         </div>
                     )}
 
-                    {/* Title + scope subtitle */}
-                    <TitleWrapper
-                        {...titleProps}
-                        className="min-w-0 flex-1 text-left flex flex-col justify-center h-9"
-                    >
-                        <h1 className="text-[15px] sm:text-[16px] lg:text-[18px] font-semibold text-[hsl(var(--admin-text-main))] tracking-tight leading-none truncate">
-                            {title}
-                        </h1>
-                        {showScope && scopeLabel && (
-                            <span className="text-[10px] text-[hsl(var(--admin-text-muted))] leading-tight truncate mt-px max-w-[200px] lg:max-w-[260px]">
-                                {scopeLabel}
-                            </span>
-                        )}
-                    </TitleWrapper>
+                    {/* Title + branch subtitle — tappable if scope enabled */}
+                    {showScope && onScopeClick ? (
+                        <button
+                            type="button"
+                            onClick={onScopeClick}
+                            aria-label="Change campus"
+                            className="min-w-0 flex-1 text-left flex items-center gap-1 h-9"
+                        >
+                            <div className="min-w-0 flex flex-col justify-center">
+                                <h1 className="text-[15px] sm:text-[16px] lg:text-[18px] font-semibold text-[hsl(var(--admin-text-main))] tracking-tight leading-none truncate">
+                                    {title}
+                                </h1>
+                                {scopeLabel && (
+                                    <span className="flex items-center gap-0.5 mt-px">
+                                        <span className="material-symbols-outlined text-[10px] text-[hsl(var(--admin-text-muted))]">location_on</span>
+                                        <span className="text-[10px] text-[hsl(var(--admin-text-muted))] leading-tight truncate max-w-[160px] lg:max-w-[220px]">
+                                            {scopeLabel}
+                                        </span>
+                                    </span>
+                                )}
+                            </div>
+                            <span className="material-symbols-outlined text-[12px] text-[hsl(var(--admin-text-muted))] flex-shrink-0">expand_more</span>
+                        </button>
+                    ) : (
+                        <div className="min-w-0 flex-1 text-left flex flex-col justify-center h-9">
+                            <h1 className="text-[15px] sm:text-[16px] lg:text-[18px] font-semibold text-[hsl(var(--admin-text-main))] tracking-tight leading-none truncate">
+                                {title}
+                            </h1>
+                            {showScope && scopeLabel && (
+                                <span className="flex items-center gap-0.5 mt-px">
+                                    <span className="material-symbols-outlined text-[10px] text-[hsl(var(--admin-text-muted))]">location_on</span>
+                                    <span className="text-[10px] text-[hsl(var(--admin-text-muted))] leading-tight truncate max-w-[160px] lg:max-w-[220px]">
+                                        {scopeLabel}
+                                    </span>
+                                </span>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* Right: Icon cluster */}
@@ -90,6 +113,18 @@ export function AppHeader({
                             aria-label="Search"
                         >
                             <span className="material-symbols-outlined text-[18px]">search</span>
+                        </button>
+                    )}
+
+                    {/* Safety — emergency/incident access */}
+                    {showSafety && onSafetyClick && (
+                        <button
+                            type="button"
+                            onClick={onSafetyClick}
+                            className="w-9 h-9 flex items-center justify-center rounded-full bg-[hsl(var(--admin-surface-alt))] text-[hsl(var(--admin-text-sub))] hover:bg-[hsl(var(--admin-border))] transition-colors"
+                            aria-label="Safety & Reports"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">shield</span>
                         </button>
                     )}
 
@@ -110,7 +145,7 @@ export function AppHeader({
                         </button>
                     )}
 
-                    {/* Avatar with Facebook-style chevron — always */}
+                    {/* Avatar with chevron — always */}
                     {onAvatarClick && (
                         <button
                             type="button"
@@ -127,9 +162,9 @@ export function AppHeader({
                                     </span>
                                 )}
                             </div>
-                            {/* Chevron badge */}
-                            <div className="absolute -bottom-[1px] -right-[1px] w-[14px] h-[14px] rounded-full bg-[hsl(var(--admin-surface-alt))] border border-[hsl(var(--admin-surface))] flex items-center justify-center">
-                                <span className="material-symbols-outlined text-[10px] text-[hsl(var(--admin-text-sub))]">expand_more</span>
+                            {/* Small chevron badge */}
+                            <div className="absolute -bottom-px -right-px w-3 h-3 rounded-full bg-[hsl(var(--admin-surface-alt))] border border-[hsl(var(--admin-surface))] flex items-center justify-center">
+                                <span className="material-symbols-outlined text-[8px] text-[hsl(var(--admin-text-sub))]">expand_more</span>
                             </div>
                         </button>
                     )}

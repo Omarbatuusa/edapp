@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { BookOpen, Star, Trophy, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { apiClient } from '../../../../../lib/api-client';
-import { SafetyQuickAccess } from '@/components/dashboard/SafetyQuickAccess';
 
 export default function LearnerDashboard() {
     const params = useParams();
@@ -48,8 +47,6 @@ export default function LearnerDashboard() {
                     </div>
                 </div>
             </div>
-
-            <SafetyQuickAccess />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="ios-card overflow-hidden">

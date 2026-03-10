@@ -2,7 +2,6 @@
 
 import { useParams } from 'next/navigation';
 import { ParentHome } from '@/components/parent/ParentHome';
-import { SafetyQuickAccess } from '@/components/dashboard/SafetyQuickAccess';
 
 const MOCK_TENANT = {
     name: 'Lakewood International Academy',
@@ -35,8 +34,6 @@ export default function ParentDashboard() {
                     </p>
                 </div>
             </div>
-
-            <SafetyQuickAccess />
 
             <ParentHome
                 tenantSlug={tenantSlug}
