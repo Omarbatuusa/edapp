@@ -62,7 +62,7 @@ export function AppHeader({
                         </div>
                     )}
 
-                    {/* Title + branch subtitle — tappable if scope enabled */}
+                    {/* Title + branch subtitle — tappable with chevron if scope switching enabled */}
                     {showScope && onScopeClick ? (
                         <button
                             type="button"
@@ -90,7 +90,8 @@ export function AppHeader({
                             <h1 className="text-[15px] sm:text-[16px] lg:text-[18px] font-semibold text-[hsl(var(--admin-text-main))] tracking-tight leading-none truncate">
                                 {title}
                             </h1>
-                            {showScope && scopeLabel && (
+                            {/* Always show branch/scope label when provided */}
+                            {scopeLabel && (
                                 <span className="flex items-center gap-0.5 mt-px">
                                     <span className="material-symbols-outlined text-[10px] text-[hsl(var(--admin-text-muted))]">location_on</span>
                                     <span className="text-[10px] text-[hsl(var(--admin-text-muted))] leading-tight truncate max-w-[160px] lg:max-w-[220px]">
