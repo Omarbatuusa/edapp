@@ -327,13 +327,14 @@
   padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
 }
 
-@media (min-width: 641px) {
+/* Bottom nav: hidden on 769px+ (larger tablets/desktop get rail) */
+@media (min-width: 769px) {
   .admin-bottom-nav {
     display: none;
   }
 }
 
-/* Admin nav rail — tablet+ only, inside container */
+/* Admin nav rail — 769px+ only (skip small tablets) */
 .admin-nav-rail {
   display: none;
   flex-shrink: 0;
@@ -347,7 +348,7 @@
   transition: width 0.3s cubic-bezier(0.32, 0.72, 0, 1), padding 0.3s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-@media (min-width: 641px) {
+@media (min-width: 769px) {
   .admin-nav-rail {
     display: flex;
     flex-direction: column;

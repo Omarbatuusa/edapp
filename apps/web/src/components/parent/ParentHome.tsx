@@ -198,7 +198,7 @@ function ChildCard({ child, tenantSlug }: { child: Child; tenantSlug: string }) 
     const isAbsent = child.status === 'absent';
 
     return (
-        <div className="min-w-[280px] max-w-[320px] ios-card flex-shrink-0 snap-start">
+        <div className="min-w-[260px] max-w-[320px] w-[75vw] sm:w-[280px] ios-card flex-shrink-0 snap-start">
             <div className="flex items-start gap-3">
                 <div className="relative shrink-0">
                     <img
@@ -414,13 +414,15 @@ function AnnouncementCard({ announcement, tenantSlug }: { announcement: Announce
 // ============================================================
 function SchoolLifeCard({ post, tenantName, tenantLogo }: { post: SchoolPost; tenantName?: string; tenantLogo?: string }) {
     const isSchoolPost = post.author.name.toLowerCase().includes('academy') || post.author.name.toLowerCase().includes('school');
+    const [expanded, setExpanded] = useState(false);
+    const isLongText = post.content.length > 180;
 
     return (
         <div className="bg-[hsl(var(--admin-surface))] rounded-lg border border-[hsl(var(--admin-border)/0.6)] shadow-[0_1px_2px_rgba(0,0,0,0.05)] overflow-hidden">
             {/* Author header — Facebook style */}
             <div className="flex items-center justify-between px-4 pt-3 pb-2">
-                <div className="flex items-center gap-2.5">
-                    <div className="w-10 h-10 rounded-full bg-[hsl(var(--admin-surface-alt))] flex items-center justify-center overflow-hidden ring-1 ring-[hsl(var(--admin-border)/0.3)]">
+                <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                    <div className="w-10 h-10 rounded-full bg-[hsl(var(--admin-surface-alt))] flex items-center justify-center overflow-hidden ring-1 ring-[hsl(var(--admin-border)/0.3)] flex-shrink-0">
                         {isSchoolPost && tenantLogo ? (
                             <img src={tenantLogo} alt={tenantName} className="w-full h-full object-cover" />
                         ) : post.author.avatar ? (
@@ -429,23 +431,34 @@ function SchoolLifeCard({ post, tenantName, tenantLogo }: { post: SchoolPost; te
                             <span className="text-[hsl(var(--admin-primary))] font-bold text-[13px]">{post.author.name.substring(0, 2).toUpperCase()}</span>
                         )}
                     </div>
-                    <div className="min-w-0">
-                        <h4 className="font-semibold text-[14px] text-[hsl(var(--admin-text-main))] truncate leading-tight">
+                    <div className="min-w-0 flex-1">
+                        <h4 className="font-semibold text-[14px] text-[hsl(var(--admin-text-main))] truncate leading-tight max-w-full">
                             {isSchoolPost && tenantName ? tenantName : post.author.name}
                         </h4>
-                        <p className="text-[12px] text-[hsl(var(--admin-text-muted))] leading-tight mt-0.5">
+                        <p className="text-[12px] text-[hsl(var(--admin-text-muted))] leading-tight mt-0.5 truncate">
                             {post.postedAt} &middot; {post.author.department}
                         </p>
                     </div>
                 </div>
-                <button type="button" title="More options" className="w-8 h-8 hover:bg-[hsl(var(--admin-surface-alt))] rounded-full flex items-center justify-center shrink-0 transition-colors">
+                <button type="button" title="More options" className="w-8 h-8 hover:bg-[hsl(var(--admin-surface-alt))] rounded-full flex items-center justify-center shrink-0 transition-colors ml-2">
                     <MoreHorizontal size={18} className="text-[hsl(var(--admin-text-muted))]" />
                 </button>
             </div>
 
-            {/* Content text */}
+            {/* Content text with See more */}
             <div className="px-4 pb-2.5">
-                <p className="text-[14px] text-[hsl(var(--admin-text-main))] leading-[1.4] line-clamp-4">{post.content}</p>
+                <p className={`text-[14px] text-[hsl(var(--admin-text-main))] leading-[1.4] ${!expanded && isLongText ? 'line-clamp-3' : ''}`}>
+                    {post.content}
+                </p>
+                {isLongText && !expanded && (
+                    <button
+                        type="button"
+                        onClick={() => setExpanded(true)}
+                        className="text-[14px] font-semibold text-[hsl(var(--admin-text-muted))] hover:underline mt-0.5"
+                    >
+                        See more
+                    </button>
+                )}
             </div>
 
             {/* Image */}
@@ -512,8 +525,7 @@ export function ParentHome({ tenantSlug, tenantName, tenantLogo }: ParentHomePro
             <section>
                 <SectionHeader title="My Children" tenantSlug={tenantSlug} />
                 <div
-                    className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory"
-                    style={{ scrollbarWidth: 'none' }}
+                    className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory hide-scrollbar"
                 >
                     {MOCK_CHILDREN.map(child => (
                         <ChildCard key={child.id} child={child} tenantSlug={tenantSlug} />
