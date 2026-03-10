@@ -675,3 +675,69 @@
     padding: 2rem;
   }
 }
+
+/* ═══════════════════════════════════════════════════════
+   DASHBOARD LAYOUT — Facebook-style
+   ═══════════════════════════════════════════════════════ */
+.dashboard-layout-outer {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-top: 16px;
+}
+
+.dashboard-layout-single {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.dashboard-layout-grid {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Desktop: Facebook-style 2-column (main ~680px + sidebar ~320px) */
+@media (min-width: 1024px) {
+  .dashboard-layout-outer {
+    padding-top: 20px;
+  }
+
+  .dashboard-layout-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 680px) 320px;
+    gap: 24px;
+    justify-content: center;
+  }
+}
+
+/* Sidebar — position:sticky inside scroll container, no independent scroll */
+.dashboard-sidebar {
+  /* Mobile: just stacks */
+}
+
+@media (min-width: 1024px) {
+  .dashboard-sidebar {
+    position: sticky;
+    top: 16px;
+    align-self: start;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* Hide scrollbar cross-browser */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    /* Prevent sidebar scroll from propagating */
+    overscroll-behavior: contain;
+  }
+
+  .dashboard-sidebar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Stabilize main scroll — prevent nested scroll conflicts */
+.admin-main {
+  overscroll-behavior-y: contain;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}

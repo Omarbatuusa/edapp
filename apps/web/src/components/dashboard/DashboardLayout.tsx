@@ -9,22 +9,22 @@ interface DashboardLayoutProps {
 }
 
 /**
- * Responsive 2-column dashboard layout.
- * Desktop (lg+): main content left + 340px sticky sidebar right.
+ * Facebook-style responsive dashboard layout.
+ * Desktop (lg+): centered main (max 680px) + 320px sidebar right.
  * Mobile: single column, sidebar below main.
  */
 export function DashboardLayout({ children, sidebar, fab }: DashboardLayoutProps) {
     return (
-        <div className="app-content-padding max-w-7xl mx-auto pb-24">
-            <div className={sidebar ? 'lg:grid lg:grid-cols-[1fr_340px] lg:gap-6' : ''}>
-                {/* Main content */}
-                <div className="min-w-0 space-y-6">
+        <div className="dashboard-layout-outer pb-24">
+            <div className={sidebar ? 'dashboard-layout-grid' : 'dashboard-layout-single'}>
+                {/* Main content — Facebook-width center column */}
+                <div className="min-w-0 space-y-5 px-4 sm:px-5 lg:px-0">
                     {children}
                 </div>
 
-                {/* Sidebar — sticky on desktop, stacked on mobile */}
+                {/* Sidebar — stable position, never scrolls with main */}
                 {sidebar && (
-                    <aside className="mt-6 lg:mt-0 space-y-4 lg:sticky lg:top-4 lg:self-start lg:max-h-[calc(100vh-80px)] lg:overflow-y-auto lg:hide-scrollbar">
+                    <aside className="mt-6 lg:mt-0 space-y-4 dashboard-sidebar">
                         {sidebar}
                     </aside>
                 )}

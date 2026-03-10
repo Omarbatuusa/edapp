@@ -416,52 +416,68 @@ function SchoolLifeCard({ post, tenantName, tenantLogo }: { post: SchoolPost; te
     const isSchoolPost = post.author.name.toLowerCase().includes('academy') || post.author.name.toLowerCase().includes('school');
 
     return (
-        <div className="ios-card p-0 overflow-hidden">
-            {/* Author */}
-            <div className="flex items-center justify-between px-5 pt-4 pb-3">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[hsl(var(--admin-surface-alt))] flex items-center justify-center overflow-hidden">
+        <div className="bg-[hsl(var(--admin-surface))] rounded-lg border border-[hsl(var(--admin-border)/0.6)] shadow-[0_1px_2px_rgba(0,0,0,0.05)] overflow-hidden">
+            {/* Author header — Facebook style */}
+            <div className="flex items-center justify-between px-4 pt-3 pb-2">
+                <div className="flex items-center gap-2.5">
+                    <div className="w-10 h-10 rounded-full bg-[hsl(var(--admin-surface-alt))] flex items-center justify-center overflow-hidden ring-1 ring-[hsl(var(--admin-border)/0.3)]">
                         {isSchoolPost && tenantLogo ? (
                             <img src={tenantLogo} alt={tenantName} className="w-full h-full object-cover" />
                         ) : post.author.avatar ? (
                             <img src={post.author.avatar} alt={post.author.name} className="w-full h-full object-cover" />
                         ) : (
-                            <span className="text-[hsl(var(--admin-primary))] font-bold text-sm">{post.author.name.substring(0, 2).toUpperCase()}</span>
+                            <span className="text-[hsl(var(--admin-primary))] font-bold text-[13px]">{post.author.name.substring(0, 2).toUpperCase()}</span>
                         )}
                     </div>
                     <div className="min-w-0">
-                        <h4 className="font-semibold text-sm text-[hsl(var(--admin-text-main))] truncate">
+                        <h4 className="font-semibold text-[14px] text-[hsl(var(--admin-text-main))] truncate leading-tight">
                             {isSchoolPost && tenantName ? tenantName : post.author.name}
                         </h4>
-                        <p className="text-[13px] text-[hsl(var(--admin-text-muted))]">{post.author.department} &bull; {post.postedAt}</p>
+                        <p className="text-[12px] text-[hsl(var(--admin-text-muted))] leading-tight mt-0.5">
+                            {post.postedAt} &middot; {post.author.department}
+                        </p>
                     </div>
                 </div>
-                <button type="button" title="More options" className="p-2 hover:bg-[hsl(var(--admin-surface-alt))] rounded-full shrink-0">
+                <button type="button" title="More options" className="w-8 h-8 hover:bg-[hsl(var(--admin-surface-alt))] rounded-full flex items-center justify-center shrink-0 transition-colors">
                     <MoreHorizontal size={18} className="text-[hsl(var(--admin-text-muted))]" />
                 </button>
             </div>
 
+            {/* Content text */}
+            <div className="px-4 pb-2.5">
+                <p className="text-[14px] text-[hsl(var(--admin-text-main))] leading-[1.4] line-clamp-4">{post.content}</p>
+            </div>
+
             {/* Image */}
             {post.image && (
-                <img src={post.image} alt="" className="w-full aspect-video object-cover" />
+                <img src={post.image} alt="" className="w-full aspect-[16/9] object-cover" />
             )}
 
-            {/* Content + Engagement */}
-            <div className="px-5 py-4">
-                <p className="text-sm text-[hsl(var(--admin-text-main))] line-clamp-3 leading-relaxed">{post.content}</p>
-                <div className="flex items-center gap-5 mt-3 pt-3 border-t border-[hsl(var(--admin-border)/0.5)]">
-                    <button type="button" title="Like" className={`flex items-center gap-1.5 text-sm font-medium ${post.liked ? 'text-red-500' : 'text-[hsl(var(--admin-text-muted))]'}`}>
-                        <Heart size={18} fill={post.liked ? 'currentColor' : 'none'} />
-                        {post.likes}
-                    </button>
-                    <button type="button" title="Comment" className="flex items-center gap-1.5 text-sm font-medium text-[hsl(var(--admin-text-muted))]">
-                        <MessageCircle size={18} />
-                        {post.comments}
-                    </button>
-                    <button type="button" title="Share" className="ml-auto text-[hsl(var(--admin-text-muted))]">
-                        <Share2 size={18} />
-                    </button>
-                </div>
+            {/* Engagement stats */}
+            <div className="px-4 py-2 flex items-center justify-between text-[12px] text-[hsl(var(--admin-text-muted))]">
+                <span className="flex items-center gap-1">
+                    <span className="w-[18px] h-[18px] rounded-full bg-[hsl(var(--admin-primary))] flex items-center justify-center">
+                        <span className="material-symbols-outlined text-[10px] text-white" style={{ fontVariationSettings: "'FILL' 1" }}>thumb_up</span>
+                    </span>
+                    {post.likes}
+                </span>
+                <span>{post.comments} comments</span>
+            </div>
+
+            {/* Action buttons — Facebook row */}
+            <div className="px-2 py-1 border-t border-[hsl(var(--admin-border)/0.4)] flex">
+                <button type="button" className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md hover:bg-[hsl(var(--admin-surface-alt))] transition-colors text-[13px] font-semibold ${post.liked ? 'text-[hsl(var(--admin-primary))]' : 'text-[hsl(var(--admin-text-muted))]'}`}>
+                    <span className="material-symbols-outlined text-[18px]" style={post.liked ? { fontVariationSettings: "'FILL' 1" } : undefined}>thumb_up</span>
+                    Like
+                </button>
+                <button type="button" className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md hover:bg-[hsl(var(--admin-surface-alt))] transition-colors text-[13px] font-semibold text-[hsl(var(--admin-text-muted))]">
+                    <span className="material-symbols-outlined text-[18px]">chat_bubble_outline</span>
+                    Comment
+                </button>
+                <button type="button" className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md hover:bg-[hsl(var(--admin-surface-alt))] transition-colors text-[13px] font-semibold text-[hsl(var(--admin-text-muted))]">
+                    <span className="material-symbols-outlined text-[18px]">share</span>
+                    Share
+                </button>
             </div>
         </div>
     );
@@ -541,23 +557,25 @@ export function ParentHome({ tenantSlug, tenantName, tenantLogo }: ParentHomePro
                 </div>
             </section>
 
-            {/* School Life — max-2-col grid on desktop */}
+            {/* School Life — Facebook-style feed */}
             <section>
                 <SectionHeader title="School Life" href="/feed" tenantSlug={tenantSlug} />
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-4">
                     {MOCK_SCHOOL_POSTS.map(post => (
                         <SchoolLifeCard key={post.id} post={post} tenantName={tenantName} tenantLogo={tenantLogo} />
                     ))}
                 </div>
             </section>
 
-            {/* End */}
-            <div className="flex flex-col items-center py-8 text-[hsl(var(--admin-text-muted))]">
-                <div className="w-8 h-8 rounded-full bg-[hsl(var(--admin-surface-alt))] flex items-center justify-center mb-2">
-                    <span className="material-symbols-outlined text-lg">check</span>
+            {/* End — Facebook-style divider */}
+            <div className="flex flex-col items-center py-10">
+                <div className="w-full max-w-[260px] flex items-center gap-3 mb-4">
+                    <div className="flex-1 h-px bg-[hsl(var(--admin-border)/0.5)]" />
+                    <span className="material-symbols-outlined text-[20px] text-[hsl(var(--admin-text-muted)/0.5)]">check_circle</span>
+                    <div className="flex-1 h-px bg-[hsl(var(--admin-border)/0.5)]" />
                 </div>
-                <p className="text-sm font-medium">You&apos;re all caught up!</p>
-                <p className="text-[13px] mt-0.5">Check back later for new updates</p>
+                <p className="text-[15px] font-semibold text-[hsl(var(--admin-text-main))]">You&apos;re all caught up</p>
+                <p className="text-[13px] text-[hsl(var(--admin-text-muted))] mt-1">You&apos;ve seen all new posts from the past 3 days.</p>
             </div>
         </div>
     );
