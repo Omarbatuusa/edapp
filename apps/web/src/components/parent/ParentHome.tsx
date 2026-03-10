@@ -567,16 +567,6 @@ export function ParentHome({ tenantSlug, tenantName, tenantLogo }: ParentHomePro
                 </div>
             </section>
 
-            {/* End — Facebook-style divider */}
-            <div className="flex flex-col items-center py-10">
-                <div className="w-full max-w-[260px] flex items-center gap-3 mb-4">
-                    <div className="flex-1 h-px bg-[hsl(var(--admin-border)/0.5)]" />
-                    <span className="material-symbols-outlined text-[20px] text-[hsl(var(--admin-text-muted)/0.5)]">check_circle</span>
-                    <div className="flex-1 h-px bg-[hsl(var(--admin-border)/0.5)]" />
-                </div>
-                <p className="text-[15px] font-semibold text-[hsl(var(--admin-text-main))]">You&apos;re all caught up</p>
-                <p className="text-[13px] text-[hsl(var(--admin-text-muted))] mt-1">You&apos;ve seen all new posts from the past 3 days.</p>
-            </div>
         </div>
     );
 }

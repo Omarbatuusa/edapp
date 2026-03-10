@@ -683,7 +683,28 @@
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  padding-top: 16px;
+  padding: 16px 16px 0;
+}
+
+/* Tablet: bump padding */
+@media (min-width: 641px) {
+  .dashboard-layout-outer {
+    padding: 16px 20px 0;
+  }
+}
+
+/* Large tablet / small desktop: more room */
+@media (min-width: 1024px) {
+  .dashboard-layout-outer {
+    padding: 20px 28px 0;
+  }
+}
+
+/* XL desktop: let grid handle spacing */
+@media (min-width: 1280px) {
+  .dashboard-layout-outer {
+    padding: 20px 16px 0;
+  }
 }
 
 .dashboard-layout-single {
@@ -696,12 +717,8 @@
   flex-direction: column;
 }
 
-/* Desktop: Facebook-style 2-column (main ~680px + sidebar ~320px) */
-@media (min-width: 1024px) {
-  .dashboard-layout-outer {
-    padding-top: 20px;
-  }
-
+/* Desktop XL+: Facebook-style 2-column (main ~680px + sidebar ~320px) */
+@media (min-width: 1280px) {
   .dashboard-layout-grid {
     display: grid;
     grid-template-columns: minmax(0, 680px) 320px;
@@ -712,10 +729,10 @@
 
 /* Sidebar — position:sticky inside scroll container, no independent scroll */
 .dashboard-sidebar {
-  /* Mobile: just stacks */
+  /* Mobile/tablet: just stacks, inherits outer padding */
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
   .dashboard-sidebar {
     position: sticky;
     top: 16px;
