@@ -315,7 +315,7 @@
   flex-direction: column;
 }
 
-/* Admin bottom nav — mobile only, inside container */
+/* Admin bottom nav — mobile/small tablet, inside container */
 .admin-bottom-nav {
   flex-shrink: 0;
   border-top: 0.5px solid hsl(var(--admin-border) / 0.8);
@@ -323,8 +323,8 @@
   background-color: hsl(var(--admin-background) / 0.8);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
-  padding: 8px 16px;
-  padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+  padding: 4px 8px;
+  padding-bottom: max(6px, env(safe-area-inset-bottom, 6px));
 }
 
 /* Bottom nav: hidden on 769px+ (larger tablets/desktop get rail) */
@@ -679,32 +679,27 @@
 
 /* ═══════════════════════════════════════════════════════
    DASHBOARD LAYOUT — Facebook-style
+   Facebook web uses: 16px side padding on mobile,
+   2-column at ~900px viewport (inside rail), centered
    ═══════════════════════════════════════════════════════ */
 .dashboard-layout-outer {
   width: 100%;
-  max-width: 1100px;
+  max-width: 1050px;
   margin: 0 auto;
-  padding: 16px 16px 0;
+  padding: 12px 16px 0;
 }
 
-/* Tablet: bump padding */
-@media (min-width: 641px) {
+/* Tablet */
+@media (min-width: 769px) {
   .dashboard-layout-outer {
-    padding: 16px 20px 0;
+    padding: 16px 24px 0;
   }
 }
 
-/* Large tablet / small desktop: more room */
-@media (min-width: 1024px) {
+/* Desktop — Facebook uses ~16-24px once grid is active */
+@media (min-width: 1080px) {
   .dashboard-layout-outer {
-    padding: 20px 28px 0;
-  }
-}
-
-/* XL desktop: let grid handle spacing */
-@media (min-width: 1280px) {
-  .dashboard-layout-outer {
-    padding: 20px 16px 0;
+    padding: 20px 24px 0;
   }
 }
 
@@ -718,33 +713,32 @@
   flex-direction: column;
 }
 
-/* Desktop XL+: Facebook-style 2-column (main ~680px + sidebar ~320px) */
-@media (min-width: 1280px) {
+/* Desktop 1080px+: 2-column grid (Facebook triggers ~900px inside rail,
+   rail is ~240px, so viewport ~1140px → we use 1080px to be safe) */
+@media (min-width: 1080px) {
   .dashboard-layout-grid {
     display: grid;
-    grid-template-columns: minmax(0, 680px) 320px;
+    grid-template-columns: minmax(0, 1fr) 320px;
     gap: 24px;
-    justify-content: center;
   }
 }
 
-/* Sidebar — position:sticky inside scroll container, no independent scroll */
+/* Sidebar — position:sticky inside scroll container */
 .dashboard-sidebar {
-  /* Mobile/tablet: just stacks, inherits outer padding */
+  /* Mobile/tablet: just stacks */
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 1080px) {
   .dashboard-sidebar {
+    margin-top: 0;
     position: sticky;
     top: 16px;
     align-self: start;
     max-height: calc(100vh - 80px);
     overflow-y: auto;
     overflow-x: hidden;
-    /* Hide scrollbar cross-browser */
     -ms-overflow-style: none;
     scrollbar-width: none;
-    /* Prevent sidebar scroll from propagating */
     overscroll-behavior: contain;
   }
 

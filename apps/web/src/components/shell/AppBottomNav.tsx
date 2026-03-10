@@ -25,7 +25,7 @@ export function AppBottomNav({ items, basePath }: AppBottomNavProps) {
 
     return (
         <nav className="admin-bottom-nav">
-            <div className="flex justify-around items-center">
+            <div className="flex justify-around items-center max-w-[540px] mx-auto">
                 {items.map((item) => {
                     const active = isActive(item.href);
                     return (

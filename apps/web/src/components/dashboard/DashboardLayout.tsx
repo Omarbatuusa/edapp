@@ -26,7 +26,7 @@ export function DashboardLayout({ children, sidebar, fab, footer }: DashboardLay
 
                 {/* Sidebar — stable position, never scrolls with main */}
                 {sidebar && (
-                    <aside className="mt-6 xl:mt-0 space-y-4 dashboard-sidebar">
+                    <aside className="mt-6 space-y-4 dashboard-sidebar">
                         {sidebar}
                     </aside>
                 )}
