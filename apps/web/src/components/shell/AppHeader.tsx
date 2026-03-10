@@ -164,8 +164,8 @@ export function AppHeader({
                                 )}
                             </div>
                             {/* Small chevron badge */}
-                            <div className="absolute -bottom-px -right-px w-3 h-3 rounded-full bg-[hsl(var(--admin-surface-alt))] border border-[hsl(var(--admin-surface))] flex items-center justify-center">
-                                <span className="material-symbols-outlined text-[8px] text-[hsl(var(--admin-text-sub))]">expand_more</span>
+                            <div className="absolute -bottom-[2px] -right-[2px] w-[15px] h-[15px] rounded-full bg-[hsl(var(--admin-border))] border-[1.5px] border-[hsl(var(--admin-surface))] flex items-center justify-center shadow-sm">
+                                <span className="material-symbols-outlined text-[9px] text-[hsl(var(--admin-text-main))]">expand_more</span>
                             </div>
                         </button>
                     )}
