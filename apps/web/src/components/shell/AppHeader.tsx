@@ -73,18 +73,16 @@ export function AppHeader({
                                     type="button"
                                     onClick={onScopeClick}
                                     aria-label="Change campus"
-                                    className="flex items-center gap-[2px] mt-[1px] hover:opacity-80 transition-opacity"
+                                    className="flex items-center gap-[3px] mt-[1px] hover:opacity-80 transition-opacity"
                                 >
-                                    <span className="material-symbols-outlined text-[7px] text-[hsl(var(--admin-text-muted))]">location_on</span>
-                                    <span className="text-[10px] text-[hsl(var(--admin-text-muted))] leading-none truncate max-w-[140px] lg:max-w-[200px]">
+                                    <span className="text-[11px] text-[hsl(var(--admin-text-muted))] leading-none truncate max-w-[140px] lg:max-w-[200px]">
                                         {scopeLabel}
                                     </span>
-                                    <span className="material-symbols-outlined text-[9px] text-[hsl(var(--admin-text-muted))]">expand_more</span>
+                                    <span className="material-symbols-outlined text-[10px] text-[hsl(var(--admin-text-muted))]">expand_more</span>
                                 </button>
                             ) : (
-                                <span className="flex items-center gap-[2px] mt-[1px]">
-                                    <span className="material-symbols-outlined text-[7px] text-[hsl(var(--admin-text-muted))]">location_on</span>
-                                    <span className="text-[10px] text-[hsl(var(--admin-text-muted))] leading-none truncate max-w-[140px] lg:max-w-[200px]">
+                                <span className="flex items-center gap-[3px] mt-[1px]">
+                                    <span className="text-[11px] text-[hsl(var(--admin-text-muted))] leading-none truncate max-w-[140px] lg:max-w-[200px]">
                                         {scopeLabel}
                                     </span>
                                 </span>

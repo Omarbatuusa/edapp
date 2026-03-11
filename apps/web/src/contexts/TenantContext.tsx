@@ -51,15 +51,28 @@ export function TenantProvider({ slug, children }: { slug: string; children: Rea
     }, [slug]);
 
     // Fetch tenant data from public endpoint (no auth needed)
+    // Use localStorage cache for instant display, then refresh from API
     useEffect(() => {
         let cancelled = false;
+        // Instant display from cache (avoids flash on navigation)
+        try {
+            const cached = localStorage.getItem('edapp_tenant_' + slug);
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                if (parsed?.id) setData(parsed);
+            }
+        } catch { /* ignore corrupt cache */ }
+
         fetch(`/v1/tenants/lookup-by-slug?slug=${slug}`)
             .then(r => {
                 if (!r.ok) throw new Error('Tenant not found');
                 return r.json();
             })
             .then(tenant => {
-                if (!cancelled) setData(tenant);
+                if (!cancelled) {
+                    setData(tenant);
+                    try { localStorage.setItem('edapp_tenant_' + slug, JSON.stringify(tenant)); } catch {}
+                }
             })
             .catch(() => {
                 // Fallback handled by defaults

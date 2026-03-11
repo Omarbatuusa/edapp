@@ -295,6 +295,12 @@
   }
 }
 
+@media (min-width: 1025px) {
+  .admin-header {
+    padding: 12px 24px 10px 24px;
+  }
+}
+
 /* Admin body — flex row for rail + content */
 .admin-body {
   display: flex;
@@ -313,6 +319,12 @@
   -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
+}
+
+@media (min-width: 1025px) {
+  .admin-main {
+    padding-right: 8px;
+  }
 }
 
 /* Admin bottom nav — mobile/small tablet, inside container */
@@ -633,6 +645,29 @@
   scrollbar-width: none;
 }
 
+/* Scrollbar hidden by default, appears on hover */
+.scrollbar-on-hover {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-on-hover:hover {
+  scrollbar-width: thin;
+  -ms-overflow-style: auto;
+}
+.scrollbar-on-hover::-webkit-scrollbar {
+  width: 0;
+}
+.scrollbar-on-hover:hover::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollbar-on-hover::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.2);
+  border-radius: 4px;
+}
+.scrollbar-on-hover:hover::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+}
+
 ::-webkit-scrollbar {
   width: 4px;
   height: 4px;
@@ -737,13 +772,7 @@
     max-height: calc(100vh - 80px);
     overflow-y: auto;
     overflow-x: hidden;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
     overscroll-behavior: contain;
-  }
-
-  .dashboard-sidebar::-webkit-scrollbar {
-    display: none;
   }
 }
 

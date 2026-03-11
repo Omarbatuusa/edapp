@@ -40,6 +40,7 @@ export default function RoleSelectionPage({ params }: { params: Promise<{ slug: 
                 if (res.ok) {
                     const data = await res.json()
                     setTenant(data)
+                    try { localStorage.setItem('edapp_tenant_' + slug, JSON.stringify(data)); } catch {}
                 }
             } catch (err) {
                 // Fail silently
