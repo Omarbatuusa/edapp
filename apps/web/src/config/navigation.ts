@@ -313,21 +313,71 @@ const RECEPTION_CONFIG: RoleNavConfig = {
 
 const FINANCE_CONFIG: RoleNavConfig = {
     bottomTabs: [
-        { id: 'fees', icon: 'payments', iconFilled: 'payments', label: 'Fees', href: '/fees' },
-        { id: 'wallet', icon: 'account_balance_wallet', label: 'Wallet', href: '/wallet' },
-        { id: 'statements', icon: 'receipt_long', label: 'Statements', href: '/statements' },
-        { id: 'reports', icon: 'bar_chart', label: 'Reports', href: '/reports' },
+        { id: 'finance', icon: 'account_balance', iconFilled: 'account_balance', label: 'Finance', href: '/finance' },
+        { id: 'billing', icon: 'receipt_long', label: 'Billing', href: '/finance/billing' },
+        { id: 'journals', icon: 'menu_book', label: 'Journals', href: '/finance/journals' },
+        { id: 'reports', icon: 'bar_chart', label: 'Reports', href: '/finance/reports' },
         MENU_TAB,
     ],
     allItems: [
-        { id: 'fees', icon: 'payments', label: 'Fees', href: '/fees' },
-        { id: 'wallet', icon: 'account_balance_wallet', label: 'Wallet', href: '/wallet' },
-        { id: 'statements', icon: 'receipt_long', label: 'Statements', href: '/statements' },
-        { id: 'reports', icon: 'bar_chart', label: 'Reports', href: '/reports' },
+        { id: 'finance', icon: 'account_balance', label: 'Dashboard', href: '/finance' },
+        { id: 'accounts', icon: 'account_tree', label: 'Chart of Accounts', href: '/finance/accounts' },
+        { id: 'journals', icon: 'menu_book', label: 'Journal Entries', href: '/finance/journals' },
+        { id: 'periods', icon: 'calendar_month', label: 'Fiscal Periods', href: '/finance/periods' },
+        { id: 'reports', icon: 'bar_chart', label: 'Reports', href: '/finance/reports' },
+        { id: 'billing', icon: 'receipt_long', label: 'Billing & Invoices', href: '/finance/billing' },
+        { id: 'invoices', icon: 'description', label: 'Invoices', href: '/finance/billing/invoices' },
+        { id: 'fee-structures', icon: 'price_change', label: 'Fee Structures', href: '/finance/billing/fee-structures' },
+        { id: 'vendors', icon: 'store', label: 'Vendors', href: '/finance/vendors' },
+        { id: 'bills', icon: 'request_quote', label: 'Vendor Bills', href: '/finance/vendors/bills' },
+        { id: 'purchase-orders', icon: 'shopping_cart', label: 'Purchase Orders', href: '/finance/vendors/purchase-orders' },
+        { id: 'assets', icon: 'inventory_2', label: 'Assets', href: '/finance/assets' },
+        { id: 'budgets', icon: 'savings', label: 'Budgets', href: '/finance/budgets' },
+        { id: 'wallets', icon: 'account_balance_wallet', label: 'Wallets', href: '/finance/wallets' },
+        { id: 'banking', icon: 'account_balance', label: 'Banking', href: '/finance/banking' },
+        { id: 'fin-settings', icon: 'settings', label: 'Finance Settings', href: '/finance/settings' },
         { id: 'messages', icon: 'chat_bubble_outline', label: 'Messages', href: '/messages' },
-        { id: 'settings', icon: 'settings', label: 'Settings', href: '/settings' },
     ],
     menuSections: [
+        {
+            title: 'Accounting',
+            items: [
+                { id: 'accounts', icon: 'account_tree', label: 'Chart of Accounts', href: '/finance/accounts' },
+                { id: 'journals', icon: 'menu_book', label: 'Journal Entries', href: '/finance/journals' },
+                { id: 'periods', icon: 'calendar_month', label: 'Fiscal Periods', href: '/finance/periods' },
+                { id: 'reports', icon: 'bar_chart', label: 'Reports', href: '/finance/reports' },
+            ],
+        },
+        {
+            title: 'Billing & Receivables',
+            items: [
+                { id: 'billing', icon: 'receipt_long', label: 'Family Accounts', href: '/finance/billing' },
+                { id: 'invoices', icon: 'description', label: 'Invoices', href: '/finance/billing/invoices' },
+                { id: 'fee-structures', icon: 'price_change', label: 'Fee Structures', href: '/finance/billing/fee-structures' },
+            ],
+        },
+        {
+            title: 'Procurement & Payables',
+            items: [
+                { id: 'vendors', icon: 'store', label: 'Vendors', href: '/finance/vendors' },
+                { id: 'bills', icon: 'request_quote', label: 'Vendor Bills', href: '/finance/vendors/bills' },
+                { id: 'purchase-orders', icon: 'shopping_cart', label: 'Purchase Orders', href: '/finance/vendors/purchase-orders' },
+            ],
+        },
+        {
+            title: 'Assets & Budgets',
+            items: [
+                { id: 'assets', icon: 'inventory_2', label: 'Asset Register', href: '/finance/assets' },
+                { id: 'budgets', icon: 'savings', label: 'Budgets', href: '/finance/budgets' },
+                { id: 'wallets', icon: 'account_balance_wallet', label: 'Learner Wallets', href: '/finance/wallets' },
+            ],
+        },
+        {
+            title: 'Banking',
+            items: [
+                { id: 'banking', icon: 'account_balance', label: 'Bank Accounts & Reconciliation', href: '/finance/banking' },
+            ],
+        },
         {
             title: 'Communication',
             items: [
@@ -337,7 +387,7 @@ const FINANCE_CONFIG: RoleNavConfig = {
         {
             title: 'System',
             items: [
-                { id: 'settings', icon: 'settings', label: 'Settings', href: '/settings' },
+                { id: 'fin-settings', icon: 'settings', label: 'Finance Settings', href: '/finance/settings' },
             ],
         },
     ],

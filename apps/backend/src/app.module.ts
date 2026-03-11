@@ -137,6 +137,30 @@ import { SecurityModule } from './security/security.module';
 import { AttendanceModule } from './attendance/attendance.module';
 import { AdminModule } from './admin/admin.module';
 import { AdminPlatformModule } from './admin/admin-platform.module';
+import { FinanceModule } from './finance/finance.module';
+
+// Finance entities
+import {
+  FinTenantSettings, FinAccount, FinFiscalYear, FinFiscalPeriod,
+  FinJournal, FinJournalLine, FinLedgerBalance,
+  FinCostCentre, FinTaxRate, FinApproval,
+  // Phase 2
+  FinFamilyAccount, FinPayer, FinFeeStructure, FinFeeItem,
+  FinDiscountRule, FinLearnerBursary, FinInvoice, FinInvoiceLine,
+  FinReceipt, FinCreditNote, FinPaymentPlan, FinPaymentPlanSchedule, FinHold,
+  // Phase 3
+  FinPaymentProviderConfig, FinPayment, FinPaymentEvent,
+  FinSavedPaymentMethod, FinBankAccount, FinBankTransaction, FinReconciliation,
+  // Phase 4
+  FinVendor, FinPurchaseOrder, FinPurchaseOrderLine,
+  FinVendorBill, FinVendorPayment,
+  FinBudget, FinBudgetLine, FinAsset,
+  FinPettyCashFund, FinPettyCashTransaction,
+  // Phase 5
+  FinFund, FinWallet, FinWalletTransaction,
+  // Phase 6
+  FinZohoConfig, FinZohoMapping, FinZohoSyncLog,
+} from './finance/entities';
 
 import { BullModule } from '@nestjs/bullmq';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -275,6 +299,26 @@ import { ScheduleModule } from '@nestjs/schedule';
           EmergencyAcknowledgement,
           EmergencyRollCall,
           EmergencyTask,
+          // Finance Phase 1
+          FinTenantSettings, FinAccount, FinFiscalYear, FinFiscalPeriod,
+          FinJournal, FinJournalLine, FinLedgerBalance,
+          FinCostCentre, FinTaxRate, FinApproval,
+          // Finance Phase 2
+          FinFamilyAccount, FinPayer, FinFeeStructure, FinFeeItem,
+          FinDiscountRule, FinLearnerBursary, FinInvoice, FinInvoiceLine,
+          FinReceipt, FinCreditNote, FinPaymentPlan, FinPaymentPlanSchedule, FinHold,
+          // Finance Phase 3
+          FinPaymentProviderConfig, FinPayment, FinPaymentEvent,
+          FinSavedPaymentMethod, FinBankAccount, FinBankTransaction, FinReconciliation,
+          // Finance Phase 4
+          FinVendor, FinPurchaseOrder, FinPurchaseOrderLine,
+          FinVendorBill, FinVendorPayment,
+          FinBudget, FinBudgetLine, FinAsset,
+          FinPettyCashFund, FinPettyCashTransaction,
+          // Finance Phase 5
+          FinFund, FinWallet, FinWalletTransaction,
+          // Finance Phase 6
+          FinZohoConfig, FinZohoMapping, FinZohoSyncLog,
         ],
         autoLoadEntities: true,
         synchronize: true, // DEV only, set to false in prod
@@ -298,6 +342,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     AttendanceModule,
     AdminModule,
     AdminPlatformModule,
+    FinanceModule,
   ],
   controllers: [AppController],
   providers: [AppService],
