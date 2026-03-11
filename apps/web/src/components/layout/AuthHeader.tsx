@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { ChevronLeft, CircleHelp } from 'lucide-react'
 import Image from "next/image"
-import { useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 
 interface AuthHeaderProps {
@@ -27,14 +26,13 @@ export function AuthHeader({
 }: AuthHeaderProps) {
     const { resolvedTheme } = useTheme()
     const [mounted, setMounted] = useState(false)
-    const router = useRouter()
 
     useEffect(() => {
         setMounted(true)
     }, [])
 
     const handleChangeSchool = () => {
-        router.push('/')
+        window.location.href = 'https://app.edapp.co.za'
     }
 
     // Determine which logo to use based on theme
@@ -59,30 +57,31 @@ export function AuthHeader({
                             </button>
                         )}
 
-                        {/* Tenant Logo + Name — tappable to switch school */}
-                        <button
-                            type="button"
-                            onClick={handleChangeSchool}
-                            className="flex items-center gap-2.5 min-w-0 hover:opacity-80 transition-opacity"
-                            aria-label="Change school"
-                        >
-                            {tenantLogo && (
-                                <div className="relative w-8 h-8 rounded-xl overflow-hidden border border-border/10 shrink-0">
-                                    <Image
-                                        src={tenantLogo}
-                                        alt={tenantName || "Logo"}
-                                        fill
-                                        className="object-cover"
-                                    />
-                                </div>
-                            )}
-                            <div className="flex items-center gap-1 min-w-0">
-                                <span className="text-sm font-semibold tracking-tight leading-none text-foreground truncate">
-                                    {tenantName}
-                                </span>
-                                <span className="material-symbols-outlined text-[12px] text-muted-foreground shrink-0">expand_more</span>
+                        {/* Tenant Logo */}
+                        {tenantLogo && (
+                            <div className="relative w-8 h-8 rounded-xl overflow-hidden border border-border/10 shrink-0">
+                                <Image
+                                    src={tenantLogo}
+                                    alt={tenantName || "Logo"}
+                                    fill
+                                    className="object-cover"
+                                />
                             </div>
-                        </button>
+                        )}
+
+                        {/* Tenant Name & Change School */}
+                        <div className="flex flex-col min-w-0 justify-center">
+                            <h1 className="text-sm font-semibold tracking-tight leading-none text-foreground truncate">
+                                {tenantName}
+                            </h1>
+                            <button
+                                type="button"
+                                onClick={handleChangeSchool}
+                                className="text-[11px] text-primary hover:underline text-left flex items-center gap-0.5 leading-tight mt-0.5 truncate"
+                            >
+                                Change school <span className="text-[9px]">›</span>
+                            </button>
+                        </div>
                     </div>
                 )}
 

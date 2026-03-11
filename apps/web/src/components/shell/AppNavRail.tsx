@@ -82,7 +82,7 @@ export function AppNavRail({ items, basePath, isCollapsed, onToggleCollapse }: A
     };
 
     return (
-        <aside className={`admin-nav-rail flex flex-col justify-between ${isCollapsed ? 'is-collapsed' : ''}`}>
+        <aside className={`admin-nav-rail scrollbar-on-hover flex flex-col justify-between ${isCollapsed ? 'is-collapsed' : ''}`}>
             <div className="flex flex-col gap-1 w-full">
                 {items.map((item) => {
                     const active = isActive(item.href);
