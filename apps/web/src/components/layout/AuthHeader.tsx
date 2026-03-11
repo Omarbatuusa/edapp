@@ -40,7 +40,7 @@ export function AuthHeader({
 
     return (
         <header
-            className="flex items-center justify-between px-4 shrink-0 z-30 w-full h-14 bg-background border-b border-border/30 shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
+            className="flex items-center justify-between px-4 shrink-0 z-30 w-full h-14 bg-white dark:bg-[hsl(0,0%,11%)] border-b border-border/30 shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
         >
             {/* Left Section */}
             <div className="flex items-center gap-3 flex-1 min-w-0">

@@ -191,9 +191,13 @@
   position: sticky;
   top: 0;
   z-index: 20;
-  background-color: hsl(var(--background));
+  background-color: #ffffff;
   border-bottom: 0.5px solid hsl(var(--border) / 0.3);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+:is(.dark) .app-header {
+  background-color: hsl(0 0% 11%);
 }
 
 .app-header-shadow {
