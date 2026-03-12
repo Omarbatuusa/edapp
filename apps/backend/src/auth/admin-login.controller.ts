@@ -139,7 +139,16 @@ export class AdminLoginController {
             '24h',
         );
 
-        // 6. Return session data
+        // 6. Deduplicate roles — platform admins manage many tenants,
+        //    so show each role only once (keep first/best tenant match)
+        const seenRoles = new Set<string>();
+        const uniqueRoles = assignments.filter(a => {
+            if (seenRoles.has(a.role)) return false;
+            seenRoles.add(a.role);
+            return true;
+        });
+
+        // 7. Return session data
         return {
             sessionToken,
             userId: user.id,
@@ -147,7 +156,7 @@ export class AdminLoginController {
             tenantSlug,
             displayName: user.display_name || user.first_name || decoded.email || '',
             email: user.email || decoded.email || '',
-            allRoles: assignments.map(a => ({
+            allRoles: uniqueRoles.map(a => ({
                 role: a.role,
                 tenantSlug: a.tenant?.tenant_slug || null,
                 branchId: a.branch_id || null,

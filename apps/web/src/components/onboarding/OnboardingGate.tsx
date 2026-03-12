@@ -165,20 +165,26 @@ function EmailVerificationStep({ email, onComplete }: { email: string; onComplet
   async function sendCode() {
     setSending(true);
     setError('');
+    setCountdown(0); // Reset countdown before sending
     const token = localStorage.getItem('session_token');
-    const res = await fetch('/v1/auth/onboarding/send-verification', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token || ''}` },
-    });
-    if (res.ok) {
-      const data = await res.json();
-      if (data.alreadyVerified) { onComplete(); return; }
-      setOtpKey(data.otpKey);
-      setSent(true);
-      setCountdown(60);
-    } else {
-      const err = await res.json().catch(() => ({}));
-      setError(err.message || 'Failed to send code');
+    try {
+      const res = await fetch('/v1/auth/onboarding/send-verification', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token || ''}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.alreadyVerified) { onComplete(); return; }
+        setOtpKey(data.otpKey);
+        setSent(true);
+        setCode(''); // Clear previous code input
+        setCountdown(30);
+      } else {
+        const err = await res.json().catch(() => ({}));
+        setError(err.message || 'Failed to send code');
+      }
+    } catch {
+      setError('Network error. Please try again.');
     }
     setSending(false);
   }

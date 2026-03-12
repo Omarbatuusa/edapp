@@ -293,11 +293,6 @@ export default function AdminLoginPage() {
                                                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">
                                                     {meta.description}
                                                 </p>
-                                                {roleInfo.tenantSlug && (
-                                                    <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1 font-mono">
-                                                        {roleInfo.tenantSlug}
-                                                    </p>
-                                                )}
                                             </div>
                                             <span className="material-symbols-outlined text-slate-300 dark:text-slate-600 group-hover:text-indigo-500 transition-colors">
                                                 arrow_forward_ios

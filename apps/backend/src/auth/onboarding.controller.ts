@@ -94,6 +94,14 @@ export class OnboardingController {
     await this.emailAuthService.verifyOTP(body.otpKey, body.code, user.email);
     await this.userRepo.update(userId, { email_verified_at: new Date() });
 
+    // Mark email as verified in Firebase too
+    try {
+      const firebaseUser = await firebaseAdmin.auth().getUserByEmail(user.email);
+      await firebaseAdmin.auth().updateUser(firebaseUser.uid, { emailVerified: true });
+    } catch (e: any) {
+      console.warn('Firebase email verification sync failed:', e.message);
+    }
+
     return { success: true, message: 'Email verified successfully' };
   }
 
