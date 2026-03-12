@@ -9,6 +9,7 @@ import { FirebaseAuthGuard } from '../../auth/firebase-auth.guard';
 import { User, UserStatus } from '../../users/user.entity';
 import { RoleAssignment, UserRole } from '../../users/role-assignment.entity';
 import { AuditEvent, AuditAction } from '../entities/audit-event.entity';
+import { validatePassword } from '../../auth/password-validator';
 
 const PLATFORM_ROLES = ['platform_super_admin', 'app_super_admin', 'platform_secretary', 'app_secretary'];
 const CAN_CREATE_USERS = ['platform_super_admin', 'app_super_admin', 'platform_secretary', 'app_secretary', 'tenant_admin'];
@@ -59,9 +60,18 @@ export class AdminUsersController {
       throw new ConflictException('A user with this email already exists');
     }
 
-    const passwordHash = body.password
-      ? await bcrypt.hash(body.password, 10)
-      : await bcrypt.hash(Math.random().toString(36).slice(2) + 'Aa1!', 10);
+    let passwordHash: string;
+    let mustChangePassword = true;
+    if (body.password) {
+      const validation = validatePassword(body.password);
+      if (!validation.valid) {
+        throw new BadRequestException(validation.errors.join('. '));
+      }
+      passwordHash = await bcrypt.hash(body.password, 10);
+      mustChangePassword = false;
+    } else {
+      passwordHash = await bcrypt.hash(Math.random().toString(36).slice(2) + 'Aa1!', 10);
+    }
 
     const user = await this.userRepo.save({
       email: body.email.toLowerCase().trim(),
@@ -70,6 +80,7 @@ export class AdminUsersController {
       last_name: body.last_name || null,
       phone_e164: body.phone_e164 || null,
       password_hash: passwordHash,
+      must_change_password: mustChangePassword,
       status: UserStatus.ACTIVE,
     } as Partial<User>);
 

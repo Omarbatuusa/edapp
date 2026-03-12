@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { RoleProvider } from '@/contexts/RoleContext';
 import { TenantProvider, useTenant } from '@/contexts/TenantContext';
 import { AppShell } from '@/components/shell/AppShell';
+import { OnboardingGate } from '@/components/onboarding/OnboardingGate';
 import { getNavConfig } from '@/config/navigation';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import pkg from '../../../../../package.json';
@@ -86,6 +87,13 @@ function DashboardLayoutInner({ slug, children }: { slug: string; children: Reac
 
     // Tenant data from context
     const { tenantDisplayName, tenantLogoUrl, branches, scope, scopeLabel, setScope } = useTenant();
+
+    // Tenant ID for onboarding gate
+    const [tenantIdForOnboarding, setTenantIdForOnboarding] = useState<string | null>(null);
+    useEffect(() => {
+        const id = localStorage.getItem(`edapp_tenant_id_${slug}`) || localStorage.getItem('tenant_id') || localStorage.getItem('admin_tenant_id');
+        setTenantIdForOnboarding(id);
+    }, [slug]);
 
     // User profile + role data
     const { currentRole, allRoles, switchRole, displayName } = useUserProfile(slug);
@@ -217,7 +225,9 @@ function DashboardLayoutInner({ slug, children }: { slug: string; children: Reac
                 allRoles={allRoles}
                 onRoleSwitch={switchRole}
             >
-                {children}
+                <OnboardingGate tenantId={tenantIdForOnboarding} slug={slug}>
+                    {children}
+                </OnboardingGate>
             </AppShell>
         </RoleProvider>
     );

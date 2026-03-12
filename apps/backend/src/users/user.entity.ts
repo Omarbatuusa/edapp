@@ -59,6 +59,13 @@ export class User {
     @Column({ type: 'timestamp', nullable: true })
     phone_verified_at: Date;
 
+    // First-login security
+    @Column({ default: true })
+    must_change_password: boolean;
+
+    @Column({ type: 'timestamp', nullable: true })
+    policies_accepted_at: Date;
+
     // Push Notifications (FCM)
     @Column({ type: 'jsonb', nullable: true, default: [] })
     device_tokens: string[];
