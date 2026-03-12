@@ -50,6 +50,15 @@ export class User {
     @Column({ type: 'timestamp', nullable: true })
     locked_until: Date | null;
 
+    @Column({ nullable: true })
+    avatar_file_id: string;
+
+    @Column({ type: 'timestamp', nullable: true })
+    email_verified_at: Date;
+
+    @Column({ type: 'timestamp', nullable: true })
+    phone_verified_at: Date;
+
     // Push Notifications (FCM)
     @Column({ type: 'jsonb', nullable: true, default: [] })
     device_tokens: string[];

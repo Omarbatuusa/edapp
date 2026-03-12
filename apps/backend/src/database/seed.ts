@@ -175,10 +175,11 @@ async function seed() {
 
     const tenants = await tenantRepo.save([
         { brand_id: brandMap['LAK'].id, tenant_slug: 'lakewood', school_code: 'LAK-001', school_name: 'Lakewood Primary School', status: TenantStatus.ACTIVE, auth_config: DEFAULT_AUTH_CONFIG },
-        { brand_id: brandMap['ALL'].id, tenant_slug: 'allied-sandton', school_code: 'ALL-001', school_name: 'Allied School Sandton', status: TenantStatus.ACTIVE, auth_config: DEFAULT_AUTH_CONFIG },
-        { brand_id: brandMap['ALL'].id, tenant_slug: 'allied-pretoria', school_code: 'ALL-002', school_name: 'Allied School Pretoria', status: TenantStatus.ACTIVE, auth_config: DEFAULT_AUTH_CONFIG },
-        { brand_id: brandMap['ALL'].id, tenant_slug: 'allied-jhb', school_code: 'ALL-003', school_name: 'Allied School Johannesburg', status: TenantStatus.ACTIVE, auth_config: DEFAULT_AUTH_CONFIG },
-        { brand_id: brandMap['ALL'].id, tenant_slug: 'allied-durban', school_code: 'ALL-004', school_name: 'Allied School Durban', status: TenantStatus.ACTIVE, auth_config: DEFAULT_AUTH_CONFIG },
+        { brand_id: brandMap['ALL'].id, tenant_slug: 'allied', school_code: 'ALL-001', school_name: 'Allied Schools', status: TenantStatus.ACTIVE, auth_config: DEFAULT_AUTH_CONFIG },
+        { brand_id: brandMap['ALL'].id, tenant_slug: 'allied-sandton', school_code: 'ALL-002', school_name: 'Allied School Sandton', status: TenantStatus.ACTIVE, auth_config: DEFAULT_AUTH_CONFIG },
+        { brand_id: brandMap['ALL'].id, tenant_slug: 'allied-pretoria', school_code: 'ALL-003', school_name: 'Allied School Pretoria', status: TenantStatus.ACTIVE, auth_config: DEFAULT_AUTH_CONFIG },
+        { brand_id: brandMap['ALL'].id, tenant_slug: 'allied-jhb', school_code: 'ALL-004', school_name: 'Allied School Johannesburg', status: TenantStatus.ACTIVE, auth_config: DEFAULT_AUTH_CONFIG },
+        { brand_id: brandMap['ALL'].id, tenant_slug: 'allied-durban', school_code: 'ALL-005', school_name: 'Allied School Durban', status: TenantStatus.ACTIVE, auth_config: DEFAULT_AUTH_CONFIG },
         { brand_id: brandMap['JEP'].id, tenant_slug: 'jeppe', school_code: 'JEP-001', school_name: 'Jeppe College', status: TenantStatus.ACTIVE, auth_config: DEFAULT_AUTH_CONFIG },
         { brand_id: brandMap['RCS'].id, tenant_slug: 'rainbow-city', school_code: 'RCS-001', school_name: 'Rainbow City Primary', status: TenantStatus.ACTIVE, auth_config: DEFAULT_AUTH_CONFIG },
     ]);
@@ -203,7 +204,8 @@ async function seed() {
 
     await branchRepo.save([
         { tenant_id: tenantMap['lakewood'].id, branch_code: 'LAK-MAIN', branch_name: 'Lakewood Main Campus', is_main_branch: true, physical_address: 'Ormonde, Johannesburg, 2091', phone_landline: '010 023 6117', mobile_whatsapp: '072 741 3979', branch_email: 'info@lakewoodacademy.co.za' },
-        { tenant_id: tenantMap['allied-sandton'].id, branch_code: 'ALL-SDN', branch_name: 'Allied School Sandton', is_main_branch: true, physical_address: '9 Alamein Road, Robertsham, Johannesburg', phone_landline: '011 433 8272', branch_email: 'info@alliedschools.co.za' },
+        { tenant_id: tenantMap['allied'].id, branch_code: 'ALL-MAIN', branch_name: 'Allied Schools Main', is_main_branch: true, physical_address: '9 Alamein Road, Robertsham, Johannesburg', phone_landline: '011 433 8272', branch_email: 'info@alliedschools.co.za' },
+        { tenant_id: tenantMap['allied-sandton'].id, branch_code: 'ALL-SDN', branch_name: 'Allied School Sandton', is_main_branch: true, physical_address: 'Sandton, Johannesburg', branch_email: 'sandton@alliedschools.co.za' },
         { tenant_id: tenantMap['allied-pretoria'].id, branch_code: 'ALL-PTA', branch_name: 'Allied School Pretoria', is_main_branch: true, physical_address: 'Pretoria, Gauteng', branch_email: 'pretoria@alliedschools.co.za' },
         { tenant_id: tenantMap['allied-jhb'].id, branch_code: 'ALL-JHB', branch_name: 'Allied School Johannesburg', is_main_branch: true, physical_address: '43 Burghersdorp Str, Fordsburg, Johannesburg', branch_email: 'jhb@alliedschools.co.za' },
         { tenant_id: tenantMap['allied-durban'].id, branch_code: 'ALL-DBN', branch_name: 'Allied School Durban', is_main_branch: true, physical_address: 'Durban, KwaZulu-Natal', branch_email: 'durban@alliedschools.co.za' },
@@ -236,26 +238,33 @@ async function seed() {
     // ========== 6. ROLE ASSIGNMENTS ==========
     console.log('\n🔑 Creating role assignments...');
     const lak = tenantMap['lakewood'];
+    const allied = tenantMap['allied'];
     const allSdn = tenantMap['allied-sandton'];
 
     await roleRepo.save([
+        // Platform roles
         { user_id: superAdmin1.id, role: UserRole.PLATFORM_SUPER_ADMIN, is_active: true },
         { user_id: superAdmin2.id, role: UserRole.PLATFORM_SUPER_ADMIN, is_active: true },
+        // Lakewood
         { user_id: superAdmin1.id, tenant_id: lak.id, role: UserRole.MAIN_BRANCH_ADMIN, is_active: true },
         { user_id: lakewoodAdmin.id, tenant_id: lak.id, role: UserRole.TENANT_ADMIN, is_active: true },
         { user_id: lakewoodTeacher.id, tenant_id: lak.id, role: UserRole.TEACHER, is_active: true },
         { user_id: lakewoodParent.id, tenant_id: lak.id, role: UserRole.PARENT, is_active: true },
         { user_id: lakewoodStudent.id, tenant_id: lak.id, role: UserRole.LEARNER, is_active: true },
-        { user_id: lakewoodFinance.id, tenant_id: lak.id, role: UserRole.STAFF, is_active: true },
-        { user_id: alliedParent.id, tenant_id: allSdn.id, role: UserRole.PARENT, is_active: true },
+        { user_id: lakewoodFinance.id, tenant_id: lak.id, role: UserRole.FINANCE_OFFICER, is_active: true },
+        // Allied (main)
+        { user_id: superAdmin1.id, tenant_id: allied.id, role: UserRole.MAIN_BRANCH_ADMIN, is_active: true },
+        { user_id: alliedParent.id, tenant_id: allied.id, role: UserRole.PARENT, is_active: true },
+        { user_id: alliedStaff.id, tenant_id: allied.id, role: UserRole.TENANT_ADMIN, is_active: true },
+        { user_id: alliedLearner.id, tenant_id: allied.id, role: UserRole.LEARNER, is_active: true },
+        // Allied Sandton
         { user_id: alliedStaff.id, tenant_id: allSdn.id, role: UserRole.TEACHER, is_active: true },
         { user_id: superAdmin1.id, tenant_id: allSdn.id, role: UserRole.MAIN_BRANCH_ADMIN, is_active: true },
-        { user_id: alliedLearner.id, tenant_id: allSdn.id, role: UserRole.LEARNER, is_active: true },
     ]);
 
     const parentChildRepo = AppDataSource.getRepository(ParentChildLink);
     await parentChildRepo.save({ tenant_id: lak.id, parent_user_id: lakewoodParent.id, child_user_id: lakewoodStudent.id });
-    await parentChildRepo.save({ tenant_id: allSdn.id, parent_user_id: alliedParent.id, child_user_id: alliedLearner.id });
+    await parentChildRepo.save({ tenant_id: allied.id, parent_user_id: alliedParent.id, child_user_id: alliedLearner.id });
     console.log('   ✅ Created role assignments + parent-child links');
 
     // ========== 7. DEMO THREADS ==========

@@ -139,6 +139,26 @@ import { AdminModule } from './admin/admin.module';
 import { AdminPlatformModule } from './admin/admin-platform.module';
 import { FinanceModule } from './finance/finance.module';
 
+// RBAC entities
+import { Permission } from './auth/entities/permission.entity';
+import { PlatformRole } from './auth/entities/platform-role.entity';
+import { PlatformRolePermission } from './auth/entities/platform-role-permission.entity';
+import { PlatformUserRole } from './auth/entities/platform-user-role.entity';
+import { TenantRole } from './auth/entities/tenant-role.entity';
+import { TenantRolePermission } from './auth/entities/tenant-role-permission.entity';
+import { TenantMembership } from './auth/entities/tenant-membership.entity';
+import { TenantMembershipRole } from './auth/entities/tenant-membership-role.entity';
+import { SupportAccessGrant } from './auth/entities/support-access-grant.entity';
+
+// Storage entities
+import { FileObject } from './storage/file-object.entity';
+
+// Identifier generator
+import { SequenceCounter } from './admin/entities/sequence-counter.entity';
+
+// RBAC module
+import { RbacModule } from './auth/rbac/rbac.module';
+
 // Finance entities
 import {
   FinTenantSettings, FinAccount, FinFiscalYear, FinFiscalPeriod,
@@ -299,6 +319,20 @@ import { ScheduleModule } from '@nestjs/schedule';
           EmergencyAcknowledgement,
           EmergencyRollCall,
           EmergencyTask,
+          // RBAC entities
+          Permission,
+          PlatformRole,
+          PlatformRolePermission,
+          PlatformUserRole,
+          TenantRole,
+          TenantRolePermission,
+          TenantMembership,
+          TenantMembershipRole,
+          SupportAccessGrant,
+          // Storage metadata
+          FileObject,
+          // Identifier generator
+          SequenceCounter,
           // Finance Phase 1
           FinTenantSettings, FinAccount, FinFiscalYear, FinFiscalPeriod,
           FinJournal, FinJournalLine, FinLedgerBalance,
@@ -343,6 +377,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     AdminModule,
     AdminPlatformModule,
     FinanceModule,
+    RbacModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -6,68 +6,135 @@ export enum UserRole {
     // ═══════════════════════════════════════════════════════════════
     // PLATFORM ROLES (global scope)
     // ═══════════════════════════════════════════════════════════════
-    PLATFORM_SUPER_ADMIN = 'platform_super_admin',     // Global admin, can manage everything
-    PLATFORM_SECRETARY = 'platform_secretary',         // Platform support admin
-    PLATFORM_SUPPORT = 'platform_support',             // Helpdesk with impersonation (audited)
+    PLATFORM_SUPER_ADMIN = 'platform_super_admin',
+    PLATFORM_SECRETARY = 'platform_secretary',
+    PLATFORM_SUPPORT = 'platform_support',
+
+    // Aliases for new naming convention (app_super_admin = platform_super_admin)
+    APP_SUPER_ADMIN = 'app_super_admin',
+    APP_SECRETARY = 'app_secretary',
+    APP_SUPPORT = 'app_support',
+
+    // ═══════════════════════════════════════════════════════════════
+    // BRAND MANAGEMENT ROLES (platform-side oversight only)
+    // ═══════════════════════════════════════════════════════════════
+    BRAND_ADMIN = 'brand_admin',
+    BRAND_OPERATIONS_MANAGER = 'brand_operations_manager',
+    BRAND_FINANCE_SUPERVISOR = 'brand_finance_supervisor',
+    BRAND_AUDITOR = 'brand_auditor',
 
     // ═══════════════════════════════════════════════════════════════
     // GOVERNANCE / ADMIN ROLES (tenant-scoped)
     // ═══════════════════════════════════════════════════════════════
-    BRAND_ADMIN = 'brand_admin',                       // Governance dashboards only (no data)
-    MAIN_BRANCH_ADMIN = 'main_branch_admin',           // Main branch admin, tenant-wide control
-    BRANCH_ADMIN = 'branch_admin',                     // Branch-limited admin
-    TENANT_ADMIN = 'tenant_admin',                     // Tenant settings & integrations
+    MAIN_BRANCH_ADMIN = 'main_branch_admin',
+    BRANCH_ADMIN = 'branch_admin',
+    TENANT_ADMIN = 'tenant_admin',
 
     // ═══════════════════════════════════════════════════════════════
-    // OPERATIONS ROLES (tenant-scoped)
+    // TENANT LEADERSHIP / OPERATIONS
     // ═══════════════════════════════════════════════════════════════
-    ADMISSIONS_OFFICER = 'admissions_officer',         // Registrar / applications
-    FINANCE_OFFICER = 'finance_officer',               // Bursar / fees
-    HR_ADMIN = 'hr_admin',                             // Staff admin / HR
-    RECEPTION = 'reception',                           // Secretary / front desk
-    IT_ADMIN = 'it_admin',                             // IT systems admin
+    PRINCIPAL = 'principal',
+    DEPUTY_PRINCIPAL = 'deputy_principal',
+    SCHOOL_OPERATIONS_MANAGER = 'school_operations_manager',
+    SCHOOL_ADMINISTRATOR = 'school_administrator',
+    ADMISSIONS_OFFICER = 'admissions_officer',
+    FINANCE_OFFICER = 'finance_officer',
+    HR_ADMIN = 'hr_admin',
+    IT_ADMIN = 'it_admin',
+    TIMETABLE_OFFICER = 'timetable_officer',
+    EXAM_OFFICER = 'exam_officer',
+    CURRICULUM_COORDINATOR = 'curriculum_coordinator',
+    DISCIPLINARY_OFFICER = 'disciplinary_officer',
+    PASTORAL_CARE_LEAD = 'pastoral_care_lead',
+    EVENTS_COORDINATOR = 'events_coordinator',
+    ALUMNI_LIAISON = 'alumni_liaison',
+    SCHOOL_AUDITOR = 'school_auditor',
 
     // ═══════════════════════════════════════════════════════════════
-    // ACADEMIC LEADERSHIP ROLES (tenant/branch-scoped)
+    // BRANCH / OFFICE / SITE SUPPORT
     // ═══════════════════════════════════════════════════════════════
-    PRINCIPAL = 'principal',                           // School principal
-    DEPUTY_PRINCIPAL = 'deputy_principal',             // Deputy principal
-    SMT = 'smt',                                       // Senior Management Team
-    HOD = 'hod',                                       // Head of Department
-    GRADE_HEAD = 'grade_head',                         // Grade Head
-    PHASE_HEAD = 'phase_head',                         // Phase Head (Foundation/Intermediate/Senior)
+    BRANCH_OPERATIONS_ADMIN = 'branch_operations_admin',
+    BRANCH_FINANCE_CLERK = 'branch_finance_clerk',
+    RECEPTIONIST = 'receptionist',
+    RECEPTION = 'reception',          // Legacy alias
+    SECRETARY = 'secretary',
+    AFTERCARE_SUPERVISOR = 'aftercare_supervisor',
+    HOSTEL_SUPERVISOR = 'hostel_supervisor',
 
     // ═══════════════════════════════════════════════════════════════
-    // TEACHING ROLES (class/subject-scoped)
+    // ACADEMIC LEADERSHIP (tenant/branch-scoped)
     // ═══════════════════════════════════════════════════════════════
-    CLASS_TEACHER = 'class_teacher',                   // Homeroom / Class teacher
-    SUBJECT_TEACHER = 'subject_teacher',               // Subject Educator
-    TEACHER = 'teacher',                               // General teacher (legacy compat)
+    SMT = 'smt',
+    HOD = 'hod',
+    GRADE_HEAD = 'grade_head',
+    PHASE_HEAD = 'phase_head',
 
     // ═══════════════════════════════════════════════════════════════
-    // SUPPORT ROLES (tenant/branch-scoped)
+    // TEACHING / ACADEMIC
     // ═══════════════════════════════════════════════════════════════
-    COUNSELLOR = 'counsellor',                         // Counsellor / Social worker
-    NURSE = 'nurse',                                   // School nurse
-    TRANSPORT = 'transport',                           // Transport coordinator
-    AFTERCARE = 'aftercare',                           // Aftercare supervisor
-    SECURITY = 'security',                             // Security staff
-    CARETAKER = 'caretaker',                           // Caretaker / Maintenance
-    STAFF = 'staff',                                   // General staff (legacy compat)
+    CLASS_TEACHER = 'class_teacher',
+    SUBJECT_TEACHER = 'subject_teacher',
+    TEACHER = 'teacher',
+    EDUCATOR = 'educator',
+    TEACHER_ASSISTANT = 'teacher_assistant',
+    LEARNING_SUPPORT_EDUCATOR = 'learning_support_educator',
+    REMEDIAL_TEACHER = 'remedial_teacher',
+    INTERN_TEACHER = 'intern_teacher',
+    COACH = 'coach',
 
     // ═══════════════════════════════════════════════════════════════
-    // END USER ROLES
+    // SUPPORT / WELFARE / SERVICES
     // ═══════════════════════════════════════════════════════════════
-    PARENT = 'parent',                                 // Parent / Guardian
-    LEARNER = 'learner',                               // Student
-    APPLICANT = 'applicant',                           // Prospective applicant
+    COUNSELLOR = 'counsellor',
+    SOCIAL_WORKER = 'social_worker',
+    NURSE = 'nurse',
+    SCHOOL_NURSE = 'school_nurse',
+    LIBRARIAN = 'librarian',
+    LAB_TECHNICIAN = 'lab_technician',
+    TRANSPORT = 'transport',
+    AFTERCARE = 'aftercare',
+    SECURITY = 'security',
+    CARETAKER = 'caretaker',
+    DRIVER = 'driver',
+    GROUNDSKEEPER = 'groundskeeper',
+    MAINTENANCE = 'maintenance',
+    CLEANER = 'cleaner',
+    KITCHEN_STAFF = 'kitchen_staff',
+    STAFF = 'staff',
 
     // ═══════════════════════════════════════════════════════════════
-    // OPTIONAL / COMMUNITY ROLES
+    // LEARNERS / FAMILY
     // ═══════════════════════════════════════════════════════════════
-    ALUMNI = 'alumni',                                 // Former student
-    SGB_MEMBER = 'sgb_member',                         // School Governing Body
-    PARENT_ASSOCIATION = 'parent_association'          // PTA member
+    PARENT = 'parent',
+    LEARNER = 'learner',
+    LEARNER_PREFECT = 'learner_prefect',
+    PARENT_GUARDIAN = 'parent_guardian',
+    PRIMARY_GUARDIAN = 'primary_guardian',
+    SECONDARY_GUARDIAN = 'secondary_guardian',
+    AUTHORIZED_PICKUP = 'authorized_pickup',
+
+    // ═══════════════════════════════════════════════════════════════
+    // APPLICANT ROLES
+    // ═══════════════════════════════════════════════════════════════
+    APPLICANT = 'applicant',
+    APPLICANT_GUARDIAN = 'applicant_guardian',
+    APPLICANT_LEARNER_PROFILE = 'applicant_learner_profile',
+
+    // ═══════════════════════════════════════════════════════════════
+    // SPECIALIST TENANT ROLES
+    // ═══════════════════════════════════════════════════════════════
+    CONTENT_MODERATOR = 'content_moderator',
+    COMMUNICATIONS_MANAGER = 'communications_manager',
+    ATTENDANCE_OFFICER = 'attendance_officer',
+    PRINTING_ADMIN = 'printing_admin',
+    DATA_STEWARD = 'data_steward',
+
+    // ═══════════════════════════════════════════════════════════════
+    // COMMUNITY ROLES
+    // ═══════════════════════════════════════════════════════════════
+    ALUMNI = 'alumni',
+    SGB_MEMBER = 'sgb_member',
+    PARENT_ASSOCIATION = 'parent_association',
 }
 
 @Entity('role_assignments')

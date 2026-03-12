@@ -22,59 +22,45 @@ const ROUTE_ROLE_MAP: Record<string, string[]> = {
         'branch_admin', 'brand_admin', 'smt', 'hod', 'platform_super_admin',
         'platform_secretary', 'platform_support', 'admissions_officer',
         'finance_officer', 'hr_admin', 'reception', 'it_admin',
+        // New platform aliases
+        'app_super_admin', 'app_secretary', 'app_support',
+        // New brand roles
+        'brand_operations_manager', 'brand_finance_supervisor', 'brand_auditor',
+        // New tenant leadership
+        'school_operations_manager', 'school_administrator', 'timetable_officer',
+        'exam_officer', 'curriculum_coordinator', 'disciplinary_officer',
+        'pastoral_care_lead', 'events_coordinator', 'alumni_liaison', 'school_auditor',
+        // New branch roles
+        'branch_operations_admin', 'branch_finance_clerk', 'receptionist', 'secretary',
+        'aftercare_supervisor', 'hostel_supervisor',
+        // Specialist
+        'content_moderator', 'communications_manager', 'attendance_officer',
+        'printing_admin', 'data_steward',
     ],
     '/staff': [
         'staff', 'teacher', 'class_teacher', 'subject_teacher', 'hod', 'grade_head',
         'phase_head', 'counsellor', 'nurse', 'transport', 'aftercare', 'security',
         'caretaker',
+        // New teaching roles
+        'educator', 'teacher_assistant', 'learning_support_educator', 'remedial_teacher',
+        'intern_teacher', 'coach',
+        // New support roles
+        'social_worker', 'school_nurse', 'librarian', 'lab_technician',
+        'driver', 'groundskeeper', 'maintenance', 'cleaner', 'kitchen_staff',
     ],
-    '/learner': ['learner', 'student'],
-    '/parent': ['parent', 'guardian'],
+    '/learner': ['learner', 'student', 'learner_prefect'],
+    '/parent': ['parent', 'guardian', 'parent_guardian', 'primary_guardian', 'secondary_guardian', 'authorized_pickup'],
 };
 
 /** Given a user role, return the correct dashboard path segment */
 function getDashboardForRole(role: string): string {
-    switch (role) {
-        case 'learner':
-        case 'student':
-            return '/learner';
-        case 'parent':
-        case 'guardian':
-            return '/parent';
-        case 'staff':
-        case 'teacher':
-        case 'class_teacher':
-        case 'subject_teacher':
-        case 'grade_head':
-        case 'phase_head':
-        case 'counsellor':
-        case 'nurse':
-        case 'transport':
-        case 'aftercare':
-        case 'security':
-        case 'caretaker':
-            return '/staff';
-        case 'admin':
-        case 'principal':
-        case 'deputy_principal':
-        case 'tenant_admin':
-        case 'main_branch_admin':
-        case 'branch_admin':
-        case 'brand_admin':
-        case 'smt':
-        case 'hod':
-        case 'platform_super_admin':
-        case 'platform_secretary':
-        case 'platform_support':
-        case 'admissions_officer':
-        case 'finance_officer':
-        case 'hr_admin':
-        case 'reception':
-        case 'it_admin':
-            return '/admin';
-        default:
-            return '';
+    // Use the ROUTE_ROLE_MAP for consistency
+    for (const [path, roles] of Object.entries(ROUTE_ROLE_MAP)) {
+        if (roles.includes(role)) return path;
     }
+    // Applicant roles go to /apply
+    if (role === 'applicant' || role === 'applicant_guardian' || role === 'applicant_learner_profile') return '/apply';
+    return '';
 }
 
 export default function DashboardLayout({ children, params }: DashboardLayoutProps) {

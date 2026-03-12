@@ -3,9 +3,21 @@ import { Brand } from '../brands/brand.entity';
 import { Branch } from '../branches/branch.entity';
 
 export enum TenantStatus {
+    DRAFT = 'draft',
+    ONBOARDING = 'onboarding',
     ACTIVE = 'active',
+    SUSPENDED = 'suspended',
     PAUSED = 'paused',
-    ARCHIVED = 'archived'
+    ARCHIVED = 'archived',
+}
+
+export enum TenantType {
+    SCHOOL = 'school',
+    MAIN_BRANCH = 'main_branch',
+    BRANCH = 'branch',
+    CAMPUS = 'campus',
+    TRAINING_CENTER = 'training_center',
+    OTHER = 'other',
 }
 
 @Entity('tenants')
@@ -30,8 +42,35 @@ export class Tenant {
     @Column()
     school_name: string; // Display name e.g., "Rainbow City Schools"
 
+    @Column({ nullable: true })
+    legal_name: string;
+
+    @Column({ type: 'enum', enum: TenantType, default: TenantType.SCHOOL })
+    tenant_type: TenantType;
+
     @Column({ type: 'enum', enum: TenantStatus, default: TenantStatus.ACTIVE })
     status: TenantStatus;
+
+    @Column({ default: 'Africa/Johannesburg' })
+    timezone: string;
+
+    @Column({ default: 'ZAR' })
+    currency: string;
+
+    @Column({ default: 'ZA' })
+    country_code: string;
+
+    @Column({ nullable: true })
+    logo_file_id: string;
+
+    @Column({ nullable: true })
+    cover_file_id: string;
+
+    @Column({ type: 'jsonb', nullable: true, default: {} })
+    settings: Record<string, any>;
+
+    @Column({ type: 'jsonb', nullable: true, default: {} })
+    branding: Record<string, any>;
 
     // Adaptive Authentication Configuration
     @Column({ type: 'jsonb', nullable: true, default: {} })

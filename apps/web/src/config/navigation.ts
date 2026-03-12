@@ -858,6 +858,64 @@ const ROLE_NAV_MAP: Record<string, RoleNavConfig> = {
     alumni: ALUMNI_CONFIG,
     sgb_member: SGB_CONFIG,
     parent_association: PTA_CONFIG,
+    // New platform role aliases
+    app_super_admin: PLATFORM_ADMIN_CONFIG,
+    app_secretary: SECRETARY_CONFIG,
+    app_support: PLATFORM_ADMIN_CONFIG,
+    // New brand roles
+    brand_operations_manager: PLATFORM_ADMIN_CONFIG,
+    brand_finance_supervisor: FINANCE_CONFIG,
+    brand_auditor: PLATFORM_ADMIN_CONFIG,
+    // New tenant leadership
+    school_operations_manager: TENANT_ADMIN_CONFIG,
+    school_administrator: RECEPTION_CONFIG,
+    timetable_officer: TEACHER_CONFIG,
+    exam_officer: TEACHER_CONFIG,
+    curriculum_coordinator: TEACHER_CONFIG,
+    disciplinary_officer: COUNSELLOR_CONFIG,
+    pastoral_care_lead: COUNSELLOR_CONFIG,
+    events_coordinator: RECEPTION_CONFIG,
+    alumni_liaison: RECEPTION_CONFIG,
+    school_auditor: FINANCE_CONFIG,
+    // New branch roles
+    branch_operations_admin: TENANT_ADMIN_CONFIG,
+    branch_finance_clerk: FINANCE_CONFIG,
+    receptionist: RECEPTION_CONFIG,
+    secretary: RECEPTION_CONFIG,
+    aftercare_supervisor: AFTERCARE_CONFIG,
+    hostel_supervisor: AFTERCARE_CONFIG,
+    // New teaching roles
+    educator: TEACHER_CONFIG,
+    teacher_assistant: TEACHER_CONFIG,
+    learning_support_educator: TEACHER_CONFIG,
+    remedial_teacher: TEACHER_CONFIG,
+    intern_teacher: TEACHER_CONFIG,
+    coach: TEACHER_CONFIG,
+    // New support roles
+    social_worker: COUNSELLOR_CONFIG,
+    school_nurse: NURSE_CONFIG,
+    librarian: GENERAL_STAFF_CONFIG,
+    lab_technician: GENERAL_STAFF_CONFIG,
+    driver: TRANSPORT_CONFIG,
+    groundskeeper: GENERAL_STAFF_CONFIG,
+    maintenance: GENERAL_STAFF_CONFIG,
+    cleaner: GENERAL_STAFF_CONFIG,
+    kitchen_staff: GENERAL_STAFF_CONFIG,
+    // New learner/family roles
+    learner_prefect: LEARNER_CONFIG,
+    parent_guardian: PARENT_CONFIG,
+    primary_guardian: PARENT_CONFIG,
+    secondary_guardian: PARENT_CONFIG,
+    authorized_pickup: PARENT_CONFIG,
+    // New applicant roles
+    applicant_guardian: APPLICANT_CONFIG,
+    applicant_learner_profile: APPLICANT_CONFIG,
+    // Specialist roles
+    content_moderator: RECEPTION_CONFIG,
+    communications_manager: RECEPTION_CONFIG,
+    attendance_officer: RECEPTION_CONFIG,
+    printing_admin: RECEPTION_CONFIG,
+    data_steward: RECEPTION_CONFIG,
     // Simplified 4-role keys (backward compat with RoleContext)
     admin: TENANT_ADMIN_CONFIG,
 };
@@ -874,8 +932,8 @@ export function getNavConfig(role: string): RoleNavConfig {
  * Determine admin sub-type from a full role string.
  */
 export function getAdminRoleType(role: string): 'platform' | 'secretary' | 'tenant' {
-    const platformRoles = ['platform_super_admin', 'brand_admin', 'platform_support'];
-    const secretaryRoles = ['platform_secretary'];
+    const platformRoles = ['platform_super_admin', 'app_super_admin', 'brand_admin', 'platform_support', 'app_support', 'brand_operations_manager', 'brand_finance_supervisor', 'brand_auditor'];
+    const secretaryRoles = ['platform_secretary', 'app_secretary'];
     if (platformRoles.includes(role)) return 'platform';
     if (secretaryRoles.includes(role)) return 'secretary';
     return 'tenant';
