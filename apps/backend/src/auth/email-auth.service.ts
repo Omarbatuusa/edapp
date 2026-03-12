@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomBytes, randomInt } from 'crypto';
+import * as nodemailer from 'nodemailer';
 
 interface OTPData {
     code: string;
@@ -23,12 +24,28 @@ export class EmailAuthService {
     // In-memory storage for MVP (Production should use Redis)
     private readonly otpCodes = new Map<string, OTPData>();
     private readonly magicLinks = new Map<string, MagicLinkData>();
+    private transporter: nodemailer.Transporter | null = null;
 
     private readonly OTP_TTL_MS = 5 * 60 * 1000; // 5 minutes
     private readonly MAGIC_LINK_TTL_MS = 10 * 60 * 1000; // 10 minutes
     private readonly MAX_OTP_ATTEMPTS = 3;
 
-    constructor(private configService: ConfigService) { }
+    constructor(private configService: ConfigService) {
+        // Initialize SMTP transporter
+        const smtpHost = this.configService.get('SMTP_HOST', 'smtp.gmail.com');
+        const smtpPort = parseInt(this.configService.get('SMTP_PORT', '587'), 10);
+        const smtpUser = this.configService.get('SMTP_USER', '');
+        const smtpPass = this.configService.get('SMTP_PASS', '');
+
+        if (smtpUser) {
+            this.transporter = nodemailer.createTransport({
+                host: smtpHost,
+                port: smtpPort,
+                secure: smtpPort === 465,
+                auth: { user: smtpUser, pass: smtpPass },
+            });
+        }
+    }
 
     /**
      * Generate a 6-digit OTP code
@@ -61,12 +78,41 @@ export class EmailAuthService {
             attempts: 0,
         });
 
-        // TODO: Send email via AWS SES / SMTP
-        // For MVP, log the code (remove in production!)
-        console.log(`[EMAIL OTP] Code for ${normalizedEmail}: ${code}`);
-
-        // In production, use email service:
-        // await this.emailService.sendOTP(normalizedEmail, code);
+        // Send email
+        if (this.transporter) {
+            try {
+                await this.transporter.sendMail({
+                    from: this.configService.get('SMTP_FROM', 'EdApp <noreply@edapp.co.za>'),
+                    to: normalizedEmail,
+                    subject: 'EdApp - Your Verification Code',
+                    html: `
+                        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 20px;">
+                            <div style="text-align: center; margin-bottom: 32px;">
+                                <h1 style="font-size: 24px; font-weight: 700; color: #1a1a1a; margin: 0;">EdApp</h1>
+                                <p style="font-size: 14px; color: #666; margin-top: 4px;">Email Verification</p>
+                            </div>
+                            <div style="background: #f8f9fa; border-radius: 16px; padding: 32px; text-align: center;">
+                                <p style="font-size: 14px; color: #555; margin: 0 0 16px;">Your verification code is:</p>
+                                <div style="font-size: 36px; font-weight: 800; letter-spacing: 8px; color: #1a1a1a; font-family: monospace; padding: 16px; background: white; border-radius: 12px; border: 2px solid #e5e7eb;">
+                                    ${code}
+                                </div>
+                                <p style="font-size: 13px; color: #888; margin: 16px 0 0;">This code expires in 5 minutes.</p>
+                            </div>
+                            <p style="font-size: 12px; color: #aaa; text-align: center; margin-top: 24px;">
+                                If you didn't request this code, you can safely ignore this email.
+                            </p>
+                        </div>
+                    `,
+                });
+                console.log(`[EMAIL OTP] Sent to ${normalizedEmail}`);
+            } catch (err) {
+                console.error('[EMAIL OTP] Send failed:', err);
+                // Fall through - still return the otpKey so flow isn't blocked
+            }
+        } else {
+            // No SMTP configured - log for development
+            console.log(`[EMAIL OTP] Code for ${normalizedEmail}: ${code} (SMTP not configured)`);
+        }
 
         return { otpKey, expiresAt };
     }

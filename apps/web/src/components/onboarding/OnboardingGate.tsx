@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { updatePassword } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
 interface OnboardingGateProps {
   children: React.ReactNode;
@@ -239,6 +241,16 @@ function EmailVerificationStep({ email, onComplete }: { email: string; onComplet
   );
 }
 
+function getPasswordStrength(password: string): { score: number; label: string; color: string } {
+  const passed = PASSWORD_RULES.filter(r => r.test(password)).length;
+  if (password.length === 0) return { score: 0, label: '', color: 'bg-gray-200' };
+  if (passed <= 1) return { score: 1, label: 'Weak', color: 'bg-red-500' };
+  if (passed <= 2) return { score: 2, label: 'Fair', color: 'bg-orange-500' };
+  if (passed <= 3) return { score: 3, label: 'Good', color: 'bg-yellow-500' };
+  if (passed <= 4) return { score: 4, label: 'Strong', color: 'bg-green-500' };
+  return { score: 5, label: 'Very Strong', color: 'bg-green-600' };
+}
+
 function PasswordSetupStep({ isFirstLogin, onComplete }: { isFirstLogin: boolean; onComplete: () => void }) {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -246,6 +258,9 @@ function PasswordSetupStep({ isFirstLogin, onComplete }: { isFirstLogin: boolean
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const strength = getPasswordStrength(password);
 
   async function handleSubmit() {
     if (password !== confirm) { setError('Passwords do not match'); return; }
@@ -261,6 +276,15 @@ function PasswordSetupStep({ isFirstLogin, onComplete }: { isFirstLogin: boolean
       }),
     });
     if (res.ok) {
+      // Also update the Firebase password on the client side
+      if (auth?.currentUser) {
+        try {
+          await updatePassword(auth.currentUser, password);
+        } catch (e) {
+          // Non-fatal — backend already updated
+          console.warn('Firebase password sync:', e);
+        }
+      }
       onComplete();
     } else {
       const err = await res.json().catch(() => ({}));
@@ -271,6 +295,14 @@ function PasswordSetupStep({ isFirstLogin, onComplete }: { isFirstLogin: boolean
 
   return (
     <div className="ios-card p-5 space-y-4">
+      {isFirstLogin && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-3">
+          <p className="text-[13px] text-blue-800 font-medium leading-snug">
+            Welcome! Your admin created a temporary password. Please set your own secure password to continue.
+          </p>
+        </div>
+      )}
+
       {!isFirstLogin && (
         <div>
           <label className="block text-[13px] font-semibold text-[hsl(var(--admin-text-sub))] mb-1">Current Password</label>
@@ -291,12 +323,36 @@ function PasswordSetupStep({ isFirstLogin, onComplete }: { isFirstLogin: boolean
             <span className="material-symbols-outlined text-[20px]">{showPassword ? 'visibility_off' : 'visibility'}</span>
           </button>
         </div>
+        {/* Password strength meter */}
+        {password.length > 0 && (
+          <div className="mt-2">
+            <div className="flex gap-1 h-1.5 rounded-full overflow-hidden bg-gray-100">
+              {[1, 2, 3, 4, 5].map(level => (
+                <div
+                  key={level}
+                  className={`flex-1 rounded-full transition-colors duration-300 ${level <= strength.score ? strength.color : 'bg-gray-200'}`}
+                />
+              ))}
+            </div>
+            <p className={`text-[11px] font-semibold mt-1 ${
+              strength.score <= 1 ? 'text-red-600' : strength.score <= 2 ? 'text-orange-600' : strength.score <= 3 ? 'text-yellow-600' : 'text-green-600'
+            }`}>
+              {strength.label}
+            </p>
+          </div>
+        )}
       </div>
 
       <div>
         <label className="block text-[13px] font-semibold text-[hsl(var(--admin-text-sub))] mb-1">Confirm Password</label>
-        <input type="password" value={confirm} onChange={e => setConfirm(e.target.value)}
-          className="w-full h-11 px-4 rounded-xl bg-[hsl(var(--admin-surface-alt))] border border-[hsl(var(--admin-border))] outline-none focus:border-[hsl(var(--admin-primary))] text-[14px]" />
+        <div className="relative">
+          <input type={showConfirm ? 'text' : 'password'} value={confirm} onChange={e => setConfirm(e.target.value)}
+            className="w-full h-11 px-4 pr-11 rounded-xl bg-[hsl(var(--admin-surface-alt))] border border-[hsl(var(--admin-border))] outline-none focus:border-[hsl(var(--admin-primary))] text-[14px]" />
+          <button type="button" onClick={() => setShowConfirm(!showConfirm)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-[hsl(var(--admin-text-muted))]">
+            <span className="material-symbols-outlined text-[20px]">{showConfirm ? 'visibility_off' : 'visibility'}</span>
+          </button>
+        </div>
       </div>
 
       {/* Password strength checklist */}

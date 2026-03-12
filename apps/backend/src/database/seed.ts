@@ -1,5 +1,6 @@
 import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
+import * as admin from 'firebase-admin';
 import { Brand, BrandStatus } from '../brands/brand.entity';
 import { Tenant, TenantStatus } from '../tenants/tenant.entity';
 import { TenantDomain, TenantDomainType } from '../tenants/tenant-domain.entity';
@@ -218,9 +219,21 @@ async function seed() {
 
     // ========== 5. USERS ==========
     console.log('\n👤 Creating users...');
+
+    // Initialize Firebase Admin for seed
+    if (admin.apps.length === 0) {
+        const path = require('path');
+        try {
+            const serviceAccount = require(path.resolve(process.cwd(), 'firebase-service-account.json'));
+            admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+        } catch {
+            admin.initializeApp({ credential: admin.credential.applicationDefault() });
+        }
+    }
+
     const passwordHash = await bcrypt.hash('Janat@2000', 10);
 
-    const superAdmin1 = await userRepo.save({ email: 'umarbatuusa@gmail.com', display_name: 'Umar Batuusa', password_hash: passwordHash, must_change_password: false, email_verified_at: new Date(), status: UserStatus.ACTIVE });
+    const superAdmin1 = await userRepo.save({ email: 'umarbatuusa@gmail.com', display_name: 'Umar Batuusa', password_hash: passwordHash, must_change_password: true, status: UserStatus.ACTIVE });
     const superAdmin2 = await userRepo.save({ email: 'admin@edapp.co.za', display_name: 'EdApp Admin', password_hash: passwordHash, status: UserStatus.ACTIVE });
 
     const lakewoodAdmin = await userRepo.save({ email: 'admin@lakewood.edu', display_name: 'Principal Skinner', first_name: 'Seymour', last_name: 'Skinner', password_hash: passwordHash, status: UserStatus.ACTIVE });
@@ -232,6 +245,21 @@ async function seed() {
     const alliedParent = await userRepo.save({ email: 'ssebuguzisula@gmail.com', display_name: 'Ssebuguzi Sula', first_name: 'Ssebuguzi', last_name: 'Sula', password_hash: passwordHash, status: UserStatus.ACTIVE });
     const alliedStaff = await userRepo.save({ email: 'alliedschoolrobertsham@gmail.com', display_name: 'Allied Staff', first_name: 'Allied', last_name: 'Staff', password_hash: passwordHash, status: UserStatus.ACTIVE });
     const alliedLearner = await userRepo.save({ email: 'learner@allied.edu', student_number: 'ALL001', pin_hash: await bcrypt.hash('1234', 10), display_name: 'Test Learner', first_name: 'Test', last_name: 'Learner', status: UserStatus.ACTIVE });
+
+    // Create Firebase accounts for seeded users
+    const firebaseAuth = admin.auth();
+    for (const u of [superAdmin1, superAdmin2, lakewoodAdmin, lakewoodTeacher, lakewoodParent, lakewoodFinance, alliedParent, alliedStaff]) {
+        try {
+            await firebaseAuth.createUser({ email: u.email, password: 'Janat@2000', displayName: u.display_name });
+            console.log(`   Firebase account created: ${u.email}`);
+        } catch (e: any) {
+            if (e.code === 'auth/email-already-exists') {
+                console.log(`   Firebase account exists: ${u.email}`);
+            } else {
+                console.warn(`   Firebase account failed for ${u.email}:`, e.message);
+            }
+        }
+    }
 
     console.log('   ✅ Created users');
 

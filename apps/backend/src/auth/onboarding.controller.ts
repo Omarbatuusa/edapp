@@ -5,6 +5,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
+import * as firebaseAdmin from 'firebase-admin';
 import { FirebaseAuthGuard } from './firebase-auth.guard';
 import { User } from '../users/user.entity';
 import { UserPolicyAcceptance, UserIntent } from '../policies/user-policy-acceptance.entity';
@@ -133,6 +134,14 @@ export class OnboardingController {
       password_hash: hash,
       must_change_password: false,
     });
+
+    // Sync password to Firebase
+    try {
+      const firebaseUser = await firebaseAdmin.auth().getUserByEmail(user.email);
+      await firebaseAdmin.auth().updateUser(firebaseUser.uid, { password: body.newPassword });
+    } catch (e: any) {
+      console.warn('Firebase password sync failed:', e.message);
+    }
 
     return { success: true, message: 'Password updated successfully' };
   }

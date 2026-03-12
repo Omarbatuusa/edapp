@@ -5,6 +5,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
+import * as firebaseAdmin from 'firebase-admin';
 import { FirebaseAuthGuard } from '../../auth/firebase-auth.guard';
 import { User, UserStatus } from '../../users/user.entity';
 import { RoleAssignment, UserRole } from '../../users/role-assignment.entity';
@@ -60,18 +61,18 @@ export class AdminUsersController {
       throw new ConflictException('A user with this email already exists');
     }
 
-    let passwordHash: string;
-    let mustChangePassword = true;
+    let rawPassword: string;
     if (body.password) {
       const validation = validatePassword(body.password);
       if (!validation.valid) {
         throw new BadRequestException(validation.errors.join('. '));
       }
-      passwordHash = await bcrypt.hash(body.password, 10);
-      mustChangePassword = false;
+      rawPassword = body.password;
     } else {
-      passwordHash = await bcrypt.hash(Math.random().toString(36).slice(2) + 'Aa1!', 10);
+      // Generate a readable temp password
+      rawPassword = 'Temp' + Math.random().toString(36).slice(2, 6) + '@' + Math.floor(Math.random() * 900 + 100);
     }
+    const passwordHash = await bcrypt.hash(rawPassword, 10);
 
     const user = await this.userRepo.save({
       email: body.email.toLowerCase().trim(),
@@ -80,9 +81,22 @@ export class AdminUsersController {
       last_name: body.last_name || null,
       phone_e164: body.phone_e164 || null,
       password_hash: passwordHash,
-      must_change_password: mustChangePassword,
+      must_change_password: true,
       status: UserStatus.ACTIVE,
     } as Partial<User>);
+
+    // Create Firebase account so the user can log in
+    try {
+      await firebaseAdmin.auth().createUser({
+        email: user.email,
+        password: rawPassword,
+        displayName: user.display_name,
+      });
+    } catch (e: any) {
+      if (e.code !== 'auth/email-already-exists') {
+        console.warn('Firebase account creation failed:', e.message);
+      }
+    }
 
     let assignment: RoleAssignment | null = null;
     if (body.role) {
@@ -117,6 +131,7 @@ export class AdminUsersController {
       last_name: user.last_name,
       status: user.status,
       role_assignment: assignment,
+      tempPassword: rawPassword,
     };
   }
 

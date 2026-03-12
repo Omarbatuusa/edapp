@@ -34,6 +34,7 @@ export default function RoleAssignModal({ tenantId, onClose, onSave }: Props) {
   const [newFirst, setNewFirst] = useState('');
   const [newLast, setNewLast] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [tempPassword, setTempPassword] = useState('');
 
   async function searchUser() {
     if (!email) return;
@@ -83,6 +84,9 @@ export default function RoleAssignModal({ tenantId, onClose, onSave }: Props) {
       setUserId(user.id);
       setUserName(user.display_name || user.email);
       setNotFound(false);
+      if (user.tempPassword) {
+        setTempPassword(user.tempPassword);
+      }
     } else {
       const err = await res.json().catch(() => ({}));
       setError(err.message || 'Failed to create user');
@@ -171,6 +175,20 @@ export default function RoleAssignModal({ tenantId, onClose, onSave }: Props) {
                 <Plus size={14} />
                 {creating ? 'Creating...' : 'Create User Account'}
               </button>
+              {tempPassword && (
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mt-2">
+                  <p className="text-[12px] font-semibold text-amber-800 mb-1">Temporary Password (share with user):</p>
+                  <div className="flex items-center gap-2">
+                    <code className="flex-1 text-[14px] font-mono font-bold text-amber-900 bg-white px-3 py-1.5 rounded-lg border border-amber-200">{tempPassword}</code>
+                    <button type="button" onClick={() => { navigator.clipboard.writeText(tempPassword); }}
+                      className="h-8 px-3 bg-amber-100 text-amber-700 text-[12px] font-bold rounded-lg hover:bg-amber-200 transition-colors flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[14px]">content_copy</span>
+                      Copy
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-amber-600 mt-2">The user will be prompted to set their own password on first login.</p>
+                </div>
+              )}
             </div>
           )}
 
