@@ -109,6 +109,7 @@ import { EmergencyRollCall } from './entities/emergency-roll-call.entity';
 import { EmergencyTask } from './entities/emergency-task.entity';
 import { AdminIncidentsController } from './controllers/admin-incidents.controller';
 import { AdminEmergenciesController } from './controllers/admin-emergencies.controller';
+import { AdminUsersController } from './controllers/admin-users.controller';
 
 @Module({
   imports: [
@@ -217,6 +218,7 @@ import { AdminEmergenciesController } from './controllers/admin-emergencies.cont
     AdminCalendarController,
     AdminIncidentsController,
     AdminEmergenciesController,
+    AdminUsersController,
   ],
 })
 export class AdminPlatformModule {}

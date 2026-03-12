@@ -59,7 +59,12 @@ export function TenantProvider({ slug, children }: { slug: string; children: Rea
             const cached = localStorage.getItem('edapp_tenant_' + slug);
             if (cached) {
                 const parsed = JSON.parse(cached);
-                if (parsed?.id) setData(parsed);
+                if (parsed?.id) {
+                    setData(parsed);
+                    localStorage.setItem('tenant_id', parsed.id);
+                    localStorage.setItem(`edapp_tenant_id_${slug}`, parsed.id);
+                    localStorage.setItem('admin_tenant_id', parsed.id);
+                }
             }
         } catch { /* ignore corrupt cache */ }
 
@@ -71,7 +76,15 @@ export function TenantProvider({ slug, children }: { slug: string; children: Rea
             .then(tenant => {
                 if (!cancelled) {
                     setData(tenant);
-                    try { localStorage.setItem('edapp_tenant_' + slug, JSON.stringify(tenant)); } catch {}
+                    try {
+                        localStorage.setItem('edapp_tenant_' + slug, JSON.stringify(tenant));
+                        // Store tenant_id for pages that need it
+                        if (tenant?.id) {
+                            localStorage.setItem('tenant_id', tenant.id);
+                            localStorage.setItem(`edapp_tenant_id_${slug}`, tenant.id);
+                            localStorage.setItem('admin_tenant_id', tenant.id);
+                        }
+                    } catch {}
                 }
             })
             .catch(() => {

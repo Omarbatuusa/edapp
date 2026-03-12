@@ -25,9 +25,12 @@ interface LoginResult {
 
 const ROLE_META: Record<string, { label: string; description: string; icon: string; color: string }> = {
     platform_super_admin: { label: 'Super Admin', description: 'Full platform access — manage all tenants, brands, and settings', icon: 'shield_person', color: 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' },
+    app_super_admin: { label: 'Super Admin', description: 'Full platform access — manage all tenants, brands, and settings', icon: 'shield_person', color: 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' },
     brand_admin: { label: 'Brand Admin', description: 'Manage brand groups, governance dashboards, and dictionaries', icon: 'corporate_fare', color: 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400' },
-    platform_secretary: { label: 'Platform Secretary', description: 'Inbox, approvals, and tenant support', icon: 'support_agent', color: 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400' },
-    platform_support: { label: 'Platform Support', description: 'Helpdesk with tenant lookup and impersonation', icon: 'headset_mic', color: 'bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400' },
+    platform_secretary: { label: 'App Secretary', description: 'Inbox, approvals, tenant management, and user support', icon: 'support_agent', color: 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400' },
+    app_secretary: { label: 'App Secretary', description: 'Inbox, approvals, tenant management, and user support', icon: 'support_agent', color: 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400' },
+    platform_support: { label: 'App Support', description: 'Helpdesk with tenant lookup and impersonation', icon: 'headset_mic', color: 'bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400' },
+    app_support: { label: 'App Support', description: 'Helpdesk with tenant lookup and impersonation', icon: 'headset_mic', color: 'bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400' },
     tenant_admin: { label: 'School Admin', description: 'Manage school settings, data, people, and integrations', icon: 'school', color: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' },
     main_branch_admin: { label: 'Main Branch Admin', description: 'Tenant-wide branch management and school data', icon: 'account_balance', color: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' },
     branch_admin: { label: 'Branch Admin', description: 'Manage your branch staff and settings', icon: 'location_city', color: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' },

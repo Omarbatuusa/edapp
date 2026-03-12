@@ -14,11 +14,12 @@ import { AddEventSheet } from '../../../../../components/dashboard/AddEventSheet
 
 interface Props { params: Promise<{ slug: string }> }
 
-const PLATFORM_ROLES = ['platform_super_admin', 'brand_admin'];
-const SECRETARY_ROLES = ['platform_secretary'];
+const PLATFORM_ROLES = ['platform_super_admin', 'app_super_admin', 'brand_admin'];
+const SECRETARY_ROLES = ['platform_secretary', 'app_secretary'];
+const SUPPORT_ROLES = ['platform_support', 'app_support'];
 const TENANT_ROLES = ['tenant_admin', 'main_branch_admin'];
-const BRANCH_ROLES = ['tenant_admin', 'main_branch_admin', 'branch_admin', 'platform_super_admin'];
-const ADMISSIONS_ROLES = ['platform_super_admin', 'brand_admin', 'tenant_admin', 'admissions_officer'];
+const BRANCH_ROLES = ['tenant_admin', 'main_branch_admin', 'branch_admin', 'platform_super_admin', 'app_super_admin'];
+const ADMISSIONS_ROLES = ['platform_super_admin', 'app_super_admin', 'brand_admin', 'tenant_admin', 'admissions_officer'];
 
 function useAdminRole(slug: string) {
     const [role, setRole] = useState('');
@@ -36,6 +37,7 @@ export default function AdminDashboard({ params }: Props) {
     const role = useAdminRole(slug);
     const isPlatform = PLATFORM_ROLES.includes(role);
     const isSecretary = SECRETARY_ROLES.includes(role);
+    const isSupport = SUPPORT_ROLES.includes(role);
     const isTenantAdmin = TENANT_ROLES.includes(role);
     const canManageBranches = BRANCH_ROLES.includes(role);
     const canManageAdmissions = ADMISSIONS_ROLES.includes(role);

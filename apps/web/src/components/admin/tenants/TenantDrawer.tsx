@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Ban } from 'lucide-react';
 
 interface Tenant {
@@ -18,7 +18,18 @@ export default function TenantDrawer({ tenant, readOnly, onClose, onSave }: Prop
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [disabling, setDisabling] = useState(false);
+  const [brands, setBrands] = useState<{id: string; brand_name: string}[]>([]);
   const set = (k: string) => (e: any) => setForm(f => ({ ...f, [k]: e.target.value }));
+
+  useEffect(() => {
+    const token = localStorage.getItem('session_token');
+    fetch('/v1/admin/brands', {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+      .then(r => r.ok ? r.json() : [])
+      .then(data => setBrands(Array.isArray(data) ? data : data.data || []))
+      .catch(() => {});
+  }, []);
 
   async function handleSave() {
     setSaving(true); setError('');
@@ -90,6 +101,7 @@ export default function TenantDrawer({ tenant, readOnly, onClose, onSave }: Prop
                 <IR icon="domain" label="School Name" value={tenant?.school_name} />
                 <IR icon="tag" label="School Code" value={tenant?.school_code} mono />
                 <IR icon="link" label="URL Slug" value={tenant?.tenant_slug} mono />
+                <IR icon="storefront" label="Brand" value={brands.find(b => b.id === tenant?.brand_id)?.brand_name} />
                 <div className="flex items-center gap-3 px-4 py-4">
                   <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-primary))]">radio_button_checked</span>
                   <span className="text-[15px] font-medium text-[hsl(var(--admin-text-sub))] flex-1">Status</span>
@@ -112,6 +124,19 @@ export default function TenantDrawer({ tenant, readOnly, onClose, onSave }: Prop
                 <FR label="URL Slug" icon="link">
                   <input value={form.tenant_slug} onChange={set('tenant_slug')} placeholder="e.g. lakewood"
                     className="flex-1 bg-transparent text-[15px] font-mono text-[hsl(var(--admin-text-main))] placeholder:text-[hsl(var(--admin-text-muted))] outline-none text-right min-w-0" />
+                </FR>
+              </div>
+
+              <SL>Brand</SL>
+              <div className="ios-card p-0 overflow-hidden">
+                <FR label="Brand" icon="storefront">
+                  <select value={form.brand_id} onChange={set('brand_id')} aria-label="Brand"
+                    className="flex-1 bg-transparent text-[15px] text-[hsl(var(--admin-text-main))] outline-none text-right appearance-none cursor-pointer">
+                    <option value="">No brand</option>
+                    {brands.map(b => (
+                      <option key={b.id} value={b.id}>{b.brand_name}</option>
+                    ))}
+                  </select>
                 </FR>
               </div>
 

@@ -9,12 +9,16 @@ import { RoleAssignment, UserRole } from '../users/role-assignment.entity';
 /** Roles allowed to log in via admin.edapp.co.za */
 const ADMIN_ROLES: string[] = [
     UserRole.PLATFORM_SUPER_ADMIN,
+    UserRole.APP_SUPER_ADMIN,
     UserRole.BRAND_ADMIN,
     UserRole.PLATFORM_SECRETARY,
+    UserRole.APP_SECRETARY,
     UserRole.PLATFORM_SUPPORT,
+    UserRole.APP_SUPPORT,
     UserRole.TENANT_ADMIN,
     UserRole.MAIN_BRANCH_ADMIN,
     UserRole.BRANCH_ADMIN,
+    UserRole.BRANCH_OPERATIONS_ADMIN,
     UserRole.ADMISSIONS_OFFICER,
     UserRole.FINANCE_OFFICER,
     UserRole.HR_ADMIN,
@@ -24,20 +28,28 @@ const ADMIN_ROLES: string[] = [
     UserRole.SMT,
     UserRole.HOD,
     UserRole.RECEPTION,
+    UserRole.SCHOOL_OPERATIONS_MANAGER,
+    UserRole.SCHOOL_ADMINISTRATOR,
 ];
 
 /** Priority order — first match wins */
 const ROLE_PRIORITY: string[] = [
     UserRole.PLATFORM_SUPER_ADMIN,
+    UserRole.APP_SUPER_ADMIN,
     UserRole.BRAND_ADMIN,
     UserRole.PLATFORM_SECRETARY,
+    UserRole.APP_SECRETARY,
     UserRole.PLATFORM_SUPPORT,
+    UserRole.APP_SUPPORT,
     UserRole.TENANT_ADMIN,
     UserRole.MAIN_BRANCH_ADMIN,
     UserRole.BRANCH_ADMIN,
+    UserRole.BRANCH_OPERATIONS_ADMIN,
     UserRole.ADMISSIONS_OFFICER,
     UserRole.PRINCIPAL,
     UserRole.DEPUTY_PRINCIPAL,
+    UserRole.SCHOOL_OPERATIONS_MANAGER,
+    UserRole.SCHOOL_ADMINISTRATOR,
     UserRole.SMT,
     UserRole.HOD,
     UserRole.FINANCE_OFFICER,
@@ -114,7 +126,12 @@ export class AdminLoginController {
         }
 
         const role = bestAssignment.role;
-        const tenantSlug = bestAssignment.tenant?.tenant_slug || 'edapp';
+        // For platform roles (no tenant_id), fall back to first tenant from other assignments
+        let tenantSlug = bestAssignment.tenant?.tenant_slug || null;
+        if (!tenantSlug) {
+            const fallback = assignments.find(a => a.tenant?.tenant_slug);
+            tenantSlug = fallback?.tenant?.tenant_slug || 'allied';
+        }
 
         // 5. Create long-lived session JWT (24h)
         const sessionToken = this.sessionTokenService.sign(
