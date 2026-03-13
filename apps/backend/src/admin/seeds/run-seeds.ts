@@ -12,18 +12,13 @@ import { SEED_DATA } from './dict-seed-data';
 
 export async function seedDictionaries(dataSource: DataSource): Promise<void> {
     for (const [tableName, entries] of Object.entries(SEED_DATA)) {
-        const repo = dataSource.getRepository(tableName);
-
         for (const entry of entries) {
-            const existing = await repo.findOne({ where: { code: entry.code } as any });
-            if (!existing) {
-                await repo.save(repo.create({
-                    code: entry.code,
-                    label: entry.label,
-                    sort_order: entry.sort_order,
-                    is_active: true,
-                } as any));
-            }
+            await dataSource.query(
+                `INSERT INTO "${tableName}" (code, label, sort_order, is_active)
+                 VALUES ($1, $2, $3, true)
+                 ON CONFLICT (code) DO NOTHING`,
+                [entry.code, entry.label, entry.sort_order],
+            );
         }
 
         console.log(`[Seed] ${tableName}: ${entries.length} entries processed`);
