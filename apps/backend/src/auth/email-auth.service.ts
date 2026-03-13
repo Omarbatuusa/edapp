@@ -150,7 +150,7 @@ export class EmailAuthService {
         if (this.transporter) {
             try {
                 await this.transporter.sendMail({
-                    from: `EdApp <${this.configService.get('SES_FROM_EMAIL', this.configService.get('SMTP_FROM', 'noreply@edapp.co.za'))}>`,
+                    from: `EdApp <${this.configService.get('SES_FROM_EMAIL', 'no-reply@edapp.co.za')}>`,
                     to: normalizedEmail,
                     subject: 'EdApp - Your Verification Code',
                     html: htmlBody,
