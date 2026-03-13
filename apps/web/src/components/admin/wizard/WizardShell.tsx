@@ -42,16 +42,41 @@ export function WizardShell({
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [submitting, setSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState('');
-    const { draftId, saving, save, clearDraft } = useWizardAutosave(formType, tenantId);
+    const {
+        draftId, saving, save, clearDraft,
+        existingDraft, versionMismatch, resumeDraft, discardDraft,
+    } = useWizardAutosave(formType, tenantId);
+    const [showDraftBanner, setShowDraftBanner] = useState(false);
 
     const step = steps[currentStep];
     const isLast = currentStep === steps.length - 1;
+
+    // Show draft resume banner if an existing draft is found
+    useEffect(() => {
+        if (existingDraft && existingDraft.data && Object.keys(existingDraft.data).length > 0) {
+            setShowDraftBanner(true);
+        }
+    }, [existingDraft]);
 
     // Autosave on data/step change
     useEffect(() => {
         save(currentStep, data);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentStep, data]);
+
+    const handleResumeDraft = () => {
+        if (existingDraft) {
+            setData(existingDraft.data);
+            setCurrentStep(existingDraft.current_step);
+            resumeDraft();
+        }
+        setShowDraftBanner(false);
+    };
+
+    const handleDiscardDraft = () => {
+        discardDraft();
+        setShowDraftBanner(false);
+    };
 
     const patchData = (patch: Record<string, any>) => {
         setData(prev => ({ ...prev, ...patch }));
@@ -126,6 +151,37 @@ export function WizardShell({
                     )}
                 </div>
             </div>
+
+            {/* Draft Resume Banner */}
+            {showDraftBanner && (
+                <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 mt-4">
+                    <div className="flex items-center justify-between gap-4 px-4 py-3 rounded-xl bg-amber-50 border border-amber-200">
+                        <div className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-amber-600 text-lg">drafts</span>
+                            <div>
+                                <p className="text-[13px] font-semibold text-amber-800">
+                                    {versionMismatch ? 'Draft found (older version)' : 'Resume previous draft?'}
+                                </p>
+                                <p className="text-[11px] text-amber-600">
+                                    {versionMismatch
+                                        ? 'This draft was created with an older form version. Some fields may not load correctly.'
+                                        : 'You have an unsaved draft. Would you like to continue where you left off?'}
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                            <button type="button" onClick={handleDiscardDraft}
+                                className="px-3 py-1.5 text-[12px] font-semibold text-amber-700 hover:bg-amber-100 rounded-lg transition-colors">
+                                Discard
+                            </button>
+                            <button type="button" onClick={handleResumeDraft}
+                                className="px-3 py-1.5 text-[12px] font-bold text-white bg-amber-600 hover:bg-amber-700 rounded-lg transition-colors">
+                                Resume
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Body */}
             <div className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-8">

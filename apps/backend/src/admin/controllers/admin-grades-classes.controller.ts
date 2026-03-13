@@ -6,6 +6,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { FirebaseAuthGuard } from '../../auth/firebase-auth.guard';
 import { SchoolClass } from '../../attendance/entities/class.entity';
+import { TenantPhaseLink } from '../entities/tenant-phase-link.entity';
+import { TenantGradeLink } from '../entities/tenant-grade-link.entity';
 import { AuditEvent, AuditAction } from '../entities/audit-event.entity';
 
 const PLATFORM_ROLES = ['platform_super_admin', 'brand_admin'];
@@ -16,6 +18,8 @@ const TENANT_ROLES = ['tenant_admin', 'main_branch_admin'];
 export class AdminGradesClassesController {
   constructor(
     @InjectRepository(SchoolClass) private classRepo: Repository<SchoolClass>,
+    @InjectRepository(TenantPhaseLink) private phaseLinkRepo: Repository<TenantPhaseLink>,
+    @InjectRepository(TenantGradeLink) private gradeLinkRepo: Repository<TenantGradeLink>,
     @InjectRepository(AuditEvent) private auditRepo: Repository<AuditEvent>,
     private dataSource: DataSource,
   ) {}
@@ -28,6 +32,84 @@ export class AdminGradesClassesController {
     const role = this.getRole(req);
     return [...PLATFORM_ROLES, ...TENANT_ROLES].some(r => role.includes(r));
   }
+
+  // ──────────────────────────────────────────────────────────
+  // Phase Links
+  // ──────────────────────────────────────────────────────────
+
+  @Get('phases')
+  async listPhases(@Req() req: any, @Param('tenantId') tenantId: string) {
+    if (!this.canManage(req)) throw new ForbiddenException('Insufficient permissions');
+    return this.phaseLinkRepo.find({ where: { tenant_id: tenantId }, order: { created_at: 'ASC' } });
+  }
+
+  @Post('phases/sync')
+  async syncPhases(
+    @Req() req: any,
+    @Param('tenantId') tenantId: string,
+    @Body() body: { phase_codes: string[] },
+  ) {
+    if (!this.canManage(req)) throw new ForbiddenException('Insufficient permissions');
+    if (!Array.isArray(body.phase_codes)) throw new BadRequestException('phase_codes must be an array');
+
+    // Remove all existing phase links for this tenant
+    await this.phaseLinkRepo.delete({ tenant_id: tenantId });
+
+    // Insert new ones
+    const links: any[] = [];
+    for (const code of body.phase_codes) {
+      links.push(this.phaseLinkRepo.create({
+        tenant_id: tenantId,
+        phase_code: code,
+      } as any));
+    }
+
+    if (links.length > 0) {
+      await this.phaseLinkRepo.save(links);
+    }
+
+    return { synced: links.length };
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // Grade Links
+  // ──────────────────────────────────────────────────────────
+
+  @Get('grades')
+  async listGrades(@Req() req: any, @Param('tenantId') tenantId: string) {
+    if (!this.canManage(req)) throw new ForbiddenException('Insufficient permissions');
+    return this.gradeLinkRepo.find({ where: { tenant_id: tenantId }, order: { created_at: 'ASC' } });
+  }
+
+  @Post('grades/sync')
+  async syncGrades(
+    @Req() req: any,
+    @Param('tenantId') tenantId: string,
+    @Body() body: { grade_codes: string[] },
+  ) {
+    if (!this.canManage(req)) throw new ForbiddenException('Insufficient permissions');
+    if (!Array.isArray(body.grade_codes)) throw new BadRequestException('grade_codes must be an array');
+
+    await this.gradeLinkRepo.delete({ tenant_id: tenantId });
+
+    const links: any[] = [];
+    for (const code of body.grade_codes) {
+      links.push(this.gradeLinkRepo.create({
+        tenant_id: tenantId,
+        grade_code: code,
+      } as any));
+    }
+
+    if (links.length > 0) {
+      await this.gradeLinkRepo.save(links);
+    }
+
+    return { synced: links.length };
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // Classes
+  // ──────────────────────────────────────────────────────────
 
   @Get('classes')
   async listClasses(

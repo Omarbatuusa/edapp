@@ -118,6 +118,7 @@ import { EmergencyAlert } from './admin/entities/emergency-alert.entity';
 import { EmergencyAcknowledgement } from './admin/entities/emergency-acknowledgement.entity';
 import { EmergencyRollCall } from './admin/entities/emergency-roll-call.entity';
 import { EmergencyTask } from './admin/entities/emergency-task.entity';
+import { ImportAudit } from './admin/entities/import-audit.entity';
 
 // Modules
 import { BrandsModule } from './brands/brands.module';
@@ -319,6 +320,7 @@ import { ScheduleModule } from '@nestjs/schedule';
           EmergencyAcknowledgement,
           EmergencyRollCall,
           EmergencyTask,
+          ImportAudit,
           // RBAC entities
           Permission,
           PlatformRole,

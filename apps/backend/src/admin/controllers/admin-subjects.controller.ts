@@ -6,6 +6,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FirebaseAuthGuard } from '../../auth/firebase-auth.guard';
 import { Subject } from '../entities/subject.entity';
+import { SubjectOffering } from '../entities/subject-offering.entity';
+import { SubjectStream } from '../entities/subject-stream.entity';
 
 const PLATFORM_ROLES = ['platform_super_admin', 'brand_admin'];
 const TENANT_ROLES = ['tenant_admin', 'main_branch_admin'];
@@ -15,6 +17,8 @@ const TENANT_ROLES = ['tenant_admin', 'main_branch_admin'];
 export class AdminSubjectsController {
   constructor(
     @InjectRepository(Subject) private subjectRepo: Repository<Subject>,
+    @InjectRepository(SubjectOffering) private offeringRepo: Repository<SubjectOffering>,
+    @InjectRepository(SubjectStream) private streamRepo: Repository<SubjectStream>,
   ) {}
 
   private getRole(req: any): string {
@@ -86,5 +90,104 @@ export class AdminSubjectsController {
     subject.is_active = !subject.is_active;
     await this.subjectRepo.save(subject);
     return { id, is_active: subject.is_active };
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // Subject Offerings (tenant-scoped)
+  // ──────────────────────────────────────────────────────────
+
+  @Get('offerings/:tenantId')
+  async listOfferings(@Req() req: any, @Param('tenantId') tenantId: string) {
+    if (!this.isPlatform(req) && !this.isTenantAdmin(req)) throw new ForbiddenException();
+    return this.offeringRepo.find({
+      where: { tenant_id: tenantId },
+      order: { created_at: 'ASC' },
+    });
+  }
+
+  @Post('offerings/:tenantId')
+  async createOffering(
+    @Req() req: any,
+    @Param('tenantId') tenantId: string,
+    @Body() body: any,
+  ) {
+    if (!this.isPlatform(req) && !this.isTenantAdmin(req)) throw new ForbiddenException();
+    if (!body.subject_id) throw new BadRequestException('subject_id is required');
+
+    return this.offeringRepo.save(this.offeringRepo.create({
+      tenant_id: tenantId,
+      subject_id: body.subject_id,
+      branch_id: body.branch_id || null,
+      stream_code: body.stream_code || null,
+      type_code: body.type_code || null,
+      language_level_code: body.language_level_code || null,
+    } as any));
+  }
+
+  @Put('offerings/:tenantId/:id')
+  async updateOffering(
+    @Req() req: any,
+    @Param('tenantId') tenantId: string,
+    @Param('id') id: string,
+    @Body() body: any,
+  ) {
+    if (!this.isPlatform(req) && !this.isTenantAdmin(req)) throw new ForbiddenException();
+    const offering = await this.offeringRepo.findOne({ where: { id, tenant_id: tenantId } });
+    if (!offering) throw new NotFoundException('Offering not found');
+    Object.assign(offering, body);
+    return this.offeringRepo.save(offering);
+  }
+
+  @Patch('offerings/:tenantId/:id/toggle')
+  async toggleOffering(@Req() req: any, @Param('tenantId') tenantId: string, @Param('id') id: string) {
+    if (!this.isPlatform(req) && !this.isTenantAdmin(req)) throw new ForbiddenException();
+    const offering = await this.offeringRepo.findOne({ where: { id, tenant_id: tenantId } }) as any;
+    if (!offering) throw new NotFoundException('Offering not found');
+    offering.is_active = !offering.is_active;
+    return this.offeringRepo.save(offering);
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // Subject Streams (tenant-scoped)
+  // ──────────────────────────────────────────────────────────
+
+  @Get('streams/:tenantId')
+  async listStreams(@Req() req: any, @Param('tenantId') tenantId: string) {
+    if (!this.isPlatform(req) && !this.isTenantAdmin(req)) throw new ForbiddenException();
+    return this.streamRepo.find({
+      where: { tenant_id: tenantId },
+      order: { stream_name: 'ASC' },
+    });
+  }
+
+  @Post('streams/:tenantId')
+  async createStream(
+    @Req() req: any,
+    @Param('tenantId') tenantId: string,
+    @Body() body: any,
+  ) {
+    if (!this.isPlatform(req) && !this.isTenantAdmin(req)) throw new ForbiddenException();
+    if (!body.stream_code || !body.stream_name) throw new BadRequestException('stream_code and stream_name required');
+
+    return this.streamRepo.save(this.streamRepo.create({
+      tenant_id: tenantId,
+      stream_code: body.stream_code,
+      stream_name: body.stream_name,
+      description: body.description || null,
+    } as any));
+  }
+
+  @Put('streams/:tenantId/:id')
+  async updateStream(
+    @Req() req: any,
+    @Param('tenantId') tenantId: string,
+    @Param('id') id: string,
+    @Body() body: any,
+  ) {
+    if (!this.isPlatform(req) && !this.isTenantAdmin(req)) throw new ForbiddenException();
+    const stream = await this.streamRepo.findOne({ where: { id, tenant_id: tenantId } });
+    if (!stream) throw new NotFoundException('Stream not found');
+    Object.assign(stream, body);
+    return this.streamRepo.save(stream);
   }
 }

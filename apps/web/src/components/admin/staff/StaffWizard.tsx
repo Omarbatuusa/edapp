@@ -10,11 +10,12 @@ import { AddressInput, AddressValue } from '../inputs/AddressInput';
 import { LookupSelect } from '../inputs/LookupSelect';
 import { ConditionalFieldGroup } from '../inputs/ConditionalFieldGroup';
 import { DocumentUpload, DocFile } from '../inputs/DocumentUpload';
-import { RepeaterField } from '../inputs/RepeaterField';
+import DateOfBirthInput from '../inputs/DateOfBirthInput';
 import { StaffIllustration } from '../illustrations/StaffIllustration';
-import { MedicalIllustration } from '../illustrations/MedicalIllustration';
 import { DocumentIllustration } from '../illustrations/DocumentIllustration';
 import { EnrollmentIllustration } from '../illustrations/EnrollmentIllustration';
+import { MedicalIllustration } from '../illustrations/MedicalIllustration';
+import { initialsFromName } from '@/lib/name-validation';
 
 const EMPTY_PHONE: PhoneValue = { raw: '', e164: '', country_iso2: 'ZA', dial_code: '+27' };
 const EMPTY_ADDRESS: AddressValue = { formatted_address: '', google_place_id: '', street: '', suburb: '', city: '', province: '', postal_code: '', country: '', lat: null, lng: null };
@@ -29,15 +30,11 @@ function getAuthHeaders(): Record<string, string> {
     return token ? { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
 }
 
-// --- Zod Schemas ---
-
 const step1Schema = z.object({
-    first_name: z.string().min(2, 'First name is required'),
-    last_name: z.string().min(2, 'Last name is required'),
+    first_name: z.string().min(2, 'First name is required (min 2 chars)'),
+    last_name: z.string().min(2, 'Last name is required (min 2 chars)'),
     email: z.string().email('Valid email is required'),
 });
-
-// --- Doc Types ---
 
 const STAFF_DOC_TYPES = [
     { code: 'sa_id', label: 'SA ID Copy' },
@@ -54,30 +51,6 @@ const STAFF_DOC_TYPES = [
     { code: 'first_aid', label: 'First Aid Certificate' },
 ];
 
-// --- Emergency Contact Type ---
-
-interface EmergencyContactData {
-    full_name: string;
-    relationship_code: string;
-    mobile_number: PhoneValue;
-    alternate_number: PhoneValue;
-    email: string;
-    authorized_to_pick_up: boolean;
-    notes_medical_alert: string;
-}
-
-function createEmptyContact(): EmergencyContactData {
-    return {
-        full_name: '',
-        relationship_code: '',
-        mobile_number: EMPTY_PHONE,
-        alternate_number: EMPTY_PHONE,
-        email: '',
-        authorized_to_pick_up: false,
-        notes_medical_alert: '',
-    };
-}
-
 export function StaffWizard({ tenantSlug, tenantId }: StaffWizardProps) {
     const router = useRouter();
     const [branches, setBranches] = useState<Array<{ id: string; branch_name: string }>>([]);
@@ -90,10 +63,10 @@ export function StaffWizard({ tenantSlug, tenantId }: StaffWizardProps) {
     }, []);
 
     const steps: WizardStep[] = [
-        // Step 1: Profile
+        // ── Step 1: Identity & Contact ──
         {
-            title: 'Profile',
-            helper: 'Basic personal information for the staff member.',
+            title: 'Identity & Contact',
+            helper: 'Name, email, and contact numbers for the staff member.',
             illustration: <StaffIllustration />,
             schema: step1Schema,
             content: ({ data, onChange, errors }) => (
@@ -107,27 +80,63 @@ export function StaffWizard({ tenantSlug, tenantId }: StaffWizardProps) {
                     />
 
                     <FieldWrapper label="First Name" required state={errors.first_name ? 'error' : data.first_name ? 'success' : 'idle'} error={errors.first_name}>
-                        <input type="text" value={data.first_name || ''} onChange={e => onChange({ first_name: e.target.value })} placeholder="First name" className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
+                        <input type="text" value={data.first_name || ''} onChange={e => onChange({ first_name: e.target.value })} placeholder="First name" aria-label="First Name" className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
                     </FieldWrapper>
 
                     <FieldWrapper label="Last Name" required state={errors.last_name ? 'error' : data.last_name ? 'success' : 'idle'} error={errors.last_name}>
-                        <input type="text" value={data.last_name || ''} onChange={e => onChange({ last_name: e.target.value })} placeholder="Last name" className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
+                        <input type="text" value={data.last_name || ''} onChange={e => onChange({ last_name: e.target.value })} placeholder="Last name" aria-label="Last Name" className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
+                    </FieldWrapper>
+
+                    <FieldWrapper label="Preferred Name(s)" state={data.preferred_name ? 'success' : 'idle'}>
+                        <input type="text" value={data.preferred_name || ''} onChange={e => onChange({ preferred_name: e.target.value })} placeholder="Preferred / known-as name" aria-label="Preferred Name" className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
+                    </FieldWrapper>
+
+                    <FieldWrapper label="Initials" state={data.initials ? 'success' : 'idle'} helper="Auto-generated from name">
+                        <input
+                            type="text"
+                            value={data.initials || (data.first_name && data.last_name ? initialsFromName(data.first_name, data.last_name) : '')}
+                            onChange={e => onChange({ initials: e.target.value })}
+                            placeholder="e.g. JD"
+                            maxLength={5}
+                            aria-label="Initials"
+                            className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]"
+                        />
                     </FieldWrapper>
 
                     <FieldWrapper label="Email" required state={errors.email ? 'error' : data.email ? 'success' : 'idle'} error={errors.email}>
-                        <input type="email" value={data.email || ''} onChange={e => onChange({ email: e.target.value })} placeholder="email@example.com" className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
+                        <input type="email" value={data.email || ''} onChange={e => onChange({ email: e.target.value })} placeholder="email@example.com" aria-label="Email" className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
+                    </FieldWrapper>
+
+                    <FieldWrapper label="Secondary Email" state={data.secondary_email ? 'success' : 'idle'}>
+                        <input type="email" value={data.secondary_email || ''} onChange={e => onChange({ secondary_email: e.target.value })} placeholder="Personal email" aria-label="Secondary Email" className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
                     </FieldWrapper>
 
                     <PhoneInput label="Mobile" value={data.mobile || EMPTY_PHONE} onChange={v => onChange({ mobile: v })} placeholder="e.g. 060 000 0000" />
                     <PhoneInput label="Alternate Phone" value={data.alt_phone || EMPTY_PHONE} onChange={v => onChange({ alt_phone: v })} placeholder="e.g. 011 000 0000" />
+                    <PhoneInput label="Home Phone" value={data.home_phone || EMPTY_PHONE} onChange={v => onChange({ home_phone: v })} placeholder="e.g. 012 000 0000" />
+                </>
+            ),
+        },
 
-                    <FieldWrapper label="Date of Birth" state={data.dob ? 'success' : 'idle'}>
-                        <input type="date" value={data.dob || ''} onChange={e => onChange({ dob: e.target.value })} className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
-                    </FieldWrapper>
+        // ── Step 2: Personal Details ──
+        {
+            title: 'Personal Details',
+            helper: 'Date of birth, demographics, and identification.',
+            illustration: <MedicalIllustration />,
+            content: ({ data, onChange }) => (
+                <>
+                    <DateOfBirthInput
+                        label="Date of Birth"
+                        value={data.dob || ''}
+                        onChange={v => onChange({ dob: v })}
+                        context="staff"
+                        employmentStartDate={data.joining_date}
+                    />
 
                     <LookupSelect label="Gender" value={data.gender_code || ''} onChange={v => onChange({ gender_code: v as string })} dictName="genders" />
                     <LookupSelect label="Religion" value={data.religion_code || ''} onChange={v => onChange({ religion_code: v as string })} dictName="religions" />
                     <LookupSelect label="Race" value={data.race_code || ''} onChange={v => onChange({ race_code: v as string })} dictName="races" />
+                    <LookupSelect label="Marital Status" value={data.marital_status_code || ''} onChange={v => onChange({ marital_status_code: v as string })} dictName="marital_statuses" />
 
                     <LookupSelect
                         label="Citizenship Type"
@@ -138,53 +147,72 @@ export function StaffWizard({ tenantSlug, tenantId }: StaffWizardProps) {
 
                     <ConditionalFieldGroup watchValue={data.citizenship_type || ''} showWhen={['sa_citizen', 'SA_CITIZEN', 'permanent_resident', 'PERMANENT_RESIDENT']}>
                         <FieldWrapper label="SA ID Number" state={data.sa_id_number ? 'success' : 'idle'}>
-                            <input type="text" value={data.sa_id_number || ''} onChange={e => onChange({ sa_id_number: e.target.value })} placeholder="13-digit SA ID number" maxLength={13} className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
+                            <input type="text" value={data.sa_id_number || ''} onChange={e => onChange({ sa_id_number: e.target.value })} placeholder="13-digit SA ID number" maxLength={13} aria-label="SA ID Number" className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
                         </FieldWrapper>
                     </ConditionalFieldGroup>
 
                     <ConditionalFieldGroup watchValue={data.citizenship_type || ''} showWhen={['foreign_national', 'FOREIGN_NATIONAL', 'refugee', 'REFUGEE', 'asylum_seeker', 'ASYLUM_SEEKER']}>
                         <FieldWrapper label="Passport Number" state={data.passport_number ? 'success' : 'idle'}>
-                            <input type="text" value={data.passport_number || ''} onChange={e => onChange({ passport_number: e.target.value })} placeholder="Passport number" className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
+                            <input type="text" value={data.passport_number || ''} onChange={e => onChange({ passport_number: e.target.value })} placeholder="Passport number" aria-label="Passport Number" className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
+                        </FieldWrapper>
+                        <LookupSelect label="Permit Type" value={data.permit_type_code || ''} onChange={v => onChange({ permit_type_code: v as string })} dictName="permit_types" />
+                        <FieldWrapper label="Permit Number" state={data.permit_number ? 'success' : 'idle'}>
+                            <input type="text" value={data.permit_number || ''} onChange={e => onChange({ permit_number: e.target.value })} placeholder="Permit number" aria-label="Permit Number" className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
                         </FieldWrapper>
                     </ConditionalFieldGroup>
 
+                    <FieldWrapper label="Bio / Notes" state={data.bio ? 'success' : 'idle'}>
+                        <textarea value={data.bio || ''} onChange={e => onChange({ bio: e.target.value })} rows={3} placeholder="Short bio or notes..." className="w-full px-3 py-3 text-sm bg-transparent outline-none resize-none text-[hsl(var(--admin-text-main))]" />
+                    </FieldWrapper>
+                </>
+            ),
+        },
+
+        // ── Step 3: Address & Employment ──
+        {
+            title: 'Address & Employment',
+            helper: 'Residential address and employment details.',
+            illustration: <EnrollmentIllustration />,
+            content: ({ data, onChange }) => (
+                <>
                     <AddressInput
                         label="Residential Address"
                         value={data.address || EMPTY_ADDRESS}
                         onChange={addr => onChange({ address: addr })}
                     />
-                </>
-            ),
-        },
 
-        // Step 2: Employment
-        {
-            title: 'Employment',
-            helper: 'Employment details and role assignments.',
-            illustration: <StaffIllustration />,
-            content: ({ data, onChange }) => (
-                <>
                     <FieldWrapper label="Assigned Branch" state={data.branch_id ? 'success' : 'idle'}>
                         <select
                             value={data.branch_id || ''}
                             onChange={e => onChange({ branch_id: e.target.value })}
-                            className="w-full px-3 py-3 text-sm bg-transparent outline-none text-slate-800 dark:text-slate-100"
+                            aria-label="Assigned Branch"
+                            className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]"
                         >
                             <option value="">-- Select branch --</option>
-                            {branches.map(b => (
-                                <option key={b.id} value={b.id}>{b.branch_name}</option>
-                            ))}
+                            {branches.map(b => <option key={b.id} value={b.id}>{b.branch_name}</option>)}
                         </select>
                     </FieldWrapper>
 
-                    <FieldWrapper label="Joining Date" state={data.joining_date ? 'success' : 'idle'}>
-                        <input type="date" value={data.joining_date || ''} onChange={e => onChange({ joining_date: e.target.value })} className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
+                    <FieldWrapper label="Employment Start Date" state={data.joining_date ? 'success' : 'idle'}>
+                        <input type="date" value={data.joining_date || ''} onChange={e => onChange({ joining_date: e.target.value })} aria-label="Employment Start Date" className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
                     </FieldWrapper>
 
                     <LookupSelect label="Employment Type" value={data.employment_type_code || ''} onChange={v => onChange({ employment_type_code: v as string })} dictName="employment_types" />
 
-                    <FieldWrapper label="SACE Number" state={data.sace_number ? 'success' : 'idle'} helper="South African Council for Educators registration number">
-                        <input type="text" value={data.sace_number || ''} onChange={e => onChange({ sace_number: e.target.value })} placeholder="e.g. 123456" className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
+                    <FieldWrapper label="Staff Code" state={data.staff_code ? 'success' : 'idle'} helper="Auto-generated if left blank">
+                        <input type="text" value={data.staff_code || ''} onChange={e => onChange({ staff_code: e.target.value })} placeholder="Auto-generated" aria-label="Staff Code" className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
+                    </FieldWrapper>
+
+                    <FieldWrapper label="Department" state={data.department ? 'success' : 'idle'}>
+                        <input type="text" value={data.department || ''} onChange={e => onChange({ department: e.target.value })} placeholder="e.g. Mathematics, Admin" aria-label="Department" className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
+                    </FieldWrapper>
+
+                    <FieldWrapper label="Job Title" state={data.job_title ? 'success' : 'idle'}>
+                        <input type="text" value={data.job_title || ''} onChange={e => onChange({ job_title: e.target.value })} placeholder="e.g. Senior Teacher, Admin Clerk" aria-label="Job Title" className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
+                    </FieldWrapper>
+
+                    <FieldWrapper label="SACE Number" state={data.sace_number ? 'success' : 'idle'} helper="South African Council for Educators">
+                        <input type="text" value={data.sace_number || ''} onChange={e => onChange({ sace_number: e.target.value })} placeholder="e.g. 123456" aria-label="SACE Number" className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
                     </FieldWrapper>
 
                     <LookupSelect label="Teaching Level" value={data.teaching_level_code || ''} onChange={v => onChange({ teaching_level_code: v as string })} dictName="teaching_levels" />
@@ -197,131 +225,56 @@ export function StaffWizard({ tenantSlug, tenantId }: StaffWizardProps) {
                         dictName="teaching_leadership_staff"
                         multiple
                     />
-                </>
-            ),
-        },
-
-        // Step 3: Medical
-        {
-            title: 'Medical',
-            helper: 'Medical information and special requirements.',
-            illustration: <MedicalIllustration />,
-            content: ({ data, onChange }) => (
-                <>
-                    <LookupSelect
-                        label="Medical Disabilities"
-                        value={data.medical_disabilities || []}
-                        onChange={v => onChange({ medical_disabilities: v })}
-                        dictName="medical_disabilities"
-                        multiple
-                    />
-
-                    <LookupSelect
-                        label="Medical Aid Provider"
-                        value={data.medical_aid_provider_code || ''}
-                        onChange={v => onChange({ medical_aid_provider_code: v as string })}
-                        dictName="medical_aid_providers"
-                    />
-
-                    <LookupSelect
-                        label="Allergies"
-                        value={data.allergies || []}
-                        onChange={v => onChange({ allergies: v })}
-                        dictName="school_allergies"
-                        multiple
-                    />
 
                     <FieldWrapper label="" state="idle">
                         <label className="flex items-center gap-3 px-3 py-3 cursor-pointer">
                             <input
                                 type="checkbox"
-                                checked={data.has_medical_conditions ?? false}
-                                onChange={e => onChange({ has_medical_conditions: e.target.checked })}
+                                checked={data.is_active ?? true}
+                                onChange={e => onChange({ is_active: e.target.checked })}
                                 className="rounded border-slate-300"
                             />
-                            <span className="text-sm text-slate-700 dark:text-slate-200">Has medical conditions</span>
+                            <span className="text-sm text-[hsl(var(--admin-text-main))]">Active staff member</span>
                         </label>
                     </FieldWrapper>
-
-                    {data.has_medical_conditions && (
-                        <FieldWrapper label="Medical Conditions Details" state={data.medical_conditions_details ? 'success' : 'idle'}>
-                            <textarea
-                                value={data.medical_conditions_details || ''}
-                                onChange={e => onChange({ medical_conditions_details: e.target.value })}
-                                rows={3}
-                                placeholder="Describe medical conditions..."
-                                className="w-full px-3 py-3 text-sm bg-transparent outline-none resize-none"
-                            />
-                        </FieldWrapper>
-                    )}
                 </>
             ),
         },
 
-        // Step 4: Emergency Contacts
+        // ── Step 4: Documents & Review ──
         {
-            title: 'Emergency Contacts',
-            helper: 'Add emergency contact persons for this staff member.',
-            illustration: <EnrollmentIllustration />,
-            content: ({ data, onChange }) => (
-                <RepeaterField<EmergencyContactData>
-                    label="Emergency Contacts"
-                    items={data.emergency_contacts || []}
-                    onChange={items => onChange({ emergency_contacts: items })}
-                    maxItems={5}
-                    minItems={0}
-                    createEmpty={createEmptyContact}
-                    addLabel="Add Contact"
-                    renderItem={(contact, idx, update) => (
-                        <>
-                            <FieldWrapper label="Full Name" required state={contact.full_name ? 'success' : 'idle'}>
-                                <input type="text" value={contact.full_name} onChange={e => update({ full_name: e.target.value })} placeholder="Full name" className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
-                            </FieldWrapper>
-                            <LookupSelect label="Relationship" value={contact.relationship_code} onChange={v => update({ relationship_code: v as string })} dictName="emergency_relationships" required />
-                            <PhoneInput label="Mobile" value={contact.mobile_number} onChange={v => update({ mobile_number: v })} required />
-                            <PhoneInput label="Alternate Number" value={contact.alternate_number} onChange={v => update({ alternate_number: v })} />
-                            <FieldWrapper label="Email" state={contact.email ? 'success' : 'idle'}>
-                                <input type="email" value={contact.email} onChange={e => update({ email: e.target.value })} placeholder="email@example.com" className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
-                            </FieldWrapper>
-                            <FieldWrapper label="" state="idle">
-                                <label className="flex items-center gap-3 px-3 py-3 cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        checked={contact.authorized_to_pick_up}
-                                        onChange={e => update({ authorized_to_pick_up: e.target.checked })}
-                                        className="rounded border-slate-300"
-                                    />
-                                    <span className="text-sm text-slate-700 dark:text-slate-200">Authorized to pick up</span>
-                                </label>
-                            </FieldWrapper>
-                            <FieldWrapper label="Notes / Medical Alert" state={contact.notes_medical_alert ? 'success' : 'idle'}>
-                                <textarea
-                                    value={contact.notes_medical_alert}
-                                    onChange={e => update({ notes_medical_alert: e.target.value })}
-                                    rows={2}
-                                    placeholder="Any notes or medical alerts..."
-                                    className="w-full px-3 py-3 text-sm bg-transparent outline-none resize-none"
-                                />
-                            </FieldWrapper>
-                        </>
-                    )}
-                />
-            ),
-        },
-
-        // Step 5: Documents
-        {
-            title: 'Documents',
-            helper: 'Upload supporting documents for the staff member.',
+            title: 'Documents & Review',
+            helper: 'Upload documents and review before submitting.',
             illustration: <DocumentIllustration />,
             content: ({ data, onChange }) => (
-                <DocumentUpload
-                    label="Staff Documents"
-                    value={data.documents || []}
-                    onChange={v => onChange({ documents: v })}
-                    docTypes={STAFF_DOC_TYPES}
-                    maxFiles={20}
-                />
+                <>
+                    <DocumentUpload
+                        label="Staff Documents"
+                        value={data.documents || []}
+                        onChange={v => onChange({ documents: v })}
+                        docTypes={STAFF_DOC_TYPES}
+                        maxFiles={20}
+                    />
+
+                    {/* Review summary */}
+                    <div className="mt-6 space-y-3">
+                        <h4 className="text-[14px] font-bold text-[hsl(var(--admin-text-main))]">Review Summary</h4>
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-[13px]">
+                            <ReviewRow label="Name" value={[data.title_code, data.first_name, data.last_name].filter(Boolean).join(' ')} />
+                            <ReviewRow label="Email" value={data.email} />
+                            <ReviewRow label="Mobile" value={data.mobile?.raw} />
+                            <ReviewRow label="DOB" value={data.dob} />
+                            <ReviewRow label="Gender" value={data.gender_code} />
+                            <ReviewRow label="Citizenship" value={data.citizenship_type} />
+                            <ReviewRow label="SA ID" value={data.sa_id_number} />
+                            <ReviewRow label="Branch" value={data.branch_id ? 'Selected' : 'Not set'} />
+                            <ReviewRow label="Employment Type" value={data.employment_type_code} />
+                            <ReviewRow label="Start Date" value={data.joining_date} />
+                            <ReviewRow label="Department" value={data.department} />
+                            <ReviewRow label="Documents" value={`${(data.documents || []).length} uploaded`} />
+                        </div>
+                    </div>
+                </>
             ),
         },
     ];
@@ -337,9 +290,20 @@ export function StaffWizard({ tenantSlug, tenantId }: StaffWizardProps) {
             gender_code: data.gender_code || null,
             religion_code: data.religion_code || null,
             race_code: data.race_code || null,
+            marital_status_code: data.marital_status_code || null,
             citizenship_type_code: data.citizenship_type || null,
             id_number: data.sa_id_number || null,
             passport_number: data.passport_number || null,
+            permit_type_code: data.permit_type_code || null,
+            permit_number: data.permit_number || null,
+            preferred_name: data.preferred_name || null,
+            initials: data.initials || (data.first_name && data.last_name ? initialsFromName(data.first_name, data.last_name) : null),
+            secondary_email: data.secondary_email || null,
+            bio: data.bio || null,
+            staff_code: data.staff_code || null,
+            department: data.department || null,
+            job_title: data.job_title || null,
+            is_active: data.is_active ?? true,
             address: data.address ? {
                 formatted_address: data.address.formatted_address,
                 google_place_id: data.address.google_place_id,
@@ -358,32 +322,24 @@ export function StaffWizard({ tenantSlug, tenantId }: StaffWizardProps) {
             sace_number: data.sace_number || null,
             teaching_level_code: data.teaching_level_code || null,
             reqv_level_code: data.reqv_level_code || null,
-            phone_mobile: data.mobile ? {
+            phone_mobile: data.mobile?.e164 ? {
                 raw: data.mobile.raw,
                 e164: data.mobile.e164,
                 country_iso2: data.mobile.country_iso2,
                 dial_code: data.mobile.dial_code,
             } : null,
-            phone_work: data.alt_phone ? {
+            phone_work: data.alt_phone?.e164 ? {
                 raw: data.alt_phone.raw,
                 e164: data.alt_phone.e164,
                 country_iso2: data.alt_phone.country_iso2,
                 dial_code: data.alt_phone.dial_code,
             } : null,
-            medical_disabilities: data.medical_disabilities || [],
-            medical_aid_provider_code: data.medical_aid_provider_code || null,
-            allergies: data.allergies || [],
-            has_medical_conditions: data.has_medical_conditions || false,
-            medical_conditions_details: data.medical_conditions_details || null,
-            emergency_contacts: (data.emergency_contacts || []).map((c: EmergencyContactData) => ({
-                full_name: c.full_name,
-                relationship_code: c.relationship_code,
-                mobile_number: c.mobile_number?.e164 || c.mobile_number?.raw || null,
-                alternate_number: c.alternate_number?.e164 || c.alternate_number?.raw || null,
-                email: c.email || null,
-                authorized_to_pick_up: c.authorized_to_pick_up,
-                notes_medical_alert: c.notes_medical_alert || null,
-            })),
+            phone_home: data.home_phone?.e164 ? {
+                raw: data.home_phone.raw,
+                e164: data.home_phone.e164,
+                country_iso2: data.home_phone.country_iso2,
+                dial_code: data.home_phone.dial_code,
+            } : null,
             documents: data.documents || [],
         };
 
@@ -406,5 +362,14 @@ export function StaffWizard({ tenantSlug, tenantId }: StaffWizardProps) {
             onComplete={handleComplete}
             onCancel={() => router.push(`/tenant/${tenantSlug}/admin/staff`)}
         />
+    );
+}
+
+function ReviewRow({ label, value }: { label: string; value?: string }) {
+    return (
+        <>
+            <span className="text-[hsl(var(--admin-text-muted))] font-medium">{label}</span>
+            <span className="text-[hsl(var(--admin-text-main))] font-medium">{value || '—'}</span>
+        </>
     );
 }

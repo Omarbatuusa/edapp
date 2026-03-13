@@ -37,6 +37,9 @@ export class AdminDraft {
     @Column({ type: 'jsonb', default: {} })
     data: Record<string, any>;
 
+    @Column({ type: 'varchar', nullable: true, default: '1.0' })
+    schema_version: string;
+
     @Column({ type: 'timestamp' })
     expires_at: Date;
 

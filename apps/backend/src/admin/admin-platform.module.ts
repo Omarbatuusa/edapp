@@ -110,6 +110,11 @@ import { EmergencyTask } from './entities/emergency-task.entity';
 import { AdminIncidentsController } from './controllers/admin-incidents.controller';
 import { AdminEmergenciesController } from './controllers/admin-emergencies.controller';
 import { AdminUsersController } from './controllers/admin-users.controller';
+import { AdminBulkImportController } from './controllers/admin-bulk-import.controller';
+import { AdminTemplateController } from './controllers/admin-templates.controller';
+import { BulkImportService } from './services/bulk-import.service';
+import { TemplateGeneratorService } from './services/template-generator.service';
+import { ImportAudit } from './entities/import-audit.entity';
 
 @Module({
   imports: [
@@ -196,6 +201,7 @@ import { AdminUsersController } from './controllers/admin-users.controller';
       EmergencyAcknowledgement,
       EmergencyRollCall,
       EmergencyTask,
+      ImportAudit,
     ]),
     AuthModule,
   ],
@@ -219,6 +225,16 @@ import { AdminUsersController } from './controllers/admin-users.controller';
     AdminIncidentsController,
     AdminEmergenciesController,
     AdminUsersController,
+    AdminBulkImportController,
+    AdminTemplateController,
+  ],
+  providers: [
+    BulkImportService,
+    TemplateGeneratorService,
+  ],
+  exports: [
+    BulkImportService,
+    TemplateGeneratorService,
   ],
 })
 export class AdminPlatformModule {}
