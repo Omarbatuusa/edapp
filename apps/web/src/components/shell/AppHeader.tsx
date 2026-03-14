@@ -4,6 +4,7 @@ import React from 'react';
 
 interface AppHeaderProps {
     title: string;
+    subtitle?: string;
     logoUrl?: string | null;
     isScrolled?: boolean;
     onSearch?: () => void;
@@ -27,6 +28,7 @@ interface AppHeaderProps {
  */
 export function AppHeader({
     title,
+    subtitle,
     logoUrl,
     onSearch,
     onNotificationClick,
@@ -70,11 +72,14 @@ export function AppHeader({
                         )}
                     </div>
 
-                    {/* Tenant name — desktop only */}
+                    {/* Tenant identity — desktop only */}
                     {title && (
-                        <span className="hidden md:block text-[14px] font-semibold text-[hsl(var(--admin-text-main))] truncate max-w-[180px]">
-                            {title}
-                        </span>
+                        <div className="hidden md:block min-w-0">
+                            <p className="text-[14px] font-semibold text-[hsl(var(--admin-text-main))] leading-tight">{title}</p>
+                            {subtitle && (
+                                <p className="text-[11px] text-[hsl(var(--admin-text-muted))] leading-tight mt-0.5">{subtitle}</p>
+                            )}
+                        </div>
                     )}
                 </div>
 

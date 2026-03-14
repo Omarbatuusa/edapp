@@ -168,6 +168,7 @@ export function AppShell({
                         {chrome === 'default' && (
                             <AppHeader
                                 title={tenantName}
+                                subtitle={scopeLabel}
                                 logoUrl={tenantLogo}
                                 onMenuOpen={() => setMobileDrawerOpen(true)}
                                 onSearch={() => setSearchSheetOpen(true)}

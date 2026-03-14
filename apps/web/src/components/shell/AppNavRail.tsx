@@ -114,24 +114,16 @@ export function AppNavRail({
                         </button>
                     </div>
                 ) : (
-                    /* Expanded: toggle icon + tenant name/subtitle */
-                    <div className="flex items-center gap-2.5">
+                    /* Expanded: toggle icon only (tenant identity is in the header) */
+                    <div className="flex items-center justify-center">
                         <button
                             type="button"
                             onClick={onToggleCollapse}
-                            className="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg text-[hsl(var(--admin-text-muted))] hover:bg-[hsl(var(--admin-surface-alt))] hover:text-[hsl(var(--admin-text-main))] transition-colors active:scale-[0.92] flex-shrink-0"
+                            className="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg text-[hsl(var(--admin-text-muted))] hover:bg-[hsl(var(--admin-surface-alt))] hover:text-[hsl(var(--admin-text-main))] transition-colors active:scale-[0.92]"
                             aria-label="Collapse sidebar"
                         >
                             <span className="material-symbols-outlined text-[18px]">dock_to_left</span>
                         </button>
-                        {tenantName && (
-                            <div className="min-w-0 flex-1">
-                                <p className="text-[14px] font-semibold text-[hsl(var(--admin-text-main))] truncate leading-tight">{tenantName}</p>
-                                {tenantSubtitle && (
-                                    <p className="text-[11px] text-[hsl(var(--admin-text-muted))] truncate leading-tight mt-0.5">{tenantSubtitle}</p>
-                                )}
-                            </div>
-                        )}
                     </div>
                 )}
             </div>
