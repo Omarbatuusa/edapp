@@ -47,19 +47,19 @@ export default function ParentDashboard() {
 
             {/* Upcoming Events */}
             <div className="ios-card">
-                <h3 className="font-semibold text-[15px] text-[hsl(var(--admin-text-main))] mb-3 tracking-tight flex items-center gap-2">
+                <h3 className="type-card-title text-[hsl(var(--admin-text-main))] mb-3 flex items-center gap-2">
                     <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-primary))]">event</span>
                     Upcoming Events
                 </h3>
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                     {MOCK_PARENT_EVENTS.slice(0, 4).map(ev => (
-                        <div key={ev.id} className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-[hsl(var(--admin-surface-alt))] transition-colors cursor-pointer">
+                        <div key={ev.id} className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-[hsl(var(--admin-surface-alt))] transition-colors cursor-pointer">
                             <span className="material-symbols-outlined text-[16px] text-[hsl(var(--admin-primary))]">
                                 {ev.type === 'exam' ? 'quiz' : ev.type === 'sport' ? 'sports_soccer' : ev.type === 'holiday' ? 'beach_access' : 'event'}
                             </span>
                             <div className="flex-1 min-w-0">
-                                <p className="text-[12px] font-semibold text-[hsl(var(--admin-text-main))] truncate">{ev.title}</p>
-                                <p className="text-[10px] text-[hsl(var(--admin-text-muted))]">
+                                <p className="type-muted font-semibold text-[hsl(var(--admin-text-main))] truncate">{ev.title}</p>
+                                <p className="type-metadata text-[hsl(var(--admin-text-muted))]">
                                     {new Date(ev.date).toLocaleDateString('en-ZA', { weekday: 'short', day: 'numeric', month: 'short' })}
                                     {ev.startTime && ` · ${ev.startTime}`}
                                 </p>
@@ -71,7 +71,7 @@ export default function ParentDashboard() {
 
             {/* Notifications */}
             <div className="ios-card">
-                <h3 className="font-semibold text-[15px] text-[hsl(var(--admin-text-main))] mb-3 tracking-tight flex items-center gap-2">
+                <h3 className="type-card-title text-[hsl(var(--admin-text-main))] mb-3 flex items-center gap-2">
                     <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-primary))]">notifications</span>
                     Notifications
                 </h3>
@@ -91,8 +91,8 @@ export default function ParentDashboard() {
                 <span className="material-symbols-outlined text-[20px] text-[hsl(var(--admin-text-muted)/0.5)]">check_circle</span>
                 <div className="flex-1 h-px bg-[hsl(var(--admin-border)/0.5)]" />
             </div>
-            <p className="text-[15px] font-semibold text-[hsl(var(--admin-text-main))]">You&apos;re all caught up</p>
-            <p className="text-[13px] text-[hsl(var(--admin-text-muted))] mt-1">You&apos;ve seen all new posts from the past 3 days.</p>
+            <p className="type-body-medium text-[hsl(var(--admin-text-main))]">You&apos;re all caught up</p>
+            <p className="type-muted text-[hsl(var(--admin-text-muted))] mt-1">You&apos;ve seen all new posts from the past 3 days.</p>
         </div>
     );
 
@@ -109,13 +109,13 @@ export default function ParentDashboard() {
         >
             {/* Welcome Header */}
             <div>
-                <p className="text-[13px] font-medium text-[hsl(var(--admin-text-muted))]">Welcome back</p>
-                <h1 className="text-[24px] sm:text-[28px] font-bold text-[hsl(var(--admin-text-main))] tracking-tight leading-tight">{MOCK_USER.name}</h1>
+                <p className="type-muted text-[hsl(var(--admin-text-muted))]">Welcome back</p>
+                <h1 className="type-page-title text-[hsl(var(--admin-text-main))]">{MOCK_USER.name}</h1>
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
-                    <p className="text-[13px] text-[hsl(var(--admin-text-sub))]">
+                    <p className="type-muted text-[hsl(var(--admin-text-sub))]">
                         Parent: <span className="font-mono font-semibold text-[hsl(var(--admin-text-main))]">{MOCK_USER.parentCode}</span>
                     </p>
-                    <p className="text-[13px] text-[hsl(var(--admin-text-sub))]">
+                    <p className="type-muted text-[hsl(var(--admin-text-sub))]">
                         Family: <span className="font-mono font-semibold text-[hsl(var(--admin-text-main))]">{MOCK_USER.familyCode}</span>
                     </p>
                 </div>
@@ -132,11 +132,11 @@ export default function ParentDashboard() {
 
 function NotifRow({ icon, text, time }: { icon: string; text: string; time: string }) {
     return (
-        <div className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-[hsl(var(--admin-surface-alt))] transition-colors cursor-pointer">
+        <div className="flex items-start gap-2.5 p-2 rounded-xl hover:bg-[hsl(var(--admin-surface-alt))] transition-colors cursor-pointer">
             <span className="material-symbols-outlined text-[16px] text-[hsl(var(--admin-primary))] mt-0.5">{icon}</span>
             <div className="flex-1 min-w-0">
-                <p className="text-[12px] font-medium text-[hsl(var(--admin-text-main))] leading-snug">{text}</p>
-                <p className="text-[10px] text-[hsl(var(--admin-text-muted))]">{time}</p>
+                <p className="type-muted text-[hsl(var(--admin-text-main))] leading-snug">{text}</p>
+                <p className="type-metadata text-[hsl(var(--admin-text-muted))]">{time}</p>
             </div>
         </div>
     );

@@ -2,7 +2,6 @@
 
 import { use, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Users, TrendingUp, AlertTriangle, Calendar, ArrowRight, Search, CheckCircle, UserX, Clock } from 'lucide-react';
 import { apiClient } from '../../../../../lib/api-client';
 import { MOCK_ADMIN_EVENTS } from '../../../../../lib/calendar-events';
 import { DashboardLayout } from '../../../../../components/dashboard/DashboardLayout';
@@ -101,7 +100,7 @@ export default function AdminDashboard({ params }: Props) {
                     <TaskItem title="Review Incident Report #102" time="4h ago" urgent />
                     <TaskItem title="Monthly Fee Reconciliation" time="1d ago" />
                 </div>
-                <button type="button" className="w-full mt-3 py-2 text-[12px] text-[hsl(var(--admin-primary))] font-semibold hover:bg-[hsl(var(--admin-primary)/0.05)] rounded-lg transition-colors">
+                <button type="button" className="w-full mt-3 py-2 type-muted text-[hsl(var(--admin-primary))] font-semibold hover:bg-[hsl(var(--admin-primary)/0.05)] rounded-lg transition-colors">
                     View All Tasks
                 </button>
             </div>
@@ -115,10 +114,10 @@ export default function AdminDashboard({ params }: Props) {
                     Staff On Leave
                 </h3>
                 <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-bold">EK</div>
+                    <div className="w-9 h-9 rounded-full bg-[hsl(var(--admin-surface-alt))] flex items-center justify-center type-muted font-bold text-[hsl(var(--admin-text-main))]">EK</div>
                     <div>
-                        <p className="text-[13px] font-semibold text-[hsl(var(--admin-text-main))]">Edna Krabappel</p>
-                        <p className="text-[11px] text-[hsl(var(--admin-text-muted))]">Sick Leave</p>
+                        <p className="type-muted font-semibold text-[hsl(var(--admin-text-main))]">Edna Krabappel</p>
+                        <p className="type-metadata text-[hsl(var(--admin-text-muted))]">Sick Leave</p>
                     </div>
                 </div>
             </div>
@@ -149,32 +148,30 @@ export default function AdminDashboard({ params }: Props) {
             }
         >
             {/* Header */}
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div>
                     <h1 className="type-page-title text-[hsl(var(--admin-text-main))]">Dashboard</h1>
                     <p className="type-body-medium text-[hsl(var(--admin-text-sub))] mt-0.5">Overview of school performance and alerts.</p>
                 </div>
-                <div className="flex gap-2">
-                    <button type="button" className="h-9 px-4 rounded-xl bg-[hsl(var(--admin-primary))] text-white font-semibold text-[13px] hover:opacity-90 transition-opacity shadow-sm">
-                        Generate Report
-                    </button>
-                </div>
+                <button type="button" className="h-9 px-4 rounded-xl bg-[hsl(var(--admin-primary))] text-white font-semibold text-[13px] hover:opacity-90 transition-opacity shadow-sm flex-shrink-0">
+                    Generate Report
+                </button>
             </div>
 
             {/* Stats Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                <StatCard title="Total Students" value="1,240" change="+12%" trend="up" icon={Users} />
+                <StatCard title="Total Students" value="1,240" change="+12%" trend="up" icon="group" />
                 <Link href={`${basePath}/attendance`} className="block">
                     <StatCard
                         title="Attendance"
                         value={attendanceRate !== null ? `${attendanceRate}%` : '—'}
                         change={attendanceRate !== null ? (attendanceRate >= 90 ? 'On track' : 'Needs attention') : 'Loading…'}
                         trend={attendanceRate !== null ? (attendanceRate >= 90 ? 'up' : 'down') : 'neutral'}
-                        icon={Calendar}
+                        icon="calendar_today"
                     />
                 </Link>
-                <StatCard title="Incidents" value="3" change="Low" trend="neutral" icon={AlertTriangle} alert />
-                <StatCard title="Revenue" value="R 840k" change="+5%" trend="up" icon={TrendingUp} />
+                <StatCard title="Incidents" value="3" change="Low" trend="neutral" icon="warning" alert />
+                <StatCard title="Revenue" value="R 840k" change="+5%" trend="up" icon="trending_up" />
             </div>
 
             {/* Nav Sections */}
@@ -245,36 +242,37 @@ export default function AdminDashboard({ params }: Props) {
                     </h3>
                     <Link
                         href={`${basePath}/attendance`}
-                        className="text-[12px] font-semibold text-[hsl(var(--admin-primary))] hover:underline flex items-center gap-1"
+                        className="type-metadata font-semibold text-[hsl(var(--admin-primary))] hover:underline flex items-center gap-1"
                     >
-                        Full Dashboard <ArrowRight size={14} />
+                        Full Dashboard
+                        <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
                     </Link>
                 </div>
-                <div className="flex items-center justify-between mb-4 p-3 bg-secondary/20 rounded-xl">
-                    <span className="text-[13px] font-medium text-muted-foreground">Attendance Rate</span>
-                    <span className={`text-2xl font-bold ${attendanceRate !== null && attendanceRate >= 90 ? 'text-green-600' : attendanceRate !== null ? 'text-amber-600' : 'text-muted-foreground'}`}>
+                <div className="flex items-center justify-between mb-4 p-3 bg-[hsl(var(--admin-surface-alt))] rounded-xl">
+                    <span className="type-muted text-[hsl(var(--admin-text-muted))]">Attendance Rate</span>
+                    <span className={`type-kpi-number ${attendanceRate !== null && attendanceRate >= 90 ? 'text-green-600' : attendanceRate !== null ? 'text-amber-600' : 'text-[hsl(var(--admin-text-muted))]'}`}>
                         {attendanceRate !== null ? `${attendanceRate}%` : '—'}
                     </span>
                 </div>
-                <div className="grid grid-cols-3 gap-3">
-                    <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-xl">
-                        <CheckCircle size={18} className="text-green-600 mx-auto mb-1" />
-                        <p className="text-xl font-bold text-green-600">{attendanceStats?.present ?? '—'}</p>
-                        <p className="text-[11px] text-muted-foreground font-medium">Present</p>
+                <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                    <div className="text-center p-2.5 sm:p-3 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                        <span className="material-symbols-outlined text-[20px] text-green-600 mb-1">check_circle</span>
+                        <p className="text-[20px] sm:text-[22px] font-bold text-green-600">{attendanceStats?.present ?? '—'}</p>
+                        <p className="type-metadata text-[hsl(var(--admin-text-muted))]">Present</p>
                     </div>
-                    <div className="text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-xl">
-                        <UserX size={18} className="text-red-500 mx-auto mb-1" />
-                        <p className="text-xl font-bold text-red-500">{attendanceStats?.absent ?? '—'}</p>
-                        <p className="text-[11px] text-muted-foreground font-medium">Absent</p>
+                    <div className="text-center p-2.5 sm:p-3 bg-red-50 dark:bg-red-900/20 rounded-xl">
+                        <span className="material-symbols-outlined text-[20px] text-red-500 mb-1">person_off</span>
+                        <p className="text-[20px] sm:text-[22px] font-bold text-red-500">{attendanceStats?.absent ?? '—'}</p>
+                        <p className="type-metadata text-[hsl(var(--admin-text-muted))]">Absent</p>
                     </div>
-                    <div className="text-center p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
-                        <Clock size={18} className="text-amber-600 mx-auto mb-1" />
-                        <p className="text-xl font-bold text-amber-600">{attendanceStats?.late ?? '—'}</p>
-                        <p className="text-[11px] text-muted-foreground font-medium">Late</p>
+                    <div className="text-center p-2.5 sm:p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
+                        <span className="material-symbols-outlined text-[20px] text-amber-600 mb-1">schedule</span>
+                        <p className="text-[20px] sm:text-[22px] font-bold text-amber-600">{attendanceStats?.late ?? '—'}</p>
+                        <p className="type-metadata text-[hsl(var(--admin-text-muted))]">Late</p>
                     </div>
                 </div>
                 {!branchId && (
-                    <p className="text-[11px] text-muted-foreground text-center mt-4">
+                    <p className="type-metadata text-[hsl(var(--admin-text-muted))] text-center mt-4">
                         Branch data loads after sign-in.{' '}
                         <Link href={`${basePath}/attendance`} className="text-[hsl(var(--admin-primary))] hover:underline font-semibold">
                             Go to Attendance →
@@ -286,13 +284,13 @@ export default function AdminDashboard({ params }: Props) {
             {/* Quick Actions */}
             <div className="ios-card">
                 <h3 className="type-card-title text-[hsl(var(--admin-text-main))] mb-4">Quick Actions</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <QuickAction icon={Users} label="Add Student" />
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                    <QuickAction icon="person_add" label="Add Student" />
                     <Link href={`${basePath}/attendance`} className="contents">
-                        <QuickAction icon={Calendar} label="Attendance" />
+                        <QuickAction icon="event_available" label="Attendance" />
                     </Link>
-                    <QuickAction icon={AlertTriangle} label="Log Incident" />
-                    <QuickAction icon={Search} label="Search Records" />
+                    <QuickAction icon="warning" label="Log Incident" />
+                    <QuickAction icon="search" label="Search Records" />
                 </div>
             </div>
         </DashboardLayout>
@@ -328,61 +326,63 @@ function NavCard({ href, label, description, icon, color }: { href: string; labe
     const c = COLOR_MAP[color] || COLOR_MAP.blue;
     return (
         <Link href={href} className="group block active:opacity-70 transition-opacity">
-            <div className="sm:hidden flex items-center gap-3 px-4 py-4 hover:bg-[hsl(var(--admin-surface-alt))] active:bg-[hsl(var(--admin-surface-alt))] transition-colors">
-                <div className={`w-9 h-9 ${c.bg} rounded-[10px] flex items-center justify-center flex-shrink-0`}>
-                    <span className={`material-symbols-outlined text-[19px] ${c.icon}`}>{icon}</span>
+            {/* Mobile: list row */}
+            <div className="sm:hidden flex items-center gap-3 px-4 py-3.5 hover:bg-[hsl(var(--admin-surface-alt))] active:bg-[hsl(var(--admin-surface-alt))] transition-colors">
+                <div className={`w-10 h-10 ${c.bg} rounded-[12px] flex items-center justify-center flex-shrink-0`}>
+                    <span className={`material-symbols-outlined text-[20px] ${c.icon}`}>{icon}</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                    <p className="text-[15px] font-semibold text-[hsl(var(--admin-text-main))] tracking-tight">{label}</p>
-                    <p className="text-[12px] font-medium text-[hsl(var(--admin-text-muted))] truncate">{description}</p>
+                    <p className="type-body-medium text-[hsl(var(--admin-text-main))]">{label}</p>
+                    <p className="type-muted text-[hsl(var(--admin-text-muted))] truncate">{description}</p>
                 </div>
-                <span className="material-symbols-outlined text-[20px] text-[hsl(var(--admin-text-muted))] group-hover:text-[hsl(var(--admin-primary))] transition-colors">chevron_right</span>
+                <span className="material-symbols-outlined text-[20px] text-[hsl(var(--admin-text-muted))] group-hover:text-[hsl(var(--admin-primary))] transition-colors flex-shrink-0">chevron_right</span>
             </div>
-            <div className="hidden sm:flex ios-card p-4 items-center gap-4 hover:-translate-y-0.5 active:scale-[0.98] transition-all border border-transparent group-hover:border-[hsl(var(--admin-border))]">
+            {/* Desktop: card */}
+            <div className="hidden sm:flex ios-card p-5 items-center gap-4 hover:-translate-y-0.5 active:scale-[0.98] transition-all border border-transparent group-hover:border-[hsl(var(--admin-border))]">
                 <div className={`w-[52px] h-[52px] ${c.bg} rounded-[14px] flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform`}>
                     <span className={`material-symbols-outlined text-[26px] ${c.icon}`}>{icon}</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-[16px] text-[hsl(var(--admin-text-main))] tracking-tight">{label}</p>
-                    <p className="text-[13px] font-medium text-[hsl(var(--admin-text-sub))] mt-0.5">{description}</p>
+                    <p className="type-card-title text-[hsl(var(--admin-text-main))]">{label}</p>
+                    <p className="type-muted text-[hsl(var(--admin-text-sub))] mt-0.5">{description}</p>
                 </div>
-                <ArrowRight size={18} className="text-[hsl(var(--admin-text-muted))] group-hover:text-[hsl(var(--admin-primary))] transition-colors flex-shrink-0" />
+                <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-text-muted))] group-hover:text-[hsl(var(--admin-primary))] transition-colors flex-shrink-0">arrow_forward</span>
             </div>
         </Link>
     );
 }
 
-function StatCard({ title, value, change, trend, icon: Icon, alert }: any) {
+function StatCard({ title, value, change, trend, icon, alert }: { title: string; value: string; change: string; trend: string; icon: string; alert?: boolean }) {
     return (
-        <div className="ios-card hover:-translate-y-1 transition-transform group cursor-pointer">
-            <div className="flex items-start justify-between mb-4">
-                <div className={`p-2.5 rounded-xl ${alert ? 'bg-red-100/80 text-red-600' : 'bg-[hsl(var(--admin-primary)/0.15)] text-[hsl(var(--admin-primary))]'}`}>
-                    <Icon size={22} className="transition-transform group-hover:scale-110" />
+        <div className="stat-card hover:-translate-y-0.5 transition-transform group cursor-pointer">
+            <div className="flex items-start justify-between mb-3 sm:mb-4">
+                <div className={`p-2 sm:p-2.5 rounded-xl ${alert ? 'bg-red-100/80 dark:bg-red-900/30 text-red-600' : 'bg-[hsl(var(--admin-primary)/0.12)] text-[hsl(var(--admin-primary))]'}`}>
+                    <span className="material-symbols-outlined text-[20px] sm:text-[22px] transition-transform group-hover:scale-110">{icon}</span>
                 </div>
-                <span className={`text-[11px] font-semibold px-2 py-1 rounded-full ${trend === 'up' ? 'bg-green-100 text-green-700' : trend === 'down' ? 'bg-red-100 text-red-700' : 'bg-secondary text-secondary-foreground'}`}>
+                <span className={`type-metadata font-semibold px-2 py-0.5 rounded-full ${trend === 'up' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : trend === 'down' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' : 'bg-[hsl(var(--admin-surface-alt))] text-[hsl(var(--admin-text-sub))]'}`}>
                     {change}
                 </span>
             </div>
-            <p className="type-muted text-muted-foreground">{title}</p>
-            <h3 className="type-kpi-number mt-1">{value}</h3>
+            <p className="type-muted text-[hsl(var(--admin-text-muted))]">{title}</p>
+            <h3 className="text-[22px] sm:text-[28px] font-bold leading-tight tracking-tight mt-0.5">{value}</h3>
         </div>
     );
 }
 
-function QuickAction({ icon: Icon, label }: any) {
+function QuickAction({ icon, label }: { icon: string; label: string }) {
     return (
-        <button type="button" className="flex flex-col items-center justify-center p-3 rounded-[16px] hover:bg-secondary/50 active:scale-[0.96] transition-all border border-transparent hover:border-border/50 group">
-            <div className="w-14 h-14 rounded-full bg-[hsl(var(--admin-surface-alt))] group-hover:bg-[hsl(var(--admin-primary)/0.1)] group-hover:text-[hsl(var(--admin-primary))] flex items-center justify-center transition-colors mb-3">
-                <Icon size={26} />
+        <button type="button" className="flex flex-col items-center justify-center p-3 rounded-2xl hover:bg-[hsl(var(--admin-surface-alt))] active:scale-[0.96] transition-all border border-transparent hover:border-[hsl(var(--admin-border)/0.5)] group">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[hsl(var(--admin-surface-alt))] group-hover:bg-[hsl(var(--admin-primary)/0.1)] group-hover:text-[hsl(var(--admin-primary))] flex items-center justify-center transition-colors mb-2.5">
+                <span className="material-symbols-outlined text-[22px] sm:text-[26px]">{icon}</span>
             </div>
-            <span className="text-[13px] font-medium text-center">{label}</span>
+            <span className="type-muted font-medium text-center text-[hsl(var(--admin-text-main))]">{label}</span>
         </button>
     );
 }
 
-function TaskItem({ title, time, urgent }: any) {
+function TaskItem({ title, time, urgent }: { title: string; time: string; urgent?: boolean }) {
     return (
-        <div className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-secondary/30 active:scale-[0.98] transition-all cursor-pointer">
+        <div className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-[hsl(var(--admin-surface-alt))] active:scale-[0.98] transition-all cursor-pointer">
             <div className={`w-2 h-2 mt-1.5 rounded-full flex-shrink-0 ${urgent ? 'bg-[hsl(var(--admin-danger))]' : 'bg-[hsl(var(--admin-primary))]'}`} />
             <div className="flex-1 min-w-0">
                 <p className="type-muted text-[hsl(var(--admin-text-main))] truncate">{title}</p>

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { BookOpen, ChevronRight } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import StaffAttendanceCard from '../../../../../components/attendance/StaffAttendanceCard';
@@ -54,11 +53,11 @@ export default function StaffDashboard() {
 
             {/* My Tasks */}
             <div className="ios-card">
-                <h3 className="font-semibold text-[15px] text-[hsl(var(--admin-text-main))] mb-3 tracking-tight flex items-center gap-2">
+                <h3 className="type-card-title text-[hsl(var(--admin-text-main))] mb-3 flex items-center gap-2">
                     <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-primary))]">checklist</span>
                     My Tasks
                 </h3>
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                     <TaskRow label="Grade 10 homework to mark" count={12} color="text-amber-600" />
                     <TaskRow label="Term reports due" count={3} color="text-red-500" />
                     <TaskRow label="Parent queries to respond" count={2} color="text-blue-500" />
@@ -67,7 +66,7 @@ export default function StaffDashboard() {
 
             {/* Notifications */}
             <div className="ios-card">
-                <h3 className="font-semibold text-[15px] text-[hsl(var(--admin-text-main))] mb-3 tracking-tight flex items-center gap-2">
+                <h3 className="type-card-title text-[hsl(var(--admin-text-main))] mb-3 flex items-center gap-2">
                     <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-primary))]">notifications</span>
                     Notifications
                 </h3>
@@ -92,8 +91,8 @@ export default function StaffDashboard() {
         >
             {/* Header */}
             <div>
-                <h1 className="text-[24px] sm:text-[28px] font-bold tracking-tight text-[hsl(var(--admin-text-main))] leading-tight">Dashboard</h1>
-                <p className="text-[14px] font-medium text-[hsl(var(--admin-text-sub))] mt-0.5">Your schedule, classes and tasks at a glance.</p>
+                <h1 className="type-page-title text-[hsl(var(--admin-text-main))]">Dashboard</h1>
+                <p className="type-body-medium text-[hsl(var(--admin-text-sub))] mt-0.5">Your schedule, classes and tasks at a glance.</p>
             </div>
 
             {/* Attendance + Classes row */}
@@ -104,21 +103,21 @@ export default function StaffDashboard() {
                         <div className="ios-card">
                             <div className="flex items-center gap-3 mb-3">
                                 <span className="material-symbols-outlined text-[22px] text-[hsl(var(--admin-primary))]">check_circle</span>
-                                <h3 className="font-semibold text-[15px] text-[hsl(var(--admin-text-main))] tracking-tight">Attendance</h3>
+                                <h3 className="type-card-title text-[hsl(var(--admin-text-main))]">Attendance</h3>
                             </div>
-                            <p className="text-[13px] text-[hsl(var(--admin-text-muted))]">Sign in to view attendance.</p>
+                            <p className="type-muted text-[hsl(var(--admin-text-muted))]">Sign in to view attendance.</p>
                         </div>
                     )}
                 </div>
 
                 <div className="ios-card col-span-1 md:col-span-2">
-                    <h2 className="font-semibold mb-4 flex items-center gap-2 text-[16px] tracking-tight text-[hsl(var(--admin-text-main))]">
-                        <BookOpen size={20} className="text-[hsl(var(--admin-primary))]" />
+                    <h2 className="type-card-title text-[hsl(var(--admin-text-main))] mb-4 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-[20px] text-[hsl(var(--admin-primary))]">auto_stories</span>
                         My Classes
                     </h2>
                     <div className="space-y-2">
                         {classes.length === 0 && (
-                            <p className="text-[13px] text-[hsl(var(--admin-text-sub))]">No classes assigned yet.</p>
+                            <p className="type-muted text-[hsl(var(--admin-text-sub))]">No classes assigned yet.</p>
                         )}
                         {classes.map((cls: any) => (
                             <Link
@@ -127,14 +126,14 @@ export default function StaffDashboard() {
                                 className="p-3.5 bg-[hsl(var(--admin-surface))] hover:bg-[hsl(var(--admin-surface-alt))] transition-colors border border-[hsl(var(--admin-border))] rounded-xl flex justify-between items-center gap-2"
                             >
                                 <div>
-                                    <span className="font-semibold text-[14px] text-[hsl(var(--admin-text-main))]">
+                                    <span className="type-body-medium text-[hsl(var(--admin-text-main))]">
                                         {cls.section_name || cls.class_code}
                                     </span>
                                     {cls.grade_id && (
-                                        <span className="ml-2 text-[12px] text-[hsl(var(--admin-text-sub))]">Grade {cls.grade_id}</span>
+                                        <span className="ml-2 type-metadata text-[hsl(var(--admin-text-sub))]">Grade {cls.grade_id}</span>
                                     )}
                                 </div>
-                                <ChevronRight size={18} className="text-[hsl(var(--admin-text-sub))]" />
+                                <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-text-sub))]">chevron_right</span>
                             </Link>
                         ))}
                     </div>
@@ -152,20 +151,20 @@ export default function StaffDashboard() {
 
 function TaskRow({ label, count, color }: { label: string; count: number; color: string }) {
     return (
-        <div className="flex items-center justify-between p-2 rounded-lg hover:bg-[hsl(var(--admin-surface-alt))] transition-colors cursor-pointer">
-            <span className="text-[12px] font-medium text-[hsl(var(--admin-text-main))]">{label}</span>
-            <span className={`text-[12px] font-bold ${color} bg-[hsl(var(--admin-surface-alt))] px-2 py-0.5 rounded-full`}>{count}</span>
+        <div className="flex items-center justify-between p-2.5 rounded-xl hover:bg-[hsl(var(--admin-surface-alt))] transition-colors cursor-pointer">
+            <span className="type-muted text-[hsl(var(--admin-text-main))]">{label}</span>
+            <span className={`type-metadata font-bold ${color} bg-[hsl(var(--admin-surface-alt))] px-2 py-0.5 rounded-full`}>{count}</span>
         </div>
     );
 }
 
 function NotifRow({ icon, text, time }: { icon: string; text: string; time: string }) {
     return (
-        <div className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-[hsl(var(--admin-surface-alt))] transition-colors cursor-pointer">
+        <div className="flex items-start gap-2.5 p-2 rounded-xl hover:bg-[hsl(var(--admin-surface-alt))] transition-colors cursor-pointer">
             <span className="material-symbols-outlined text-[16px] text-[hsl(var(--admin-primary))] mt-0.5">{icon}</span>
             <div className="flex-1 min-w-0">
-                <p className="text-[12px] font-medium text-[hsl(var(--admin-text-main))] leading-snug">{text}</p>
-                <p className="text-[10px] text-[hsl(var(--admin-text-muted))]">{time}</p>
+                <p className="type-muted text-[hsl(var(--admin-text-main))] leading-snug">{text}</p>
+                <p className="type-metadata text-[hsl(var(--admin-text-muted))]">{time}</p>
             </div>
         </div>
     );
