@@ -102,38 +102,28 @@ export function AppNavRail({
             {/* ── ZONE 1: Sticky top — tenant identity + collapse control ── */}
             <div className="sidebar-top">
                 {isIconOnly ? (
-                    /* Collapsed: logo centered, collapse button revealed on hover */
-                    <div className="flex flex-col items-center gap-1.5">
-                        {tenantLogo ? (
-                            <div className="w-9 h-9 rounded-xl overflow-hidden bg-[hsl(var(--admin-surface-alt))] flex-shrink-0 border border-[hsl(var(--admin-border)/0.3)]">
-                                <img src={tenantLogo} alt={tenantName || ''} className="w-full h-full object-cover" />
-                            </div>
-                        ) : (
-                            <div className="w-9 h-9 rounded-xl bg-[hsl(var(--admin-primary))] flex items-center justify-center flex-shrink-0">
-                                <span className="material-symbols-outlined text-white text-lg">school</span>
-                            </div>
-                        )}
+                    /* Collapsed: centered toggle icon only */
+                    <div className="flex items-center justify-center">
                         <button
                             type="button"
                             onClick={onToggleCollapse}
-                            className="collapse-reveal hidden lg:flex items-center justify-center w-6 h-6 rounded-md text-[hsl(var(--admin-text-muted))] hover:bg-[hsl(var(--admin-surface-alt))] hover:text-[hsl(var(--admin-text-main))] transition-colors active:scale-[0.92] flex-shrink-0"
+                            className="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg text-[hsl(var(--admin-text-muted))] hover:bg-[hsl(var(--admin-surface-alt))] hover:text-[hsl(var(--admin-text-main))] transition-colors active:scale-[0.92]"
                             aria-label="Expand sidebar"
                         >
-                            <span className="material-symbols-outlined text-[16px]">dock_to_right</span>
+                            <span className="material-symbols-outlined text-[18px]">dock_to_right</span>
                         </button>
                     </div>
                 ) : (
-                    /* Expanded: logo + name + subtitle + inline collapse control */
+                    /* Expanded: toggle icon + tenant name/subtitle */
                     <div className="flex items-center gap-2.5">
-                        {tenantLogo ? (
-                            <div className="w-9 h-9 rounded-xl overflow-hidden bg-[hsl(var(--admin-surface-alt))] flex-shrink-0 border border-[hsl(var(--admin-border)/0.3)]">
-                                <img src={tenantLogo} alt={tenantName || ''} className="w-full h-full object-cover" />
-                            </div>
-                        ) : (
-                            <div className="w-9 h-9 rounded-xl bg-[hsl(var(--admin-primary))] flex items-center justify-center flex-shrink-0">
-                                <span className="material-symbols-outlined text-white text-lg">school</span>
-                            </div>
-                        )}
+                        <button
+                            type="button"
+                            onClick={onToggleCollapse}
+                            className="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg text-[hsl(var(--admin-text-muted))] hover:bg-[hsl(var(--admin-surface-alt))] hover:text-[hsl(var(--admin-text-main))] transition-colors active:scale-[0.92] flex-shrink-0"
+                            aria-label="Collapse sidebar"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">dock_to_left</span>
+                        </button>
                         {tenantName && (
                             <div className="min-w-0 flex-1">
                                 <p className="text-[14px] font-semibold text-[hsl(var(--admin-text-main))] truncate leading-tight">{tenantName}</p>
@@ -142,14 +132,6 @@ export function AppNavRail({
                                 )}
                             </div>
                         )}
-                        <button
-                            type="button"
-                            onClick={onToggleCollapse}
-                            className="hidden lg:flex items-center justify-center w-7 h-7 rounded-md text-[hsl(var(--admin-text-muted))] hover:bg-[hsl(var(--admin-surface-alt))] hover:text-[hsl(var(--admin-text-main))] transition-colors active:scale-[0.92] flex-shrink-0"
-                            aria-label="Collapse sidebar"
-                        >
-                            <span className="material-symbols-outlined text-[16px]">dock_to_left</span>
-                        </button>
                     </div>
                 )}
             </div>

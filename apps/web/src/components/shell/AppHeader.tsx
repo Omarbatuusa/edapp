@@ -23,9 +23,10 @@ interface AppHeaderProps {
  * Minimal AppHeader — icon-only left, action icons right.
  *
  * Mobile:   [≡ trigger] [Logo] ··· [Search] [Safety] [Bell] [Avatar ▾]
- * Desktop:  [Logo] ··· [Search] [Safety] [Bell] [Avatar ▾]
+ * Desktop:  [Logo] [TenantName] ··· [Search] [Safety] [Bell] [Avatar ▾]
  */
 export function AppHeader({
+    title,
     logoUrl,
     onSearch,
     onNotificationClick,
@@ -56,8 +57,8 @@ export function AppHeader({
                         </button>
                     )}
 
-                    {/* Logo icon — mobile only (sidebar has tenant identity on desktop) */}
-                    <div className="hide-on-rail flex-shrink-0">
+                    {/* Logo icon — always visible */}
+                    <div className="flex-shrink-0">
                         {logoUrl ? (
                             <div className="w-8 h-8 rounded-lg overflow-hidden bg-[hsl(var(--admin-surface-alt))] border border-[hsl(var(--admin-border)/0.3)]">
                                 <img src={logoUrl} alt="" className="w-full h-full object-cover" />
@@ -68,6 +69,13 @@ export function AppHeader({
                             </div>
                         )}
                     </div>
+
+                    {/* Tenant name — desktop only */}
+                    {title && (
+                        <span className="hidden md:block text-[14px] font-semibold text-[hsl(var(--admin-text-main))] truncate max-w-[180px]">
+                            {title}
+                        </span>
+                    )}
                 </div>
 
                 {/* Right: Icon cluster */}

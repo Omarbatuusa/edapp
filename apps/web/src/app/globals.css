@@ -413,16 +413,7 @@
   }
 }
 
-/* Collapse icon: hidden by default on collapsed, revealed on hover */
-.collapse-reveal {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.15s ease;
-}
-.sidebar-top:hover .collapse-reveal {
-  opacity: 1;
-  pointer-events: auto;
-}
+/* Collapse/expand toggle — always visible, icon only */
 
 .sidebar-menu {
   flex: 1;
