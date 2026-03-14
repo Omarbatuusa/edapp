@@ -159,7 +159,7 @@ export default function AdminDashboard({ params }: Props) {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 auto-rows-fr">
                 <StatCard title="Total Students" value="1,240" change="+12%" trend="up" icon="group" />
                 <Link href={`${basePath}/attendance`} className="block">
                     <StatCard
@@ -255,21 +255,9 @@ export default function AdminDashboard({ params }: Props) {
                     </span>
                 </div>
                 <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                    <div className="text-center p-2.5 sm:p-3 bg-green-50 dark:bg-green-900/20 rounded-xl">
-                        <span className="material-symbols-outlined text-[20px] text-green-600 mb-1">check_circle</span>
-                        <p className="text-[20px] sm:text-[22px] font-bold text-green-600">{attendanceStats?.present ?? '—'}</p>
-                        <p className="type-metadata text-[hsl(var(--admin-text-muted))]">Present</p>
-                    </div>
-                    <div className="text-center p-2.5 sm:p-3 bg-red-50 dark:bg-red-900/20 rounded-xl">
-                        <span className="material-symbols-outlined text-[20px] text-red-500 mb-1">person_off</span>
-                        <p className="text-[20px] sm:text-[22px] font-bold text-red-500">{attendanceStats?.absent ?? '—'}</p>
-                        <p className="type-metadata text-[hsl(var(--admin-text-muted))]">Absent</p>
-                    </div>
-                    <div className="text-center p-2.5 sm:p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
-                        <span className="material-symbols-outlined text-[20px] text-amber-600 mb-1">schedule</span>
-                        <p className="text-[20px] sm:text-[22px] font-bold text-amber-600">{attendanceStats?.late ?? '—'}</p>
-                        <p className="type-metadata text-[hsl(var(--admin-text-muted))]">Late</p>
-                    </div>
+                    <AttendanceStat icon="check_circle" value={attendanceStats?.present ?? '—'} label="Present" color="green" />
+                    <AttendanceStat icon="person_off" value={attendanceStats?.absent ?? '—'} label="Absent" color="red" />
+                    <AttendanceStat icon="schedule" value={attendanceStats?.late ?? '—'} label="Late" color="amber" />
                 </div>
                 {!branchId && (
                     <p className="type-metadata text-[hsl(var(--admin-text-muted))] text-center mt-4">
@@ -303,8 +291,10 @@ function NavSection({ title, children }: { title: string; children: React.ReactN
     return (
         <div>
             <p className="type-badge text-[hsl(var(--admin-text-muted))] mb-2 ml-1 px-1">{title}</p>
+            {/* Mobile: compact list card */}
             <div className="sm:hidden ios-card p-0 overflow-hidden divide-y divide-[hsl(var(--admin-border))]">{children}</div>
-            <div className="hidden sm:grid grid-cols-2 lg:grid-cols-3 gap-4">{children}</div>
+            {/* Desktop/tablet: equal-height grid */}
+            <div className="hidden sm:grid grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4 auto-rows-fr">{children}</div>
         </div>
     );
 }
@@ -325,9 +315,9 @@ const COLOR_MAP: Record<string, { bg: string; icon: string }> = {
 function NavCard({ href, label, description, icon, color }: { href: string; label: string; description: string; icon: string; color: string }) {
     const c = COLOR_MAP[color] || COLOR_MAP.blue;
     return (
-        <Link href={href} className="group block active:opacity-70 transition-opacity">
+        <Link href={href} className="group block active:opacity-70 transition-opacity h-full">
             {/* Mobile: list row */}
-            <div className="sm:hidden flex items-center gap-3 px-4 py-3.5 hover:bg-[hsl(var(--admin-surface-alt))] active:bg-[hsl(var(--admin-surface-alt))] transition-colors">
+            <div className="sm:hidden flex items-center gap-3 px-4 py-3.5 hover:bg-[hsl(var(--admin-surface-alt))] active:bg-[hsl(var(--admin-surface-alt))] transition-colors min-h-[60px]">
                 <div className={`w-10 h-10 ${c.bg} rounded-[12px] flex items-center justify-center flex-shrink-0`}>
                     <span className={`material-symbols-outlined text-[20px] ${c.icon}`}>{icon}</span>
                 </div>
@@ -337,16 +327,15 @@ function NavCard({ href, label, description, icon, color }: { href: string; labe
                 </div>
                 <span className="material-symbols-outlined text-[20px] text-[hsl(var(--admin-text-muted))] group-hover:text-[hsl(var(--admin-primary))] transition-colors flex-shrink-0">chevron_right</span>
             </div>
-            {/* Desktop: card */}
-            <div className="hidden sm:flex ios-card p-5 items-center gap-4 hover:-translate-y-0.5 active:scale-[0.98] transition-all border border-transparent group-hover:border-[hsl(var(--admin-border))]">
-                <div className={`w-[52px] h-[52px] ${c.bg} rounded-[14px] flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform`}>
-                    <span className={`material-symbols-outlined text-[26px] ${c.icon}`}>{icon}</span>
+            {/* Desktop/tablet: card — h-full ensures equal height in grid */}
+            <div className="hidden sm:flex h-full ios-card p-4 lg:p-5 items-start gap-4 hover:-translate-y-0.5 active:scale-[0.98] transition-all border border-transparent group-hover:border-[hsl(var(--admin-border))]">
+                <div className={`w-11 h-11 lg:w-[52px] lg:h-[52px] ${c.bg} rounded-[12px] lg:rounded-[14px] flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform`}>
+                    <span className={`material-symbols-outlined text-[22px] lg:text-[26px] ${c.icon}`}>{icon}</span>
                 </div>
-                <div className="flex-1 min-w-0">
-                    <p className="type-card-title text-[hsl(var(--admin-text-main))]">{label}</p>
-                    <p className="type-muted text-[hsl(var(--admin-text-sub))] mt-0.5">{description}</p>
+                <div className="flex-1 min-w-0 py-0.5">
+                    <p className="type-card-title text-[hsl(var(--admin-text-main))] leading-snug">{label}</p>
+                    <p className="type-muted text-[hsl(var(--admin-text-sub))] mt-0.5 line-clamp-2">{description}</p>
                 </div>
-                <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-text-muted))] group-hover:text-[hsl(var(--admin-primary))] transition-colors flex-shrink-0">arrow_forward</span>
             </div>
         </Link>
     );
@@ -354,29 +343,48 @@ function NavCard({ href, label, description, icon, color }: { href: string; labe
 
 function StatCard({ title, value, change, trend, icon, alert }: { title: string; value: string; change: string; trend: string; icon: string; alert?: boolean }) {
     return (
-        <div className="stat-card hover:-translate-y-0.5 transition-transform group cursor-pointer">
-            <div className="flex items-start justify-between mb-3 sm:mb-4">
+        <div className="stat-card h-full flex flex-col hover:-translate-y-0.5 transition-transform group cursor-pointer">
+            <div className="flex items-start justify-between mb-auto">
                 <div className={`p-2 sm:p-2.5 rounded-xl ${alert ? 'bg-red-100/80 dark:bg-red-900/30 text-red-600' : 'bg-[hsl(var(--admin-primary)/0.12)] text-[hsl(var(--admin-primary))]'}`}>
                     <span className="material-symbols-outlined text-[20px] sm:text-[22px] transition-transform group-hover:scale-110">{icon}</span>
                 </div>
-                <span className={`type-metadata font-semibold px-2 py-0.5 rounded-full ${trend === 'up' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : trend === 'down' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' : 'bg-[hsl(var(--admin-surface-alt))] text-[hsl(var(--admin-text-sub))]'}`}>
+                <span className={`type-metadata font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${trend === 'up' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : trend === 'down' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' : 'bg-[hsl(var(--admin-surface-alt))] text-[hsl(var(--admin-text-sub))]'}`}>
                     {change}
                 </span>
             </div>
-            <p className="type-muted text-[hsl(var(--admin-text-muted))]">{title}</p>
-            <h3 className="text-[22px] sm:text-[28px] font-bold leading-tight tracking-tight mt-0.5">{value}</h3>
+            <div className="mt-3 sm:mt-4">
+                <p className="type-muted text-[hsl(var(--admin-text-muted))]">{title}</p>
+                <h3 className="text-[22px] sm:text-[28px] font-bold leading-tight tracking-tight mt-0.5">{value}</h3>
+            </div>
         </div>
     );
 }
 
 function QuickAction({ icon, label }: { icon: string; label: string }) {
     return (
-        <button type="button" className="flex flex-col items-center justify-center p-3 rounded-2xl hover:bg-[hsl(var(--admin-surface-alt))] active:scale-[0.96] transition-all border border-transparent hover:border-[hsl(var(--admin-border)/0.5)] group">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[hsl(var(--admin-surface-alt))] group-hover:bg-[hsl(var(--admin-primary)/0.1)] group-hover:text-[hsl(var(--admin-primary))] flex items-center justify-center transition-colors mb-2.5">
-                <span className="material-symbols-outlined text-[22px] sm:text-[26px]">{icon}</span>
+        <button type="button" className="h-full flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl hover:bg-[hsl(var(--admin-surface-alt))] active:scale-[0.96] transition-all border border-transparent hover:border-[hsl(var(--admin-border)/0.5)] group">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[hsl(var(--admin-surface-alt))] group-hover:bg-[hsl(var(--admin-primary)/0.1)] group-hover:text-[hsl(var(--admin-primary))] flex items-center justify-center transition-colors mb-2">
+                <span className="material-symbols-outlined text-[22px] sm:text-[24px]">{icon}</span>
             </div>
             <span className="type-muted font-medium text-center text-[hsl(var(--admin-text-main))]">{label}</span>
         </button>
+    );
+}
+
+const ATTENDANCE_COLORS: Record<string, { bg: string; text: string }> = {
+    green: { bg: 'bg-green-50 dark:bg-green-900/20', text: 'text-green-600' },
+    red: { bg: 'bg-red-50 dark:bg-red-900/20', text: 'text-red-500' },
+    amber: { bg: 'bg-amber-50 dark:bg-amber-900/20', text: 'text-amber-600' },
+};
+
+function AttendanceStat({ icon, value, label, color }: { icon: string; value: string | number; label: string; color: string }) {
+    const c = ATTENDANCE_COLORS[color] || ATTENDANCE_COLORS.green;
+    return (
+        <div className={`flex flex-col items-center justify-center p-2.5 sm:p-3 ${c.bg} rounded-xl`}>
+            <span className={`material-symbols-outlined text-[20px] ${c.text}`}>{icon}</span>
+            <p className={`text-[20px] sm:text-[22px] font-bold ${c.text} mt-1 leading-none`}>{value}</p>
+            <p className="type-metadata text-[hsl(var(--admin-text-muted))] mt-1">{label}</p>
+        </div>
     );
 }
 

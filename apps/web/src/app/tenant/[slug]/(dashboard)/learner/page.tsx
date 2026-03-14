@@ -93,14 +93,14 @@ export default function LearnerDashboard() {
             }
         >
             {/* Welcome Hero */}
-            <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1 p-6 sm:p-8 bg-[hsl(var(--admin-primary))] rounded-[20px] text-white shadow-lg relative overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-stretch">
+                <div className="p-6 sm:p-8 bg-[hsl(var(--admin-primary))] rounded-[20px] text-white shadow-lg relative overflow-hidden flex flex-col justify-center">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                     <h1 className="text-[24px] sm:text-[28px] font-bold tracking-tight mb-1.5 relative z-10">Welcome back!</h1>
                     <p className="type-body-medium text-white/80 relative z-10">You have 3 assignments due this week.</p>
                 </div>
                 <div className="flex items-center">
-                    <div className="ios-card text-center p-5">
+                    <div className="ios-card p-5 flex items-center justify-center h-full">
                         {attendance?.checked_in ? (
                             <div className="flex items-center gap-2 text-green-600">
                                 <span className="material-symbols-outlined text-[22px]">check_circle</span>
@@ -130,8 +130,8 @@ export default function LearnerDashboard() {
             />
 
             {/* Achievements + Next Class */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="ios-card overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 auto-rows-fr">
+                <div className="ios-card overflow-hidden flex flex-col">
                     <h2 className="type-card-title text-[hsl(var(--admin-text-main))] mb-4 flex items-center gap-2">
                         <span className="material-symbols-outlined text-[20px] text-amber-500">star</span>
                         Recent Achievements
@@ -143,7 +143,7 @@ export default function LearnerDashboard() {
                     </div>
                 </div>
 
-                <div className="ios-card overflow-hidden">
+                <div className="ios-card overflow-hidden flex flex-col">
                     <h2 className="type-card-title text-[hsl(var(--admin-text-main))] mb-4 flex items-center gap-2">
                         <span className="material-symbols-outlined text-[20px] text-[hsl(var(--admin-primary))]">schedule</span>
                         Next Class
