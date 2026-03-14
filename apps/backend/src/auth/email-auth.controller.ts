@@ -1,4 +1,5 @@
 import { Controller, Post, Get, Body, Query, Param, BadRequestException } from '@nestjs/common';
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { EmailAuthService } from './email-auth.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -7,19 +8,32 @@ import { Tenant } from '../tenants/tenant.entity';
 
 // DTOs
 class SendOTPDto {
+    @IsEmail()
     email: string;
 }
 
 class VerifyOTPDto {
+    @IsString() @IsNotEmpty()
     otpKey: string;
+
+    @IsString() @IsNotEmpty()
     code: string;
+
+    @IsEmail()
     email: string;
 }
 
 class SendMagicLinkDto {
+    @IsEmail()
     email: string;
+
+    @IsString() @IsNotEmpty()
     tenantSlug: string;
+
+    @IsString() @IsNotEmpty()
     role: string;
+
+    @IsString() @IsOptional()
     returnUrl: string;
 }
 
