@@ -10,6 +10,9 @@ import { WeeklyPlanner } from '../../../../../components/dashboard/WeeklyPlanner
 import { QuickChat } from '../../../../../components/dashboard/QuickChat';
 import { QuickAddFAB } from '../../../../../components/dashboard/QuickAddFAB';
 import { AddEventSheet } from '../../../../../components/dashboard/AddEventSheet';
+import { ProfileCompletionCard } from '../../../../../components/dashboard/ProfileCompletionCard';
+import { GroupsChannelsCard } from '../../../../../components/dashboard/GroupsChannelsCard';
+import { ActivityFeed } from '../../../../../components/dashboard/ActivityFeed';
 
 export default function LearnerDashboard() {
     const params = useParams();
@@ -33,12 +36,24 @@ export default function LearnerDashboard() {
 
     const sidebar = (
         <>
+            <ProfileCompletionCard
+                sections={[
+                    { label: 'General Information', completed: 4, total: 5 },
+                    { label: 'Profile Photo', completed: 1, total: 1 },
+                    { label: 'Cover Photo', completed: 0, total: 1 },
+                    { label: 'Interests', completed: 2, total: 3 },
+                ]}
+                editLink={`${basePath}/profile`}
+            />
+
             <MiniCalendar
                 events={MOCK_LEARNER_EVENTS}
                 onAddEvent={(date) => { setPreselectedDate(date); setEventSheetOpen(true); }}
             />
 
             <QuickChat basePath={basePath} />
+
+            <GroupsChannelsCard basePath={basePath} />
 
             {/* Assignments Due */}
             <div className="ios-card">
@@ -161,6 +176,9 @@ export default function LearnerDashboard() {
                     </div>
                 </div>
             </div>
+
+            {/* Activity Feed */}
+            <ActivityFeed role="learner" />
         </DashboardLayout>
     );
 }

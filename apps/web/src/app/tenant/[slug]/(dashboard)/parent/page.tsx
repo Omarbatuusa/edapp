@@ -9,6 +9,9 @@ import { MiniCalendar } from '@/components/dashboard/MiniCalendar';
 import { QuickChat } from '@/components/dashboard/QuickChat';
 import { QuickAddFAB } from '@/components/dashboard/QuickAddFAB';
 import { AddEventSheet } from '@/components/dashboard/AddEventSheet';
+import { ProfileCompletionCard } from '@/components/dashboard/ProfileCompletionCard';
+import { GroupsChannelsCard } from '@/components/dashboard/GroupsChannelsCard';
+import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 
 const MOCK_TENANT = {
     name: 'Lakewood International Academy',
@@ -38,12 +41,24 @@ export default function ParentDashboard() {
 
     const sidebar = (
         <>
+            <ProfileCompletionCard
+                sections={[
+                    { label: 'General Information', completed: 4, total: 5 },
+                    { label: 'Emergency Contacts', completed: 1, total: 2 },
+                    { label: 'Profile Photo', completed: 1, total: 1 },
+                    { label: 'Cover Photo', completed: 0, total: 1 },
+                ]}
+                editLink={`${basePath}/profile`}
+            />
+
             <MiniCalendar
                 events={MOCK_PARENT_EVENTS}
                 onAddEvent={(date) => { setPreselectedDate(date); setEventSheetOpen(true); }}
             />
 
             <QuickChat basePath={basePath} />
+
+            <GroupsChannelsCard basePath={basePath} />
 
             {/* Upcoming Events */}
             <div className="ios-card">
@@ -126,6 +141,9 @@ export default function ParentDashboard() {
                 tenantName={MOCK_TENANT.name}
                 tenantLogo={MOCK_TENANT.logo}
             />
+
+            {/* Activity Feed */}
+            <ActivityFeed role="parent" />
         </DashboardLayout>
     );
 }

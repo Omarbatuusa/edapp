@@ -114,8 +114,8 @@ export function AppNavRail({
                         </button>
                     </div>
                 ) : (
-                    /* Expanded: toggle icon only (tenant identity is in the header) */
-                    <div className="flex items-center justify-center">
+                    /* Expanded: left-aligned toggle (tenant identity is in the header) */
+                    <div className="flex items-center justify-start pl-3">
                         <button
                             type="button"
                             onClick={onToggleCollapse}

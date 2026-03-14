@@ -10,6 +10,9 @@ import { WeeklyPlanner } from '../../../../../components/dashboard/WeeklyPlanner
 import { QuickChat } from '../../../../../components/dashboard/QuickChat';
 import { QuickAddFAB } from '../../../../../components/dashboard/QuickAddFAB';
 import { AddEventSheet } from '../../../../../components/dashboard/AddEventSheet';
+import { ProfileCompletionCard } from '../../../../../components/dashboard/ProfileCompletionCard';
+import { GroupsChannelsCard } from '../../../../../components/dashboard/GroupsChannelsCard';
+import { ActivityFeed } from '../../../../../components/dashboard/ActivityFeed';
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -84,6 +87,16 @@ export default function AdminDashboard({ params }: Props) {
 
     const sidebar = (
         <>
+            <ProfileCompletionCard
+                sections={[
+                    { label: 'General Information', completed: 5, total: 6 },
+                    { label: 'School Settings', completed: 3, total: 4 },
+                    { label: 'Branding', completed: 1, total: 2 },
+                    { label: 'Contact Details', completed: 2, total: 2 },
+                ]}
+                editLink={`${basePath}/settings`}
+            />
+
             <MiniCalendar
                 events={MOCK_ADMIN_EVENTS}
                 onAddEvent={(date) => { setPreselectedDate(date); setEventSheetOpen(true); }}
@@ -106,6 +119,8 @@ export default function AdminDashboard({ params }: Props) {
             </div>
 
             <QuickChat basePath={basePath} />
+
+            <GroupsChannelsCard basePath={basePath} />
 
             {/* Staff On Leave */}
             <div className="ios-card">
@@ -281,6 +296,9 @@ export default function AdminDashboard({ params }: Props) {
                     <QuickAction icon="search" label="Search Records" />
                 </div>
             </div>
+
+            {/* Activity Feed */}
+            <ActivityFeed role="admin" />
         </DashboardLayout>
     );
 }
