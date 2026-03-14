@@ -62,19 +62,21 @@ function RailTooltip({ children, text, show: forceShow }: { children: React.Reac
 
 /**
  * Universal desktop nav rail for ALL roles.
- * 2-zone layout: sticky top (collapse toggle) → scrollable menu.
- * No tenant identity in sidebar. No footer section.
- * Collapsed state hides collapse icon; hover on rail reveals expand icon.
+ * 3-zone layout: sticky header (tenant + collapse) → scrollable nav → sticky micro footer.
  */
 export function AppNavRail({
     items,
     basePath,
     isCollapsed,
     onToggleCollapse,
+    tenantName,
+    tenantLogo,
+    tenantSubtitle,
+    appVersion = '1.0.0',
 }: AppNavRailProps) {
     const pathname = usePathname();
     const [isIconOnly, setIsIconOnly] = useState(false);
-    const [hoveringRail, setHoveringRail] = useState(false);
+    const year = new Date().getFullYear();
 
     // Detect if labels are hidden (icon-only mode) — tablet or collapsed desktop
     useEffect(() => {
@@ -93,35 +95,43 @@ export function AppNavRail({
         return pathname?.startsWith(full);
     };
 
-    // Show collapse icon: always when expanded, only on hover when collapsed
-    const showCollapseButton = !isCollapsed || hoveringRail;
-
     return (
-        <aside
-            className={`admin-nav-rail ${isCollapsed ? 'is-collapsed' : ''}`}
-            onMouseEnter={() => setHoveringRail(true)}
-            onMouseLeave={() => setHoveringRail(false)}
-        >
-            {/* ── STICKY TOP: Collapse toggle ── */}
+        <aside className={`admin-nav-rail ${isCollapsed ? 'is-collapsed' : ''}`}>
+            {/* ── STICKY TOP: Tenant identity + collapse control ── */}
             <div className="sidebar-top">
-                <div className="hidden lg:flex">
-                    {showCollapseButton ? (
-                        <button
-                            onClick={onToggleCollapse}
-                            className="flex items-center gap-2.5 rounded-lg transition-all active:scale-[0.96] w-full text-[hsl(var(--admin-text-muted))] hover:bg-[hsl(var(--admin-surface-alt))] hover:text-[hsl(var(--admin-text-main))]"
-                            style={{ padding: '8px', justifyContent: isIconOnly ? 'center' : 'flex-start' }}
-                            aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-                        >
-                            <span className="material-symbols-outlined text-[20px] flex-shrink-0">
-                                {isCollapsed ? 'dock_to_right' : 'dock_to_left'}
-                            </span>
-                            {!isIconOnly && (
-                                <span className="text-[13px] font-medium truncate">Collapse</span>
-                            )}
-                        </button>
+                <div className="flex items-center gap-2.5" style={{ justifyContent: isIconOnly ? 'center' : 'flex-start' }}>
+                    {/* Tenant logo — always visible */}
+                    {tenantLogo ? (
+                        <div className="w-9 h-9 rounded-xl overflow-hidden bg-[hsl(var(--admin-surface-alt))] flex-shrink-0 border border-[hsl(var(--admin-border)/0.3)]">
+                            <img src={tenantLogo} alt={tenantName || ''} className="w-full h-full object-cover" />
+                        </div>
                     ) : (
-                        <div style={{ height: '36px' }} />
+                        <div className="w-9 h-9 rounded-xl bg-[hsl(var(--admin-primary))] flex items-center justify-center flex-shrink-0">
+                            <span className="material-symbols-outlined text-white text-lg">school</span>
+                        </div>
                     )}
+
+                    {/* Tenant name + subtitle — expanded only */}
+                    {!isIconOnly && tenantName && (
+                        <div className="min-w-0 flex-1">
+                            <p className="text-[14px] font-semibold text-[hsl(var(--admin-text-main))] truncate leading-tight">{tenantName}</p>
+                            {tenantSubtitle && (
+                                <p className="text-[11px] text-[hsl(var(--admin-text-muted))] truncate leading-tight mt-0.5">{tenantSubtitle}</p>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Collapse/expand control — desktop only */}
+                    <button
+                        type="button"
+                        onClick={onToggleCollapse}
+                        className={`hidden lg:flex items-center justify-center w-7 h-7 rounded-md text-[hsl(var(--admin-text-muted))] hover:bg-[hsl(var(--admin-surface-alt))] hover:text-[hsl(var(--admin-text-main))] transition-all active:scale-[0.92] flex-shrink-0 ${isCollapsed ? 'collapse-reveal' : ''}`}
+                        aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                    >
+                        <span className="material-symbols-outlined text-[18px]">
+                            {isCollapsed ? 'dock_to_right' : 'dock_to_left'}
+                        </span>
+                    </button>
                 </div>
             </div>
 
@@ -158,6 +168,17 @@ export function AppNavRail({
                     })}
                 </div>
             </nav>
+
+            {/* ── STICKY MICRO FOOTER ── */}
+            <div className="sidebar-footer">
+                {!isIconOnly ? (
+                    <p className="text-[9px] font-medium text-[hsl(var(--admin-text-muted)/0.5)] tracking-wide text-center">
+                        &copy; edAPP &middot; v{appVersion} &middot; {year}
+                    </p>
+                ) : (
+                    <div className="h-1" />
+                )}
+            </div>
         </aside>
     );
 }

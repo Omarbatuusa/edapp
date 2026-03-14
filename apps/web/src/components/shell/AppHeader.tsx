@@ -52,20 +52,22 @@ export function AppHeader({
                             className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-[hsl(var(--admin-surface-alt))] transition-colors flex-shrink-0 hide-on-rail"
                             aria-label="Open menu"
                         >
-                            <span className="material-symbols-outlined text-[20px] text-[hsl(var(--admin-text-sub))]">menu_open</span>
+                            <span className="material-symbols-outlined text-[20px] text-[hsl(var(--admin-text-sub))]">menu</span>
                         </button>
                     )}
 
-                    {/* Logo icon only */}
-                    {logoUrl ? (
-                        <div className="w-8 h-8 rounded-lg overflow-hidden bg-[hsl(var(--admin-surface-alt))] flex-shrink-0 border border-[hsl(var(--admin-border)/0.3)]">
-                            <img src={logoUrl} alt="" className="w-full h-full object-cover" />
-                        </div>
-                    ) : (
-                        <div className="w-8 h-8 rounded-lg bg-[hsl(var(--admin-primary))] flex items-center justify-center flex-shrink-0">
-                            <span className="material-symbols-outlined text-white text-base">school</span>
-                        </div>
-                    )}
+                    {/* Logo icon — mobile only (sidebar has tenant identity on desktop) */}
+                    <div className="hide-on-rail flex-shrink-0">
+                        {logoUrl ? (
+                            <div className="w-8 h-8 rounded-lg overflow-hidden bg-[hsl(var(--admin-surface-alt))] border border-[hsl(var(--admin-border)/0.3)]">
+                                <img src={logoUrl} alt="" className="w-full h-full object-cover" />
+                            </div>
+                        ) : (
+                            <div className="w-8 h-8 rounded-lg bg-[hsl(var(--admin-primary))] flex items-center justify-center">
+                                <span className="material-symbols-outlined text-white text-base">school</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Right: Icon cluster */}

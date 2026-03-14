@@ -71,7 +71,28 @@ export function MobileDrawer({
 
             {/* Drawer panel */}
             <div className="mobile-drawer" role="dialog" aria-label="Navigation menu">
-                {/* Scrollable menu body — no header, just nav */}
+                {/* Header: tenant identity */}
+                <div className="mobile-drawer-header">
+                    <div className="flex items-center gap-2.5">
+                        {tenantLogo ? (
+                            <div className="w-9 h-9 rounded-xl overflow-hidden bg-[hsl(var(--admin-surface-alt))] flex-shrink-0 border border-[hsl(var(--admin-border)/0.3)]">
+                                <img src={tenantLogo} alt={tenantName} className="w-full h-full object-cover" />
+                            </div>
+                        ) : (
+                            <div className="w-9 h-9 rounded-xl bg-[hsl(var(--admin-primary))] flex items-center justify-center flex-shrink-0">
+                                <span className="material-symbols-outlined text-white text-lg">school</span>
+                            </div>
+                        )}
+                        <div className="min-w-0 flex-1">
+                            <p className="text-[15px] font-semibold text-[hsl(var(--admin-text-main))] truncate leading-tight">{tenantName}</p>
+                            {tenantSubtitle && (
+                                <p className="text-[11px] text-[hsl(var(--admin-text-muted))] truncate leading-tight mt-0.5">{tenantSubtitle}</p>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Scrollable menu body */}
                 <nav className="mobile-drawer-body scrollbar-on-hover">
                     {/* Primary nav items */}
                     <div className="flex flex-col gap-0.5 mb-4">

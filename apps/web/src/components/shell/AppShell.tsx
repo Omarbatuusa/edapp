@@ -188,6 +188,10 @@ export function AppShell({
                                 basePath={basePath}
                                 isCollapsed={isCollapsed}
                                 onToggleCollapse={toggleCollapse}
+                                tenantName={tenantName}
+                                tenantLogo={tenantLogo}
+                                tenantSubtitle={scopeLabel}
+                                appVersion={appVersion}
                             />
                             <main
                                 className="admin-main relative flex flex-col"
@@ -199,7 +203,7 @@ export function AppShell({
                                 <div className="flex-1">
                                     {children}
                                 </div>
-                                <AppFooter version={appVersion} />
+                                <AppFooter version={appVersion} className="lg:hidden" />
                             </main>
                         </div>
                         {/* Bottom nav only on tab roots */}
@@ -219,6 +223,8 @@ export function AppShell({
                     navConfig={navConfig}
                     basePath={basePath}
                     tenantName={tenantName}
+                    tenantLogo={tenantLogo}
+                    tenantSubtitle={scopeLabel}
                 />
 
                 {/* Overlay panels */}
