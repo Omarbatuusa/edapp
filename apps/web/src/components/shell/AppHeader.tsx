@@ -10,6 +10,7 @@ interface AppHeaderProps {
     onNotificationClick?: () => void;
     onAvatarClick?: () => void;
     onSafetyClick?: () => void;
+    onMenuOpen?: () => void;
     notificationsCount?: number;
     user?: any;
     scopeLabel?: string;
@@ -36,6 +37,7 @@ export function AppHeader({
     onNotificationClick,
     onAvatarClick,
     onSafetyClick,
+    onMenuOpen,
     notificationsCount = 0,
     user,
     scopeLabel = 'All campuses',
@@ -49,8 +51,20 @@ export function AppHeader({
     return (
         <header className="admin-header" id="app-header">
             <div className="flex items-center justify-between gap-2.5">
-                {/* Left: Logo + Title/Branch */}
+                {/* Left: Hamburger (mobile) + Logo + Title/Branch */}
                 <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                    {/* Hamburger — mobile only (hidden when rail is visible at 769px+) */}
+                    {onMenuOpen && (
+                        <button
+                            type="button"
+                            onClick={onMenuOpen}
+                            className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-[hsl(var(--admin-surface-alt))] transition-colors flex-shrink-0 hide-on-rail"
+                            aria-label="Open menu"
+                        >
+                            <span className="material-symbols-outlined text-[22px] text-[hsl(var(--admin-text-sub))]">menu</span>
+                        </button>
+                    )}
+
                     {/* Logo */}
                     {logoUrl ? (
                         <div className="w-9 h-9 rounded-xl overflow-hidden bg-[hsl(var(--admin-surface-alt))] flex-shrink-0 border border-[hsl(var(--admin-border)/0.3)]">

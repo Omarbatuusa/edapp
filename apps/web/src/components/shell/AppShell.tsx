@@ -6,6 +6,7 @@ import { AppHeader } from './AppHeader';
 import { AppBottomNav } from './AppBottomNav';
 import { AppNavRail } from './AppNavRail';
 import { AppFooter } from './AppFooter';
+import { MobileDrawer } from './MobileDrawer';
 import { SubpageBar } from './SubpageBar';
 import { ProfileSheet } from './ProfileSheet';
 import { EmergencySheet } from './EmergencySheet';
@@ -80,6 +81,9 @@ export function AppShell({
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const mainRef = useRef<HTMLDivElement>(null);
+
+    // Mobile drawer
+    const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
     // Overlay panels
     const [profileSheetOpen, setProfileSheetOpen] = useState(false);
@@ -165,6 +169,7 @@ export function AppShell({
                             <AppHeader
                                 title={tenantName}
                                 logoUrl={tenantLogo}
+                                onMenuOpen={() => setMobileDrawerOpen(true)}
                                 onSearch={() => setSearchSheetOpen(true)}
                                 onSafetyClick={showSafety ? () => setSafetyChooserOpen(true) : undefined}
                                 onNotificationClick={() => setNotificationPanelOpen(true)}
@@ -183,6 +188,10 @@ export function AppShell({
                                 basePath={basePath}
                                 isCollapsed={isCollapsed}
                                 onToggleCollapse={toggleCollapse}
+                                tenantName={tenantName}
+                                tenantLogo={tenantLogo}
+                                tenantSubtitle={scopeLabel}
+                                appVersion={appVersion}
                             />
                             <main
                                 className="admin-main relative flex flex-col"
@@ -194,7 +203,7 @@ export function AppShell({
                                 <div className="flex-1">
                                     {children}
                                 </div>
-                                <AppFooter version={appVersion} />
+                                <AppFooter version={appVersion} className="lg:hidden" />
                             </main>
                         </div>
                         {/* Bottom nav only on tab roots */}
@@ -206,6 +215,18 @@ export function AppShell({
                         )}
                     </div>
                 </div>
+
+                {/* Mobile drawer */}
+                <MobileDrawer
+                    isOpen={mobileDrawerOpen}
+                    onClose={() => setMobileDrawerOpen(false)}
+                    navConfig={navConfig}
+                    basePath={basePath}
+                    tenantName={tenantName}
+                    tenantLogo={tenantLogo}
+                    tenantSubtitle={scopeLabel}
+                    appVersion={appVersion}
+                />
 
                 {/* Overlay panels */}
                 <ProfileSheet

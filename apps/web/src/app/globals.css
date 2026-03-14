@@ -105,6 +105,21 @@
 
     /* Viewport */
     --app-vh: 1vh;
+
+    /* ── Typography Scale ── */
+    --type-page-title: 700 28px/1.15 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --type-section-title: 700 18px/1.25 inherit;
+    --type-card-title: 600 16px/1.3 inherit;
+    --type-kpi-number: 700 28px/1.1 inherit;
+    --type-body: 400 15px/1.5 inherit;
+    --type-body-medium: 500 14px/1.45 inherit;
+    --type-muted: 500 13px/1.4 inherit;
+    --type-badge: 600 11px/1.2 inherit;
+    --type-nav-label: 500 14px/1.3 inherit;
+    --type-metadata: 500 11px/1.3 inherit;
+    --type-calendar-day: 600 14px/1.2 inherit;
+    --type-calendar-header: 700 15px/1.2 inherit;
+    --type-calendar-weekday: 700 11px/1.2 inherit;
   }
 
   .dark {
@@ -355,13 +370,9 @@
   display: none;
   flex-shrink: 0;
   border-right: 0.5px solid hsl(var(--admin-border) / 0.8);
-  background-color: hsl(var(--admin-surface-alt) / 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  padding: 12px 8px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  transition: width 0.3s cubic-bezier(0.32, 0.72, 0, 1), padding 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  background-color: hsl(var(--admin-surface));
+  overflow: hidden;
+  transition: width 0.3s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 @media (min-width: 769px) {
@@ -369,25 +380,94 @@
     display: flex;
     flex-direction: column;
     width: var(--admin-rail-width-tablet);
-    align-items: center;
-    gap: 4px;
-    padding: 12px 8px;
   }
 }
 
 @media (min-width: 1025px) {
   .admin-nav-rail {
     width: var(--admin-rail-width-desktop);
-    align-items: stretch;
-    padding: 16px 12px;
-    gap: 4px;
   }
 
   .admin-nav-rail.is-collapsed {
     width: var(--admin-rail-width-tablet);
-    align-items: center;
-    padding: 16px 8px;
   }
+}
+
+/* Sidebar 3-zone layout */
+.sidebar-top {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: hsl(var(--admin-surface));
+  padding: 12px;
+  flex-shrink: 0;
+  border-bottom: 0.5px solid hsl(var(--admin-border) / 0.3);
+}
+
+.sidebar-menu {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px;
+}
+
+@media (min-width: 1025px) {
+  .sidebar-menu {
+    padding: 8px 12px;
+  }
+}
+
+.sidebar-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  background: hsl(var(--admin-surface));
+  padding: 12px;
+  flex-shrink: 0;
+  border-top: 0.5px solid hsl(var(--admin-border) / 0.3);
+}
+
+/* Mobile drawer */
+.mobile-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.4);
+  animation: fade-in 0.2s ease;
+}
+
+.mobile-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 300px;
+  max-width: 85vw;
+  z-index: 51;
+  background: hsl(var(--admin-surface));
+  display: flex;
+  flex-direction: column;
+  animation: slide-in-left 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
+}
+
+.mobile-drawer-header {
+  padding: max(16px, env(safe-area-inset-top, 16px)) 16px 16px;
+  border-bottom: 0.5px solid hsl(var(--admin-border) / 0.5);
+  flex-shrink: 0;
+}
+
+.mobile-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px;
+}
+
+.mobile-drawer-footer {
+  padding: 12px 16px;
+  padding-bottom: max(12px, env(safe-area-inset-bottom, 12px));
+  border-top: 0.5px solid hsl(var(--admin-border) / 0.5);
+  flex-shrink: 0;
 }
 
 /* iOS Specific Utility Classes for Admin */
@@ -429,6 +509,25 @@
     padding: 28px;
   }
 }
+
+/* Hide element when nav rail is visible (769px+) */
+@media (min-width: 769px) {
+  .hide-on-rail {
+    display: none !important;
+  }
+}
+
+/* ── Typography Scale Utilities ── */
+.type-page-title { font: var(--type-page-title); letter-spacing: -0.02em; color: hsl(var(--admin-text-main)); }
+.type-section-title { font: var(--type-section-title); letter-spacing: -0.01em; color: hsl(var(--admin-text-main)); }
+.type-card-title { font: var(--type-card-title); letter-spacing: -0.01em; color: hsl(var(--admin-text-main)); }
+.type-kpi-number { font: var(--type-kpi-number); letter-spacing: -0.02em; color: hsl(var(--admin-text-main)); }
+.type-body { font: var(--type-body); color: hsl(var(--admin-text-main)); }
+.type-body-medium { font: var(--type-body-medium); color: hsl(var(--admin-text-sub)); }
+.type-muted { font: var(--type-muted); color: hsl(var(--admin-text-muted)); }
+.type-badge { font: var(--type-badge); letter-spacing: 0.04em; text-transform: uppercase; color: hsl(var(--admin-text-muted)); }
+.type-nav-label { font: var(--type-nav-label); }
+.type-metadata { font: var(--type-metadata); color: hsl(var(--admin-text-muted)); }
 
 /* ═══════════════════════════════════════════════════════
    SURFACE & COMPONENT UTILITIES
@@ -758,7 +857,7 @@
   .dashboard-layout-grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 320px;
-    gap: 24px;
+    gap: 28px;
   }
 }
 

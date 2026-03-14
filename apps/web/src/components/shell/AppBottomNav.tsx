@@ -12,7 +12,7 @@ interface AppBottomNavProps {
 /**
  * Universal bottom nav for ALL roles (mobile only).
  * Reuses the `admin-bottom-nav` CSS class for iOS-premium styling.
- * Expects exactly 5 items (4 primary + Menu).
+ * Expects exactly 4 primary tab items.
  */
 export function AppBottomNav({ items, basePath }: AppBottomNavProps) {
     const pathname = usePathname();

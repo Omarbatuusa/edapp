@@ -20,7 +20,7 @@ export interface NavSection {
 }
 
 export interface RoleNavConfig {
-    /** Bottom nav tabs — exactly 5 (4 primary + Menu). */
+    /** Bottom nav tabs — exactly 4 primary tabs. */
     bottomTabs: NavItem[];
     /** All nav items shown in the desktop rail + menu overflow. */
     allItems: NavItem[];
@@ -30,8 +30,6 @@ export interface RoleNavConfig {
     getBasePath: (slug: string) => string;
 }
 
-// ── Menu tab (always last) ──────────────────────────────────────────────────
-const MENU_TAB: NavItem = { id: 'menu', icon: 'menu', label: 'Menu', href: '/menu' };
 
 // ═══════════════════════════════════════════════════════════════════════════
 // ADMIN CONFIGS (platform / secretary / tenant)
@@ -43,7 +41,7 @@ const PLATFORM_ADMIN_CONFIG: RoleNavConfig = {
         { id: 'tenants', icon: 'domain', label: 'Tenants', href: '/tenants' },
         { id: 'people', icon: 'group', label: 'People', href: '/people' },
         { id: 'audit', icon: 'history', label: 'Audit', href: '/audit' },
-        MENU_TAB,
+
     ],
     allItems: [
         { id: 'dashboard', icon: 'dashboard', label: 'Dashboard', href: '' },
@@ -78,7 +76,7 @@ const SECRETARY_CONFIG: RoleNavConfig = {
         { id: 'tenants', icon: 'domain', label: 'Tenants', href: '/tenants' },
         { id: 'approvals', icon: 'approval', label: 'Approvals', href: '/approvals' },
         { id: 'people', icon: 'group', label: 'People', href: '/people' },
-        MENU_TAB,
+
     ],
     allItems: [
         { id: 'inbox', icon: 'inbox', label: 'Inbox', href: '/inbox' },
@@ -104,7 +102,7 @@ const TENANT_ADMIN_CONFIG: RoleNavConfig = {
         { id: 'enrollment', icon: 'how_to_reg', label: 'Enrollment', href: '/enrollment' },
         { id: 'attendance', icon: 'event_available', label: 'Attendance', href: '/attendance' },
         { id: 'staff', icon: 'badge', label: 'Staff', href: '/staff' },
-        MENU_TAB,
+
     ],
     allItems: [
         { id: 'dashboard', icon: 'dashboard', label: 'Dashboard', href: '' },
@@ -160,7 +158,7 @@ const PRINCIPAL_SMT_CONFIG: RoleNavConfig = {
         { id: 'attendance', icon: 'event_available', label: 'Attendance', href: '/attendance' },
         { id: 'people', icon: 'group', label: 'People', href: '/people' },
         { id: 'reports', icon: 'bar_chart', label: 'Reports', href: '/reports' },
-        MENU_TAB,
+
     ],
     allItems: [
         { id: 'dashboard', icon: 'dashboard', label: 'Dashboard', href: '' },
@@ -204,7 +202,7 @@ const HOD_CONFIG: RoleNavConfig = {
         { id: 'teachers', icon: 'groups', label: 'Teachers', href: '/teachers' },
         { id: 'subjects', icon: 'auto_stories', label: 'Subjects', href: '/subjects' },
         { id: 'reports', icon: 'bar_chart', label: 'Reports', href: '/reports' },
-        MENU_TAB,
+
     ],
     allItems: [
         { id: 'dashboard', icon: 'dashboard', label: 'Dashboard', href: '' },
@@ -243,7 +241,7 @@ const TEACHER_CONFIG: RoleNavConfig = {
         { id: 'classes', icon: 'school', label: 'Classes', href: '/classes' },
         { id: 'homework', icon: 'assignment', label: 'Homework', href: '/homework' },
         { id: 'messages', icon: 'chat_bubble_outline', iconFilled: 'chat_bubble', label: 'Chat', href: '/messages' },
-        MENU_TAB,
+
     ],
     allItems: [
         { id: 'home', icon: 'home', label: 'Home', href: '' },
@@ -284,7 +282,7 @@ const RECEPTION_CONFIG: RoleNavConfig = {
         { id: 'gate', icon: 'sensor_door', label: 'Gate', href: '/gate' },
         { id: 'visitors', icon: 'person_add', label: 'Visitors', href: '/visitors' },
         { id: 'messages', icon: 'chat_bubble_outline', iconFilled: 'chat_bubble', label: 'Messages', href: '/messages' },
-        MENU_TAB,
+
     ],
     allItems: [
         { id: 'today', icon: 'today', label: 'Today', href: '' },
@@ -317,7 +315,7 @@ const FINANCE_CONFIG: RoleNavConfig = {
         { id: 'billing', icon: 'receipt_long', label: 'Billing', href: '/finance/billing' },
         { id: 'journals', icon: 'menu_book', label: 'Journals', href: '/finance/journals' },
         { id: 'reports', icon: 'bar_chart', label: 'Reports', href: '/finance/reports' },
-        MENU_TAB,
+
     ],
     allItems: [
         { id: 'finance', icon: 'account_balance', label: 'Dashboard', href: '/finance' },
@@ -400,7 +398,7 @@ const ADMISSIONS_CONFIG: RoleNavConfig = {
         { id: 'applications', icon: 'description', label: 'Applications', href: '/applications' },
         { id: 'schedule', icon: 'calendar_today', label: 'Schedule', href: '/schedule' },
         { id: 'messages', icon: 'chat_bubble_outline', iconFilled: 'chat_bubble', label: 'Chat', href: '/messages' },
-        MENU_TAB,
+
     ],
     allItems: [
         { id: 'pipeline', icon: 'filter_alt', label: 'Pipeline', href: '/pipeline' },
@@ -433,7 +431,7 @@ const HR_CONFIG: RoleNavConfig = {
         { id: 'leave', icon: 'event_busy', label: 'Leave', href: '/leave' },
         { id: 'payroll', icon: 'payments', label: 'Payroll', href: '/payroll' },
         { id: 'reports', icon: 'bar_chart', label: 'Reports', href: '/reports' },
-        MENU_TAB,
+
     ],
     allItems: [
         { id: 'staff', icon: 'badge', label: 'Staff', href: '/staff' },
@@ -466,7 +464,7 @@ const IT_ADMIN_CONFIG: RoleNavConfig = {
         { id: 'printing', icon: 'print', label: 'Printing', href: '/printing' },
         { id: 'network', icon: 'lan', label: 'Network', href: '/network' },
         { id: 'logs', icon: 'history', label: 'Logs', href: '/audit' },
-        MENU_TAB,
+
     ],
     allItems: [
         { id: 'devices', icon: 'devices', label: 'Devices', href: '/devices' },
@@ -496,7 +494,7 @@ const COUNSELLOR_CONFIG: RoleNavConfig = {
         { id: 'schedule', icon: 'calendar_today', label: 'Schedule', href: '/schedule' },
         { id: 'resources', icon: 'library_books', label: 'Resources', href: '/resources' },
         { id: 'messages', icon: 'chat_bubble_outline', iconFilled: 'chat_bubble', label: 'Chat', href: '/messages' },
-        MENU_TAB,
+
     ],
     allItems: [
         { id: 'cases', icon: 'psychology', label: 'Cases', href: '/cases' },
@@ -519,7 +517,7 @@ const NURSE_CONFIG: RoleNavConfig = {
         { id: 'records', icon: 'folder_shared', label: 'Records', href: '/records' },
         { id: 'emergencies', icon: 'emergency', label: 'Emergencies', href: '/emergencies' },
         { id: 'messages', icon: 'chat_bubble_outline', iconFilled: 'chat_bubble', label: 'Chat', href: '/messages' },
-        MENU_TAB,
+
     ],
     allItems: [
         { id: 'sick-bay', icon: 'medical_services', label: 'Sick Bay', href: '/sick-bay' },
@@ -540,7 +538,7 @@ const TRANSPORT_CONFIG: RoleNavConfig = {
         { id: 'tracking', icon: 'location_on', label: 'Tracking', href: '/tracking' },
         { id: 'incidents', icon: 'report', label: 'Incidents', href: '/incidents' },
         { id: 'messages', icon: 'chat_bubble_outline', iconFilled: 'chat_bubble', label: 'Chat', href: '/messages' },
-        MENU_TAB,
+
     ],
     allItems: [
         { id: 'routes', icon: 'directions_bus', label: 'Routes', href: '/routes' },
@@ -561,7 +559,7 @@ const SECURITY_CONFIG: RoleNavConfig = {
         { id: 'incidents', icon: 'report', label: 'Incidents', href: '/incidents' },
         { id: 'patrols', icon: 'directions_walk', label: 'Patrols', href: '/patrols' },
         { id: 'emergency', icon: 'emergency', label: 'Emergency', href: '/safety' },
-        MENU_TAB,
+
     ],
     allItems: [
         { id: 'gate', icon: 'sensor_door', label: 'Gate', href: '/gate' },
@@ -582,7 +580,7 @@ const AFTERCARE_CONFIG: RoleNavConfig = {
         { id: 'activities', icon: 'sports_soccer', label: 'Activities', href: '/activities' },
         { id: 'pickups', icon: 'directions_car', label: 'Pickups', href: '/pickups' },
         { id: 'messages', icon: 'chat_bubble_outline', iconFilled: 'chat_bubble', label: 'Chat', href: '/messages' },
-        MENU_TAB,
+
     ],
     allItems: [
         { id: 'attendance', icon: 'event_available', label: 'Attendance', href: '/attendance' },
@@ -603,7 +601,7 @@ const GENERAL_STAFF_CONFIG: RoleNavConfig = {
         { id: 'tasks', icon: 'checklist', label: 'Tasks', href: '/tasks' },
         { id: 'messages', icon: 'chat_bubble_outline', iconFilled: 'chat_bubble', label: 'Messages', href: '/messages' },
         { id: 'reports', icon: 'bar_chart', label: 'Reports', href: '/reports' },
-        MENU_TAB,
+
     ],
     allItems: [
         { id: 'home', icon: 'home', label: 'Home', href: '' },
@@ -626,7 +624,7 @@ const CARETAKER_CONFIG: RoleNavConfig = {
         { id: 'requests', icon: 'build', label: 'Requests', href: '/requests' },
         { id: 'inventory', icon: 'inventory_2', label: 'Inventory', href: '/inventory' },
         { id: 'messages', icon: 'chat_bubble_outline', iconFilled: 'chat_bubble', label: 'Messages', href: '/messages' },
-        MENU_TAB,
+
     ],
     allItems: [
         { id: 'tasks', icon: 'checklist', label: 'Tasks', href: '/tasks' },
@@ -651,7 +649,7 @@ const PARENT_CONFIG: RoleNavConfig = {
         { id: 'children', icon: 'child_care', label: 'Children', href: '/children' },
         { id: 'messages', icon: 'chat_bubble_outline', iconFilled: 'chat_bubble', label: 'Chat', href: '/chat' },
         { id: 'pay', icon: 'payments', label: 'Pay', href: '/pay' },
-        MENU_TAB,
+
     ],
     allItems: [
         { id: 'home', icon: 'home', label: 'Home', href: '' },
@@ -690,7 +688,7 @@ const LEARNER_CONFIG: RoleNavConfig = {
         { id: 'courses', icon: 'menu_book', label: 'Courses', href: '/courses' },
         { id: 'grades', icon: 'grade', label: 'Grades', href: '/grades' },
         { id: 'messages', icon: 'chat_bubble_outline', iconFilled: 'chat_bubble', label: 'Chat', href: '/messages' },
-        MENU_TAB,
+
     ],
     allItems: [
         { id: 'home', icon: 'home', label: 'Home', href: '' },
@@ -727,7 +725,7 @@ const APPLICANT_CONFIG: RoleNavConfig = {
         { id: 'documents', icon: 'folder', label: 'Documents', href: '/documents' },
         { id: 'status', icon: 'pending', label: 'Status', href: '/status' },
         { id: 'messages', icon: 'chat_bubble_outline', iconFilled: 'chat_bubble', label: 'Messages', href: '/messages' },
-        MENU_TAB,
+
     ],
     allItems: [
         { id: 'application', icon: 'description', label: 'Application', href: '/application' },
@@ -752,7 +750,7 @@ const ALUMNI_CONFIG: RoleNavConfig = {
         { id: 'events', icon: 'event', label: 'Events', href: '/events' },
         { id: 'directory', icon: 'contacts', label: 'Directory', href: '/directory' },
         { id: 'messages', icon: 'chat_bubble_outline', iconFilled: 'chat_bubble', label: 'Messages', href: '/messages' },
-        MENU_TAB,
+
     ],
     allItems: [
         { id: 'community', icon: 'groups', label: 'Community', href: '/community' },
@@ -773,7 +771,7 @@ const SGB_CONFIG: RoleNavConfig = {
         { id: 'documents', icon: 'folder', label: 'Documents', href: '/documents' },
         { id: 'votes', icon: 'how_to_vote', label: 'Votes', href: '/votes' },
         { id: 'governance', icon: 'gavel', label: 'Governance', href: '/governance' },
-        MENU_TAB,
+
     ],
     allItems: [
         { id: 'meetings', icon: 'groups', label: 'Meetings', href: '/meetings' },
@@ -794,7 +792,7 @@ const PTA_CONFIG: RoleNavConfig = {
         { id: 'fundraising', icon: 'volunteer_activism', label: 'Fundraising', href: '/fundraising' },
         { id: 'volunteers', icon: 'diversity_3', label: 'Volunteers', href: '/volunteers' },
         { id: 'messages', icon: 'chat_bubble_outline', iconFilled: 'chat_bubble', label: 'Messages', href: '/messages' },
-        MENU_TAB,
+
     ],
     allItems: [
         { id: 'events', icon: 'event', label: 'Events', href: '/events' },

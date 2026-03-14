@@ -45,20 +45,20 @@ export function MiniCalendar({ events = [], selectedDate, onSelectDate, onAddEve
             {/* Header */}
             <div className="flex items-center justify-between mb-3">
                 <button type="button" onClick={prevMonth} className="w-8 h-8 rounded-full hover:bg-[hsl(var(--admin-surface-alt))] flex items-center justify-center transition-colors">
-                    <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-text-sub))]">chevron_left</span>
+                    <span className="material-symbols-outlined text-[20px] text-[hsl(var(--admin-text-sub))]">chevron_left</span>
                 </button>
-                <button type="button" onClick={goToday} className="text-[14px] font-bold text-[hsl(var(--admin-text-main))] tracking-tight hover:text-[hsl(var(--admin-primary))] transition-colors">
+                <button type="button" onClick={goToday} className="text-[15px] font-bold text-[hsl(var(--admin-text-main))] tracking-tight hover:text-[hsl(var(--admin-primary))] transition-colors">
                     {MONTHS[month]} {year}
                 </button>
                 <button type="button" onClick={nextMonth} className="w-8 h-8 rounded-full hover:bg-[hsl(var(--admin-surface-alt))] flex items-center justify-center transition-colors">
-                    <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-text-sub))]">chevron_right</span>
+                    <span className="material-symbols-outlined text-[20px] text-[hsl(var(--admin-text-sub))]">chevron_right</span>
                 </button>
             </div>
 
             {/* Weekday headers */}
             <div className="grid grid-cols-7 mb-1">
                 {WEEKDAYS_SHORT.map((d, i) => (
-                    <div key={i} className="text-center text-[10px] font-bold text-[hsl(var(--admin-text-muted))] uppercase tracking-wider py-1">
+                    <div key={i} className="text-center text-[11px] font-bold text-[hsl(var(--admin-text-muted))] uppercase tracking-wider py-1">
                         {d}
                     </div>
                 ))}
@@ -87,7 +87,7 @@ export function MiniCalendar({ events = [], selectedDate, onSelectDate, onAddEve
                                 if (dayEvents.length === 0) onAddEvent?.(dateStr);
                             }}
                             className={`
-                                aspect-square flex flex-col items-center justify-center rounded-full relative transition-all text-[12px] font-semibold
+                                aspect-square p-0.5 flex flex-col items-center justify-center rounded-full relative transition-all text-[14px] font-semibold
                                 ${isToday && !isSelected ? 'bg-[hsl(var(--admin-primary))] text-white' : ''}
                                 ${isSelected ? 'ring-2 ring-[hsl(var(--admin-primary))] bg-[hsl(var(--admin-primary)/0.12)]' : ''}
                                 ${!isToday && !isSelected && isWeekend ? 'text-[hsl(var(--admin-text-muted))]' : ''}
@@ -110,7 +110,7 @@ export function MiniCalendar({ events = [], selectedDate, onSelectDate, onAddEve
 
             {/* Today button */}
             <div className="mt-2 flex justify-center">
-                <button type="button" onClick={goToday} className="text-[11px] font-semibold text-[hsl(var(--admin-primary))] hover:underline">
+                <button type="button" onClick={goToday} className="text-[12px] font-semibold text-[hsl(var(--admin-primary))] hover:underline">
                     Today
                 </button>
             </div>
