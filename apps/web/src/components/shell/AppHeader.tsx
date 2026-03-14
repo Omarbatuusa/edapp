@@ -20,18 +20,12 @@ interface AppHeaderProps {
 }
 
 /**
- * Facebook-style AppHeader — clean single-line layout.
+ * Minimal AppHeader — icon-only left, action icons right.
  *
- * Mobile:   [Logo] [Title + branch ▾] ··· [Safety] [Bell] [Avatar ▾]
- * Tablet:   [Logo] [Title + branch ▾] ··· [Search] [Safety] [Bell] [Avatar ▾]
- * Desktop:  [Logo] [Title + branch ▾] ··· [Search] [Safety] [Bell] [Avatar ▾]
- *
- * Always-on background + shadow.
- * Avatar has small chevron badge for role switching.
- * Safety icon opens emergency/incident chooser.
+ * Mobile:   [≡ trigger] [Logo] ··· [Search] [Safety] [Bell] [Avatar ▾]
+ * Desktop:  [Logo] ··· [Search] [Safety] [Bell] [Avatar ▾]
  */
 export function AppHeader({
-    title,
     logoUrl,
     onSearch,
     onNotificationClick,
@@ -40,9 +34,6 @@ export function AppHeader({
     onMenuOpen,
     notificationsCount = 0,
     user,
-    scopeLabel = 'All campuses',
-    onScopeClick,
-    showScope = false,
     showSafety = false,
 }: AppHeaderProps) {
     const displayName = user?.display_name || user?.first_name || user?.displayName || 'User';
@@ -50,10 +41,10 @@ export function AppHeader({
 
     return (
         <header className="admin-header" id="app-header">
-            <div className="flex items-center justify-between gap-2.5">
-                {/* Left: Hamburger (mobile) + Logo + Title/Branch */}
-                <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                    {/* Hamburger — mobile only (hidden when rail is visible at 769px+) */}
+            <div className="flex items-center justify-between gap-2">
+                {/* Left: Drawer trigger (mobile) + Logo icon */}
+                <div className="flex items-center gap-2 flex-shrink-0">
+                    {/* Drawer trigger — mobile only */}
                     {onMenuOpen && (
                         <button
                             type="button"
@@ -61,58 +52,30 @@ export function AppHeader({
                             className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-[hsl(var(--admin-surface-alt))] transition-colors flex-shrink-0 hide-on-rail"
                             aria-label="Open menu"
                         >
-                            <span className="material-symbols-outlined text-[22px] text-[hsl(var(--admin-text-sub))]">menu</span>
+                            <span className="material-symbols-outlined text-[20px] text-[hsl(var(--admin-text-sub))]">menu_open</span>
                         </button>
                     )}
 
-                    {/* Logo */}
+                    {/* Logo icon only */}
                     {logoUrl ? (
-                        <div className="w-9 h-9 rounded-xl overflow-hidden bg-[hsl(var(--admin-surface-alt))] flex-shrink-0 border border-[hsl(var(--admin-border)/0.3)]">
+                        <div className="w-8 h-8 rounded-lg overflow-hidden bg-[hsl(var(--admin-surface-alt))] flex-shrink-0 border border-[hsl(var(--admin-border)/0.3)]">
                             <img src={logoUrl} alt="" className="w-full h-full object-cover" />
                         </div>
                     ) : (
-                        <div className="w-9 h-9 rounded-xl bg-[hsl(var(--admin-primary))] flex items-center justify-center flex-shrink-0">
-                            <span className="material-symbols-outlined text-white text-lg">school</span>
+                        <div className="w-8 h-8 rounded-lg bg-[hsl(var(--admin-primary))] flex items-center justify-center flex-shrink-0">
+                            <span className="material-symbols-outlined text-white text-base">school</span>
                         </div>
                     )}
-
-                    {/* Title + branch subtitle */}
-                    <div className="min-w-0 flex-1 flex flex-col justify-center">
-                        <h1 className="text-[15px] sm:text-[16px] lg:text-[18px] font-semibold text-[hsl(var(--admin-text-main))] tracking-tight leading-tight truncate">
-                            {title}
-                        </h1>
-                        {scopeLabel && (
-                            showScope && onScopeClick ? (
-                                <button
-                                    type="button"
-                                    onClick={onScopeClick}
-                                    aria-label="Change campus"
-                                    className="flex items-center gap-[3px] mt-[1px] hover:opacity-80 transition-opacity"
-                                >
-                                    <span className="text-[11px] text-[hsl(var(--admin-text-muted))] leading-none truncate max-w-[140px] lg:max-w-[200px]">
-                                        {scopeLabel}
-                                    </span>
-                                    <span className="material-symbols-outlined text-[10px] text-[hsl(var(--admin-text-muted))]">expand_more</span>
-                                </button>
-                            ) : (
-                                <span className="flex items-center gap-[3px] mt-[1px]">
-                                    <span className="text-[11px] text-[hsl(var(--admin-text-muted))] leading-none truncate max-w-[140px] lg:max-w-[200px]">
-                                        {scopeLabel}
-                                    </span>
-                                </span>
-                            )
-                        )}
-                    </div>
                 </div>
 
                 {/* Right: Icon cluster */}
                 <div className="flex items-center gap-1 flex-shrink-0">
-                    {/* Search — tablet+ only */}
+                    {/* Search — visible on all sizes */}
                     {onSearch && (
                         <button
                             type="button"
                             onClick={onSearch}
-                            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-full bg-[hsl(var(--admin-surface-alt))] text-[hsl(var(--admin-text-sub))] hover:bg-[hsl(var(--admin-border))] transition-colors"
+                            className="w-9 h-9 flex items-center justify-center rounded-full bg-[hsl(var(--admin-surface-alt))] text-[hsl(var(--admin-text-sub))] hover:bg-[hsl(var(--admin-border))] transition-colors"
                             aria-label="Search"
                         >
                             <span className="material-symbols-outlined text-[18px]">search</span>
@@ -131,7 +94,7 @@ export function AppHeader({
                         </button>
                     )}
 
-                    {/* Notifications — always */}
+                    {/* Notifications */}
                     {onNotificationClick && (
                         <button
                             type="button"
@@ -148,7 +111,7 @@ export function AppHeader({
                         </button>
                     )}
 
-                    {/* Avatar with chevron — always */}
+                    {/* Avatar with chevron */}
                     {onAvatarClick && (
                         <button
                             type="button"

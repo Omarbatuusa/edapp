@@ -369,10 +369,13 @@
 .admin-nav-rail {
   display: none;
   flex-shrink: 0;
-  border-right: 0.5px solid hsl(var(--admin-border) / 0.8);
   background-color: hsl(var(--admin-surface));
   overflow: hidden;
   transition: width 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  border-right: 0.5px solid hsl(var(--admin-border) / 0.6);
+  border-top-right-radius: 18px;
+  border-bottom-right-radius: 18px;
+  z-index: 31;
 }
 
 @media (min-width: 769px) {
@@ -393,15 +396,14 @@
   }
 }
 
-/* Sidebar 3-zone layout */
+/* Sidebar 2-zone layout */
 .sidebar-top {
   position: sticky;
   top: 0;
   z-index: 2;
   background: hsl(var(--admin-surface));
-  padding: 12px;
+  padding: 8px 12px;
   flex-shrink: 0;
-  border-bottom: 0.5px solid hsl(var(--admin-border) / 0.3);
 }
 
 .sidebar-menu {
@@ -417,14 +419,24 @@
   }
 }
 
-.sidebar-footer {
-  position: sticky;
-  bottom: 0;
-  z-index: 2;
-  background: hsl(var(--admin-surface));
-  padding: 12px;
-  flex-shrink: 0;
-  border-top: 0.5px solid hsl(var(--admin-border) / 0.3);
+/* Stable scrollbar — prevents width shift on hover */
+.sidebar-scroll-stable {
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+.sidebar-scroll-stable:hover {
+  scrollbar-color: hsl(var(--muted-foreground) / 0.25) transparent;
+}
+.sidebar-scroll-stable::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-scroll-stable::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 4px;
+}
+.sidebar-scroll-stable:hover::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.25);
 }
 
 /* Mobile drawer */
@@ -432,7 +444,9 @@
   position: fixed;
   inset: 0;
   z-index: 50;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.35);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
   animation: fade-in 0.2s ease;
 }
 
@@ -441,33 +455,23 @@
   top: 0;
   left: 0;
   bottom: 0;
-  width: 300px;
-  max-width: 85vw;
+  width: 280px;
+  max-width: 80vw;
   z-index: 51;
   background: hsl(var(--admin-surface));
   display: flex;
   flex-direction: column;
-  animation: slide-in-left 0.3s cubic-bezier(0.32, 0.72, 0, 1);
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
-}
-
-.mobile-drawer-header {
-  padding: max(16px, env(safe-area-inset-top, 16px)) 16px 16px;
-  border-bottom: 0.5px solid hsl(var(--admin-border) / 0.5);
-  flex-shrink: 0;
+  animation: slide-in-left 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+  border-top-right-radius: 18px;
+  border-bottom-right-radius: 18px;
 }
 
 .mobile-drawer-body {
   flex: 1;
   overflow-y: auto;
-  padding: 8px 12px;
-}
-
-.mobile-drawer-footer {
-  padding: 12px 16px;
-  padding-bottom: max(12px, env(safe-area-inset-bottom, 12px));
-  border-top: 0.5px solid hsl(var(--admin-border) / 0.5);
-  flex-shrink: 0;
+  padding: max(16px, env(safe-area-inset-top, 16px)) 10px 10px;
+  padding-bottom: max(10px, env(safe-area-inset-bottom, 10px));
 }
 
 /* iOS Specific Utility Classes for Admin */
@@ -748,27 +752,27 @@
   scrollbar-width: none;
 }
 
-/* Scrollbar hidden by default, appears on hover */
+/* Scrollbar hidden by default, appears on hover — stable gutter prevents width shift */
 .scrollbar-on-hover {
-  scrollbar-width: none;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
   -ms-overflow-style: none;
 }
 .scrollbar-on-hover:hover {
-  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted-foreground) / 0.25) transparent;
   -ms-overflow-style: auto;
 }
 .scrollbar-on-hover::-webkit-scrollbar {
-  width: 0;
-}
-.scrollbar-on-hover:hover::-webkit-scrollbar {
   width: 4px;
 }
 .scrollbar-on-hover::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.2);
+  background: transparent;
   border-radius: 4px;
+  transition: background 0.2s;
 }
 .scrollbar-on-hover:hover::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.3);
+  background: hsl(var(--muted-foreground) / 0.25);
 }
 
 ::-webkit-scrollbar {

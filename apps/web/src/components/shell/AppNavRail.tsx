@@ -62,21 +62,19 @@ function RailTooltip({ children, text, show: forceShow }: { children: React.Reac
 
 /**
  * Universal desktop nav rail for ALL roles.
- * 3-zone layout: sticky top (collapse + tenant) → scrollable menu → sticky footer (branding).
+ * 2-zone layout: sticky top (collapse toggle) → scrollable menu.
+ * No tenant identity in sidebar. No footer section.
+ * Collapsed state hides collapse icon; hover on rail reveals expand icon.
  */
 export function AppNavRail({
     items,
     basePath,
     isCollapsed,
     onToggleCollapse,
-    tenantName,
-    tenantLogo,
-    tenantSubtitle,
-    appVersion = '1.0.0',
 }: AppNavRailProps) {
     const pathname = usePathname();
     const [isIconOnly, setIsIconOnly] = useState(false);
-    const year = new Date().getFullYear();
+    const [hoveringRail, setHoveringRail] = useState(false);
 
     // Detect if labels are hidden (icon-only mode) — tablet or collapsed desktop
     useEffect(() => {
@@ -95,52 +93,40 @@ export function AppNavRail({
         return pathname?.startsWith(full);
     };
 
+    // Show collapse icon: always when expanded, only on hover when collapsed
+    const showCollapseButton = !isCollapsed || hoveringRail;
+
     return (
-        <aside className={`admin-nav-rail ${isCollapsed ? 'is-collapsed' : ''}`}>
-            {/* ── STICKY TOP: Collapse toggle + Tenant identity ── */}
+        <aside
+            className={`admin-nav-rail ${isCollapsed ? 'is-collapsed' : ''}`}
+            onMouseEnter={() => setHoveringRail(true)}
+            onMouseLeave={() => setHoveringRail(false)}
+        >
+            {/* ── STICKY TOP: Collapse toggle ── */}
             <div className="sidebar-top">
-                {/* Collapse toggle — desktop only */}
-                <div className="hidden lg:flex mb-2">
-                    <RailTooltip text={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'} show={isIconOnly}>
+                <div className="hidden lg:flex">
+                    {showCollapseButton ? (
                         <button
                             onClick={onToggleCollapse}
-                            className="flex items-center gap-2 rounded-lg transition-all active:scale-[0.96] w-full text-[hsl(var(--admin-text-muted))] hover:bg-[hsl(var(--admin-surface-alt))] hover:text-[hsl(var(--admin-text-main))]"
+                            className="flex items-center gap-2.5 rounded-lg transition-all active:scale-[0.96] w-full text-[hsl(var(--admin-text-muted))] hover:bg-[hsl(var(--admin-surface-alt))] hover:text-[hsl(var(--admin-text-main))]"
                             style={{ padding: '8px', justifyContent: isIconOnly ? 'center' : 'flex-start' }}
                             aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
                         >
-                            <span className="material-symbols-outlined text-[22px] flex-shrink-0">
-                                {isCollapsed ? 'menu' : 'keyboard_double_arrow_left'}
+                            <span className="material-symbols-outlined text-[20px] flex-shrink-0">
+                                {isCollapsed ? 'dock_to_right' : 'dock_to_left'}
                             </span>
+                            {!isIconOnly && (
+                                <span className="text-[13px] font-medium truncate">Collapse</span>
+                            )}
                         </button>
-                    </RailTooltip>
+                    ) : (
+                        <div style={{ height: '36px' }} />
+                    )}
                 </div>
-
-                {/* Tenant identity */}
-                {tenantName && (
-                    <div className="flex items-center gap-2.5" style={{ justifyContent: isIconOnly ? 'center' : 'flex-start' }}>
-                        {tenantLogo ? (
-                            <div className="w-9 h-9 rounded-xl overflow-hidden bg-[hsl(var(--admin-surface-alt))] flex-shrink-0 border border-[hsl(var(--admin-border)/0.3)]">
-                                <img src={tenantLogo} alt={tenantName} className="w-full h-full object-cover" />
-                            </div>
-                        ) : (
-                            <div className="w-9 h-9 rounded-xl bg-[hsl(var(--admin-primary))] flex items-center justify-center flex-shrink-0">
-                                <span className="material-symbols-outlined text-white text-lg">school</span>
-                            </div>
-                        )}
-                        {!isIconOnly && (
-                            <div className="min-w-0 flex-1">
-                                <p className="text-[14px] font-semibold text-[hsl(var(--admin-text-main))] truncate leading-tight">{tenantName}</p>
-                                {tenantSubtitle && (
-                                    <p className="text-[11px] text-[hsl(var(--admin-text-muted))] truncate leading-tight mt-0.5">{tenantSubtitle}</p>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                )}
             </div>
 
             {/* ── SCROLLABLE MENU ── */}
-            <nav className="sidebar-menu scrollbar-on-hover">
+            <nav className="sidebar-menu sidebar-scroll-stable">
                 <div className="flex flex-col gap-1 w-full">
                     {items.map((item) => {
                         const active = isActive(item.href);
@@ -172,38 +158,6 @@ export function AppNavRail({
                     })}
                 </div>
             </nav>
-
-            {/* ── STICKY FOOTER: EdApp branding + Settings ── */}
-            <div className="sidebar-footer">
-                {/* EdApp branding */}
-                <div className="flex items-center gap-2 mb-2" style={{ justifyContent: isIconOnly ? 'center' : 'flex-start' }}>
-                    <span className="material-symbols-outlined text-[20px] text-[hsl(var(--admin-primary))] flex-shrink-0" style={{ fontVariationSettings: "'FILL' 1" }}>
-                        school
-                    </span>
-                    {!isIconOnly && (
-                        <span className="text-[14px] font-bold text-[hsl(var(--admin-text-main))] tracking-tight">edAPP</span>
-                    )}
-                </div>
-
-                {/* Settings link */}
-                <RailTooltip text="Settings" show={isIconOnly}>
-                    <a
-                        href={basePath + '/settings'}
-                        className={`flex items-center gap-3 rounded-xl transition-all active:scale-[0.96] w-full text-[hsl(var(--admin-text-muted))] hover:bg-[hsl(var(--admin-surface-alt))] hover:text-[hsl(var(--admin-text-main))] font-medium ${isActive('/settings') ? 'bg-[hsl(var(--admin-primary)/0.1)] text-[hsl(var(--admin-primary))] font-semibold' : ''}`}
-                        style={{ padding: isIconOnly ? '10px' : '10px 14px', justifyContent: isIconOnly ? 'center' : 'flex-start' }}
-                    >
-                        <span className="material-symbols-outlined text-[22px] flex-shrink-0">settings</span>
-                        {!isIconOnly && <span className="text-sm font-medium">Settings</span>}
-                    </a>
-                </RailTooltip>
-
-                {/* Version/copyright */}
-                {!isIconOnly && (
-                    <p className="type-metadata text-center mt-2 px-2">
-                        &copy; edAPP &bull; v{appVersion} &bull; {year}
-                    </p>
-                )}
-            </div>
         </aside>
     );
 }
