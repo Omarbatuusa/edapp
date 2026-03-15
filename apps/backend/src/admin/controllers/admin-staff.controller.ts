@@ -1,15 +1,18 @@
 import {
-  Controller, Get, Post, Put, Patch, Body, Param, Query,
+  Controller, Get, Post, Put, Patch, Delete, Body, Param, Query,
   UseGuards, Req, ForbiddenException, NotFoundException, BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
+import * as bcrypt from 'bcryptjs';
+import * as firebaseAdmin from 'firebase-admin';
 import { FirebaseAuthGuard } from '../../auth/firebase-auth.guard';
 import { StaffProfile } from '../entities/staff-profile.entity';
 import { CreateStaffDto, UpdateStaffDto } from '../dto/staff.dto';
-import { User } from '../../users/user.entity';
+import { User, UserStatus } from '../../users/user.entity';
 import { RoleAssignment, UserRole } from '../../users/role-assignment.entity';
 import { AuditEvent, AuditAction } from '../entities/audit-event.entity';
+import { EmailAuthService } from '../../auth/email-auth.service';
 
 const PLATFORM_ROLES = ['platform_super_admin', 'brand_admin'];
 const TENANT_ROLES = ['tenant_admin', 'main_branch_admin'];
@@ -24,7 +27,53 @@ export class AdminStaffController {
     @InjectRepository(RoleAssignment) private roleRepo: Repository<RoleAssignment>,
     @InjectRepository(AuditEvent) private auditRepo: Repository<AuditEvent>,
     private dataSource: DataSource,
+    private emailAuthService: EmailAuthService,
   ) {}
+
+  /** Generate a readable temporary password */
+  private generateTempPassword(): string {
+    return 'Temp' + Math.random().toString(36).slice(2, 6) + '@' + Math.floor(Math.random() * 900 + 100);
+  }
+
+  /** Create Firebase account for a new user, returns the temp password used */
+  private async createFirebaseAccount(email: string, displayName: string, tempPassword: string): Promise<void> {
+    try {
+      await firebaseAdmin.auth().createUser({
+        email,
+        password: tempPassword,
+        displayName,
+      });
+    } catch (e: any) {
+      if (e.code !== 'auth/email-already-exists') {
+        console.warn('[Staff] Firebase account creation failed:', e.message);
+      }
+    }
+  }
+
+  /** Delete a user from Firebase by email */
+  private async deleteFirebaseAccount(email: string): Promise<void> {
+    try {
+      const fbUser = await firebaseAdmin.auth().getUserByEmail(email);
+      await firebaseAdmin.auth().deleteUser(fbUser.uid);
+      console.log(`[Staff] Firebase account deleted for ${email}`);
+    } catch (e: any) {
+      if (e.code !== 'auth/user-not-found') {
+        console.warn('[Staff] Firebase account deletion failed:', e.message);
+      }
+    }
+  }
+
+  /** Disable/enable a Firebase account by email */
+  private async setFirebaseDisabled(email: string, disabled: boolean): Promise<void> {
+    try {
+      const fbUser = await firebaseAdmin.auth().getUserByEmail(email);
+      await firebaseAdmin.auth().updateUser(fbUser.uid, { disabled });
+    } catch (e: any) {
+      if (e.code !== 'auth/user-not-found') {
+        console.warn('[Staff] Firebase disable/enable failed:', e.message);
+      }
+    }
+  }
 
   // ──────────────────────────────────────────────────────────
   // Helpers
@@ -170,13 +219,20 @@ export class AdminStaffController {
   ) {
     this.ensureAccess(req);
 
+    // Generate temp password for the new staff member
+    const tempPassword = this.generateTempPassword();
+    const passwordHash = await bcrypt.hash(tempPassword, 10);
+
     const result = await this.dataSource.transaction(async (manager) => {
-      // 1. Create User
+      // 1. Create User with password hash + must_change_password
       const user = manager.create(User, {
-        email: body.email,
+        email: body.email.toLowerCase().trim(),
         first_name: body.first_name,
         last_name: body.last_name,
         display_name: `${body.first_name} ${body.last_name}`,
+        password_hash: passwordHash,
+        must_change_password: true,
+        status: UserStatus.ACTIVE,
       });
       const savedUser = await manager.save(User, user);
 
@@ -257,7 +313,18 @@ export class AdminStaffController {
       };
     });
 
-    return result;
+    // After successful DB transaction, create Firebase account
+    const displayName = `${body.first_name} ${body.last_name}`;
+    await this.createFirebaseAccount(body.email.toLowerCase().trim(), displayName, tempPassword);
+
+    // Send welcome email with temp password
+    await this.emailAuthService.sendWelcomeEmail(
+      body.email.toLowerCase().trim(),
+      displayName,
+      tempPassword,
+    );
+
+    return { ...result, tempPassword };
   }
 
   // ──────────────────────────────────────────────────────────
@@ -337,6 +404,51 @@ export class AdminStaffController {
     user.status = newStatus as any;
     await this.userRepo.save(user);
 
+    // Sync with Firebase — disable/enable the Firebase account
+    await this.setFirebaseDisabled(user.email, newStatus === 'disabled');
+
+    await this.logAudit(req, tenantId, AuditAction.STAFF_EDIT, id,
+      { status: user.status === 'active' ? 'disabled' : 'active' },
+      { status: newStatus },
+    );
+
     return { id: profile.id, is_active: newStatus === 'active' };
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // DELETE /:id — Delete staff (deactivate + remove from Firebase)
+  // ──────────────────────────────────────────────────────────
+
+  @Delete(':id')
+  async remove(
+    @Req() req: any,
+    @Param('tenantId') tenantId: string,
+    @Param('id') id: string,
+  ) {
+    this.ensureAccess(req);
+
+    const profile = await this.staffRepo.findOne({ where: { id, tenant_id: tenantId } });
+    if (!profile) throw new NotFoundException('Staff member not found');
+
+    const user = await this.userRepo.findOne({ where: { id: profile.user_id } });
+    if (!user) throw new NotFoundException('Linked user not found');
+
+    // 1. Deactivate all role assignments for this user in this tenant
+    await this.roleRepo.update(
+      { user_id: user.id, tenant_id: tenantId } as any,
+      { is_active: false },
+    );
+
+    // 2. Deactivate user
+    user.status = UserStatus.DISABLED;
+    await this.userRepo.save(user);
+
+    // 3. Delete from Firebase
+    await this.deleteFirebaseAccount(user.email);
+
+    // 4. Audit
+    await this.logAudit(req, tenantId, AuditAction.STAFF_EDIT, id, { status: 'active' }, { status: 'deleted', firebase: 'deleted' });
+
+    return { success: true, message: 'Staff member deactivated and Firebase account removed' };
   }
 }

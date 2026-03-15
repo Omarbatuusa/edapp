@@ -4,15 +4,18 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
+import * as bcrypt from 'bcryptjs';
+import * as firebaseAdmin from 'firebase-admin';
 import { FirebaseAuthGuard } from '../../auth/firebase-auth.guard';
 import { Tenant, TenantStatus } from '../../tenants/tenant.entity';
 import { TenantFeature } from '../entities/tenant-feature.entity';
 import { AuditEvent, AuditAction } from '../entities/audit-event.entity';
 import { TenantDomain } from '../../tenants/tenant-domain.entity';
-import { User } from '../../users/user.entity';
+import { User, UserStatus } from '../../users/user.entity';
 import { RoleAssignment } from '../../users/role-assignment.entity';
 import { TenantMembership } from '../../auth/entities/tenant-membership.entity';
 import { generateSlug, generateSchoolCode, ensureUniqueSlug, ensureUniqueCode } from '../utils/slug-generator';
+import { EmailAuthService } from '../../auth/email-auth.service';
 
 const PLATFORM_ROLES = ['platform_super_admin', 'app_super_admin', 'brand_admin'];
 const SECRETARY_ROLES = ['platform_secretary', 'app_secretary'];
@@ -42,6 +45,7 @@ export class AdminTenantsController {
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(RoleAssignment) private roleRepo: Repository<RoleAssignment>,
     @InjectRepository(TenantMembership) private membershipRepo: Repository<TenantMembership>,
+    private emailAuthService: EmailAuthService,
   ) {}
 
   private isPlatform(req: any): boolean {
@@ -205,14 +209,37 @@ export class AdminTenantsController {
     if (!body.email) throw new BadRequestException('email is required');
 
     // Find or create user
-    let user: any = await this.userRepo.findOne({ where: { email: body.email.toLowerCase() } });
+    const emailLower = body.email.toLowerCase().trim();
+    const displayName = body.display_name || body.email.split('@')[0];
+    let user: any = await this.userRepo.findOne({ where: { email: emailLower } });
+    let isNewUser = false;
+    let tempPassword: string | null = null;
+
     if (!user) {
+      isNewUser = true;
+      tempPassword = 'Temp' + Math.random().toString(36).slice(2, 6) + '@' + Math.floor(Math.random() * 900 + 100);
+      const passwordHash = await bcrypt.hash(tempPassword, 10);
+
       user = await this.userRepo.save(this.userRepo.create({
-        email: body.email.toLowerCase(),
-        display_name: body.display_name || body.email.split('@')[0],
-        status: 'active',
+        email: emailLower,
+        display_name: displayName,
+        status: UserStatus.ACTIVE,
         must_change_password: true,
+        password_hash: passwordHash,
       } as any)) as any;
+
+      // Create Firebase account
+      try {
+        await firebaseAdmin.auth().createUser({
+          email: emailLower,
+          password: tempPassword,
+          displayName,
+        });
+      } catch (e: any) {
+        if (e.code !== 'auth/email-already-exists') {
+          console.warn('[InviteAdmin] Firebase account creation failed:', e.message);
+        }
+      }
     }
 
     const userId = user.id;
@@ -248,12 +275,18 @@ export class AdminTenantsController {
       role: 'tenant_admin',
     });
 
+    // Send welcome email for new users
+    if (isNewUser && tempPassword) {
+      await this.emailAuthService.sendWelcomeEmail(emailLower, displayName, tempPassword);
+    }
+
     return {
       status: 'success',
       user_id: userId,
       email: body.email,
       role: 'tenant_admin',
       tenant_id: tenantId,
+      ...(tempPassword ? { tempPassword } : {}),
     };
   }
 

@@ -1,5 +1,5 @@
 import {
-  Controller, Get, Post, Body, Param, Query,
+  Controller, Get, Post, Delete, Body, Param, Query,
   UseGuards, Req, ForbiddenException, BadRequestException, ConflictException, NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,6 +11,7 @@ import { User, UserStatus } from '../../users/user.entity';
 import { RoleAssignment, UserRole } from '../../users/role-assignment.entity';
 import { AuditEvent, AuditAction } from '../entities/audit-event.entity';
 import { validatePassword } from '../../auth/password-validator';
+import { EmailAuthService } from '../../auth/email-auth.service';
 
 const PLATFORM_ROLES = ['platform_super_admin', 'app_super_admin', 'platform_secretary', 'app_secretary'];
 const CAN_CREATE_USERS = ['platform_super_admin', 'app_super_admin', 'platform_secretary', 'app_secretary', 'tenant_admin'];
@@ -22,6 +23,7 @@ export class AdminUsersController {
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(RoleAssignment) private roleRepo: Repository<RoleAssignment>,
     @InjectRepository(AuditEvent) private auditRepo: Repository<AuditEvent>,
+    private emailAuthService: EmailAuthService,
   ) {}
 
   private getRole(req: any): string {
@@ -122,6 +124,13 @@ export class AdminUsersController {
       ip_address: req.ip,
       user_agent: req.headers?.['user-agent'],
     } as Partial<AuditEvent>);
+
+    // Send welcome email with temp password
+    await this.emailAuthService.sendWelcomeEmail(
+      user.email,
+      user.display_name || user.email,
+      rawPassword,
+    );
 
     return {
       id: user.id,
@@ -252,5 +261,50 @@ export class AdminUsersController {
         branch_id: a.branch_id,
       })),
     };
+  }
+
+  /**
+   * DELETE /admin/users/:id — Deactivate user + delete from Firebase
+   */
+  @Delete(':id')
+  async deleteUser(@Req() req: any, @Param('id') id: string) {
+    if (!this.canCreateUsers(req)) {
+      throw new ForbiddenException('Insufficient permissions to delete users');
+    }
+
+    const user = await this.userRepo.findOne({ where: { id } });
+    if (!user) throw new NotFoundException('User not found');
+
+    // 1. Deactivate all role assignments
+    await this.roleRepo.update({ user_id: id } as any, { is_active: false });
+
+    // 2. Deactivate user in DB (soft delete)
+    user.status = UserStatus.DISABLED;
+    await this.userRepo.save(user);
+
+    // 3. Delete from Firebase
+    try {
+      const fbUser = await firebaseAdmin.auth().getUserByEmail(user.email);
+      await firebaseAdmin.auth().deleteUser(fbUser.uid);
+      console.log(`[AdminUsers] Firebase account deleted for ${user.email}`);
+    } catch (e: any) {
+      if (e.code !== 'auth/user-not-found') {
+        console.warn('[AdminUsers] Firebase deletion failed:', e.message);
+      }
+    }
+
+    // 4. Audit
+    await this.auditRepo.save({
+      actor_user_id: req.user?.uid || req.user?.dbUserId,
+      action: AuditAction.USER_CREATE, // Using closest available action
+      entity_type: 'user',
+      entity_id: id,
+      before: { email: user.email, status: 'active' },
+      after: { status: 'disabled', firebase: 'deleted' },
+      ip_address: req.ip,
+      user_agent: req.headers?.['user-agent'],
+    } as Partial<AuditEvent>);
+
+    return { success: true, message: `User ${user.email} deactivated and Firebase account removed` };
   }
 }

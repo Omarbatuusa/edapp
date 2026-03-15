@@ -32,9 +32,13 @@ export class EmailAuthService {
     private readonly MAX_OTP_ATTEMPTS = 3;
 
     constructor(private configService: ConfigService) {
-        const sesAccessKey = this.configService.get('SES_ACCESS_KEY', '');
-        const sesSecretKey = this.configService.get('SES_SECRET_KEY', '');
-        const sesRegion = this.configService.get('SES_REGION', 'eu-west-1');
+        // Support both SES_* and AWS_* env var naming conventions
+        const sesAccessKey = this.configService.get('SES_ACCESS_KEY', '')
+            || this.configService.get('AWS_ACCESS_KEY_ID', '');
+        const sesSecretKey = this.configService.get('SES_SECRET_KEY', '')
+            || this.configService.get('AWS_SECRET_ACCESS_KEY', '');
+        const sesRegion = this.configService.get('SES_REGION', '')
+            || this.configService.get('AWS_REGION', 'af-south-1');
         this.fromEmail = this.configService.get('SES_FROM_EMAIL', 'no-reply@edapp.co.za');
 
         if (sesAccessKey && sesSecretKey) {
@@ -262,6 +266,62 @@ export class EmailAuthService {
             role: data.role,
             returnUrl: data.returnUrl,
         };
+    }
+
+    /**
+     * Send welcome email with temporary password to a newly created user
+     */
+    async sendWelcomeEmail(email: string, displayName: string, tempPassword: string): Promise<boolean> {
+        const normalizedEmail = email.toLowerCase().trim();
+
+        const htmlBody = `
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 520px; margin: 0 auto; padding: 40px 20px;">
+                <div style="text-align: center; margin-bottom: 32px;">
+                    <h1 style="font-size: 28px; font-weight: 700; color: #1a1a1a; margin: 0;">Welcome to EdApp</h1>
+                    <p style="font-size: 14px; color: #666; margin-top: 8px;">Your account has been created</p>
+                </div>
+                <div style="background: #f8f9fa; border-radius: 16px; padding: 32px;">
+                    <p style="font-size: 15px; color: #333; margin: 0 0 8px;">Hi <strong>${displayName}</strong>,</p>
+                    <p style="font-size: 14px; color: #555; margin: 0 0 20px; line-height: 1.6;">
+                        An administrator has created an account for you on the EdApp platform.
+                        Use the credentials below to sign in for the first time.
+                    </p>
+
+                    <div style="background: white; border-radius: 12px; padding: 20px; border: 1px solid #e5e7eb; margin-bottom: 20px;">
+                        <p style="font-size: 13px; color: #888; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 0.5px;">Email</p>
+                        <p style="font-size: 15px; color: #1a1a1a; font-weight: 600; margin: 0 0 16px; font-family: monospace;">${normalizedEmail}</p>
+                        <p style="font-size: 13px; color: #888; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 0.5px;">Temporary Password</p>
+                        <p style="font-size: 18px; color: #1a1a1a; font-weight: 700; margin: 0; font-family: monospace; letter-spacing: 1px;">${tempPassword}</p>
+                    </div>
+
+                    <div style="background: #fef3c7; border-radius: 8px; padding: 12px 16px; border: 1px solid #fcd34d;">
+                        <p style="font-size: 13px; color: #92400e; margin: 0; line-height: 1.5;">
+                            <strong>Important:</strong> You will be asked to verify your email and set a new password on your first login.
+                        </p>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 24px;">
+                    <a href="https://admin.edapp.co.za/login" style="display: inline-block; background: #4f46e5; color: white; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px;">
+                        Sign In to EdApp
+                    </a>
+                </div>
+                <p style="font-size: 12px; color: #aaa; text-align: center; margin-top: 24px;">
+                    If you did not expect this email, please contact your administrator.
+                </p>
+            </div>
+        `;
+
+        const sent = await this.sendEmail(
+            normalizedEmail,
+            'Welcome to EdApp — Your Account is Ready',
+            htmlBody,
+        );
+
+        if (!sent) {
+            console.log(`[WELCOME EMAIL] Fallback — Temp password for ${normalizedEmail}: ${tempPassword}`);
+        }
+
+        return sent;
     }
 
     /**
