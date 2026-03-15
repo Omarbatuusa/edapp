@@ -274,7 +274,10 @@ export default function AdminLoginPage() {
                             </p>
 
                             <div className="w-full mt-8 space-y-3">
-                                {loginResult.allRoles.map((roleInfo, idx) => {
+                                {loginResult.allRoles.filter((roleInfo, idx, arr) => {
+                                    const meta = getRoleMeta(roleInfo.role)
+                                    return arr.findIndex(r => getRoleMeta(r.role).label === meta.label) === idx
+                                }).map((roleInfo, idx) => {
                                     const meta = getRoleMeta(roleInfo.role)
                                     return (
                                         <button
