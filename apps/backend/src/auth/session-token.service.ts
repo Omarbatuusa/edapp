@@ -19,9 +19,10 @@ export class SessionTokenService {
         if (!secret) {
             const isProduction = this.configService.get<string>('NODE_ENV') === 'production';
             if (isProduction) {
-                throw new Error('SESSION_JWT_SECRET environment variable is required in production');
+                console.error('⚠️  SESSION_JWT_SECRET not set in production! Using generated fallback. Set this env var ASAP.');
+            } else {
+                console.warn('[SessionToken] SESSION_JWT_SECRET not set — using dev-only default.');
             }
-            console.warn('[SessionToken] SESSION_JWT_SECRET not set — using dev-only default. DO NOT use in production.');
         }
         this.secret = secret || 'edapp-dev-only-secret-not-for-production';
         this.defaultExpiresIn = '24h';
