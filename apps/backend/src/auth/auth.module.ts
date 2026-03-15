@@ -19,12 +19,13 @@ import { HandoffService } from './handoff.service';
 import { AdminLoginController } from './admin-login.controller';
 import { OnboardingController } from './onboarding.controller';
 import { UserPolicyAcceptance } from '../policies/user-policy-acceptance.entity';
+import { TenantMembership } from './entities/tenant-membership.entity';
 
 @Global()
 @Module({
     imports: [
         ConfigModule,
-        TypeOrmModule.forFeature([User, Tenant, TenantSettings, RoleAssignment, UserPolicyAcceptance, PasswordHistory]),
+        TypeOrmModule.forFeature([User, Tenant, TenantSettings, RoleAssignment, UserPolicyAcceptance, PasswordHistory, TenantMembership]),
     ],
     controllers: [AuthController, HandoffController, EmailAuthController, AdminLoginController, OnboardingController],
     providers: [

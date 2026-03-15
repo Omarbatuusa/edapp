@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import { SessionTokenService } from './session-token.service';
 import { User } from '../users/user.entity';
 import { RoleAssignment, UserRole } from '../users/role-assignment.entity';
+import { TenantMembership } from './entities/tenant-membership.entity';
 
 /** Roles allowed to log in via admin.edapp.co.za */
 const ADMIN_ROLES: string[] = [
@@ -67,6 +68,7 @@ export class AdminLoginController {
         private readonly sessionTokenService: SessionTokenService,
         @InjectRepository(User) private readonly userRepo: Repository<User>,
         @InjectRepository(RoleAssignment) private readonly roleRepo: Repository<RoleAssignment>,
+        @InjectRepository(TenantMembership) private readonly membershipRepo: Repository<TenantMembership>,
     ) { }
 
     /**
@@ -78,8 +80,9 @@ export class AdminLoginController {
      */
     @Post('admin-login')
     async adminLogin(
-        @Body('token') token: string,
+        @Body() body: { token: string; rememberDevice?: boolean; rememberDuration?: number },
     ) {
+        const { token, rememberDevice, rememberDuration } = body;
         if (!token) {
             throw new UnauthorizedException('Token is required');
         }
@@ -135,10 +138,25 @@ export class AdminLoginController {
             tenantSlug = fallback?.tenant?.tenant_slug || 'allied';
         }
 
-        // 5. Create long-lived session JWT (24h)
+        // 5. Activate INVITED memberships on login (transition to ACTIVE)
+        const tenantIds = [...new Set(assignments.filter(a => a.tenant_id).map(a => a.tenant_id))];
+        if (tenantIds.length > 0) {
+            await this.membershipRepo.update(
+                { user_id: user.id, status: 'invited' as any },
+                { status: 'active' as any, joined_at: new Date() },
+            );
+        }
+
+        // Update last_login_at
+        await this.userRepo.update(user.id, { last_login_at: new Date() });
+
+        // 6. Create session JWT (24h default, or longer for remember-device)
+        const expiresIn = rememberDevice && rememberDuration
+            ? `${rememberDuration}d`
+            : '24h';
         const sessionToken = this.sessionTokenService.sign(
             { sub: user.id, role, tenant: tenantSlug },
-            '24h',
+            expiresIn,
         );
 
         // 6. Deduplicate roles — platform admins manage many tenants,

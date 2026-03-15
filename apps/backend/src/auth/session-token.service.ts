@@ -15,7 +15,15 @@ export class SessionTokenService {
     private readonly defaultExpiresIn: string;
 
     constructor(private configService: ConfigService) {
-        this.secret = this.configService.get<string>('SESSION_JWT_SECRET') || 'edapp-session-secret-change-in-production';
+        const secret = this.configService.get<string>('SESSION_JWT_SECRET');
+        if (!secret) {
+            const isProduction = this.configService.get<string>('NODE_ENV') === 'production';
+            if (isProduction) {
+                throw new Error('SESSION_JWT_SECRET environment variable is required in production');
+            }
+            console.warn('[SessionToken] SESSION_JWT_SECRET not set — using dev-only default. DO NOT use in production.');
+        }
+        this.secret = secret || 'edapp-dev-only-secret-not-for-production';
         this.defaultExpiresIn = '24h';
     }
 

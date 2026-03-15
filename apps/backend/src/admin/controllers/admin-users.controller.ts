@@ -97,8 +97,16 @@ export class AdminUsersController {
         displayName: user.display_name,
       });
     } catch (e: any) {
-      if (e.code !== 'auth/email-already-exists') {
-        console.warn('Firebase account creation failed:', e.message);
+      if (e.code === 'auth/email-already-exists') {
+        // Firebase account exists — link firebase_uid
+        try {
+          const fbUser = await firebaseAdmin.auth().getUserByEmail(user.email);
+          await this.userRepo.update(user.id, { firebase_uid: fbUser.uid });
+        } catch (_) {}
+      } else {
+        // Fatal: user can't log in without Firebase account — roll back
+        await this.userRepo.delete(user.id);
+        throw new BadRequestException(`Failed to create authentication account: ${e.message}`);
       }
     }
 
@@ -149,7 +157,7 @@ export class AdminUsersController {
       last_name: user.last_name,
       status: user.status,
       role_assignment: assignment,
-      tempPassword: rawPassword,
+      passwordSentViaEmail: true,
     };
   }
 
@@ -242,10 +250,10 @@ export class AdminUsersController {
 
     await this.auditRepo.save({
       actor_user_id: req.user?.uid || req.user?.dbUserId,
-      action: AuditAction.USER_CREATE,
+      action: AuditAction.USER_PASSWORD_RESET,
       entity_type: 'user',
       entity_id: userId,
-      after: { action: 'password_reset', email: user.email },
+      after: { email: user.email },
       ip_address: req.ip,
       user_agent: req.headers?.['user-agent'],
     } as Partial<AuditEvent>);
@@ -405,7 +413,7 @@ export class AdminUsersController {
     // 4. Audit
     await this.auditRepo.save({
       actor_user_id: req.user?.uid || req.user?.dbUserId,
-      action: AuditAction.USER_CREATE, // Using closest available action
+      action: AuditAction.USER_DELETE,
       entity_type: 'user',
       entity_id: id,
       before: { email: user.email, status: 'active' },

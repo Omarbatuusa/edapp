@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bullmq';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 // Entities
 import { Thread } from './thread.entity';
@@ -43,6 +44,7 @@ import { SlaProcessor } from './sla.processor';
 @Module({
     imports: [
         BullModule.registerQueue({ name: 'sla-monitor' }),
+        NotificationsModule,
         TypeOrmModule.forFeature([
             Thread,
             Message,

@@ -1,10 +1,15 @@
-import { Controller, Post, Get, Body, Query, Param, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Get, Body, Query, Param, BadRequestException, NotFoundException } from '@nestjs/common';
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { EmailAuthService } from './email-auth.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcryptjs';
+import * as firebaseAdmin from 'firebase-admin';
 import { TenantSettings } from '../tenants/tenant-settings.entity';
 import { Tenant } from '../tenants/tenant.entity';
+import { User } from '../users/user.entity';
+import { PasswordHistory } from '../users/password-history.entity';
+import { validatePassword } from './password-validator';
 
 // DTOs
 class SendOTPDto {
@@ -37,6 +42,25 @@ class SendMagicLinkDto {
     returnUrl: string;
 }
 
+class PasswordResetRequestDto {
+    @IsEmail()
+    email: string;
+}
+
+class PasswordResetVerifyDto {
+    @IsEmail()
+    email: string;
+
+    @IsString() @IsNotEmpty()
+    otpKey: string;
+
+    @IsString() @IsNotEmpty()
+    code: string;
+
+    @IsString() @IsNotEmpty()
+    newPassword: string;
+}
+
 @Controller('auth')
 export class EmailAuthController {
     constructor(
@@ -45,6 +69,10 @@ export class EmailAuthController {
         private readonly tenantSettingsRepository: Repository<TenantSettings>,
         @InjectRepository(Tenant)
         private readonly tenantRepository: Repository<Tenant>,
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
+        @InjectRepository(PasswordHistory)
+        private readonly passwordHistoryRepo: Repository<PasswordHistory>,
     ) { }
 
     /**
@@ -175,5 +203,133 @@ export class EmailAuthController {
             role: result.role,
             returnUrl: result.returnUrl,
         };
+    }
+
+    // ════════════════════════════════════════════
+    // PASSWORD RESET FLOW
+    // ════════════════════════════════════════════
+
+    /**
+     * POST /auth/password-reset/request — Send password reset OTP
+     */
+    @Post('password-reset/request')
+    async requestPasswordReset(@Body() dto: PasswordResetRequestDto) {
+        if (!dto.email) {
+            throw new BadRequestException('Email is required');
+        }
+
+        const normalizedEmail = dto.email.toLowerCase().trim();
+
+        // Check if user exists (don't reveal whether email is registered for security)
+        const user = await this.userRepository.findOne({ where: { email: normalizedEmail } });
+
+        if (user) {
+            // Send OTP via the password reset email template
+            const result = await this.emailAuthService.sendPasswordResetOTP(normalizedEmail);
+            return {
+                success: true,
+                message: 'If an account exists with this email, a reset code has been sent.',
+                otpKey: result.otpKey,
+                expiresAt: result.expiresAt,
+            };
+        }
+
+        // User doesn't exist — return same message to prevent enumeration
+        return {
+            success: true,
+            message: 'If an account exists with this email, a reset code has been sent.',
+            otpKey: null,
+            expiresAt: null,
+        };
+    }
+
+    /**
+     * POST /auth/password-reset/confirm — Verify OTP and set new password
+     */
+    @Post('password-reset/confirm')
+    async confirmPasswordReset(@Body() dto: PasswordResetVerifyDto) {
+        if (!dto.email || !dto.otpKey || !dto.code || !dto.newPassword) {
+            throw new BadRequestException('email, otpKey, code, and newPassword are required');
+        }
+
+        const normalizedEmail = dto.email.toLowerCase().trim();
+
+        // 1. Verify OTP
+        await this.emailAuthService.verifyOTP(dto.otpKey, dto.code, normalizedEmail);
+
+        // 2. Find user
+        const user = await this.userRepository.findOne({ where: { email: normalizedEmail } });
+        if (!user) {
+            throw new NotFoundException('No account found with this email');
+        }
+
+        // 3. Validate password strength
+        const validation = validatePassword(dto.newPassword);
+        if (!validation.valid) {
+            throw new BadRequestException(validation.errors.join('. '));
+        }
+
+        // 4. Check password history — cannot reuse
+        const previous = await this.passwordHistoryRepo.find({
+            where: { user_id: user.id },
+            order: { created_at: 'DESC' },
+        });
+        for (const prev of previous) {
+            const isReused = await bcrypt.compare(dto.newPassword, prev.password_hash);
+            if (isReused) {
+                throw new BadRequestException('This password was used before. Choose a different one.');
+            }
+        }
+        if (user.password_hash) {
+            const matchesCurrent = await bcrypt.compare(dto.newPassword, user.password_hash);
+            if (matchesCurrent) {
+                throw new BadRequestException('You cannot reuse your current password.');
+            }
+        }
+
+        // 5. Hash and update
+        const hash = await bcrypt.hash(dto.newPassword, 10);
+
+        // Record old password in history
+        if (user.password_hash) {
+            await this.passwordHistoryRepo.save({
+                user_id: user.id,
+                password_hash: user.password_hash,
+                source: 'previous',
+            } as Partial<PasswordHistory>);
+        }
+
+        await this.userRepository.update(user.id, {
+            password_hash: hash,
+            must_change_password: false,
+        });
+
+        // Record new password in history
+        await this.passwordHistoryRepo.save({
+            user_id: user.id,
+            password_hash: hash,
+            source: 'reset',
+        } as Partial<PasswordHistory>);
+
+        // 6. Sync to Firebase
+        try {
+            const fbUser = await firebaseAdmin.auth().getUserByEmail(normalizedEmail);
+            await firebaseAdmin.auth().updateUser(fbUser.uid, {
+                password: dto.newPassword,
+                disabled: false,
+            });
+        } catch (e: any) {
+            if (e.code === 'auth/user-not-found') {
+                // Create Firebase account if it doesn't exist
+                await firebaseAdmin.auth().createUser({
+                    email: normalizedEmail,
+                    password: dto.newPassword,
+                    displayName: user.display_name || normalizedEmail,
+                });
+            }
+            // Non-fatal for password reset — DB is already updated
+        }
+
+        return { success: true, message: 'Password reset successfully. You can now sign in.' };
     }
 }

@@ -1,7 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThan } from 'typeorm';
 import { Notification, NotificationType, NotificationUrgency } from './notification.entity';
+import { PushService } from '../notifications/push.service';
 
 // ============================================================
 // NOTIFICATIONS SERVICE - Push notification management
@@ -34,9 +35,12 @@ export interface CreateNotificationDto {
 
 @Injectable()
 export class NotificationsService {
+    private readonly logger = new Logger(NotificationsService.name);
+
     constructor(
         @InjectRepository(Notification)
         private notificationRepo: Repository<Notification>,
+        private pushService: PushService,
     ) { }
 
     // ============================================
@@ -59,7 +63,12 @@ export class NotificationsService {
             expires_at: dto.expires_at,
         });
 
-        return this.notificationRepo.save(notification);
+        const saved = await this.notificationRepo.save(notification);
+
+        // Auto-trigger push notification (fire-and-forget)
+        this.sendPush(saved).catch(() => {});
+
+        return saved;
     }
 
     // ============================================
@@ -217,11 +226,29 @@ export class NotificationsService {
     // SEND PUSH NOTIFICATION (placeholder for FCM)
     // ============================================
 
-    async sendPush(notification: Notification, deviceTokens: string[]): Promise<void> {
-        // TODO: Implement Firebase FCM integration
-        // For now, just mark as sent
-        notification.push_sent = true;
-        notification.push_sent_at = new Date();
-        await this.notificationRepo.save(notification);
+    async sendPush(notification: Notification): Promise<void> {
+        try {
+            const result = await this.pushService.sendToUser(notification.user_id, {
+                title: notification.title,
+                body: notification.body || '',
+                data: {
+                    notification_id: notification.id,
+                    type: notification.type,
+                    ...(notification.reference_type ? { reference_type: notification.reference_type } : {}),
+                    ...(notification.reference_id ? { reference_id: notification.reference_id } : {}),
+                },
+                click_action: notification.action?.target,
+            });
+
+            notification.push_sent = true;
+            notification.push_sent_at = new Date();
+            await this.notificationRepo.save(notification);
+
+            if (result.success > 0) {
+                this.logger.log(`Push sent for notification ${notification.id}: ${result.success} delivered`);
+            }
+        } catch (err: any) {
+            this.logger.error(`Push failed for notification ${notification.id}: ${err.message}`);
+        }
     }
 }

@@ -37,7 +37,7 @@ export class AdminStaffController {
     return 'Temp' + Math.random().toString(36).slice(2, 6) + '@' + Math.floor(Math.random() * 900 + 100);
   }
 
-  /** Create Firebase account for a new user, returns the temp password used */
+  /** Create Firebase account for a new user — throws on non-duplicate errors */
   private async createFirebaseAccount(email: string, displayName: string, tempPassword: string): Promise<void> {
     try {
       await firebaseAdmin.auth().createUser({
@@ -46,9 +46,11 @@ export class AdminStaffController {
         displayName,
       });
     } catch (e: any) {
-      if (e.code !== 'auth/email-already-exists') {
-        console.warn('[Staff] Firebase account creation failed:', e.message);
+      if (e.code === 'auth/email-already-exists') {
+        // Acceptable — Firebase account already exists
+        return;
       }
+      throw new BadRequestException(`Failed to create authentication account: ${e.message}`);
     }
   }
 
@@ -333,7 +335,7 @@ export class AdminStaffController {
       tempPassword,
     );
 
-    return { ...result, tempPassword };
+    return { ...result, passwordSentViaEmail: true };
   }
 
   // ──────────────────────────────────────────────────────────

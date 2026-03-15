@@ -52,12 +52,12 @@ export class FirebaseAuthGuard implements CanActivate {
             });
 
             // Auto-link: if no user found by firebase_uid, try by email
+            // Only link if the Firebase email is verified to prevent account takeover
             if (!dbUser && decoded.email) {
                 dbUser = await this.userRepo.findOne({
                     where: { email: decoded.email },
                 });
-                // Link firebase_uid to existing DB user for future lookups
-                if (dbUser && !dbUser.firebase_uid) {
+                if (dbUser && !dbUser.firebase_uid && decoded.email_verified) {
                     await this.userRepo.update(dbUser.id, { firebase_uid: decoded.uid });
                 }
             }

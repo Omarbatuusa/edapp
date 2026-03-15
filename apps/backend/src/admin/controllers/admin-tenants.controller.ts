@@ -293,7 +293,7 @@ export class AdminTenantsController {
       email: body.email,
       role: 'tenant_admin',
       tenant_id: tenantId,
-      ...(tempPassword ? { tempPassword } : {}),
+      passwordSentViaEmail: isNewUser,
     };
   }
 
