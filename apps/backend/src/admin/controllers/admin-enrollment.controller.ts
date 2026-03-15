@@ -4,6 +4,8 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
+import * as bcrypt from 'bcryptjs';
+import * as firebaseAdmin from 'firebase-admin';
 import { FirebaseAuthGuard } from '../../auth/firebase-auth.guard';
 
 import { EnrollmentApplication, EnrollmentStatus } from '../entities/enrollment-application.entity';
@@ -12,12 +14,14 @@ import { SubmitEnrollmentDto } from '../dto/enrollment.dto';
 import { RejectEnrollmentDto } from '../dto/enrollment.dto';
 import { LearnerProfile } from '../entities/learner-profile.entity';
 import { GuardianProfile } from '../entities/guardian-profile.entity';
-import { User } from '../../users/user.entity';
+import { User, UserStatus } from '../../users/user.entity';
 import { RoleAssignment, UserRole } from '../../users/role-assignment.entity';
 import { AuditEvent, AuditAction } from '../entities/audit-event.entity';
 import { EmergencyContact } from '../entities/emergency-contact.entity';
 import { ParentChildLink } from '../../communication/parent-child-link.entity';
 import { SchoolClass } from '../../attendance/entities/class.entity';
+import { PasswordHistory } from '../../users/password-history.entity';
+import { EmailAuthService } from '../../auth/email-auth.service';
 
 const PLATFORM_ROLES = ['platform_super_admin', 'brand_admin'];
 const TENANT_ROLES = ['tenant_admin', 'main_branch_admin'];
@@ -36,8 +40,27 @@ export class AdminEnrollmentController {
     @InjectRepository(EmergencyContact) private emergencyContactRepo: Repository<EmergencyContact>,
     @InjectRepository(ParentChildLink) private parentChildLinkRepo: Repository<ParentChildLink>,
     @InjectRepository(SchoolClass) private schoolClassRepo: Repository<SchoolClass>,
+    @InjectRepository(PasswordHistory) private passwordHistoryRepo: Repository<PasswordHistory>,
     private dataSource: DataSource,
+    private emailAuthService: EmailAuthService,
   ) {}
+
+  /** Generate a readable temp password */
+  private generateTempPassword(): string {
+    return 'Temp' + Math.random().toString(36).slice(2, 6) + '@' + Math.floor(Math.random() * 900 + 100);
+  }
+
+  /** Generate a 4-digit learner PIN */
+  private generatePin(): string {
+    return String(Math.floor(1000 + Math.random() * 9000));
+  }
+
+  /** Generate a student number like STU-20260315-XXXX */
+  private generateStudentNumber(): string {
+    const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const rand = Math.floor(1000 + Math.random() * 9000);
+    return `STU-${date}-${rand}`;
+  }
 
   private getRole(req: any): string {
     return req.user?.role || req.user?.customClaims?.role || '';
@@ -212,11 +235,19 @@ export class AdminEnrollmentController {
       const learnerEmail = (guardiansData[0]?.email) ||
         `learner_${application.id.substring(0, 8)}@placeholder.local`;
 
+      // Generate learner credentials (student number + PIN)
+      const studentNumber = this.generateStudentNumber();
+      const pin = this.generatePin();
+      const pinHash = await bcrypt.hash(pin, 10);
+
       const learnerUser = manager.create(User, {
         email: learnerEmail,
         first_name: learnerData.first_name || undefined,
         last_name: learnerData.last_name || undefined,
         display_name: fullName,
+        student_number: studentNumber,
+        pin_hash: pinHash,
+        status: UserStatus.ACTIVE,
       } as any);
       const savedLearnerUser = await manager.save(User, learnerUser);
 
@@ -271,14 +302,52 @@ export class AdminEnrollmentController {
           guardianUser = await manager.findOne(User, { where: { email: guardian.email } });
         }
         if (!guardianUser) {
+          const guardianEmail = guardian.email || `guardian_${Date.now()}_${Math.random().toString(36).slice(2, 8)}@placeholder.local`;
+          const guardianDisplayName = [guardian.first_name, guardian.last_name].filter(Boolean).join(' ') || guardianEmail.split('@')[0];
+          const guardianTempPw = this.generateTempPassword();
+          const guardianPwHash = await bcrypt.hash(guardianTempPw, 10);
+
           guardianUser = manager.create(User, {
-            email: guardian.email || `guardian_${Date.now()}_${Math.random().toString(36).slice(2, 8)}@placeholder.local`,
+            email: guardianEmail,
             first_name: guardian.first_name || undefined,
             last_name: guardian.last_name || undefined,
-            display_name: [guardian.first_name, guardian.last_name].filter(Boolean).join(' ') || undefined,
+            display_name: guardianDisplayName,
             phone_e164: guardian.phone_mobile || undefined,
+            password_hash: guardianPwHash,
+            must_change_password: true,
+            status: UserStatus.ACTIVE,
           } as any);
           guardianUser = await manager.save(User, guardianUser);
+
+          // Create Firebase account for parent (only for real emails)
+          if (guardian.email && !guardian.email.includes('@placeholder.local')) {
+            try {
+              await firebaseAdmin.auth().createUser({
+                email: guardianEmail,
+                password: guardianTempPw,
+                displayName: guardianDisplayName,
+              });
+            } catch (e: any) {
+              if (e.code !== 'auth/email-already-exists') {
+                console.warn('[Enrollment] Firebase parent account failed:', e.message);
+              }
+            }
+
+            // Record temp password in history
+            await manager.save(PasswordHistory, manager.create(PasswordHistory, {
+              user_id: guardianUser.id,
+              password_hash: guardianPwHash,
+              source: 'temp',
+            } as any));
+
+            // Send welcome email (after transaction, collected below)
+            (application as any)._parentWelcomes = (application as any)._parentWelcomes || [];
+            (application as any)._parentWelcomes.push({
+              email: guardianEmail,
+              displayName: guardianDisplayName,
+              tempPassword: guardianTempPw,
+            });
+          }
         }
 
         const guardianProfile = manager.create(GuardianProfile, {
@@ -368,10 +437,25 @@ export class AdminEnrollmentController {
       });
       await manager.save(AuditEvent, audit);
 
-      return updatedApplication;
+      return {
+        ...updatedApplication,
+        _studentNumber: studentNumber,
+        _pin: pin,
+        _parentWelcomes: (application as any)._parentWelcomes || [],
+      };
     });
 
-    return result;
+    // Send welcome emails to parents after transaction
+    const parentWelcomes = (result as any)._parentWelcomes || [];
+    for (const pw of parentWelcomes) {
+      await this.emailAuthService.sendWelcomeEmail(pw.email, pw.displayName, pw.tempPassword);
+    }
+
+    return {
+      ...result,
+      studentNumber: (result as any)._studentNumber,
+      pin: (result as any)._pin,
+    };
   }
 
   // ─── POST /:id/reject — Reject application ───────────────────────
