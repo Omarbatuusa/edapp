@@ -16,6 +16,7 @@ import { RoleAssignment } from '../../users/role-assignment.entity';
 import { TenantMembership } from '../../auth/entities/tenant-membership.entity';
 import { generateSlug, generateSchoolCode, ensureUniqueSlug, ensureUniqueCode } from '../utils/slug-generator';
 import { EmailAuthService } from '../../auth/email-auth.service';
+import { PasswordHistory } from '../../users/password-history.entity';
 
 const PLATFORM_ROLES = ['platform_super_admin', 'app_super_admin', 'brand_admin'];
 const SECRETARY_ROLES = ['platform_secretary', 'app_secretary'];
@@ -45,6 +46,7 @@ export class AdminTenantsController {
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(RoleAssignment) private roleRepo: Repository<RoleAssignment>,
     @InjectRepository(TenantMembership) private membershipRepo: Repository<TenantMembership>,
+    @InjectRepository(PasswordHistory) private passwordHistoryRepo: Repository<PasswordHistory>,
     private emailAuthService: EmailAuthService,
   ) {}
 
@@ -275,8 +277,13 @@ export class AdminTenantsController {
       role: 'tenant_admin',
     });
 
-    // Send welcome email for new users
+    // Record temp password in history + send welcome email for new users
     if (isNewUser && tempPassword) {
+      await this.passwordHistoryRepo.save({
+        user_id: userId,
+        password_hash: user.password_hash,
+        source: 'temp',
+      } as Partial<PasswordHistory>);
       await this.emailAuthService.sendWelcomeEmail(emailLower, displayName, tempPassword);
     }
 

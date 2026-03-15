@@ -13,6 +13,7 @@ import { User, UserStatus } from '../../users/user.entity';
 import { RoleAssignment, UserRole } from '../../users/role-assignment.entity';
 import { AuditEvent, AuditAction } from '../entities/audit-event.entity';
 import { EmailAuthService } from '../../auth/email-auth.service';
+import { PasswordHistory } from '../../users/password-history.entity';
 
 const PLATFORM_ROLES = ['platform_super_admin', 'brand_admin'];
 const TENANT_ROLES = ['tenant_admin', 'main_branch_admin'];
@@ -26,6 +27,7 @@ export class AdminStaffController {
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(RoleAssignment) private roleRepo: Repository<RoleAssignment>,
     @InjectRepository(AuditEvent) private auditRepo: Repository<AuditEvent>,
+    @InjectRepository(PasswordHistory) private passwordHistoryRepo: Repository<PasswordHistory>,
     private dataSource: DataSource,
     private emailAuthService: EmailAuthService,
   ) {}
@@ -316,6 +318,13 @@ export class AdminStaffController {
     // After successful DB transaction, create Firebase account
     const displayName = `${body.first_name} ${body.last_name}`;
     await this.createFirebaseAccount(body.email.toLowerCase().trim(), displayName, tempPassword);
+
+    // Record temp password in history (so it can't be reused)
+    await this.passwordHistoryRepo.save({
+      user_id: result.user_id,
+      password_hash: passwordHash,
+      source: 'temp',
+    } as Partial<PasswordHistory>);
 
     // Send welcome email with temp password
     await this.emailAuthService.sendWelcomeEmail(

@@ -8,6 +8,7 @@ import * as bcrypt from 'bcryptjs';
 import * as firebaseAdmin from 'firebase-admin';
 import { FirebaseAuthGuard } from './firebase-auth.guard';
 import { User } from '../users/user.entity';
+import { PasswordHistory } from '../users/password-history.entity';
 import { UserPolicyAcceptance, UserIntent } from '../policies/user-policy-acceptance.entity';
 import { EmailAuthService } from './email-auth.service';
 import { validatePassword } from './password-validator';
@@ -18,6 +19,7 @@ export class OnboardingController {
   constructor(
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(UserPolicyAcceptance) private acceptanceRepo: Repository<UserPolicyAcceptance>,
+    @InjectRepository(PasswordHistory) private passwordHistoryRepo: Repository<PasswordHistory>,
     private emailAuthService: EmailAuthService,
   ) {}
 
@@ -137,11 +139,47 @@ export class OnboardingController {
       }
     }
 
+    // Check password history — cannot reuse any previous password
+    const previousPasswords = await this.passwordHistoryRepo.find({
+      where: { user_id: userId },
+      order: { created_at: 'DESC' },
+    });
+    for (const prev of previousPasswords) {
+      const isReused = await bcrypt.compare(body.newPassword, prev.password_hash);
+      if (isReused) {
+        throw new BadRequestException('You cannot reuse a previous password. Please choose a new one.');
+      }
+    }
+    // Also check current password_hash (covers temp passwords not yet in history)
+    if (user.password_hash) {
+      const matchesCurrent = await bcrypt.compare(body.newPassword, user.password_hash);
+      if (matchesCurrent) {
+        throw new BadRequestException('You cannot reuse your current password. Please choose a new one.');
+      }
+    }
+
     const hash = await bcrypt.hash(body.newPassword, 10);
+
+    // Save old password to history before updating
+    if (user.password_hash) {
+      await this.passwordHistoryRepo.save({
+        user_id: userId,
+        password_hash: user.password_hash,
+        source: user.must_change_password ? 'temp' : 'previous',
+      } as Partial<PasswordHistory>);
+    }
+
     await this.userRepo.update(userId, {
       password_hash: hash,
       must_change_password: false,
     });
+
+    // Save new password to history
+    await this.passwordHistoryRepo.save({
+      user_id: userId,
+      password_hash: hash,
+      source: 'onboarding',
+    } as Partial<PasswordHistory>);
 
     // Sync password to Firebase
     try {

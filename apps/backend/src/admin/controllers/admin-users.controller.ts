@@ -12,6 +12,7 @@ import { RoleAssignment, UserRole } from '../../users/role-assignment.entity';
 import { AuditEvent, AuditAction } from '../entities/audit-event.entity';
 import { validatePassword } from '../../auth/password-validator';
 import { EmailAuthService } from '../../auth/email-auth.service';
+import { PasswordHistory } from '../../users/password-history.entity';
 
 const PLATFORM_ROLES = ['platform_super_admin', 'app_super_admin', 'platform_secretary', 'app_secretary'];
 const CAN_CREATE_USERS = ['platform_super_admin', 'app_super_admin', 'platform_secretary', 'app_secretary', 'tenant_admin'];
@@ -23,6 +24,7 @@ export class AdminUsersController {
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(RoleAssignment) private roleRepo: Repository<RoleAssignment>,
     @InjectRepository(AuditEvent) private auditRepo: Repository<AuditEvent>,
+    @InjectRepository(PasswordHistory) private passwordHistoryRepo: Repository<PasswordHistory>,
     private emailAuthService: EmailAuthService,
   ) {}
 
@@ -125,6 +127,13 @@ export class AdminUsersController {
       user_agent: req.headers?.['user-agent'],
     } as Partial<AuditEvent>);
 
+    // Record temp password in history (so it can't be reused)
+    await this.passwordHistoryRepo.save({
+      user_id: user.id,
+      password_hash: passwordHash,
+      source: 'temp',
+    } as Partial<PasswordHistory>);
+
     // Send welcome email with temp password
     await this.emailAuthService.sendWelcomeEmail(
       user.email,
@@ -142,6 +151,106 @@ export class AdminUsersController {
       role_assignment: assignment,
       tempPassword: rawPassword,
     };
+  }
+
+  /**
+   * POST /admin/users/:userId/reset-password — Admin resets a user's password
+   * Creates Firebase account if it doesn't exist.
+   */
+  @Post(':userId/reset-password')
+  async resetPassword(
+    @Req() req: any,
+    @Param('userId') userId: string,
+    @Body() body: { password: string },
+  ) {
+    if (!this.isPlatformAdmin(req)) {
+      throw new ForbiddenException('Only platform admins can reset passwords');
+    }
+    const user = await this.userRepo.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+    if (!body.password) throw new BadRequestException('Password is required');
+
+    const validation = validatePassword(body.password);
+    if (!validation.valid) {
+      throw new BadRequestException(validation.errors.join('. '));
+    }
+
+    // Check password history
+    const previous = await this.passwordHistoryRepo.find({
+      where: { user_id: userId },
+      order: { created_at: 'DESC' },
+    });
+    for (const prev of previous) {
+      const isReused = await bcrypt.compare(body.password, prev.password_hash);
+      if (isReused) {
+        throw new BadRequestException('This password was used before. Choose a different one.');
+      }
+    }
+
+    const hash = await bcrypt.hash(body.password, 10);
+
+    // Record old password in history
+    if (user.password_hash) {
+      await this.passwordHistoryRepo.save({
+        user_id: userId,
+        password_hash: user.password_hash,
+        source: 'previous',
+      } as Partial<PasswordHistory>);
+    }
+
+    // Update DB
+    await this.userRepo.update(userId, {
+      password_hash: hash,
+      must_change_password: true,
+    });
+
+    // Record new password in history
+    await this.passwordHistoryRepo.save({
+      user_id: userId,
+      password_hash: hash,
+      source: 'admin-reset',
+    } as Partial<PasswordHistory>);
+
+    // Create or update Firebase account
+    try {
+      const fbUser = await firebaseAdmin.auth().getUserByEmail(user.email);
+      await firebaseAdmin.auth().updateUser(fbUser.uid, {
+        password: body.password,
+        disabled: false,
+      });
+    } catch (e: any) {
+      if (e.code === 'auth/user-not-found') {
+        // Firebase account doesn't exist — create it
+        await firebaseAdmin.auth().createUser({
+          email: user.email,
+          password: body.password,
+          displayName: user.display_name || user.email,
+        });
+        console.log(`[AdminUsers] Created Firebase account for ${user.email}`);
+      } else {
+        console.warn('[AdminUsers] Firebase password reset failed:', e.message);
+      }
+    }
+
+    // Link firebase_uid if not set
+    if (!user.firebase_uid) {
+      try {
+        const fbUser = await firebaseAdmin.auth().getUserByEmail(user.email);
+        await this.userRepo.update(userId, { firebase_uid: fbUser.uid });
+      } catch (_) {}
+    }
+
+    await this.auditRepo.save({
+      actor_user_id: req.user?.uid || req.user?.dbUserId,
+      action: AuditAction.USER_CREATE,
+      entity_type: 'user',
+      entity_id: userId,
+      after: { action: 'password_reset', email: user.email },
+      ip_address: req.ip,
+      user_agent: req.headers?.['user-agent'],
+    } as Partial<AuditEvent>);
+
+    return { success: true, message: `Password reset for ${user.email}. Firebase account ensured.` };
   }
 
   @Get('search')

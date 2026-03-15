@@ -13,6 +13,7 @@ import { User } from '../users/user.entity';
 import { Tenant } from '../tenants/tenant.entity';
 import { TenantSettings } from '../tenants/tenant-settings.entity';
 import { RoleAssignment } from '../users/role-assignment.entity';
+import { PasswordHistory } from '../users/password-history.entity';
 import { HandoffController } from './handoff.controller';
 import { HandoffService } from './handoff.service';
 import { AdminLoginController } from './admin-login.controller';
@@ -23,7 +24,7 @@ import { UserPolicyAcceptance } from '../policies/user-policy-acceptance.entity'
 @Module({
     imports: [
         ConfigModule,
-        TypeOrmModule.forFeature([User, Tenant, TenantSettings, RoleAssignment, UserPolicyAcceptance]),
+        TypeOrmModule.forFeature([User, Tenant, TenantSettings, RoleAssignment, UserPolicyAcceptance, PasswordHistory]),
     ],
     controllers: [AuthController, HandoffController, EmailAuthController, AdminLoginController, OnboardingController],
     providers: [

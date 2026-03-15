@@ -119,6 +119,7 @@ import { AdminLinkedAccessController, MyLinkedTenantsController } from './contro
 import { BulkImportService } from './services/bulk-import.service';
 import { TemplateGeneratorService } from './services/template-generator.service';
 import { ImportAudit } from './entities/import-audit.entity';
+import { PasswordHistory } from '../users/password-history.entity';
 
 @Module({
   imports: [
@@ -126,6 +127,7 @@ import { ImportAudit } from './entities/import-audit.entity';
       Tenant,
       User,
       RoleAssignment,
+      PasswordHistory,
       DictPhase,
       DictGrade,
       DictClassGender,

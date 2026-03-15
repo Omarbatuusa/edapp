@@ -11,6 +11,7 @@ import { TenantDomain } from './tenants/tenant-domain.entity';
 import { Branch } from './branches/branch.entity';
 import { User } from './users/user.entity';
 import { RoleAssignment } from './users/role-assignment.entity';
+import { PasswordHistory } from './users/password-history.entity';
 import { TenantSettings } from './tenants/tenant-settings.entity';
 import { PolicyDocument } from './policies/policy-document.entity';
 import { PolicyVersion } from './policies/policy-version.entity';
@@ -215,6 +216,7 @@ import { ScheduleModule } from '@nestjs/schedule';
           Branch,
           User,
           RoleAssignment,
+          PasswordHistory,
           PolicyDocument,
           PolicyVersion,
           UserPolicyAcceptance,
