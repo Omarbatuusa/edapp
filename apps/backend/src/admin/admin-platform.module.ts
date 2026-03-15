@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
+import { StorageModule } from '../storage/storage.module';
 import { Tenant } from '../tenants/tenant.entity';
 import { TenantDomain } from '../tenants/tenant-domain.entity';
 import { User } from '../users/user.entity';
@@ -213,6 +214,7 @@ import { PasswordHistory } from '../users/password-history.entity';
       LinkedTenantAccess,
     ]),
     AuthModule,
+    StorageModule,
   ],
   controllers: [
     AdminTenantsController,
