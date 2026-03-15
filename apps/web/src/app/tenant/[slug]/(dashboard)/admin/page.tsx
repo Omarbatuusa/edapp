@@ -49,12 +49,27 @@ export default function AdminDashboard({ params }: Props) {
     const [attendanceStats, setAttendanceStats] = useState<{ total: number; present: number; absent: number; late: number } | null>(null);
     const [eventSheetOpen, setEventSheetOpen] = useState(false);
     const [preselectedDate, setPreselectedDate] = useState<string>();
+    const [subscription, setSubscription] = useState<{
+        subscription_status: string | null;
+        subscription_plan: string | null;
+        subscription_ends_at: string | null;
+        suspended_at: string | null;
+        suspension_reason: string | null;
+    } | null>(null);
 
     useEffect(() => {
         apiClient.get('/auth/me').then(res => {
             if (res.data?.branch_id) setBranchId(res.data.branch_id);
         }).catch(() => {});
-    }, []);
+
+        // Fetch subscription status for tenant admins
+        const tenantId = localStorage.getItem('admin_tenant_id') || localStorage.getItem(`edapp_tenant_id_${slug}`);
+        if (tenantId) {
+            apiClient.get(`/admin/subscriptions/tenant/${tenantId}`).then(res => {
+                setSubscription(res.data?.tenant || null);
+            }).catch(() => {});
+        }
+    }, [slug]);
 
     useEffect(() => {
         if (!branchId) return;
@@ -87,6 +102,19 @@ export default function AdminDashboard({ params }: Props) {
 
     const sidebar = (
         <>
+            {/* Subscription Status Card */}
+            {subscription?.subscription_status && (
+                <SubscriptionCard
+                    status={subscription.subscription_status}
+                    plan={subscription.subscription_plan}
+                    endsAt={subscription.subscription_ends_at}
+                    suspendedAt={subscription.suspended_at}
+                    suspensionReason={subscription.suspension_reason}
+                    basePath={basePath}
+                    isPlatform={isPlatform}
+                />
+            )}
+
             <ProfileCompletionCard
                 sections={[
                     { label: 'General Information', completed: 5, total: 6 },
@@ -213,6 +241,7 @@ export default function AdminDashboard({ params }: Props) {
                     <NavCard href={`${basePath}/people`} label="People & Roles" description="Manage users and role assignments" icon="group" color="teal" />
                     <NavCard href={`${basePath}/audit`} label="Audit Log" description="View platform activity and changes" icon="history" color="gray" />
                     <NavCard href={`${basePath}/support-access`} label="Support Access" description="Manage time-limited support access grants" icon="support_agent" color="orange" />
+                    <NavCard href={`${basePath}/subscriptions`} label="Subscriptions" description="Manage tenant subscriptions and billing" icon="credit_card" color="green" />
                 </NavSection>
             )}
             {canManageBranches && (
@@ -442,6 +471,86 @@ function NotifItem({ icon, text, time }: { icon: string; text: string; time: str
                 <p className="type-muted text-[hsl(var(--admin-text-main))] leading-snug">{text}</p>
                 <p className="type-metadata text-[hsl(var(--admin-text-muted))]">{time}</p>
             </div>
+        </div>
+    );
+}
+
+function SubscriptionCard({
+    status, plan, endsAt, suspendedAt, suspensionReason, basePath, isPlatform,
+}: {
+    status: string;
+    plan: string | null;
+    endsAt: string | null;
+    suspendedAt: string | null;
+    suspensionReason: string | null;
+    basePath: string;
+    isPlatform: boolean;
+}) {
+    const isActive = status === 'active' || status === 'trial';
+    const isSuspended = status === 'suspended';
+    const isExpired = status === 'expired';
+    const isPastDue = status === 'past_due';
+
+    const daysLeft = endsAt ? Math.max(0, Math.ceil((new Date(endsAt).getTime() - Date.now()) / 86400000)) : null;
+    const planLabel = plan === 'monthly' ? 'Monthly' : plan === 'quarterly' ? 'Quarterly' : plan === 'annual' ? 'Annual' : plan || '—';
+
+    const statusConfig = isSuspended
+        ? { bg: 'bg-red-50 dark:bg-red-900/20', border: 'border-red-200 dark:border-red-800', icon: 'block', iconColor: 'text-red-600', label: 'Suspended', labelColor: 'bg-red-100 text-red-700' }
+        : isExpired
+            ? { bg: 'bg-amber-50 dark:bg-amber-900/20', border: 'border-amber-200 dark:border-amber-800', icon: 'timer_off', iconColor: 'text-amber-600', label: 'Expired', labelColor: 'bg-amber-100 text-amber-700' }
+            : isPastDue
+                ? { bg: 'bg-amber-50 dark:bg-amber-900/20', border: 'border-amber-200 dark:border-amber-800', icon: 'warning', iconColor: 'text-amber-600', label: 'Past Due', labelColor: 'bg-amber-100 text-amber-700' }
+                : status === 'trial'
+                    ? { bg: 'bg-blue-50 dark:bg-blue-900/20', border: 'border-blue-200 dark:border-blue-800', icon: 'science', iconColor: 'text-blue-600', label: 'Trial', labelColor: 'bg-blue-100 text-blue-700' }
+                    : { bg: 'bg-green-50 dark:bg-green-900/20', border: 'border-green-200 dark:border-green-800', icon: 'verified', iconColor: 'text-green-600', label: 'Active', labelColor: 'bg-green-100 text-green-700' };
+
+    return (
+        <div className={`rounded-2xl p-4 border ${statusConfig.bg} ${statusConfig.border}`}>
+            <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                    <span className={`material-symbols-outlined text-[18px] ${statusConfig.iconColor}`}>{statusConfig.icon}</span>
+                    <h3 className="text-sm font-semibold text-[hsl(var(--admin-text-main))]">Subscription</h3>
+                </div>
+                <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${statusConfig.labelColor}`}>
+                    {statusConfig.label}
+                </span>
+            </div>
+
+            <div className="space-y-2">
+                <div className="flex justify-between text-xs">
+                    <span className="text-[hsl(var(--admin-text-muted))]">Plan</span>
+                    <span className="font-semibold text-[hsl(var(--admin-text-main))]">{planLabel}</span>
+                </div>
+                {endsAt && (
+                    <div className="flex justify-between text-xs">
+                        <span className="text-[hsl(var(--admin-text-muted))]">{isActive ? 'Renews' : 'Ended'}</span>
+                        <span className="font-semibold text-[hsl(var(--admin-text-main))]">
+                            {new Date(endsAt).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </span>
+                    </div>
+                )}
+                {isActive && daysLeft !== null && (
+                    <div className="flex justify-between text-xs">
+                        <span className="text-[hsl(var(--admin-text-muted))]">Days left</span>
+                        <span className={`font-semibold ${daysLeft <= 7 ? 'text-amber-600' : 'text-[hsl(var(--admin-text-main))]'}`}>
+                            {daysLeft}
+                        </span>
+                    </div>
+                )}
+                {isSuspended && suspensionReason && (
+                    <p className="text-xs text-red-600 dark:text-red-400 mt-1">{suspensionReason}</p>
+                )}
+            </div>
+
+            {(!isActive && !isSuspended) && (
+                <Link
+                    href={`${basePath}/subscription`}
+                    className="mt-3 w-full flex items-center justify-center gap-1.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl transition-all active:scale-[0.98]"
+                >
+                    <span className="material-symbols-outlined text-[16px]">credit_card</span>
+                    Renew
+                </Link>
+            )}
         </div>
     );
 }

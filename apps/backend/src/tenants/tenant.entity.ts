@@ -133,6 +133,26 @@ export class Tenant {
     @Column({ type: 'jsonb', nullable: true, default: [] })
     gallery_file_ids: string[];
 
+    // ─── Subscription (denormalized for fast checks) ───
+    @Column({ type: 'varchar', nullable: true, default: null })
+    subscription_status: string; // 'active' | 'trial' | 'past_due' | 'suspended' | 'expired' | null
+
+    @Column({ type: 'timestamptz', nullable: true })
+    subscription_ends_at: Date;
+
+    @Column({ type: 'varchar', nullable: true })
+    subscription_plan: string; // 'monthly' | 'quarterly' | 'annual'
+
+    // ─── Suspension (platform admin can suspend for non-payment) ───
+    @Column({ type: 'timestamptz', nullable: true })
+    suspended_at: Date;
+
+    @Column({ nullable: true })
+    suspended_by: string; // user_id of admin who suspended
+
+    @Column({ nullable: true })
+    suspension_reason: string;
+
     @CreateDateColumn()
     created_at: Date;
 

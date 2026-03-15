@@ -57,7 +57,9 @@ export default function ForgotPasswordPage({ params }: { params: Promise<{ slug:
                 body: JSON.stringify({ email }),
             })
 
-            const data = await res.json()
+            const text = await res.text()
+            let data: any
+            try { data = JSON.parse(text) } catch { throw new Error('Server error. Please try again later.') }
             if (!res.ok) throw new Error(data.message || 'Failed to send reset code')
 
             if (data.otpKey) {
@@ -96,7 +98,9 @@ export default function ForgotPasswordPage({ params }: { params: Promise<{ slug:
                 }),
             })
 
-            const data = await res.json()
+            const text = await res.text()
+            let data: any
+            try { data = JSON.parse(text) } catch { throw new Error('Server error. Please try again later.') }
             if (!res.ok) throw new Error(data.message || 'Password reset failed')
 
             setStep('success')

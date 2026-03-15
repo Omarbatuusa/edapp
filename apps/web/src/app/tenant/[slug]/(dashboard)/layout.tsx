@@ -7,6 +7,7 @@ import { RoleProvider } from '@/contexts/RoleContext';
 import { TenantProvider, useTenant } from '@/contexts/TenantContext';
 import { AppShell } from '@/components/shell/AppShell';
 import { OnboardingGate } from '@/components/onboarding/OnboardingGate';
+import { SubscriptionGate } from '@/components/subscription/SubscriptionGate';
 import { getNavConfig } from '@/config/navigation';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import pkg from '../../../../../package.json';
@@ -225,9 +226,11 @@ function DashboardLayoutInner({ slug, children }: { slug: string; children: Reac
                 allRoles={allRoles}
                 onRoleSwitch={switchRole}
             >
-                <OnboardingGate tenantId={tenantIdForOnboarding} slug={slug}>
-                    {children}
-                </OnboardingGate>
+                <SubscriptionGate slug={slug}>
+                    <OnboardingGate tenantId={tenantIdForOnboarding} slug={slug}>
+                        {children}
+                    </OnboardingGate>
+                </SubscriptionGate>
             </AppShell>
         </RoleProvider>
     );

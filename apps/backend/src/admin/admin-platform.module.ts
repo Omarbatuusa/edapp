@@ -121,6 +121,9 @@ import { BulkImportService } from './services/bulk-import.service';
 import { TemplateGeneratorService } from './services/template-generator.service';
 import { ImportAudit } from './entities/import-audit.entity';
 import { PasswordHistory } from '../users/password-history.entity';
+import { TenantSubscription } from '../tenants/tenant-subscription.entity';
+import { TenantPayment } from '../tenants/tenant-payment.entity';
+import { AdminSubscriptionsController } from './controllers/admin-subscriptions.controller';
 
 @Module({
   imports: [
@@ -212,6 +215,8 @@ import { PasswordHistory } from '../users/password-history.entity';
       TenantDomain,
       TenantMembership,
       LinkedTenantAccess,
+      TenantSubscription,
+      TenantPayment,
     ]),
     AuthModule,
     StorageModule,
@@ -240,6 +245,7 @@ import { PasswordHistory } from '../users/password-history.entity';
     AdminTemplateController,
     AdminLinkedAccessController,
     MyLinkedTenantsController,
+    AdminSubscriptionsController,
   ],
   providers: [
     BulkImportService,

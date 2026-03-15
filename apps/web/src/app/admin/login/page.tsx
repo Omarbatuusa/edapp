@@ -102,12 +102,14 @@ export default function AdminLoginPage() {
                 }),
             })
 
+            const text = await res.text()
+            let data: any
+            try { data = JSON.parse(text) } catch {
+                throw new Error('Server error. Please try again later.')
+            }
             if (!res.ok) {
-                const data = await res.json().catch(() => ({}))
                 throw new Error(data.message || 'Login failed. Ensure you have an admin role.')
             }
-
-            const data: LoginResult = await res.json()
 
             // 4. If only one role, auto-select and redirect
             if (data.allRoles.length <= 1) {

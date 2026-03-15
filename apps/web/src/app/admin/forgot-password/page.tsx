@@ -42,7 +42,9 @@ export default function AdminForgotPasswordPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email }),
             })
-            const data = await res.json()
+            const text = await res.text()
+            let data: any
+            try { data = JSON.parse(text) } catch { throw new Error('Server error. Please try again later.') }
             if (!res.ok) throw new Error(data.message || 'Failed to send reset code')
 
             if (data.otpKey) setOtpKey(data.otpKey)
@@ -72,7 +74,9 @@ export default function AdminForgotPasswordPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, otpKey, code, newPassword }),
             })
-            const data = await res.json()
+            const text = await res.text()
+            let data: any
+            try { data = JSON.parse(text) } catch { throw new Error('Server error. Please try again later.') }
             if (!res.ok) throw new Error(data.message || 'Password reset failed')
             setStep('success')
         } catch (err: any) {

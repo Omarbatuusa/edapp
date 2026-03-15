@@ -8,6 +8,8 @@ import { AppService } from './app.service';
 import { Brand } from './brands/brand.entity';
 import { Tenant } from './tenants/tenant.entity';
 import { TenantDomain } from './tenants/tenant-domain.entity';
+import { TenantSubscription } from './tenants/tenant-subscription.entity';
+import { TenantPayment } from './tenants/tenant-payment.entity';
 import { Branch } from './branches/branch.entity';
 import { User } from './users/user.entity';
 import { RoleAssignment } from './users/role-assignment.entity';
@@ -212,6 +214,8 @@ import { ScheduleModule } from '@nestjs/schedule';
           Brand,
           Tenant,
           TenantDomain,
+          TenantSubscription,
+          TenantPayment,
           TenantSettings,
           Branch,
           User,
