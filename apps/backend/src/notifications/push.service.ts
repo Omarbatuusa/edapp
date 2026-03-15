@@ -4,6 +4,7 @@ import { Repository, In } from 'typeorm';
 import * as admin from 'firebase-admin';
 import { DeviceToken, DevicePlatform } from './device-token.entity';
 import { Notification } from '../communication/notification.entity';
+import { initFirebaseAdmin } from '../firebase-admin.config';
 
 // ============================================================
 // PUSH NOTIFICATION SERVICE - Firebase Cloud Messaging
@@ -42,33 +43,8 @@ export class PushService implements OnModuleInit {
     // Initialize Firebase Admin SDK
     private initializeFirebase() {
         try {
-            // Check if already initialized
-            if (admin.apps.length > 0) {
-                this.isInitialized = true;
-                return;
-            }
-
-            // Initialize with service account or application default credentials
-            const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT;
-
-            if (serviceAccount) {
-                // Parse JSON service account from environment variable
-                const credentials = JSON.parse(serviceAccount);
-                admin.initializeApp({
-                    credential: admin.credential.cert(credentials),
-                });
-            } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-                // Use application default credentials (for GCP environments)
-                admin.initializeApp({
-                    credential: admin.credential.applicationDefault(),
-                });
-            } else {
-                this.logger.warn('Firebase credentials not configured - push notifications disabled');
-                return;
-            }
-
+            initFirebaseAdmin();
             this.isInitialized = true;
-            this.logger.log('Firebase Admin SDK initialized successfully');
         } catch (error) {
             this.logger.error('Failed to initialize Firebase Admin SDK:', error);
         }

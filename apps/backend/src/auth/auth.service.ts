@@ -1,33 +1,11 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import * as admin from 'firebase-admin';
-import { ConfigService } from '@nestjs/config';
-
-import * as path from 'path';
+import { initFirebaseAdmin } from '../firebase-admin.config';
 
 @Injectable()
 export class AuthService implements OnModuleInit {
-    constructor(private configService: ConfigService) { }
-
     onModuleInit() {
-        if (admin.apps.length === 0) {
-            const serviceAccountPath = path.resolve(process.cwd(), 'firebase-service-account.json');
-            try {
-                // Try loading service account JSON file first (local dev)
-                const serviceAccount = require(serviceAccountPath);
-                admin.initializeApp({
-                    credential: admin.credential.cert(serviceAccount),
-                });
-                console.log('Firebase Admin Initialized from:', serviceAccountPath);
-            } catch {
-                // Fallback to Application Default Credentials (GCP VM)
-                const projectId = this.configService.get<string>('FIREBASE_PROJECT_ID');
-                admin.initializeApp({
-                    credential: admin.credential.applicationDefault(),
-                    projectId,
-                });
-                console.log('Firebase Admin Initialized via ADC, project:', projectId);
-            }
-        }
+        initFirebaseAdmin();
     }
 
     async verifyToken(token: string): Promise<admin.auth.DecodedIdToken> {

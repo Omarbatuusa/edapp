@@ -1,6 +1,7 @@
 import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import * as admin from 'firebase-admin';
+import { initFirebaseAdmin } from '../firebase-admin.config';
 import { Brand, BrandStatus } from '../brands/brand.entity';
 import { Tenant, TenantStatus } from '../tenants/tenant.entity';
 import { TenantDomain, TenantDomainType } from '../tenants/tenant-domain.entity';
@@ -221,15 +222,7 @@ async function seed() {
     console.log('\n👤 Creating users...');
 
     // Initialize Firebase Admin for seed
-    if (admin.apps.length === 0) {
-        const path = require('path');
-        try {
-            const serviceAccount = require(path.resolve(process.cwd(), 'firebase-service-account.json'));
-            admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
-        } catch {
-            admin.initializeApp({ credential: admin.credential.applicationDefault() });
-        }
-    }
+    initFirebaseAdmin();
 
     const passwordHash = await bcrypt.hash('Janat@2000', 10);
 
