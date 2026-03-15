@@ -16,6 +16,7 @@ import { useSubpageDetection } from '@/hooks/useSubpageDetection';
 import { NotificationPanel } from '@/components/dashboard/NotificationPanel';
 import { SearchSheet } from '@/components/dashboard/SearchSheet';
 import { ScopeSelectorSheet } from '@/components/dashboard/ScopeSelectorSheet';
+import { LinkedTenantSwitcher, useHasLinkedTenants } from '@/components/dashboard/LinkedTenantSwitcher';
 import { EmergencyProvider } from '@/contexts/EmergencyContext';
 import { ShellActionsProvider } from '@/contexts/ShellActionsContext';
 import { EmergencyBanner } from '@/components/safety/EmergencyBanner';
@@ -93,6 +94,10 @@ export function AppShell({
     const [emergencySheetOpen, setEmergencySheetOpen] = useState(false);
     const [reportsHubOpen, setReportsHubOpen] = useState(false);
     const [safetyChooserOpen, setSafetyChooserOpen] = useState(false);
+    const [linkedSwitcherOpen, setLinkedSwitcherOpen] = useState(false);
+
+    // Linked tenant switcher visibility
+    const hasLinkedTenants = useHasLinkedTenants();
 
     // Subpage detection + chrome flag
     const { isSubpage, isFullscreen, chrome } = useSubpageDetection(navConfig.bottomTabs, basePath);
@@ -181,6 +186,7 @@ export function AppShell({
                                 onScopeClick={hf.showScope && showScopeChip ? () => setScopeSelectorOpen(true) : undefined}
                                 showScope={hf.showScope && showScopeChip}
                                 showSafety={showSafety}
+                                onSwitchSchool={hasLinkedTenants ? () => setLinkedSwitcherOpen(true) : undefined}
                             />
                         )}
                         <div className="admin-body">
@@ -257,6 +263,11 @@ export function AppShell({
                     currentScope={currentScope}
                     onSelect={(branchId) => onScopeChange?.(branchId)}
                     tenantName={tenantName}
+                />
+                <LinkedTenantSwitcher
+                    isOpen={linkedSwitcherOpen}
+                    onClose={() => setLinkedSwitcherOpen(false)}
+                    currentTenantSlug={tenantSlug}
                 />
                 <SafetyChooserSheet
                     isOpen={safetyChooserOpen}

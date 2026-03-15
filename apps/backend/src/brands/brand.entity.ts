@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Tenant } from '../tenants/tenant.entity';
 
 export enum BrandStatus {
     ACTIVE = 'active',
@@ -16,6 +17,18 @@ export class Brand {
     @Column()
     brand_name: string; // e.g., "Rainbow City Schools"
 
+    @Column({ unique: true, nullable: true })
+    brand_slug: string; // e.g., "rainbow-city-schools"
+
+    @Column({ type: 'text', nullable: true })
+    description: string;
+
+    @Column({ nullable: true })
+    logo_file_id: string;
+
+    @Column({ nullable: true })
+    cover_file_id: string;
+
     @Column({ type: 'enum', enum: BrandStatus, default: BrandStatus.ACTIVE })
     status: BrandStatus;
 
@@ -26,6 +39,6 @@ export class Brand {
     updated_at: Date;
 
     // Relations (for grouping only - no operational data on brand)
-    // @OneToMany(() => Tenant, tenant => tenant.brand)
-    // tenants: Tenant[];
+    @OneToMany(() => Tenant, tenant => tenant.brand)
+    tenants: Tenant[];
 }

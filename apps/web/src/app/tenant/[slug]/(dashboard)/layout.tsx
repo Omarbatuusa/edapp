@@ -19,8 +19,8 @@ interface DashboardLayoutProps {
 /** Maps URL path segments to allowed roles */
 const ROUTE_ROLE_MAP: Record<string, string[]> = {
     '/admin': [
-        'admin', 'principal', 'deputy_principal', 'tenant_admin', 'main_branch_admin',
-        'branch_admin', 'brand_admin', 'smt', 'hod', 'platform_super_admin',
+        'admin', 'principal', 'deputy_principal', 'tenant_admin', 'tenant_brand_admin',
+        'main_branch_admin', 'branch_admin', 'brand_admin', 'smt', 'hod', 'platform_super_admin',
         'platform_secretary', 'platform_support', 'admissions_officer',
         'finance_officer', 'hr_admin', 'reception', 'it_admin',
         // New platform aliases

@@ -10,6 +10,10 @@ import {
     BadRequestException,
 } from '@nestjs/common';
 import { StorageService } from './storage.service';
+import { SvgSanitizerService } from './svg-sanitizer.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { FileObject, FileVisibility, FileCategory } from './file-object.entity';
 
 interface UploadRequestDto {
     category: string;
@@ -45,9 +49,23 @@ const CATEGORY_RULES: Record<string, { mimeTypes: string[]; maxSizeMB: number }>
     },
 };
 
+interface ConfirmUploadDto {
+    objectKey: string;
+    contentType: string;
+    originalName?: string;
+    sizeBytes?: number;
+    category?: string;
+    entityType?: string;
+    entityId?: string;
+}
+
 @Controller('storage')
 export class StorageController {
-    constructor(private readonly storageService: StorageService) { }
+    constructor(
+        private readonly storageService: StorageService,
+        private readonly svgSanitizer: SvgSanitizerService,
+        @InjectRepository(FileObject) private readonly fileRepo: Repository<FileObject>,
+    ) { }
 
     /**
      * Generate a signed URL for uploading a file
@@ -125,5 +143,78 @@ export class StorageController {
 
         const readUrl = await this.storageService.generateSignedReadUrl(objectKey);
         return { readUrl };
+    }
+
+    /**
+     * Confirm an upload after the file has been PUT to GCS via signed URL.
+     * For SVGs: downloads, sanitizes, re-uploads the sanitized version.
+     * Creates a file_objects record for tracking.
+     */
+    @Post('confirm-upload')
+    @HttpCode(HttpStatus.OK)
+    async confirmUpload(
+        @Body() body: ConfirmUploadDto,
+        @Req() req: any,
+    ) {
+        const tenantSlug = req.tenant?.slug;
+        if (!tenantSlug) {
+            throw new BadRequestException('Tenant context required');
+        }
+
+        if (!body.objectKey || !body.contentType) {
+            throw new BadRequestException('objectKey and contentType are required');
+        }
+
+        // Validate tenant owns this object
+        const expectedPrefix = `uploads/${tenantSlug}/`;
+        if (!body.objectKey.startsWith(expectedPrefix)) {
+            throw new BadRequestException('Access denied: object belongs to another tenant');
+        }
+
+        // SVG sanitization
+        if (this.svgSanitizer.isSvg(body.contentType)) {
+            try {
+                const rawBuffer = await this.storageService.downloadObject(body.objectKey);
+                const sanitized = this.svgSanitizer.sanitize(rawBuffer);
+                await this.storageService.uploadBuffer(body.objectKey, sanitized, body.contentType);
+            } catch (err) {
+                throw new BadRequestException('SVG sanitization failed — file may be invalid or contain unsafe content');
+            }
+        }
+
+        // Map category string to enum
+        const categoryMap: Record<string, FileCategory> = {
+            logos: FileCategory.LOGO,
+            avatars: FileCategory.AVATAR,
+            documents: FileCategory.GENERAL_DOCUMENT,
+            reports: FileCategory.REPORT_EXPORT,
+            attachments: FileCategory.MESSAGE_ATTACHMENT,
+            covers: FileCategory.COVER,
+        };
+
+        // Create file_objects record
+        const tenantId = req.tenant_id || req.tenant?.id;
+        const fileObj = this.fileRepo.create({
+            tenant_id: tenantId,
+            bucket_name: this.storageService.getBucketName(),
+            object_key: body.objectKey,
+            original_name: body.originalName || body.objectKey.split('/').pop(),
+            mime_type: body.contentType,
+            size_bytes: body.sizeBytes || 0,
+            visibility: FileVisibility.SIGNED,
+            category: categoryMap[body.category || ''] || FileCategory.GENERAL_DOCUMENT,
+            entity_type: body.entityType || null,
+            entity_id: body.entityId || null,
+            uploaded_by_user_id: req.user?.uid || req.user?.dbUserId || null,
+        } as any);
+
+        const saved = await this.fileRepo.save(fileObj);
+
+        return {
+            status: 'success',
+            fileId: saved.id,
+            objectKey: body.objectKey,
+            sanitized: this.svgSanitizer.isSvg(body.contentType),
+        };
     }
 }

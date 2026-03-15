@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn, OneToMany, Index } from 'typeorm';
 import { Brand } from '../brands/brand.entity';
 import { Branch } from '../branches/branch.entity';
 
@@ -32,6 +32,14 @@ export class Tenant {
 
     @Column({ nullable: true })
     brand_id: string;
+
+    // Structural link: main_branch → branch/campus
+    @ManyToOne(() => Tenant, { nullable: true })
+    @JoinColumn({ name: 'parent_tenant_id' })
+    parent_tenant: Tenant;
+
+    @Column({ nullable: true })
+    parent_tenant_id: string;
 
     @Column({ unique: true })
     tenant_slug: string; // e.g., rainbow, allied, lia, jeppe
@@ -94,6 +102,36 @@ export class Tenant {
     // QR Code Security
     @Column({ nullable: true })
     qr_token_secret: string;
+
+    // School description / about
+    @Column({ type: 'text', nullable: true })
+    about: string;
+
+    // EMIS Number (important for CAPS schools)
+    @Column({ nullable: true })
+    emis_number: string;
+
+    // Area/location label for subtitle display (e.g., "Robertsham", "Fordsburg")
+    @Column({ nullable: true })
+    area_label: string;
+
+    // Direct contact info (tenant-level, complementing branch-level contacts)
+    @Column({ nullable: true })
+    contact_email: string;
+
+    @Column({ nullable: true })
+    contact_phone: string;
+
+    @Column({ nullable: true })
+    secondary_email: string;
+
+    // Google Places structured address
+    @Column({ type: 'jsonb', nullable: true })
+    physical_address: Record<string, any>;
+
+    // Gallery image file IDs
+    @Column({ type: 'jsonb', nullable: true, default: [] })
+    gallery_file_ids: string[];
 
     @CreateDateColumn()
     created_at: Date;

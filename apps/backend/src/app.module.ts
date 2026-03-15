@@ -150,6 +150,7 @@ import { TenantRolePermission } from './auth/entities/tenant-role-permission.ent
 import { TenantMembership } from './auth/entities/tenant-membership.entity';
 import { TenantMembershipRole } from './auth/entities/tenant-membership-role.entity';
 import { SupportAccessGrant } from './auth/entities/support-access-grant.entity';
+import { LinkedTenantAccess } from './auth/entities/linked-tenant-access.entity';
 
 // Storage entities
 import { FileObject } from './storage/file-object.entity';
@@ -331,6 +332,7 @@ import { ScheduleModule } from '@nestjs/schedule';
           TenantMembership,
           TenantMembershipRole,
           SupportAccessGrant,
+          LinkedTenantAccess,
           // Storage metadata
           FileObject,
           // Identifier generator

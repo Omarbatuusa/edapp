@@ -29,6 +29,7 @@ export enum UserRole {
     MAIN_BRANCH_ADMIN = 'main_branch_admin',
     BRANCH_ADMIN = 'branch_admin',
     TENANT_ADMIN = 'tenant_admin',
+    TENANT_BRAND_ADMIN = 'tenant_brand_admin',
 
     // ═══════════════════════════════════════════════════════════════
     // TENANT LEADERSHIP / OPERATIONS

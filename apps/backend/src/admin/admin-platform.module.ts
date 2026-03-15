@@ -2,8 +2,11 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
 import { Tenant } from '../tenants/tenant.entity';
+import { TenantDomain } from '../tenants/tenant-domain.entity';
 import { User } from '../users/user.entity';
 import { RoleAssignment } from '../users/role-assignment.entity';
+import { TenantMembership } from '../auth/entities/tenant-membership.entity';
+import { LinkedTenantAccess } from '../auth/entities/linked-tenant-access.entity';
 
 import { DictPhase } from './entities/dict-phase.entity';
 import { DictGrade } from './entities/dict-grade.entity';
@@ -112,6 +115,7 @@ import { AdminEmergenciesController } from './controllers/admin-emergencies.cont
 import { AdminUsersController } from './controllers/admin-users.controller';
 import { AdminBulkImportController } from './controllers/admin-bulk-import.controller';
 import { AdminTemplateController } from './controllers/admin-templates.controller';
+import { AdminLinkedAccessController, MyLinkedTenantsController } from './controllers/admin-linked-access.controller';
 import { BulkImportService } from './services/bulk-import.service';
 import { TemplateGeneratorService } from './services/template-generator.service';
 import { ImportAudit } from './entities/import-audit.entity';
@@ -202,6 +206,9 @@ import { ImportAudit } from './entities/import-audit.entity';
       EmergencyRollCall,
       EmergencyTask,
       ImportAudit,
+      TenantDomain,
+      TenantMembership,
+      LinkedTenantAccess,
     ]),
     AuthModule,
   ],
@@ -227,6 +234,8 @@ import { ImportAudit } from './entities/import-audit.entity';
     AdminUsersController,
     AdminBulkImportController,
     AdminTemplateController,
+    AdminLinkedAccessController,
+    MyLinkedTenantsController,
   ],
   providers: [
     BulkImportService,

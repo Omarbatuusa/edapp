@@ -1,0 +1,433 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { z } from 'zod';
+import { WizardShell, WizardStep } from '../wizard/WizardShell';
+import { FieldWrapper } from '../inputs/FieldWrapper';
+import { LookupSelect } from '../inputs/LookupSelect';
+import { AddressInput, AddressValue } from '../inputs/AddressInput';
+import { PhoneInput, PhoneValue } from '../inputs/PhoneInput';
+import { LogoUpload } from '../inputs/LogoUpload';
+import { CoverUpload } from '../inputs/CoverUpload';
+import { GalleryUpload } from '../inputs/GalleryUpload';
+import { TenantIllustration } from '../illustrations/TenantIllustration';
+import { BrandIllustration } from '../illustrations/BrandIllustration';
+import { SchoolIllustration } from '../illustrations/SchoolIllustration';
+import { ContactIllustration } from '../illustrations/ContactIllustration';
+import { BrandingIllustration } from '../illustrations/BrandingIllustration';
+import { PersonalIllustration } from '../illustrations/PersonalIllustration';
+import { ReviewIllustration } from '../illustrations/ReviewIllustration';
+
+interface TenantWizardProps {
+    tenantSlug: string;
+}
+
+const TENANT_TYPES = [
+    { key: 'school', label: 'School', icon: 'school', desc: 'A standalone school with no branch structure' },
+    { key: 'main_branch', label: 'Main Branch', icon: 'corporate_fare', desc: 'The primary campus of a multi-branch school' },
+    { key: 'branch', label: 'Branch', icon: 'domain_add', desc: 'A secondary campus linked to a main branch' },
+    { key: 'campus', label: 'Campus', icon: 'location_city', desc: 'A satellite campus within a school group' },
+];
+
+function slugify(name: string): string {
+    return name.toLowerCase().trim()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '')
+        .substring(0, 60);
+}
+
+function codeify(name: string): string {
+    return name.replace(/[^a-zA-Z]/g, '').substring(0, 3).toUpperCase().padEnd(3, 'X') + '01';
+}
+
+const EMPTY_PHONE: PhoneValue = { raw: '', e164: '', country_iso2: 'ZA', dial_code: '+27' };
+const EMPTY_ADDRESS: AddressValue = {
+    formatted_address: '', google_place_id: '', street: '', suburb: '',
+    city: '', province: '', postal_code: '', country: '', lat: null, lng: null,
+};
+
+const step1Schema = z.object({
+    tenant_type: z.string().min(1, 'Please select a school type'),
+});
+
+const step3Schema = z.object({
+    school_name: z.string().min(2, 'School name must be at least 2 characters'),
+});
+
+const step6Schema = z.object({
+    initial_admin_email: z.string().email('Please enter a valid email').or(z.literal('')),
+});
+
+export function TenantWizard({ tenantSlug }: TenantWizardProps) {
+    const router = useRouter();
+
+    const steps: WizardStep[] = [
+        // Step 1: School Type
+        {
+            title: 'School Type',
+            helper: 'What type of school are you creating?',
+            illustration: <TenantIllustration />,
+            schema: step1Schema,
+            content: ({ data, onChange, errors }) => (
+                <div className="flex flex-col gap-3">
+                    {TENANT_TYPES.map(t => (
+                        <button
+                            key={t.key}
+                            type="button"
+                            onClick={() => onChange({ tenant_type: t.key })}
+                            className={`flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left ${
+                                data.tenant_type === t.key
+                                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                                    : 'border-slate-200 dark:border-slate-700 hover:border-blue-300'
+                            }`}
+                        >
+                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                                data.tenant_type === t.key
+                                    ? 'bg-blue-500 text-white'
+                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
+                            }`}>
+                                <span className="material-symbols-outlined text-2xl">{t.icon}</span>
+                            </div>
+                            <div>
+                                <p className="text-sm font-bold text-slate-800 dark:text-slate-100">{t.label}</p>
+                                <p className="text-xs text-slate-500 mt-0.5">{t.desc}</p>
+                            </div>
+                            {data.tenant_type === t.key && (
+                                <span className="material-symbols-outlined text-blue-500 ml-auto">check_circle</span>
+                            )}
+                        </button>
+                    ))}
+                    {errors.tenant_type && (
+                        <p className="text-xs text-red-500 flex items-center gap-1">
+                            <span className="material-symbols-outlined text-sm">error</span>
+                            {errors.tenant_type}
+                        </p>
+                    )}
+                </div>
+            ),
+        },
+
+        // Step 2: Brand & Group
+        {
+            title: 'Brand & Group',
+            helper: 'Link this school to a brand and optionally to a parent school.',
+            illustration: <BrandIllustration />,
+            content: ({ data, onChange }) => (
+                <>
+                    <LookupSelect
+                        label="Brand"
+                        value={data.brand_id || ''}
+                        onChange={v => onChange({ brand_id: v as string })}
+                        endpoint="/v1/admin/brands"
+                        labelKey="brand_name"
+                        valueKey="id"
+                        placeholder="— Select a brand (optional) —"
+                    />
+                    {(data.tenant_type === 'branch' || data.tenant_type === 'campus') && (
+                        <LookupSelect
+                            label="Parent School (Main Branch)"
+                            value={data.parent_tenant_id || ''}
+                            onChange={v => onChange({ parent_tenant_id: v as string })}
+                            endpoint="/v1/admin/tenants"
+                            filterParams={{ status: 'active' }}
+                            labelKey="school_name"
+                            valueKey="id"
+                            required
+                            placeholder="— Select the main branch —"
+                            error={!data.parent_tenant_id && (data.tenant_type === 'branch' || data.tenant_type === 'campus') ? '' : undefined}
+                        />
+                    )}
+                </>
+            ),
+        },
+
+        // Step 3: School Details
+        {
+            title: 'School Details',
+            helper: 'Enter the core information about this school.',
+            illustration: <SchoolIllustration />,
+            schema: step3Schema,
+            content: ({ data, onChange, errors }) => (
+                <>
+                    <FieldWrapper
+                        label="School Name"
+                        required
+                        state={errors.school_name ? 'error' : data.school_name ? 'success' : 'idle'}
+                        error={errors.school_name}
+                    >
+                        <input
+                            type="text"
+                            value={data.school_name || ''}
+                            onChange={e => {
+                                const name = e.target.value;
+                                const patch: Record<string, any> = { school_name: name };
+                                if (!data._slugEdited) patch.tenant_slug = slugify(name);
+                                if (!data._codeEdited) patch.school_code = codeify(name);
+                                onChange(patch);
+                            }}
+                            placeholder="Enter school name"
+                            className="w-full px-3 py-3 text-sm bg-transparent outline-none"
+                        />
+                    </FieldWrapper>
+                    <FieldWrapper label="Legal Name" state={data.legal_name ? 'success' : 'idle'} helper="Official registered entity name (if different from school name)">
+                        <input type="text" value={data.legal_name || ''} onChange={e => onChange({ legal_name: e.target.value })} placeholder="e.g. Rainbow City Schools (Pty) Ltd" className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
+                    </FieldWrapper>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <FieldWrapper label="Tenant Slug" state={data.tenant_slug ? 'success' : 'idle'} helper="Auto-generated URL slug">
+                            <input type="text" value={data.tenant_slug || ''} onChange={e => onChange({ tenant_slug: slugify(e.target.value), _slugEdited: true })} placeholder="e.g. rainbow-primary" className="w-full px-3 py-3 text-sm bg-transparent outline-none font-mono" />
+                        </FieldWrapper>
+                        <FieldWrapper label="School Code" state={data.school_code ? 'success' : 'idle'} helper="Auto-generated unique code">
+                            <input type="text" value={data.school_code || ''} onChange={e => onChange({ school_code: e.target.value.toUpperCase(), _codeEdited: true })} placeholder="e.g. RAI01" maxLength={10} className="w-full px-3 py-3 text-sm bg-transparent outline-none font-mono uppercase" />
+                        </FieldWrapper>
+                    </div>
+                    <FieldWrapper label="About" state="idle" helper="A short description of this school">
+                        <textarea value={data.about || ''} onChange={e => onChange({ about: e.target.value })} rows={3} placeholder="Describe this school..." className="w-full px-3 py-3 text-sm bg-transparent outline-none resize-none" />
+                    </FieldWrapper>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <FieldWrapper label="EMIS Number" state={data.emis_number ? 'success' : 'idle'} helper="Department of Education EMIS number">
+                            <input type="text" value={data.emis_number || ''} onChange={e => onChange({ emis_number: e.target.value })} placeholder="e.g. 700360015" className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
+                        </FieldWrapper>
+                        <FieldWrapper label="Area Label" state={data.area_label ? 'success' : 'idle'} helper="Displayed as subtitle, e.g. Robertsham, Fordsburg">
+                            <input type="text" value={data.area_label || ''} onChange={e => onChange({ area_label: e.target.value })} placeholder="e.g. Robertsham" className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
+                        </FieldWrapper>
+                    </div>
+                </>
+            ),
+        },
+
+        // Step 4: Contact & Location
+        {
+            title: 'Contact & Location',
+            helper: 'Add contact details and the physical address for this school.',
+            illustration: <ContactIllustration />,
+            content: ({ data, onChange }) => (
+                <>
+                    <FieldWrapper label="Contact Email" state={data.contact_email ? 'success' : 'idle'}>
+                        <input type="email" value={data.contact_email || ''} onChange={e => onChange({ contact_email: e.target.value })} placeholder="info@school.co.za" className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
+                    </FieldWrapper>
+                    <FieldWrapper label="Secondary Email" state={data.secondary_email ? 'success' : 'idle'}>
+                        <input type="email" value={data.secondary_email || ''} onChange={e => onChange({ secondary_email: e.target.value })} placeholder="admin@school.co.za" className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
+                    </FieldWrapper>
+                    <PhoneInput
+                        label="Contact Phone"
+                        value={data.contact_phone_obj || EMPTY_PHONE}
+                        onChange={v => onChange({ contact_phone_obj: v, contact_phone: v.e164 || v.raw })}
+                    />
+                    <AddressInput
+                        label="Physical Address"
+                        value={data.physical_address || EMPTY_ADDRESS}
+                        onChange={v => onChange({ physical_address: v })}
+                    />
+                </>
+            ),
+        },
+
+        // Step 5: Branding & Media
+        {
+            title: 'Branding & Media',
+            helper: 'Upload the school logo, cover image, and optional gallery photos.',
+            illustration: <BrandingIllustration />,
+            content: ({ data, onChange }) => (
+                <>
+                    <LogoUpload
+                        label="School Logo"
+                        value={data.logo_file_id || ''}
+                        onChange={key => onChange({ logo_file_id: key })}
+                    />
+                    <CoverUpload
+                        label="Cover Photo"
+                        value={data.cover_file_id || ''}
+                        onChange={key => onChange({ cover_file_id: key })}
+                    />
+                    <GalleryUpload
+                        label="School Gallery"
+                        value={data.gallery_file_ids || []}
+                        onChange={keys => onChange({ gallery_file_ids: keys })}
+                        max={8}
+                    />
+                </>
+            ),
+        },
+
+        // Step 6: Initial Admin
+        {
+            title: 'Initial Admin',
+            helper: 'Invite the first administrator for this school. They will receive an email to set up their account.',
+            illustration: <PersonalIllustration />,
+            schema: step6Schema,
+            content: ({ data, onChange, errors }) => (
+                <>
+                    <FieldWrapper
+                        label="Admin Email"
+                        state={errors.initial_admin_email ? 'error' : data.initial_admin_email ? 'success' : 'idle'}
+                        error={errors.initial_admin_email}
+                        helper="This person will be assigned the tenant_admin role"
+                    >
+                        <input
+                            type="email"
+                            value={data.initial_admin_email || ''}
+                            onChange={e => onChange({ initial_admin_email: e.target.value })}
+                            placeholder="admin@school.co.za"
+                            className="w-full px-3 py-3 text-sm bg-transparent outline-none"
+                        />
+                    </FieldWrapper>
+                    <FieldWrapper
+                        label="Admin Display Name"
+                        state={data.initial_admin_name ? 'success' : 'idle'}
+                        helper="Optional — defaults to the email prefix"
+                    >
+                        <input
+                            type="text"
+                            value={data.initial_admin_name || ''}
+                            onChange={e => onChange({ initial_admin_name: e.target.value })}
+                            placeholder="e.g. John Smith"
+                            className="w-full px-3 py-3 text-sm bg-transparent outline-none"
+                        />
+                    </FieldWrapper>
+                    <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+                        <div className="flex items-start gap-2">
+                            <span className="material-symbols-outlined text-blue-500 text-lg mt-0.5">info</span>
+                            <div>
+                                <p className="text-sm font-medium text-blue-700 dark:text-blue-300">What happens next?</p>
+                                <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                                    After creating the tenant, a user account and tenant_admin role assignment will be created for this email.
+                                    The admin can log in using their email to manage this school.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            ),
+        },
+
+        // Step 7: Review & Create
+        {
+            title: 'Review & Create',
+            helper: 'Review all details before creating this tenant.',
+            illustration: <ReviewIllustration />,
+            content: ({ data }) => {
+                const typeLabel = TENANT_TYPES.find(t => t.key === data.tenant_type)?.label || data.tenant_type;
+                return (
+                    <div className="flex flex-col gap-4">
+                        <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4 flex flex-col gap-3">
+                            <ReviewRow label="School Type" value={typeLabel} />
+                            <ReviewRow label="School Name" value={data.school_name} />
+                            {data.legal_name && <ReviewRow label="Legal Name" value={data.legal_name} />}
+                            <ReviewRow label="Slug" value={data.tenant_slug} mono />
+                            <ReviewRow label="School Code" value={data.school_code} mono />
+                            {data.area_label && <ReviewRow label="Area" value={data.area_label} />}
+                            {data.emis_number && <ReviewRow label="EMIS" value={data.emis_number} />}
+                        </div>
+
+                        {(data.contact_email || data.contact_phone) && (
+                            <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4 flex flex-col gap-3">
+                                <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Contact</p>
+                                {data.contact_email && <ReviewRow label="Email" value={data.contact_email} />}
+                                {data.secondary_email && <ReviewRow label="Secondary" value={data.secondary_email} />}
+                                {data.contact_phone && <ReviewRow label="Phone" value={data.contact_phone} />}
+                                {data.physical_address?.formatted_address && <ReviewRow label="Address" value={data.physical_address.formatted_address} />}
+                            </div>
+                        )}
+
+                        <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4 flex flex-col gap-3">
+                            <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Assets & Admin</p>
+                            <div className="flex gap-4">
+                                <ReviewCheck label="Logo" done={!!data.logo_file_id} />
+                                <ReviewCheck label="Cover" done={!!data.cover_file_id} />
+                                <ReviewCheck label="Gallery" done={(data.gallery_file_ids || []).length > 0} />
+                            </div>
+                            {data.initial_admin_email && <ReviewRow label="Initial Admin" value={data.initial_admin_email} />}
+                        </div>
+
+                        <p className="text-xs text-slate-400">
+                            Domains will be auto-created: <span className="font-mono">{data.tenant_slug || '...'}.edapp.co.za</span> and <span className="font-mono">apply-{data.tenant_slug || '...'}.edapp.co.za</span>
+                        </p>
+                    </div>
+                );
+            },
+        },
+    ];
+
+    const handleComplete = async (data: Record<string, any>) => {
+        const token = localStorage.getItem('session_token');
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        // Create the tenant
+        const res = await fetch('/v1/admin/tenants', {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({
+                school_name: data.school_name,
+                legal_name: data.legal_name || null,
+                tenant_slug: data.tenant_slug || undefined,
+                school_code: data.school_code || undefined,
+                tenant_type: data.tenant_type,
+                brand_id: data.brand_id || null,
+                parent_tenant_id: data.parent_tenant_id || null,
+                about: data.about || null,
+                emis_number: data.emis_number || null,
+                area_label: data.area_label || null,
+                contact_email: data.contact_email || null,
+                contact_phone: data.contact_phone || null,
+                secondary_email: data.secondary_email || null,
+                physical_address: data.physical_address?.formatted_address ? data.physical_address : null,
+                logo_file_id: data.logo_file_id || null,
+                cover_file_id: data.cover_file_id || null,
+                gallery_file_ids: data.gallery_file_ids || [],
+            }),
+        });
+        const tenant = await res.json();
+        if (!res.ok) throw new Error(tenant.message || 'Failed to create tenant');
+
+        // Invite initial admin if email provided
+        if (data.initial_admin_email) {
+            try {
+                await fetch(`/v1/admin/tenants/${tenant.id}/invite-admin`, {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify({
+                        email: data.initial_admin_email,
+                        display_name: data.initial_admin_name || undefined,
+                    }),
+                });
+            } catch {
+                // Non-fatal — tenant was created, admin invite can be retried
+            }
+        }
+
+        router.push(`/tenant/${tenantSlug}/admin/tenants`);
+    };
+
+    return (
+        <WizardShell
+            steps={steps}
+            formType="TENANT_CREATE"
+            submitLabel="Create Tenant"
+            onComplete={handleComplete}
+            onCancel={() => router.push(`/tenant/${tenantSlug}/admin/tenants`)}
+        />
+    );
+}
+
+function ReviewRow({ label, value, mono }: { label: string; value?: string; mono?: boolean }) {
+    return (
+        <div>
+            <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-0.5">{label}</p>
+            <p className={`text-sm text-slate-800 dark:text-slate-100 font-semibold ${mono ? 'font-mono' : ''}`}>{value || '—'}</p>
+        </div>
+    );
+}
+
+function ReviewCheck({ label, done }: { label: string; done: boolean }) {
+    return (
+        <div className="flex items-center gap-1 text-xs">
+            <span className={`material-symbols-outlined text-sm ${done ? 'text-green-500' : 'text-slate-300'}`}>
+                {done ? 'check_circle' : 'radio_button_unchecked'}
+            </span>
+            <span className={done ? 'text-green-700 dark:text-green-400 font-medium' : 'text-slate-400'}>{label}</span>
+        </div>
+    );
+}

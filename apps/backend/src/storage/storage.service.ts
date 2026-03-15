@@ -127,6 +127,55 @@ export class StorageService {
     }
 
     /**
+     * Download an object from GCS as a Buffer
+     */
+    async downloadObject(objectKey: string): Promise<Buffer> {
+        if (!objectKey.startsWith('uploads/')) {
+            throw new Error('Invalid object key: must start with uploads/');
+        }
+
+        try {
+            const [contents] = await this.storage
+                .bucket(this.bucket)
+                .file(objectKey)
+                .download();
+            this.logger.debug(`Downloaded object: ${objectKey}`);
+            return contents;
+        } catch (error) {
+            this.logger.error(`Failed to download object: ${error.message}`);
+            throw error;
+        }
+    }
+
+    /**
+     * Upload a Buffer to GCS (overwrite existing object)
+     */
+    async uploadBuffer(objectKey: string, buffer: Buffer, contentType: string): Promise<void> {
+        if (!objectKey.startsWith('uploads/')) {
+            throw new Error('Invalid object key: must start with uploads/');
+        }
+
+        try {
+            const file = this.storage.bucket(this.bucket).file(objectKey);
+            await file.save(buffer, {
+                contentType,
+                resumable: false,
+            });
+            this.logger.debug(`Uploaded buffer to: ${objectKey}`);
+        } catch (error) {
+            this.logger.error(`Failed to upload buffer: ${error.message}`);
+            throw error;
+        }
+    }
+
+    /**
+     * Get the bucket name
+     */
+    getBucketName(): string {
+        return this.bucket;
+    }
+
+    /**
      * Sanitize tenant slug to prevent directory traversal
      */
     private sanitizeSlug(slug: string): string {

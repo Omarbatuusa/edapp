@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { Search, Plus } from 'lucide-react';
 import TenantDrawer from './TenantDrawer';
 
@@ -17,6 +18,7 @@ const ST: Record<string, string> = {
 };
 
 export default function TenantsList({ slug, readOnly = false }: Props) {
+  const router = useRouter();
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -69,7 +71,7 @@ export default function TenantsList({ slug, readOnly = false }: Props) {
             </select>
             <button
               type="button"
-              onClick={() => setShowCreate(true)}
+              onClick={() => router.push(`/tenant/${slug}/admin/tenants/new`)}
               className="h-11 px-4 bg-[hsl(var(--admin-primary))] text-white text-[14px] font-bold rounded-xl flex items-center gap-2 active:scale-95 transition-all"
             >
               <Plus size={16} />

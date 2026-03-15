@@ -174,20 +174,35 @@ export default function AdminDashboard({ params }: Props) {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 auto-rows-fr">
-                <StatCard title="Total Students" value="1,240" change="+12%" trend="up" icon="group" />
-                <Link href={`${basePath}/attendance`} className="block">
-                    <StatCard
-                        title="Attendance"
-                        value={attendanceRate !== null ? `${attendanceRate}%` : '—'}
-                        change={attendanceRate !== null ? (attendanceRate >= 90 ? 'On track' : 'Needs attention') : 'Loading…'}
-                        trend={attendanceRate !== null ? (attendanceRate >= 90 ? 'up' : 'down') : 'neutral'}
-                        icon="calendar_today"
-                    />
-                </Link>
-                <StatCard title="Incidents" value="3" change="Low" trend="neutral" icon="warning" alert />
-                <StatCard title="Revenue" value="R 840k" change="+5%" trend="up" icon="trending_up" />
-            </div>
+            {(isPlatform || isSecretary) ? (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 auto-rows-fr">
+                    <Link href={`${basePath}/brands`} className="block">
+                        <StatCard title="Total Brands" value="—" change="View all" trend="neutral" icon="category" />
+                    </Link>
+                    <Link href={`${basePath}/tenants`} className="block">
+                        <StatCard title="Active Tenants" value="—" change="View all" trend="neutral" icon="domain" />
+                    </Link>
+                    <StatCard title="Onboarding" value="—" change="Pending" trend="neutral" icon="pending_actions" />
+                    <Link href={`${basePath}/support-access`} className="block">
+                        <StatCard title="Support Queries" value="—" change="View" trend="neutral" icon="support_agent" />
+                    </Link>
+                </div>
+            ) : (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 auto-rows-fr">
+                    <StatCard title="Total Students" value="1,240" change="+12%" trend="up" icon="group" />
+                    <Link href={`${basePath}/attendance`} className="block">
+                        <StatCard
+                            title="Attendance"
+                            value={attendanceRate !== null ? `${attendanceRate}%` : '—'}
+                            change={attendanceRate !== null ? (attendanceRate >= 90 ? 'On track' : 'Needs attention') : 'Loading…'}
+                            trend={attendanceRate !== null ? (attendanceRate >= 90 ? 'up' : 'down') : 'neutral'}
+                            icon="calendar_today"
+                        />
+                    </Link>
+                    <StatCard title="Incidents" value="3" change="Low" trend="neutral" icon="warning" alert />
+                    <StatCard title="Revenue" value="R 840k" change="+5%" trend="up" icon="trending_up" />
+                </div>
+            )}
 
             {/* Nav Sections */}
             {isPlatform && (
@@ -197,6 +212,7 @@ export default function AdminDashboard({ params }: Props) {
                     <NavCard href={`${basePath}/dictionaries`} label="Dictionaries" description="Phases, grades, subjects, languages" icon="menu_book" color="violet" />
                     <NavCard href={`${basePath}/people`} label="People & Roles" description="Manage users and role assignments" icon="group" color="teal" />
                     <NavCard href={`${basePath}/audit`} label="Audit Log" description="View platform activity and changes" icon="history" color="gray" />
+                    <NavCard href={`${basePath}/support-access`} label="Support Access" description="Manage time-limited support access grants" icon="support_agent" color="orange" />
                 </NavSection>
             )}
             {canManageBranches && (

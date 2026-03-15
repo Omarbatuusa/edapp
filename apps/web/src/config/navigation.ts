@@ -819,6 +819,7 @@ const ROLE_NAV_MAP: Record<string, RoleNavConfig> = {
     // Governance
     brand_admin: PLATFORM_ADMIN_CONFIG,
     tenant_admin: TENANT_ADMIN_CONFIG,
+    tenant_brand_admin: TENANT_ADMIN_CONFIG,
     main_branch_admin: TENANT_ADMIN_CONFIG,
     branch_admin: TENANT_ADMIN_CONFIG,
     // Operations
@@ -946,7 +947,7 @@ export interface HeaderFeatureFlags {
 }
 
 const SCOPE_ROLES = new Set([
-    'tenant_admin', 'main_branch_admin', 'branch_admin',
+    'tenant_admin', 'tenant_brand_admin', 'main_branch_admin', 'branch_admin',
     'admissions_officer', 'finance_officer', 'hr_admin', 'reception', 'it_admin',
     'principal', 'deputy_principal', 'smt', 'hod', 'grade_head', 'phase_head',
 ]);

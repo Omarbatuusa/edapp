@@ -18,6 +18,7 @@ interface AppHeaderProps {
     onScopeClick?: () => void;
     showScope?: boolean;
     showSafety?: boolean;
+    onSwitchSchool?: () => void;
 }
 
 /**
@@ -38,6 +39,7 @@ export function AppHeader({
     notificationsCount = 0,
     user,
     showSafety = false,
+    onSwitchSchool,
 }: AppHeaderProps) {
     const displayName = user?.display_name || user?.first_name || user?.displayName || 'User';
     const displayInitial = displayName.charAt(0).toUpperCase();
@@ -85,6 +87,18 @@ export function AppHeader({
 
                 {/* Right: Icon cluster */}
                 <div className="flex items-center gap-1 flex-shrink-0">
+                    {/* Switch School — only if user has linked tenants */}
+                    {onSwitchSchool && (
+                        <button
+                            type="button"
+                            onClick={onSwitchSchool}
+                            className="w-9 h-9 flex items-center justify-center rounded-full bg-[hsl(var(--admin-surface-alt))] text-[hsl(var(--admin-text-sub))] hover:bg-[hsl(var(--admin-border))] transition-colors"
+                            aria-label="Switch school"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">swap_horiz</span>
+                        </button>
+                    )}
+
                     {/* Search — visible on all sizes */}
                     {onSearch && (
                         <button
