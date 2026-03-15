@@ -9,11 +9,14 @@ import { AdminBrandsController } from './admin-brands.controller';
 import { Branch } from '../branches/branch.entity';
 import { Brand } from '../brands/brand.entity';
 import { AuthModule } from '../auth/auth.module';
+import { StorageModule } from '../storage/storage.module';
+import { Tenant } from '../tenants/tenant.entity';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([AdminDraft, Branch, Brand]),
+        TypeOrmModule.forFeature([AdminDraft, Branch, Brand, Tenant]),
         AuthModule,
+        StorageModule,
     ],
     controllers: [
         AdminDraftsController,
