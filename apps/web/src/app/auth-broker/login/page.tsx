@@ -58,6 +58,11 @@ function BrokerLoginContent() {
     const [pin, setPin] = useState('');
     const [showPin, setShowPin] = useState(false);
 
+    // OTP state
+    const [otpKey, setOtpKey] = useState('');
+    const [otpCode, setOtpCode] = useState('');
+    const [countdown, setCountdown] = useState(0);
+
     // Remember device
     const [rememberDevice, setRememberDevice] = useState(true);
     const [rememberDuration, setRememberDuration] = useState('30');
@@ -112,6 +117,61 @@ function BrokerLoginContent() {
 
         fetchTenantAndAuthMethods();
     }, [tenantSlug, role]);
+
+    // OTP countdown
+    useEffect(() => {
+        if (countdown <= 0) return;
+        const timer = setTimeout(() => setCountdown(c => c - 1), 1000);
+        return () => clearTimeout(timer);
+    }, [countdown]);
+
+    const handleSendOtp = async () => {
+        if (!email) { setError('Please enter your email'); return; }
+        try {
+            setLoading(true);
+            setError(null);
+            const res = await fetch('/v1/auth/otp/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email }),
+            });
+            const text = await res.text();
+            let data: any;
+            try { data = JSON.parse(text); } catch { throw new Error('Server error'); }
+            if (!res.ok) throw new Error(data.message || 'Failed to send code');
+            setOtpKey(data.otpKey);
+            setAuthStep('otp-verify');
+            setCountdown(30);
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleVerifyOtp = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (otpCode.length < 6) return;
+        try {
+            setLoading(true);
+            setError(null);
+            // OTP login verifies the code and creates a session in one call
+            const res = await fetch('/v1/auth/otp-login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, otpKey, code: otpCode }),
+            });
+            const text = await res.text();
+            let data: any;
+            try { data = JSON.parse(text); } catch { throw new Error('Server error'); }
+            if (!res.ok) throw new Error(data.message || 'Login failed');
+
+            await completeHandoff(data.sessionToken, data.userId);
+        } catch (err: any) {
+            setError(err.message || 'Something went wrong');
+            setLoading(false);
+        }
+    };
 
     const completeHandoff = async (sessionToken: string, userId: string) => {
         if (!tenantSlug || !role) return;
@@ -456,6 +516,19 @@ function BrokerLoginContent() {
                                             </button>
                                         )}
 
+                                        {/* Email OTP Option */}
+                                        {email && (
+                                            <button
+                                                type="button"
+                                                onClick={handleSendOtp}
+                                                disabled={loading || !email}
+                                                className="w-full h-12 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center justify-center gap-2"
+                                            >
+                                                <span className="material-symbols-outlined text-lg">pin</span>
+                                                <span>Sign in with email code</span>
+                                            </button>
+                                        )}
+
                                         {/* Password Login Option */}
                                         {authMethods.email_password_enabled && email && (
                                             <button
@@ -584,6 +657,51 @@ function BrokerLoginContent() {
                                         </>
                                     )}
                                 </button>
+                            </form>
+                        )}
+
+                        {/* === OTP VERIFY === */}
+                        {authStep === 'otp-verify' && (
+                            <form onSubmit={handleVerifyOtp} className="space-y-4">
+                                <div className="text-center mb-4">
+                                    <div className="w-14 h-14 rounded-2xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mx-auto mb-3">
+                                        <span className="material-symbols-outlined text-indigo-600 dark:text-indigo-400 text-3xl">verified_user</span>
+                                    </div>
+                                    <h2 className="text-lg font-bold">Enter Code</h2>
+                                    <p className="text-sm text-muted-foreground mt-1">
+                                        We sent a 6-digit code to <strong className="text-foreground">{email}</strong>
+                                    </p>
+                                </div>
+
+                                <div className="relative">
+                                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xl">pin</span>
+                                    <input
+                                        type="text" inputMode="numeric" value={otpCode}
+                                        onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                        placeholder="6-digit code"
+                                        className="w-full h-14 rounded-xl bg-slate-100 dark:bg-slate-800 px-5 pl-12 text-base border-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none tracking-[0.3em] font-mono text-center text-lg"
+                                        maxLength={6} required
+                                    />
+                                </div>
+
+                                {error && (
+                                    <p className="text-sm text-red-500 bg-red-50 dark:bg-red-900/20 px-4 py-3 rounded-xl">{error}</p>
+                                )}
+
+                                <button type="submit" disabled={loading || otpCode.length < 6}
+                                    className="w-full h-14 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                                    {loading ? 'Verifying...' : (
+                                        <><span>Sign In</span><span className="material-symbols-outlined text-xl">login</span></>
+                                    )}
+                                </button>
+
+                                <div className="text-center pt-2">
+                                    {countdown > 0 ? (
+                                        <p className="text-xs text-slate-400">Resend code in {countdown}s</p>
+                                    ) : (
+                                        <button type="button" onClick={handleSendOtp} className="text-sm text-indigo-600 hover:underline font-medium">Resend code</button>
+                                    )}
+                                </div>
                             </form>
                         )}
 

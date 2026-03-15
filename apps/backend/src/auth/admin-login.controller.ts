@@ -1,8 +1,9 @@
-import { Controller, Post, Body, UnauthorizedException, ForbiddenException } from '@nestjs/common';
+import { Controller, Post, Body, UnauthorizedException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { AuthService } from './auth.service';
 import { SessionTokenService } from './session-token.service';
+import { EmailAuthService } from './email-auth.service';
 import { User } from '../users/user.entity';
 import { RoleAssignment, UserRole } from '../users/role-assignment.entity';
 import { TenantMembership } from './entities/tenant-membership.entity';
@@ -66,6 +67,7 @@ export class AdminLoginController {
     constructor(
         private readonly authService: AuthService,
         private readonly sessionTokenService: SessionTokenService,
+        private readonly emailAuthService: EmailAuthService,
         @InjectRepository(User) private readonly userRepo: Repository<User>,
         @InjectRepository(RoleAssignment) private readonly roleRepo: Repository<RoleAssignment>,
         @InjectRepository(TenantMembership) private readonly membershipRepo: Repository<TenantMembership>,
@@ -176,6 +178,101 @@ export class AdminLoginController {
             tenantSlug,
             displayName: user.display_name || user.first_name || decoded.email || '',
             email: user.email || decoded.email || '',
+            allRoles: uniqueRoles.map(a => ({
+                role: a.role,
+                tenantSlug: a.tenant?.tenant_slug || null,
+                branchId: a.branch_id || null,
+            })),
+        };
+    }
+
+    /**
+     * Email OTP login: send OTP → verify OTP → session JWT
+     * POST /auth/otp-login — Verify OTP and create session
+     */
+    @Post('otp-login')
+    async otpLogin(
+        @Body() body: { email: string; otpKey: string; code: string; rememberDevice?: boolean; rememberDuration?: number },
+    ) {
+        const { email, otpKey, code, rememberDevice, rememberDuration } = body;
+        if (!email || !otpKey || !code) {
+            throw new BadRequestException('email, otpKey, and code are required');
+        }
+
+        // 1. Verify OTP
+        const verified = await this.emailAuthService.verifyOTP(otpKey, code, email);
+        if (!verified) {
+            throw new UnauthorizedException('Invalid or expired code');
+        }
+
+        // 2. Find user by email
+        const user = await this.userRepo.findOne({ where: { email } });
+        if (!user) {
+            throw new UnauthorizedException('No account found. Contact your administrator.');
+        }
+
+        // 3. Get active admin role assignments
+        const assignments = await this.roleRepo.find({
+            where: {
+                user_id: user.id,
+                is_active: true,
+                role: In(ADMIN_ROLES as UserRole[]),
+            },
+            relations: ['tenant'],
+            order: { created_at: 'DESC' },
+        });
+
+        if (assignments.length === 0) {
+            throw new ForbiddenException('No admin role assigned. Contact your administrator.');
+        }
+
+        // 4. Pick highest-priority role
+        let bestAssignment = assignments[0];
+        let bestPriority = ROLE_PRIORITY.length;
+        for (const a of assignments) {
+            const idx = ROLE_PRIORITY.indexOf(a.role);
+            if (idx !== -1 && idx < bestPriority) {
+                bestPriority = idx;
+                bestAssignment = a;
+            }
+        }
+
+        const role = bestAssignment.role;
+        let tenantSlug = bestAssignment.tenant?.tenant_slug || null;
+        if (!tenantSlug) {
+            const fallback = assignments.find(a => a.tenant?.tenant_slug);
+            tenantSlug = fallback?.tenant?.tenant_slug || 'allied';
+        }
+
+        // 5. Activate INVITED memberships
+        await this.membershipRepo.update(
+            { user_id: user.id, status: 'invited' as any },
+            { status: 'active' as any, joined_at: new Date() },
+        );
+
+        await this.userRepo.update(user.id, { last_login_at: new Date() });
+
+        // 6. Create session JWT
+        const expiresIn = rememberDevice && rememberDuration ? `${rememberDuration}d` : '24h';
+        const sessionToken = this.sessionTokenService.sign(
+            { sub: user.id, role, tenant: tenantSlug },
+            expiresIn,
+        );
+
+        const seenRoles = new Set<string>();
+        const uniqueRoles = assignments.filter(a => {
+            if (seenRoles.has(a.role)) return false;
+            seenRoles.add(a.role);
+            return true;
+        });
+
+        return {
+            sessionToken,
+            userId: user.id,
+            role,
+            tenantSlug,
+            displayName: user.display_name || user.first_name || email,
+            email: user.email || email,
             allRoles: uniqueRoles.map(a => ({
                 role: a.role,
                 tenantSlug: a.tenant?.tenant_slug || null,

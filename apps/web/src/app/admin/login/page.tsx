@@ -48,12 +48,14 @@ function getRoleMeta(role: string) {
     return ROLE_META[role] || { label: role.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()), description: 'Administrative access', icon: 'admin_panel_settings', color: 'bg-slate-100 text-slate-600' }
 }
 
+type LoginStep = 'login' | 'otp-sent' | 'select-role'
+
 export default function AdminLoginPage() {
     const router = useRouter()
     const { login, logout } = useAuth()
 
-    // Steps: 'login' → 'select-role' → redirect
-    const [step, setStep] = useState<'login' | 'select-role'>('login')
+    const [step, setStep] = useState<LoginStep>('login')
+    const [authMode, setAuthMode] = useState<'password' | 'otp'>('password')
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
@@ -61,6 +63,11 @@ export default function AdminLoginPage() {
     const [showHelp, setShowHelp] = useState(false)
     const [rememberDevice, setRememberDevice] = useState(true)
     const [rememberDuration, setRememberDuration] = useState('30')
+
+    // OTP state
+    const [otpKey, setOtpKey] = useState("")
+    const [otpCode, setOtpCode] = useState("")
+    const [countdown, setCountdown] = useState(0)
 
     // After auth
     const [loginResult, setLoginResult] = useState<LoginResult | null>(null)
@@ -76,6 +83,13 @@ export default function AdminLoginPage() {
             }
         }
     }, [router])
+
+    // Countdown timer
+    useEffect(() => {
+        if (countdown <= 0) return
+        const timer = setTimeout(() => setCountdown(c => c - 1), 1000)
+        return () => clearTimeout(timer)
+    }, [countdown])
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -111,22 +125,79 @@ export default function AdminLoginPage() {
                 throw new Error(data.message || 'Login failed. Ensure you have an admin role.')
             }
 
-            // 4. If only one role, auto-select and redirect
-            if (data.allRoles.length <= 1) {
-                activateRole(data, data.role, data.tenantSlug)
-                return
-            }
-
-            // 5. Multiple roles — show selector
-            setLoginResult(data)
-            setStep('select-role')
+            handleLoginSuccess(data)
         } catch (err: any) {
             setError(err.message || "Invalid credentials")
-            // Sign out Firebase if backend fails
             try { await logout() } catch {}
         } finally {
             setLoading(false)
         }
+    }
+
+    const handleSendOtp = async () => {
+        if (!email) { setError('Please enter your email address'); return }
+        setLoading(true)
+        setError("")
+
+        try {
+            const res = await fetch('/v1/auth/otp/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email }),
+            })
+            const text = await res.text()
+            let data: any
+            try { data = JSON.parse(text) } catch { throw new Error('Server error. Please try again later.') }
+            if (!res.ok) throw new Error(data.message || 'Failed to send code')
+
+            setOtpKey(data.otpKey)
+            setStep('otp-sent')
+            setCountdown(30)
+        } catch (err: any) {
+            setError(err.message || 'Something went wrong')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleVerifyOtp = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (otpCode.length < 6) return
+        setLoading(true)
+        setError("")
+
+        try {
+            const res = await fetch('/v1/auth/otp-login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email,
+                    otpKey,
+                    code: otpCode,
+                    rememberDevice,
+                    rememberDuration: rememberDevice ? parseInt(rememberDuration, 10) : undefined,
+                }),
+            })
+            const text = await res.text()
+            let data: any
+            try { data = JSON.parse(text) } catch { throw new Error('Server error. Please try again later.') }
+            if (!res.ok) throw new Error(data.message || 'Invalid code')
+
+            handleLoginSuccess(data)
+        } catch (err: any) {
+            setError(err.message || 'Something went wrong')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleLoginSuccess = (data: LoginResult) => {
+        if (data.allRoles.length <= 1) {
+            activateRole(data, data.role, data.tenantSlug)
+            return
+        }
+        setLoginResult(data)
+        setStep('select-role')
     }
 
     const activateRole = (data: LoginResult, selectedRole: string, tenantSlug: string | null) => {
@@ -147,6 +218,12 @@ export default function AdminLoginPage() {
     }
 
     const handleBack = () => {
+        if (step === 'otp-sent') {
+            setStep('login')
+            setOtpCode('')
+            setError('')
+            return
+        }
         if (step === 'select-role') {
             setStep('login')
             setLoginResult(null)
@@ -182,102 +259,150 @@ export default function AdminLoginPage() {
                                 Sign in to manage the EdApp platform.
                             </p>
 
-                            <form onSubmit={handleLogin} className="w-full max-w-sm mt-8 space-y-4">
-                                <div className="relative">
-                                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xl">
-                                        mail
-                                    </span>
-                                    <input
-                                        type="email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        placeholder="Email address"
-                                        className="w-full h-14 rounded-xl bg-slate-100 dark:bg-slate-800 px-5 pl-12 text-base border-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
-                                        required
-                                    />
-                                </div>
+                            {/* Auth mode tabs */}
+                            <div className="w-full max-w-sm mt-6 flex bg-slate-100 dark:bg-slate-800 rounded-xl p-1 gap-1">
+                                <button type="button" onClick={() => { setAuthMode('password'); setError('') }}
+                                    className={`flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 ${authMode === 'password' ? 'bg-white dark:bg-slate-700 text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
+                                    <span className="material-symbols-outlined text-[16px]">lock</span>
+                                    Password
+                                </button>
+                                <button type="button" onClick={() => { setAuthMode('otp'); setError('') }}
+                                    className={`flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 ${authMode === 'otp' ? 'bg-white dark:bg-slate-700 text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
+                                    <span className="material-symbols-outlined text-[16px]">mail</span>
+                                    Email OTP
+                                </button>
+                            </div>
 
-                                <div className="relative">
-                                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xl">
-                                        lock
-                                    </span>
-                                    <input
-                                        type="password"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        placeholder="Password"
-                                        className="w-full h-14 rounded-xl bg-slate-100 dark:bg-slate-800 px-5 pl-12 text-base border-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
-                                        required
-                                    />
-                                </div>
+                            {/* Password login */}
+                            {authMode === 'password' && (
+                                <form onSubmit={handleLogin} className="w-full max-w-sm mt-4 space-y-4">
+                                    <div className="relative">
+                                        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xl">mail</span>
+                                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                                            placeholder="Email address"
+                                            className="w-full h-14 rounded-xl bg-slate-100 dark:bg-slate-800 px-5 pl-12 text-base border-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
+                                            required />
+                                    </div>
+                                    <div className="relative">
+                                        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xl">lock</span>
+                                        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+                                            placeholder="Password"
+                                            className="w-full h-14 rounded-xl bg-slate-100 dark:bg-slate-800 px-5 pl-12 text-base border-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
+                                            required />
+                                    </div>
+                                    <div className="text-right -mt-1">
+                                        <Link href="/admin/forgot-password" className="text-xs text-indigo-600 hover:underline font-medium">Forgot password?</Link>
+                                    </div>
 
-                                {/* Forgot Password */}
-                                <div className="text-right -mt-1">
-                                    <Link href="/admin/forgot-password" className="text-xs text-indigo-600 hover:underline font-medium">
-                                        Forgot password?
-                                    </Link>
-                                </div>
+                                    {/* Remember Device */}
+                                    <div className="space-y-3 pt-1">
+                                        <label className="flex items-center justify-between cursor-pointer group">
+                                            <div className="flex items-center gap-3">
+                                                <span className="material-symbols-outlined text-lg text-slate-400 group-hover:text-indigo-500 transition-colors">devices</span>
+                                                <span className="text-sm text-slate-600 dark:text-slate-300">Remember this device</span>
+                                            </div>
+                                            <input type="checkbox" className="hidden" checked={rememberDevice} onChange={() => setRememberDevice(!rememberDevice)} />
+                                            <div className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${rememberDevice ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-600'}`}>
+                                                <div className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200 ${rememberDevice ? 'translate-x-5' : 'translate-x-0'}`} />
+                                            </div>
+                                        </label>
+                                        {rememberDevice && (
+                                            <div className="flex bg-slate-100 dark:bg-slate-800 rounded-xl p-1 gap-1">
+                                                {[{ d: '7', label: '1 week' }, { d: '30', label: '1 month' }, { d: '90', label: '3 months' }].map(({ d, label }) => (
+                                                    <button key={d} type="button" onClick={() => setRememberDuration(d)}
+                                                        className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all ${rememberDuration === d ? 'bg-white dark:bg-slate-700 text-indigo-600 shadow-sm ring-1 ring-indigo-100 dark:ring-indigo-900/50' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}>
+                                                        {label}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
 
-                                {/* Remember Device */}
-                                <div className="space-y-3 pt-1">
-                                    <label className="flex items-center justify-between cursor-pointer group">
-                                        <div className="flex items-center gap-3">
-                                            <span className="material-symbols-outlined text-lg text-slate-400 group-hover:text-indigo-500 transition-colors">devices</span>
-                                            <span className="text-sm text-slate-600 dark:text-slate-300">Remember this device</span>
-                                        </div>
-                                        <input type="checkbox" className="hidden" checked={rememberDevice} onChange={() => setRememberDevice(!rememberDevice)} />
-                                        <div className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${rememberDevice ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-600'}`}>
-                                            <div className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200 ${rememberDevice ? 'translate-x-5' : 'translate-x-0'}`} />
-                                        </div>
-                                    </label>
+                                    {error && <p className="text-sm text-red-500 bg-red-50 dark:bg-red-900/20 px-4 py-3 rounded-xl">{error}</p>}
 
-                                    {rememberDevice && (
-                                        <div className="flex bg-slate-100 dark:bg-slate-800 rounded-xl p-1 gap-1">
-                                            {[{ d: '7', label: '1 week' }, { d: '30', label: '1 month' }, { d: '90', label: '3 months' }].map(({ d, label }) => (
-                                                <button
-                                                    key={d}
-                                                    type="button"
-                                                    onClick={() => setRememberDuration(d)}
-                                                    className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all ${rememberDuration === d
-                                                        ? 'bg-white dark:bg-slate-700 text-indigo-600 shadow-sm ring-1 ring-indigo-100 dark:ring-indigo-900/50'
-                                                        : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-                                                        }`}
-                                                >
-                                                    {label}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
+                                    <button type="submit" disabled={loading}
+                                        className="w-full h-14 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                                        {loading ? (
+                                            <span className="flex items-center gap-2"><span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />Signing in...</span>
+                                        ) : (<><span>Continue</span><span className="material-symbols-outlined text-xl">arrow_forward</span></>)}
+                                    </button>
+                                </form>
+                            )}
 
-                                {error && (
-                                    <p className="text-sm text-red-500 bg-red-50 dark:bg-red-900/20 px-4 py-3 rounded-xl">
-                                        {error}
+                            {/* Email OTP login */}
+                            {authMode === 'otp' && (
+                                <div className="w-full max-w-sm mt-4 space-y-4">
+                                    <div className="relative">
+                                        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xl">mail</span>
+                                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                                            placeholder="Email address"
+                                            className="w-full h-14 rounded-xl bg-slate-100 dark:bg-slate-800 px-5 pl-12 text-base border-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none" />
+                                    </div>
+
+                                    {error && <p className="text-sm text-red-500 bg-red-50 dark:bg-red-900/20 px-4 py-3 rounded-xl">{error}</p>}
+
+                                    <button type="button" onClick={handleSendOtp} disabled={loading || !email}
+                                        className="w-full h-14 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                                        {loading ? (
+                                            <span className="flex items-center gap-2"><span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />Sending...</span>
+                                        ) : (<><span>Send Login Code</span><span className="material-symbols-outlined text-xl">send</span></>)}
+                                    </button>
+
+                                    <p className="text-xs text-slate-400 text-center px-2">
+                                        We'll send a 6-digit code to your email. No password needed.
                                     </p>
-                                )}
+                                </div>
+                            )}
+                        </>
+                    )}
 
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className="w-full h-14 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                                >
+                    {/* ─── OTP Verification ─── */}
+                    {step === 'otp-sent' && (
+                        <>
+                            <div className="w-14 h-14 rounded-2xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mb-4">
+                                <span className="material-symbols-outlined text-indigo-600 dark:text-indigo-400 text-3xl">verified_user</span>
+                            </div>
+                            <h1 className="text-2xl font-bold tracking-tight text-center">Enter Code</h1>
+                            <p className="mt-2 text-sm text-muted-foreground text-center">
+                                We sent a 6-digit code to <strong className="text-foreground">{email}</strong>
+                            </p>
+
+                            <form onSubmit={handleVerifyOtp} className="w-full max-w-sm mt-8 space-y-4">
+                                <div className="relative">
+                                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xl">pin</span>
+                                    <input type="text" inputMode="numeric" value={otpCode}
+                                        onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                        placeholder="6-digit code"
+                                        className="w-full h-14 rounded-xl bg-slate-100 dark:bg-slate-800 px-5 pl-12 text-base border-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none tracking-[0.3em] font-mono text-center text-lg"
+                                        maxLength={6} required />
+                                </div>
+
+                                {error && <p className="text-sm text-red-500 bg-red-50 dark:bg-red-900/20 px-4 py-3 rounded-xl">{error}</p>}
+
+                                <button type="submit" disabled={loading || otpCode.length < 6}
+                                    className="w-full h-14 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                                     {loading ? (
-                                        <span className="flex items-center gap-2">
-                                            <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                            Signing in...
-                                        </span>
+                                        <span className="flex items-center gap-2"><span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />Verifying...</span>
+                                    ) : (<><span>Sign In</span><span className="material-symbols-outlined text-xl">login</span></>)}
+                                </button>
+
+                                <div className="text-center pt-2">
+                                    {countdown > 0 ? (
+                                        <p className="text-xs text-slate-400">Resend code in {countdown}s</p>
                                     ) : (
-                                        <>
-                                            <span>Continue</span>
-                                            <span className="material-symbols-outlined text-xl">arrow_forward</span>
-                                        </>
+                                        <button type="button" onClick={handleSendOtp} className="text-sm text-indigo-600 hover:underline font-medium">Resend code</button>
                                     )}
+                                </div>
+
+                                <button type="button" onClick={handleBack}
+                                    className="w-full text-center text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 pt-1">
+                                    Back to login
                                 </button>
                             </form>
                         </>
                     )}
 
-                    {/* ─── STEP 2: Role Selection ─── */}
+                    {/* ─── STEP: Role Selection ─── */}
                     {step === 'select-role' && loginResult && (
                         <>
                             <div className="w-12 h-12 rounded-2xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-4">
@@ -307,26 +432,17 @@ export default function AdminLoginPage() {
                                                 <span className="material-symbols-outlined text-2xl">{meta.icon}</span>
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="font-semibold text-[15px] text-slate-900 dark:text-slate-100 tracking-tight">
-                                                    {meta.label}
-                                                </p>
-                                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">
-                                                    {meta.description}
-                                                </p>
+                                                <p className="font-semibold text-[15px] text-slate-900 dark:text-slate-100 tracking-tight">{meta.label}</p>
+                                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">{meta.description}</p>
                                             </div>
-                                            <span className="material-symbols-outlined text-slate-300 dark:text-slate-600 group-hover:text-indigo-500 transition-colors">
-                                                arrow_forward_ios
-                                            </span>
+                                            <span className="material-symbols-outlined text-slate-300 dark:text-slate-600 group-hover:text-indigo-500 transition-colors">arrow_forward_ios</span>
                                         </button>
                                     )
                                 })}
                             </div>
 
-                            <button
-                                type="button"
-                                onClick={handleBack}
-                                className="mt-6 text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-medium transition-colors"
-                            >
+                            <button type="button" onClick={handleBack}
+                                className="mt-6 text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-medium transition-colors">
                                 Sign in with a different account
                             </button>
                         </>

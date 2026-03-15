@@ -277,13 +277,13 @@ export class EmailAuthController {
         for (const prev of previous) {
             const isReused = await bcrypt.compare(dto.newPassword, prev.password_hash);
             if (isReused) {
-                throw new BadRequestException('This password was used before. Choose a different one.');
+                throw new BadRequestException('Please choose a different password. This one cannot be used.');
             }
         }
         if (user.password_hash) {
             const matchesCurrent = await bcrypt.compare(dto.newPassword, user.password_hash);
             if (matchesCurrent) {
-                throw new BadRequestException('You cannot reuse your current password.');
+                throw new BadRequestException('Please choose a different password. This one cannot be used.');
             }
         }
 
