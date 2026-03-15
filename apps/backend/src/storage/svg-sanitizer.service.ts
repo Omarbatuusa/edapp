@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JSDOM } from 'jsdom';
-import DOMPurify from 'dompurify';
+import createDOMPurify from 'dompurify';
 
 /**
  * Server-side SVG sanitizer using DOMPurify + jsdom.
@@ -8,11 +8,11 @@ import DOMPurify from 'dompurify';
  */
 @Injectable()
 export class SvgSanitizerService {
-    private purify: DOMPurify.DOMPurifyI;
+    private purify: ReturnType<typeof createDOMPurify>;
 
     constructor() {
-        const window = new JSDOM('').window as unknown as Window;
-        this.purify = DOMPurify(window);
+        const window = new JSDOM('').window;
+        this.purify = createDOMPurify(window as any);
     }
 
     /**

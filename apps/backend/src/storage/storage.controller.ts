@@ -208,7 +208,7 @@ export class StorageController {
             uploaded_by_user_id: req.user?.uid || req.user?.dbUserId || null,
         } as any);
 
-        const saved = await this.fileRepo.save(fileObj);
+        const saved = await this.fileRepo.save(fileObj) as any;
 
         return {
             status: 'success',

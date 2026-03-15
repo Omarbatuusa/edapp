@@ -205,23 +205,25 @@ export class AdminTenantsController {
     if (!body.email) throw new BadRequestException('email is required');
 
     // Find or create user
-    let user = await this.userRepo.findOne({ where: { email: body.email.toLowerCase() } });
+    let user: any = await this.userRepo.findOne({ where: { email: body.email.toLowerCase() } });
     if (!user) {
       user = await this.userRepo.save(this.userRepo.create({
         email: body.email.toLowerCase(),
         display_name: body.display_name || body.email.split('@')[0],
         status: 'active',
         must_change_password: true,
-      } as any));
+      } as any)) as any;
     }
+
+    const userId = user.id;
 
     // Create tenant membership
     const existingMembership = await this.membershipRepo.findOne({
-      where: { user_id: user.id, tenant_id: tenantId } as any,
+      where: { user_id: userId, tenant_id: tenantId } as any,
     });
     if (!existingMembership) {
       await this.membershipRepo.save(this.membershipRepo.create({
-        user_id: user.id,
+        user_id: userId,
         tenant_id: tenantId,
         status: 'invited',
       } as any));
@@ -229,11 +231,11 @@ export class AdminTenantsController {
 
     // Create role assignment
     const existingRole = await this.roleRepo.findOne({
-      where: { user_id: user.id, tenant_id: tenantId, role: 'tenant_admin' } as any,
+      where: { user_id: userId, tenant_id: tenantId, role: 'tenant_admin' } as any,
     });
     if (!existingRole) {
       await this.roleRepo.save(this.roleRepo.create({
-        user_id: user.id,
+        user_id: userId,
         tenant_id: tenantId,
         role: 'tenant_admin',
         is_active: true,
@@ -241,14 +243,14 @@ export class AdminTenantsController {
     }
 
     await this.log(req, AuditAction.ROLE_ASSIGN, tenantId, null, {
-      user_id: user.id,
+      user_id: userId,
       email: body.email,
       role: 'tenant_admin',
     });
 
     return {
       status: 'success',
-      user_id: user.id,
+      user_id: userId,
       email: body.email,
       role: 'tenant_admin',
       tenant_id: tenantId,
