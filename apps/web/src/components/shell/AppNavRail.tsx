@@ -120,14 +120,14 @@ function SidebarAccordion({
 
             <div className={`sidebar-accordion-content ${open ? 'is-open' : ''}`}>
                 <div>
-                    <div className="ml-4 mt-0.5 border-l border-[hsl(var(--sidebar-divider)/0.1)] pl-2 flex flex-col gap-0.5">
+                    <div className="ml-[18px] mt-1 mb-1 border-l border-[hsl(var(--sidebar-divider)/0.12)] pl-2.5 flex flex-col gap-[3px]">
                         {item.children!.map((child) => {
                             const active = isActive(child.href);
                             return (
                                 <a
                                     key={child.id}
                                     href={basePath + child.href}
-                                    className={`sidebar-nav-item sidebar-nav-item--full py-[7px] ${active ? 'is-active' : ''}`}
+                                    className={`sidebar-sub-item ${active ? 'is-active' : ''}`}
                                 >
                                     <span
                                         className="material-symbols-outlined text-[18px] flex-shrink-0"
@@ -135,7 +135,7 @@ function SidebarAccordion({
                                     >
                                         {child.icon}
                                     </span>
-                                    <span className="text-[12px] font-medium truncate">{child.label}</span>
+                                    <span className="text-[12.5px] font-medium truncate">{child.label}</span>
                                 </a>
                             );
                         })}

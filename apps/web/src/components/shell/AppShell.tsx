@@ -168,9 +168,29 @@ export function AppShell({
             <ShellActionsProvider value={shellActions}>
                 <div className="admin-app-outer">
                     <div className="admin-app-container">
-                        <EmergencyBanner />
+                        {/* Sidebar — direct child of container so it spans full height on desktop grid */}
+                        <AppNavRail
+                            sidebarSections={navConfig.sidebarSections}
+                            allItems={navConfig.allItems}
+                            basePath={basePath}
+                            isCollapsed={isCollapsed}
+                            onToggleCollapse={toggleCollapse}
+                            tenantName={tenantName}
+                            tenantLogo={tenantLogo}
+                            tenantSubtitle={scopeLabel}
+                            appVersion={appVersion}
+                            user={user}
+                            role={role}
+                            onSearch={() => setSearchSheetOpen(true)}
+                            onProfileClick={() => setProfileSheetOpen(true)}
+                            currentRole={currentRole}
+                            allRoles={allRoles}
+                            onRoleSwitch={onRoleSwitch}
+                        />
                         {/* AppHeader on tab roots only (chrome === "default") */}
                         {chrome === 'default' && (
+                            <>
+                            <EmergencyBanner />
                             <AppHeader
                                 title={tenantName}
                                 subtitle={scopeLabel}
@@ -188,39 +208,22 @@ export function AppShell({
                                 showSafety={showSafety}
                                 onSwitchSchool={hasLinkedTenants ? () => setLinkedSwitcherOpen(true) : undefined}
                             />
+                            </>
                         )}
                         <div className="admin-body">
-                            <AppNavRail
-                                sidebarSections={navConfig.sidebarSections}
-                                allItems={navConfig.allItems}
-                                basePath={basePath}
-                                isCollapsed={isCollapsed}
-                                onToggleCollapse={toggleCollapse}
-                                tenantName={tenantName}
-                                tenantLogo={tenantLogo}
-                                tenantSubtitle={scopeLabel}
-                                appVersion={appVersion}
-                                user={user}
-                                role={role}
-                                onSearch={() => setSearchSheetOpen(true)}
-                                onProfileClick={() => setProfileSheetOpen(true)}
-                                currentRole={currentRole}
-                                allRoles={allRoles}
-                                onRoleSwitch={onRoleSwitch}
-                            />
-                            <main
-                                className="admin-main relative flex flex-col"
-                                ref={mainRef}
-                                onScroll={handleScroll}
-                            >
-                                {/* Subpage takeover: only SubpageBar, no AppHeader */}
-                                {chrome === 'takeover' && <SubpageBar />}
-                                <div className="flex-1">
-                                    {children}
-                                </div>
-                                <AppFooter version={appVersion} className="lg:hidden" />
-                            </main>
-                        </div>
+                        <main
+                            className="admin-main relative flex flex-col"
+                            ref={mainRef}
+                            onScroll={handleScroll}
+                        >
+                            {/* Subpage takeover: only SubpageBar, no AppHeader */}
+                            {chrome === 'takeover' && <SubpageBar />}
+                            <div className="flex-1">
+                                {children}
+                            </div>
+                            <AppFooter version={appVersion} className="lg:hidden" />
+                        </main>
+                    </div>
                         {/* Bottom nav only on tab roots */}
                         {chrome === 'default' && (
                             <AppBottomNav

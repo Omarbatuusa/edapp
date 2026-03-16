@@ -305,6 +305,23 @@
   }
 }
 
+/* ── Desktop grid: sidebar spans full height, everything else in col 2 ── */
+@media (min-width: 769px) {
+  .admin-app-container {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto 1fr auto;
+  }
+  .admin-app-container > .admin-nav-rail {
+    grid-column: 1;
+    grid-row: 1 / -1;
+  }
+  /* All non-sidebar children go to col 2 */
+  .admin-app-container > :not(.admin-nav-rail) {
+    grid-column: 2;
+  }
+}
+
 /* Admin header — Facebook-style always-on bg + shadow */
 .admin-header {
   position: sticky;
@@ -329,7 +346,7 @@
   }
 }
 
-/* Admin body — flex row for rail + content */
+/* Admin body — content area (sidebar is now outside) */
 .admin-body {
   display: flex;
   flex-direction: row;
@@ -514,6 +531,26 @@
   background-color: hsl(var(--admin-primary) / 0.12);
   color: hsl(210 100% 70%);
   box-shadow: 0 0 0 1px hsl(var(--admin-primary) / 0.15), 0 1px 4px hsl(var(--admin-primary) / 0.08);
+}
+
+/* Submenu child items — clean spacing */
+.sidebar-sub-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  text-decoration: none;
+  color: hsl(var(--sidebar-text));
+}
+.sidebar-sub-item:hover {
+  background-color: hsl(var(--sidebar-hover) / 0.06);
+  color: hsl(var(--sidebar-text-active));
+}
+.sidebar-sub-item.is-active {
+  background-color: hsl(var(--admin-primary) / 0.10);
+  color: hsl(210 100% 70%);
 }
 
 /* Accordion children container */

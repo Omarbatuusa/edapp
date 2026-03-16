@@ -65,7 +65,7 @@ function DrawerAccordion({
 
             <div className={`grid transition-[grid-template-rows] duration-250 ease-[cubic-bezier(0.32,0.72,0,1)] ${open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
                 <div className="overflow-hidden">
-                    <div className="ml-5 mt-0.5 border-l-2 border-[hsl(var(--admin-border)/0.3)] pl-3 flex flex-col gap-0.5 pb-1">
+                    <div className="ml-[22px] mt-1 mb-1 border-l-2 border-[hsl(var(--admin-border)/0.15)] pl-3 flex flex-col gap-[2px] pb-0.5">
                         {item.children!.map((child) => {
                             const active = isActive(child.href);
                             return (
@@ -73,7 +73,7 @@ function DrawerAccordion({
                                     key={child.id}
                                     href={basePath + child.href}
                                     className={`flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all active:scale-[0.98] ${active
-                                        ? 'bg-[hsl(var(--admin-primary)/0.1)] text-[hsl(var(--admin-primary))] font-semibold'
+                                        ? 'bg-[hsl(var(--admin-primary)/0.08)] text-[hsl(var(--admin-primary))] font-semibold'
                                         : 'text-[hsl(var(--admin-text-sub))] hover:bg-[hsl(var(--admin-surface-alt))] hover:text-[hsl(var(--admin-text-main))] font-medium'
                                         }`}
                                 >
@@ -138,94 +138,100 @@ function MobileAccountPopover({
                 onClick={onClose}
                 aria-hidden="true"
             />
-            {/* Panel — bottom sheet */}
+            {/* Panel — bottom sheet with sticky header + scrollable body */}
             <div
                 ref={panelRef}
-                className="fixed inset-x-0 bottom-0 z-[61] bg-[hsl(var(--admin-surface))] rounded-t-2xl shadow-2xl max-h-[70vh] overflow-y-auto animate-in slide-in-from-bottom duration-300"
+                className="fixed inset-x-0 bottom-0 z-[61] bg-[hsl(var(--admin-surface))] rounded-t-2xl shadow-2xl max-h-[75vh] flex flex-col animate-in slide-in-from-bottom duration-300"
             >
-                {/* Handle */}
-                <div className="flex justify-center pt-3 pb-1">
-                    <div className="w-10 h-1 rounded-full bg-[hsl(var(--admin-border))]" />
-                </div>
+                {/* ── Sticky header: handle + user info ── */}
+                <div className="flex-shrink-0">
+                    {/* Handle */}
+                    <div className="flex justify-center pt-3 pb-1">
+                        <div className="w-10 h-1 rounded-full bg-[hsl(var(--admin-border))]" />
+                    </div>
 
-                {/* User info */}
-                <div className="px-5 py-3 border-b border-[hsl(var(--admin-border)/0.3)]">
-                    <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center flex-shrink-0 border border-[hsl(var(--admin-border)/0.3)]">
-                            {user?.photoURL ? (
-                                <img src={user.photoURL} alt={displayName} className="w-full h-full object-cover rounded-full" />
-                            ) : (
-                                <span className="text-[18px] font-bold text-[hsl(var(--admin-primary))]">{displayName.charAt(0).toUpperCase()}</span>
-                            )}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                            <p className="text-[16px] font-semibold text-[hsl(var(--admin-text-main))] truncate">{displayName}</p>
-                            {displayEmail && (
-                                <p className="text-[13px] text-[hsl(var(--admin-text-muted))] truncate mt-0.5">{displayEmail}</p>
-                            )}
-                            {roleMeta && (
-                                <div className="mt-2 inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-[hsl(var(--admin-surface-alt))] text-[11px] font-medium text-[hsl(var(--admin-text-sub))]">
-                                    <span className="material-symbols-outlined text-[14px]">{roleMeta.icon}</span>
-                                    <span>{roleMeta.shortName}</span>
-                                </div>
-                            )}
+                    {/* User info — always visible */}
+                    <div className="px-5 py-3 border-b border-[hsl(var(--admin-border)/0.3)]">
+                        <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center flex-shrink-0 border border-[hsl(var(--admin-border)/0.3)]">
+                                {user?.photoURL ? (
+                                    <img src={user.photoURL} alt={displayName} className="w-full h-full object-cover rounded-full" />
+                                ) : (
+                                    <span className="text-[18px] font-bold text-[hsl(var(--admin-primary))]">{displayName.charAt(0).toUpperCase()}</span>
+                                )}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <p className="text-[16px] font-semibold text-[hsl(var(--admin-text-main))] truncate">{displayName}</p>
+                                {displayEmail && (
+                                    <p className="text-[13px] text-[hsl(var(--admin-text-muted))] truncate mt-0.5">{displayEmail}</p>
+                                )}
+                                {roleMeta && (
+                                    <div className="mt-2 inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-[hsl(var(--admin-surface-alt))] text-[11px] font-medium text-[hsl(var(--admin-text-sub))]">
+                                        <span className="material-symbols-outlined text-[14px]">{roleMeta.icon}</span>
+                                        <span>{roleMeta.shortName}</span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Role switcher */}
-                {allRoles && allRoles.length > 1 && currentRole && onRoleSwitch && (
-                    <div className="px-4 py-3 border-b border-[hsl(var(--admin-border)/0.3)]">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-[hsl(var(--admin-text-muted))] mb-2">Switch Role</p>
-                        <div className="space-y-1">
-                            {allRoles.map((r) => {
-                                const meta = getRoleMetadata(r.role);
-                                const isActiveRole = r.id === currentRole.id;
-                                return (
-                                    <button
-                                        key={r.id}
-                                        type="button"
-                                        onClick={() => { onRoleSwitch(r); onClose(); drawerClose(); }}
-                                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors ${isActiveRole
-                                            ? 'bg-[hsl(var(--admin-primary)/0.1)] text-[hsl(var(--admin-primary))]'
-                                            : 'text-[hsl(var(--admin-text-main))] hover:bg-[hsl(var(--admin-surface-alt))]'
-                                            }`}
-                                    >
-                                        <span className="material-symbols-outlined text-[20px]">{meta?.icon || 'person'}</span>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-[13px] font-medium truncate">{meta?.displayName || r.role}</p>
-                                            <p className="text-[11px] text-[hsl(var(--admin-text-muted))] truncate">{r.tenant_name || tenantName}</p>
-                                        </div>
-                                        {isActiveRole && <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-primary))]">check</span>}
-                                    </button>
-                                );
-                            })}
+                {/* ── Scrollable body ── */}
+                <div className="flex-1 overflow-y-auto overscroll-contain min-h-0">
+                    {/* Role switcher */}
+                    {allRoles && allRoles.length > 1 && currentRole && onRoleSwitch && (
+                        <div className="px-4 py-3 border-b border-[hsl(var(--admin-border)/0.3)]">
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-[hsl(var(--admin-text-muted))] mb-2">Switch Role</p>
+                            <div className="space-y-1">
+                                {allRoles.map((r) => {
+                                    const meta = getRoleMetadata(r.role);
+                                    const isActiveRole = r.id === currentRole.id;
+                                    return (
+                                        <button
+                                            key={r.id}
+                                            type="button"
+                                            onClick={() => { onRoleSwitch(r); onClose(); drawerClose(); }}
+                                            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors ${isActiveRole
+                                                ? 'bg-[hsl(var(--admin-primary)/0.1)] text-[hsl(var(--admin-primary))]'
+                                                : 'text-[hsl(var(--admin-text-main))] hover:bg-[hsl(var(--admin-surface-alt))]'
+                                                }`}
+                                        >
+                                            <span className="material-symbols-outlined text-[20px]">{meta?.icon || 'person'}</span>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-[13px] font-medium truncate">{meta?.displayName || r.role}</p>
+                                                <p className="text-[11px] text-[hsl(var(--admin-text-muted))] truncate">{r.tenant_name || tenantName}</p>
+                                            </div>
+                                            {isActiveRole && <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-primary))]">check</span>}
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
-                {/* Actions */}
-                <div className="px-4 py-3">
-                    <button
-                        type="button"
-                        onClick={() => { router.push(basePath + '/settings'); onClose(); drawerClose(); }}
-                        className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-[hsl(var(--admin-text-main))] hover:bg-[hsl(var(--admin-surface-alt))] transition-colors"
-                    >
-                        <span className="material-symbols-outlined text-[20px] text-[hsl(var(--admin-text-muted))]">settings</span>
-                        <span className="text-[14px] font-medium">Settings</span>
-                    </button>
-                    <button
-                        type="button"
-                        onClick={handleSignOut}
-                        className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-red-500 hover:bg-red-50 transition-colors"
-                    >
-                        <span className="material-symbols-outlined text-[20px]">logout</span>
-                        <span className="text-[14px] font-medium">Sign Out</span>
-                    </button>
+                    {/* Actions */}
+                    <div className="px-4 py-3">
+                        <button
+                            type="button"
+                            onClick={() => { router.push(basePath + '/settings'); onClose(); drawerClose(); }}
+                            className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-[hsl(var(--admin-text-main))] hover:bg-[hsl(var(--admin-surface-alt))] transition-colors"
+                        >
+                            <span className="material-symbols-outlined text-[20px] text-[hsl(var(--admin-text-muted))]">settings</span>
+                            <span className="text-[14px] font-medium">Settings</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleSignOut}
+                            className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-red-500 hover:bg-red-50 transition-colors"
+                        >
+                            <span className="material-symbols-outlined text-[20px]">logout</span>
+                            <span className="text-[14px] font-medium">Sign Out</span>
+                        </button>
+                    </div>
                 </div>
 
                 {/* Safe area bottom */}
-                <div style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom, 8px))' }} />
+                <div className="flex-shrink-0" style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom, 8px))' }} />
             </div>
         </>,
         document.body

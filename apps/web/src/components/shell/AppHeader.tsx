@@ -22,13 +22,14 @@ interface AppHeaderProps {
 }
 
 /**
- * Utility-only AppHeader — no tenant identity.
- * Tenant identity lives exclusively in the sidebar.
+ * AppHeader — utility bar with mobile tenant identity.
  *
- * Mobile:   [≡ trigger] ··· [Search] [Safety] [Bell] [Avatar ▾]
+ * Mobile:   [≡ trigger] [Logo + Name] ··· [Search] [Safety] [Bell] [Avatar ▾]
  * Desktop:  (empty left) ··· [Search] [Safety] [Bell] [Avatar ▾]
  */
 export function AppHeader({
+    title,
+    logoUrl,
     onSearch,
     onNotificationClick,
     onAvatarClick,
@@ -45,8 +46,8 @@ export function AppHeader({
     return (
         <header className="admin-header" id="app-header">
             <div className="flex items-center justify-between gap-2">
-                {/* Left: mobile drawer trigger only */}
-                <div className="flex items-center gap-2 flex-shrink-0">
+                {/* Left: mobile drawer trigger + tenant identity (mobile only) */}
+                <div className="flex items-center gap-2 flex-shrink-0 min-w-0">
                     {onMenuOpen && (
                         <button
                             type="button"
@@ -57,6 +58,23 @@ export function AppHeader({
                             <span className="material-symbols-outlined text-[20px] text-[hsl(var(--admin-text-sub))]">menu</span>
                         </button>
                     )}
+                    {/* Tenant logo + name — mobile only, hidden when sidebar is visible */}
+                    <div className="flex items-center gap-2 min-w-0 lg:hidden">
+                        {logoUrl ? (
+                            <div className="w-8 h-8 rounded-lg overflow-hidden bg-[hsl(var(--admin-surface-alt))] flex-shrink-0 border border-[hsl(var(--admin-border)/0.3)]">
+                                <img src={logoUrl} alt={title || ''} className="w-full h-full object-cover" />
+                            </div>
+                        ) : (
+                            <div className="w-8 h-8 rounded-lg bg-[hsl(var(--admin-primary)/0.12)] flex items-center justify-center flex-shrink-0">
+                                <span className="material-symbols-outlined text-[hsl(var(--admin-primary))] text-[18px]">school</span>
+                            </div>
+                        )}
+                        {title && (
+                            <p className="text-[14px] font-semibold text-[hsl(var(--admin-text-main))] truncate leading-tight">
+                                {title}
+                            </p>
+                        )}
+                    </div>
                 </div>
 
                 {/* Right: utility icon cluster */}
