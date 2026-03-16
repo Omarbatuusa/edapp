@@ -61,7 +61,7 @@ export default function AdminLoginPage() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
     const [showHelp, setShowHelp] = useState(false)
-    const [rememberDevice, setRememberDevice] = useState(true)
+    const [rememberDevice, setRememberDevice] = useState(false)
     const [rememberDuration, setRememberDuration] = useState('30')
 
     // OTP state

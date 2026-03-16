@@ -64,7 +64,7 @@ function BrokerLoginContent() {
     const [countdown, setCountdown] = useState(0);
 
     // Remember device
-    const [rememberDevice, setRememberDevice] = useState(true);
+    const [rememberDevice, setRememberDevice] = useState(false);
     const [rememberDuration, setRememberDuration] = useState('30');
 
     const tenantSlug = searchParams.get('tenant');

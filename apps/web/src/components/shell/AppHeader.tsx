@@ -58,21 +58,16 @@ export function AppHeader({
                             <span className="material-symbols-outlined text-[20px] text-[hsl(var(--admin-text-sub))]">menu</span>
                         </button>
                     )}
-                    {/* Tenant logo + name — mobile only, hidden when sidebar is visible */}
-                    <div className="flex items-center gap-2 min-w-0 lg:hidden">
+                    {/* Tenant logo icon only — mobile, hidden when sidebar is visible */}
+                    <div className="lg:hidden flex-shrink-0">
                         {logoUrl ? (
-                            <div className="w-8 h-8 rounded-lg overflow-hidden bg-[hsl(var(--admin-surface-alt))] flex-shrink-0 border border-[hsl(var(--admin-border)/0.3)]">
+                            <div className="w-8 h-8 rounded-lg overflow-hidden bg-[hsl(var(--admin-surface-alt))] border border-[hsl(var(--admin-border)/0.3)]">
                                 <img src={logoUrl} alt={title || ''} className="w-full h-full object-cover" />
                             </div>
                         ) : (
-                            <div className="w-8 h-8 rounded-lg bg-[hsl(var(--admin-primary)/0.12)] flex items-center justify-center flex-shrink-0">
+                            <div className="w-8 h-8 rounded-lg bg-[hsl(var(--admin-primary)/0.12)] flex items-center justify-center">
                                 <span className="material-symbols-outlined text-[hsl(var(--admin-primary))] text-[18px]">school</span>
                             </div>
-                        )}
-                        {title && (
-                            <p className="text-[14px] font-semibold text-[hsl(var(--admin-text-main))] truncate leading-tight">
-                                {title}
-                            </p>
                         )}
                     </div>
                 </div>
