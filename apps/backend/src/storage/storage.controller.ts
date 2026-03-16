@@ -26,6 +26,14 @@ interface SignedUrlResponseDto {
     objectKey: string;
 }
 
+const PLATFORM_ROLES = [
+    'platform_super_admin',
+    'app_super_admin',
+    'brand_admin',
+    'platform_secretary',
+    'app_secretary',
+];
+
 const CATEGORY_RULES: Record<string, { mimeTypes: string[]; maxSizeMB: number }> = {
     documents: {
         mimeTypes: ['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
@@ -38,6 +46,10 @@ const CATEGORY_RULES: Record<string, { mimeTypes: string[]; maxSizeMB: number }>
     logos: {
         mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'],
         maxSizeMB: 5,
+    },
+    covers: {
+        mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+        maxSizeMB: 10,
     },
     reports: {
         mimeTypes: ['application/pdf', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/csv'],
@@ -68,8 +80,31 @@ export class StorageController {
     ) { }
 
     /**
-     * Generate a signed URL for uploading a file
-     * Requires tenant context from middleware
+     * Resolve storage scope from request.
+     * Tenant-scoped requests use tenant slug; platform admin requests use 'platform'.
+     */
+    private resolveStorageScope(req: any): { slug: string; tenantId: string | null } {
+        if (req.tenant?.slug) {
+            return { slug: req.tenant.slug, tenantId: req.tenant_id || req.tenant.id };
+        }
+        const role = req.user?.role || req.user?.customClaims?.role || '';
+        if (PLATFORM_ROLES.some(r => role.includes(r))) {
+            return { slug: 'platform', tenantId: null };
+        }
+        throw new BadRequestException('Tenant context required');
+    }
+
+    /**
+     * Check if user has platform-level access (can read any object).
+     */
+    private hasPlatformAccess(req: any): boolean {
+        const role = req.user?.role || req.user?.customClaims?.role || '';
+        return PLATFORM_ROLES.some(r => role.includes(r));
+    }
+
+    /**
+     * Generate a signed URL for uploading a file.
+     * Supports both tenant-scoped and platform-scoped uploads.
      */
     @Post('upload-url')
     @HttpCode(HttpStatus.OK)
@@ -77,10 +112,7 @@ export class StorageController {
         @Body() body: UploadRequestDto,
         @Req() req: any,
     ): Promise<SignedUrlResponseDto> {
-        const tenantSlug = req.tenant?.slug;
-        if (!tenantSlug) {
-            throw new BadRequestException('Tenant context required');
-        }
+        const { slug } = this.resolveStorageScope(req);
 
         if (!body.category || !body.filename) {
             throw new BadRequestException('Category and filename are required');
@@ -91,6 +123,7 @@ export class StorageController {
             'documents',
             'avatars',
             'logos',
+            'covers',
             'reports',
             'attachments',
         ];
@@ -110,7 +143,7 @@ export class StorageController {
         }
 
         return this.storageService.generateSignedUploadUrl(
-            tenantSlug,
+            slug,
             body.category,
             body.filename,
             contentType,
@@ -118,24 +151,29 @@ export class StorageController {
     }
 
     /**
-     * Generate a signed URL for reading/downloading a file
-     * Validates tenant ownership of the object
+     * Generate a signed URL for reading/downloading a file.
+     * Tenant users can only read their own objects; platform admins can read any.
      */
     @Get('read-url')
     async getReadUrl(
         @Query('key') objectKey: string,
         @Req() req: any,
     ): Promise<{ readUrl: string }> {
-        const tenantSlug = req.tenant?.slug;
-        if (!tenantSlug) {
-            throw new BadRequestException('Tenant context required');
-        }
-
         if (!objectKey) {
             throw new BadRequestException('Object key is required');
         }
 
-        // Validate tenant owns this object (key must contain tenant slug)
+        // Platform admins can read any object (platform-scoped or any tenant)
+        if (this.hasPlatformAccess(req)) {
+            const readUrl = await this.storageService.generateSignedReadUrl(objectKey);
+            return { readUrl };
+        }
+
+        // Tenant users can only read their own objects
+        const tenantSlug = req.tenant?.slug;
+        if (!tenantSlug) {
+            throw new BadRequestException('Tenant context required');
+        }
         const expectedPrefix = `uploads/${tenantSlug}/`;
         if (!objectKey.startsWith(expectedPrefix)) {
             throw new BadRequestException('Access denied: object belongs to another tenant');
@@ -156,19 +194,19 @@ export class StorageController {
         @Body() body: ConfirmUploadDto,
         @Req() req: any,
     ) {
-        const tenantSlug = req.tenant?.slug;
-        if (!tenantSlug) {
-            throw new BadRequestException('Tenant context required');
-        }
+        const { slug, tenantId } = this.resolveStorageScope(req);
 
         if (!body.objectKey || !body.contentType) {
             throw new BadRequestException('objectKey and contentType are required');
         }
 
-        // Validate tenant owns this object
-        const expectedPrefix = `uploads/${tenantSlug}/`;
+        // Validate the object belongs to the resolved scope
+        const expectedPrefix = `uploads/${slug}/`;
         if (!body.objectKey.startsWith(expectedPrefix)) {
-            throw new BadRequestException('Access denied: object belongs to another tenant');
+            // Platform admins can also confirm objects under any tenant
+            if (!this.hasPlatformAccess(req)) {
+                throw new BadRequestException('Access denied: object belongs to another tenant');
+            }
         }
 
         // SVG sanitization
@@ -185,15 +223,14 @@ export class StorageController {
         // Map category string to enum
         const categoryMap: Record<string, FileCategory> = {
             logos: FileCategory.LOGO,
+            covers: FileCategory.COVER,
             avatars: FileCategory.AVATAR,
             documents: FileCategory.GENERAL_DOCUMENT,
             reports: FileCategory.REPORT_EXPORT,
             attachments: FileCategory.MESSAGE_ATTACHMENT,
-            covers: FileCategory.COVER,
         };
 
-        // Create file_objects record
-        const tenantId = req.tenant_id || req.tenant?.id;
+        // Create file_objects record (tenant_id is null for platform-scoped uploads)
         const fileObj = this.fileRepo.create({
             tenant_id: tenantId,
             bucket_name: this.storageService.getBucketName(),

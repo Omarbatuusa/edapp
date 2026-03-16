@@ -23,7 +23,7 @@ export function CoverUpload({ label = 'Cover Photo', value, onChange }: CoverUpl
         const blobUrl = URL.createObjectURL(file);
         setPreviewUrl(blobUrl);
         try {
-            const { objectKey, previewUrl: signedUrl } = await uploadToGcs(file, 'logos');
+            const { objectKey, previewUrl: signedUrl } = await uploadToGcs(file, 'covers');
             onChange(objectKey);
             if (signedUrl) setPreviewUrl(signedUrl);
         } catch (err: any) {

@@ -1082,3 +1082,22 @@
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
 }
+
+/* ── Illustration gentle float animation ── */
+@keyframes gentle-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+.gentle-float {
+  animation: gentle-float 4s ease-in-out infinite;
+}
+
+/* ── Field shake animation (validation error) ── */
+@keyframes field-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+.animate-field-shake {
+  animation: field-shake 0.2s ease-in-out 2;
+}

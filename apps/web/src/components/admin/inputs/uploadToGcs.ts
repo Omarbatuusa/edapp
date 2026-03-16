@@ -1,6 +1,6 @@
 export async function uploadToGcs(
     file: File,
-    category: 'logos' | 'attachments' = 'logos',
+    category: string = 'logos',
 ): Promise<{ objectKey: string; previewUrl: string }> {
     const token = typeof window !== 'undefined' ? localStorage.getItem('session_token') : null;
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
