@@ -12,6 +12,7 @@ export interface NavItem {
     href: string;
     badge?: number;
     section?: string;
+    children?: NavItem[];
 }
 
 export interface NavSection {
@@ -26,6 +27,8 @@ export interface RoleNavConfig {
     allItems: NavItem[];
     /** Grouped sections for the Menu page. */
     menuSections: NavSection[];
+    /** Grouped sections for the desktop sidebar (optional — falls back to auto-generated from allItems). */
+    sidebarSections?: NavSection[];
     /** Base path factory, e.g. `/tenant/${slug}/admin`. */
     getBasePath: (slug: string) => string;
 }
@@ -66,6 +69,21 @@ const PLATFORM_ADMIN_CONFIG: RoleNavConfig = {
                 { id: 'settings', icon: 'settings', label: 'Settings', href: '/control' },
             ],
         },
+    ],
+    sidebarSections: [
+        { title: 'Main', items: [
+            { id: 'dashboard', icon: 'dashboard', label: 'Dashboard', href: '' },
+        ]},
+        { title: 'Platform', items: [
+            { id: 'tenants', icon: 'domain', label: 'Tenants', href: '/tenants' },
+            { id: 'brands', icon: 'sell', label: 'Brands', href: '/brands' },
+            { id: 'people', icon: 'group', label: 'People', href: '/people' },
+            { id: 'dictionaries', icon: 'dictionary', label: 'Dictionaries', href: '/dictionaries' },
+        ]},
+        { title: 'System', items: [
+            { id: 'audit', icon: 'history', label: 'Audit Log', href: '/audit' },
+            { id: 'settings', icon: 'settings', label: 'Settings', href: '/control' },
+        ]},
     ],
     getBasePath: (slug) => `/tenant/${slug}/admin`,
 };
@@ -144,6 +162,46 @@ const TENANT_ADMIN_CONFIG: RoleNavConfig = {
                 { id: 'settings', icon: 'settings', label: 'Settings', href: '/control' },
             ],
         },
+    ],
+    sidebarSections: [
+        { title: 'Main', items: [
+            { id: 'dashboard', icon: 'dashboard', label: 'Dashboard', href: '' },
+        ]},
+        { title: 'School Operations', items: [
+            { id: 'enrollment', icon: 'how_to_reg', label: 'Admissions', href: '/enrollment' },
+            { id: 'attendance', icon: 'event_available', label: 'Attendance', href: '/attendance' },
+            { id: 'communication', icon: 'forum', label: 'Communication', href: '/messages', children: [
+                { id: 'chat', icon: 'chat', label: 'Chat', href: '/messages' },
+                { id: 'notices', icon: 'campaign', label: 'Notices', href: '/notices' },
+            ]},
+        ]},
+        { title: 'Academic', items: [
+            { id: 'curriculum', icon: 'school', label: 'Academics', href: '/curriculum', children: [
+                { id: 'grades-classes', icon: 'class', label: 'Classes', href: '/grades-classes' },
+                { id: 'timetable', icon: 'schedule', label: 'Timetable', href: '/timetable' },
+                { id: 'assessments', icon: 'quiz', label: 'Assessments', href: '/assessments' },
+            ]},
+            { id: 'school-data', icon: 'database', label: 'School Data', href: '/school-data' },
+        ]},
+        { title: 'Finance', items: [
+            { id: 'finance', icon: 'account_balance', label: 'Finance', href: '/finance', children: [
+                { id: 'fin-invoices', icon: 'description', label: 'Invoices', href: '/finance/billing/invoices' },
+                { id: 'fin-payments', icon: 'payments', label: 'Payments', href: '/finance/billing' },
+                { id: 'fin-reports', icon: 'bar_chart', label: 'Finance Reports', href: '/finance/reports' },
+            ]},
+        ]},
+        { title: 'Safety', items: [
+            { id: 'incidents', icon: 'report', label: 'Incidents', href: '/incidents' },
+            { id: 'emergency', icon: 'emergency', label: 'Emergency', href: '/emergency' },
+        ]},
+        { title: 'Admin', items: [
+            { id: 'staff', icon: 'badge', label: 'HR / Staff', href: '/staff' },
+            { id: 'people', icon: 'group', label: 'People', href: '/people' },
+            { id: 'families', icon: 'family_restroom', label: 'Families', href: '/families' },
+            { id: 'branches', icon: 'location_city', label: 'Branches', href: '/branches' },
+            { id: 'integrations', icon: 'toggle_on', label: 'Features', href: '/integrations' },
+            { id: 'settings', icon: 'settings', label: 'Settings', href: '/control' },
+        ]},
     ],
     getBasePath: (slug) => `/tenant/${slug}/admin`,
 };
@@ -388,6 +446,37 @@ const FINANCE_CONFIG: RoleNavConfig = {
                 { id: 'fin-settings', icon: 'settings', label: 'Finance Settings', href: '/finance/settings' },
             ],
         },
+    ],
+    sidebarSections: [
+        { title: 'Main', items: [
+            { id: 'finance', icon: 'account_balance', label: 'Dashboard', href: '/finance' },
+        ]},
+        { title: 'Accounting', items: [
+            { id: 'accounts', icon: 'account_tree', label: 'Chart of Accounts', href: '/finance/accounts' },
+            { id: 'journals', icon: 'menu_book', label: 'Journal Entries', href: '/finance/journals' },
+            { id: 'periods', icon: 'calendar_month', label: 'Fiscal Periods', href: '/finance/periods' },
+            { id: 'reports', icon: 'bar_chart', label: 'Reports', href: '/finance/reports' },
+        ]},
+        { title: 'Billing & Receivables', items: [
+            { id: 'billing', icon: 'receipt_long', label: 'Family Accounts', href: '/finance/billing' },
+            { id: 'invoices', icon: 'description', label: 'Invoices', href: '/finance/billing/invoices' },
+            { id: 'fee-structures', icon: 'price_change', label: 'Fee Structures', href: '/finance/billing/fee-structures' },
+        ]},
+        { title: 'Procurement', items: [
+            { id: 'vendors', icon: 'store', label: 'Vendors', href: '/finance/vendors' },
+            { id: 'bills', icon: 'request_quote', label: 'Vendor Bills', href: '/finance/vendors/bills' },
+            { id: 'purchase-orders', icon: 'shopping_cart', label: 'Purchase Orders', href: '/finance/vendors/purchase-orders' },
+        ]},
+        { title: 'Assets & Banking', items: [
+            { id: 'assets', icon: 'inventory_2', label: 'Asset Register', href: '/finance/assets' },
+            { id: 'budgets', icon: 'savings', label: 'Budgets', href: '/finance/budgets' },
+            { id: 'wallets', icon: 'account_balance_wallet', label: 'Learner Wallets', href: '/finance/wallets' },
+            { id: 'banking', icon: 'account_balance', label: 'Banking', href: '/finance/banking' },
+        ]},
+        { title: 'System', items: [
+            { id: 'fin-settings', icon: 'settings', label: 'Finance Settings', href: '/finance/settings' },
+            { id: 'messages', icon: 'chat_bubble_outline', label: 'Messages', href: '/messages' },
+        ]},
     ],
     getBasePath: (slug) => `/tenant/${slug}/admin`,
 };

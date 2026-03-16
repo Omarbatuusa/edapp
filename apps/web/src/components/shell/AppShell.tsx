@@ -191,7 +191,8 @@ export function AppShell({
                         )}
                         <div className="admin-body">
                             <AppNavRail
-                                items={navConfig.allItems}
+                                sidebarSections={navConfig.sidebarSections}
+                                allItems={navConfig.allItems}
                                 basePath={basePath}
                                 isCollapsed={isCollapsed}
                                 onToggleCollapse={toggleCollapse}
@@ -199,6 +200,13 @@ export function AppShell({
                                 tenantLogo={tenantLogo}
                                 tenantSubtitle={scopeLabel}
                                 appVersion={appVersion}
+                                user={user}
+                                role={role}
+                                onSearch={() => setSearchSheetOpen(true)}
+                                onProfileClick={() => setProfileSheetOpen(true)}
+                                currentRole={currentRole}
+                                allRoles={allRoles}
+                                onRoleSwitch={onRoleSwitch}
                             />
                             <main
                                 className="admin-main relative flex flex-col"
@@ -232,6 +240,12 @@ export function AppShell({
                     tenantName={tenantName}
                     tenantLogo={tenantLogo}
                     tenantSubtitle={scopeLabel}
+                    user={user}
+                    role={role}
+                    onSearch={() => setSearchSheetOpen(true)}
+                    currentRole={currentRole}
+                    allRoles={allRoles}
+                    onRoleSwitch={onRoleSwitch}
                 />
 
                 {/* Overlay panels */}

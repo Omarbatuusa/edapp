@@ -79,8 +79,17 @@
     --admin-max-width-tablet: 100%;
     --admin-max-width-desktop: 100%;
     --admin-nav-height: 84px;
-    --admin-rail-width-collapsed: 60px;
-    --admin-rail-width-desktop: 240px;
+    --admin-rail-width-collapsed: 72px;
+    --admin-rail-width-desktop: 280px;
+
+    /* ── Premium Sidebar Tokens ── */
+    --sidebar-bg: 225 15% 12%;
+    --sidebar-text: 0 0% 82%;
+    --sidebar-text-active: 0 0% 100%;
+    --sidebar-text-muted: 0 0% 50%;
+    --sidebar-hover: 0 0% 100%;
+    --sidebar-divider: 0 0% 100%;
+    --sidebar-section-label: 0 0% 55%;
     --admin-header-height: 52px;
 
     /* Light Mode - iOS Grouped Background & Pure White Cards */
@@ -365,17 +374,17 @@
   }
 }
 
-/* Admin nav rail — 769px+ only (skip small tablets) */
+/* ═══════════════════════════════════════════════════════
+   PREMIUM SIDEBAR — dark elegant base, all breakpoints
+   ═══════════════════════════════════════════════════════ */
 .admin-nav-rail {
   display: none;
   flex-shrink: 0;
-  background-color: hsl(var(--admin-surface));
+  background-color: hsl(var(--sidebar-bg));
   overflow: hidden;
   will-change: width;
-  transition: width 0.25s cubic-bezier(0.32, 0.72, 0, 1);
-  border-right: 0.5px solid hsl(var(--admin-border) / 0.6);
-  border-top-right-radius: 18px;
-  border-bottom-right-radius: 18px;
+  transition: width 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  border-right: 1px solid hsl(var(--sidebar-divider) / 0.06);
   z-index: 31;
 }
 
@@ -391,50 +400,46 @@
   .admin-nav-rail {
     width: var(--admin-rail-width-desktop);
   }
-
   .admin-nav-rail.is-collapsed {
     width: var(--admin-rail-width-collapsed);
   }
 }
 
-/* ── Sidebar 3-zone layout ── */
+/* ── Sidebar zones ── */
 .sidebar-top {
   position: sticky;
   top: 0;
   z-index: 2;
-  background: hsl(var(--admin-surface));
-  padding: 12px 10px;
+  background: hsl(var(--sidebar-bg));
+  padding: 16px 12px 8px;
   flex-shrink: 0;
+  border-bottom: 1px solid hsl(var(--sidebar-divider) / 0.06);
 }
-/* Expanded desktop: slightly more horizontal breathing room */
 @media (min-width: 1025px) {
   .admin-nav-rail:not(.is-collapsed) .sidebar-top {
-    padding: 12px 14px;
+    padding: 16px 16px 10px;
   }
 }
-
-/* Collapse/expand toggle — always visible, icon only */
 
 .sidebar-menu {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 4px 6px;
+  padding: 8px 8px;
 }
-
 @media (min-width: 1025px) {
   .admin-nav-rail:not(.is-collapsed) .sidebar-menu {
-    padding: 4px 10px;
+    padding: 8px 12px;
   }
 }
 
-/* Stable scrollbar — prevents width shift on hover (expanded only) */
+/* Stable scrollbar — dark themed */
 .sidebar-scroll-stable {
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
 }
 .sidebar-scroll-stable:hover {
-  scrollbar-color: hsl(var(--muted-foreground) / 0.2) transparent;
+  scrollbar-color: hsl(0 0% 100% / 0.12) transparent;
 }
 .sidebar-scroll-stable::-webkit-scrollbar {
   width: 4px;
@@ -444,23 +449,27 @@
   border-radius: 4px;
 }
 .sidebar-scroll-stable:hover::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.2);
+  background: hsl(0 0% 100% / 0.12);
 }
-/* Expanded sidebar: reserve scrollbar gutter to prevent width jitter */
 @media (min-width: 1025px) {
   .admin-nav-rail:not(.is-collapsed) .sidebar-scroll-stable {
     scrollbar-gutter: stable;
   }
 }
 
-/* Sidebar nav items — stable dimensions, no reflow on hover */
+/* Sidebar nav items — premium styling */
 .sidebar-nav-item {
   display: flex;
   align-items: center;
-  border-radius: 12px;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  border-radius: 10px;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
   text-decoration: none;
   width: 100%;
+  color: hsl(var(--sidebar-text));
+}
+.sidebar-nav-item:hover {
+  background-color: hsl(var(--sidebar-hover) / 0.06);
+  color: hsl(var(--sidebar-text-active));
 }
 .sidebar-nav-item:active {
   transform: scale(0.97);
@@ -470,18 +479,77 @@
   padding: 10px;
 }
 .sidebar-nav-item--full {
-  gap: 12px;
-  padding: 10px 12px;
+  gap: 10px;
+  padding: 8px 12px;
 }
 
-/* Sidebar sticky micro footer */
+/* Active nav item — soft glow */
+.sidebar-nav-item.is-active {
+  background-color: hsl(var(--admin-primary) / 0.12);
+  color: hsl(210 100% 70%);
+  box-shadow: 0 0 0 1px hsl(var(--admin-primary) / 0.15), 0 1px 4px hsl(var(--admin-primary) / 0.08);
+}
+
+/* Accordion children container */
+.sidebar-accordion-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.sidebar-accordion-content.is-open {
+  grid-template-rows: 1fr;
+}
+.sidebar-accordion-content > div {
+  overflow: hidden;
+}
+
+/* Accordion chevron */
+.sidebar-accordion-chevron {
+  transition: transform 0.2s ease;
+  font-size: 18px;
+  color: hsl(var(--sidebar-text-muted));
+}
+.sidebar-accordion-chevron.is-open {
+  transform: rotate(180deg);
+}
+
+/* Sidebar sticky footer / user area */
 .sidebar-footer {
   position: sticky;
   bottom: 0;
   z-index: 2;
-  background: hsl(var(--admin-surface));
-  padding: 6px 10px;
+  background: hsl(var(--sidebar-bg));
+  padding: 8px 12px 12px;
   flex-shrink: 0;
+  border-top: 1px solid hsl(var(--sidebar-divider) / 0.06);
+}
+
+/* User popover — glass card floating above footer */
+.sidebar-user-popover {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 12px;
+  right: 12px;
+  background: hsl(225 15% 16% / 0.97);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid hsl(0 0% 100% / 0.08);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
+  padding: 8px;
+  z-index: 60;
+  animation: sidebar-popover-in 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes sidebar-popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* Mobile drawer */
@@ -500,7 +568,7 @@
   top: 0;
   left: 0;
   bottom: 0;
-  width: 280px;
+  width: 300px;
   max-width: 80vw;
   z-index: 51;
   background: hsl(var(--admin-surface));
