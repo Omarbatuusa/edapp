@@ -8,12 +8,14 @@ import {
     HttpCode,
     HttpStatus,
     BadRequestException,
+    UseGuards,
 } from '@nestjs/common';
 import { StorageService } from './storage.service';
 import { SvgSanitizerService } from './svg-sanitizer.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FileObject, FileVisibility, FileCategory } from './file-object.entity';
+import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 
 interface UploadRequestDto {
     category: string;
@@ -72,6 +74,7 @@ interface ConfirmUploadDto {
 }
 
 @Controller('storage')
+@UseGuards(FirebaseAuthGuard)
 export class StorageController {
     constructor(
         private readonly storageService: StorageService,
