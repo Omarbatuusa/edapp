@@ -381,11 +381,36 @@
   display: none;
   flex-shrink: 0;
   background-color: hsl(var(--sidebar-bg));
-  overflow: hidden;
+  overflow: visible;
   will-change: width;
   transition: width 0.3s cubic-bezier(0.32, 0.72, 0, 1);
   border-right: 1px solid hsl(var(--sidebar-divider) / 0.06);
   z-index: 31;
+  position: relative;
+}
+
+/* ── Chevron collapse/expand handle — clipped to sidebar outer edge ── */
+.sidebar-collapse-handle {
+  position: absolute;
+  top: 24px;
+  right: -14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: hsl(var(--sidebar-bg));
+  border: 1px solid hsl(var(--sidebar-divider) / 0.12);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  z-index: 40;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: hsl(var(--sidebar-text-muted));
+  transition: color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+.sidebar-collapse-handle:hover {
+  color: white;
+  background: hsl(225 15% 18%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
 @media (min-width: 769px) {
@@ -426,6 +451,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   padding: 8px 8px;
+  min-height: 0;
 }
 @media (min-width: 1025px) {
   .admin-nav-rail:not(.is-collapsed) .sidebar-menu {

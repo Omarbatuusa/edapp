@@ -67,14 +67,13 @@ function RailTooltip({ children, text, show: forceShow }: { children: React.Reac
 
 /* ── Accordion submenu for items with children ── */
 function SidebarAccordion({
-    item, basePath, isIconOnly, isActive, isChildActive, pathname,
+    item, basePath, isIconOnly, isActive, isChildActive,
 }: {
     item: NavItem; basePath: string; isIconOnly: boolean;
-    isActive: (href: string) => boolean; isChildActive: boolean; pathname: string;
+    isActive: (href: string) => boolean; isChildActive: boolean;
 }) {
     const [open, setOpen] = useState(isChildActive);
 
-    // Auto-open when a child route becomes active
     useEffect(() => {
         if (isChildActive) setOpen(true);
     }, [isChildActive]);
@@ -82,7 +81,6 @@ function SidebarAccordion({
     const parentActive = isActive(item.href) && !isChildActive;
 
     if (isIconOnly) {
-        // In collapsed mode, just show parent icon — children hidden
         const active = parentActive || isChildActive;
         return (
             <RailTooltip text={item.label} show={isIconOnly}>
@@ -103,14 +101,10 @@ function SidebarAccordion({
 
     return (
         <div>
-            {/* Accordion trigger */}
             <button
                 type="button"
                 onClick={() => setOpen(!open)}
-                className={`sidebar-nav-item sidebar-nav-item--full w-full ${parentActive || isChildActive
-                    ? 'is-active'
-                    : ''
-                    }`}
+                className={`sidebar-nav-item sidebar-nav-item--full w-full ${parentActive || isChildActive ? 'is-active' : ''}`}
             >
                 <span
                     className="material-symbols-outlined text-[22px] flex-shrink-0"
@@ -124,7 +118,6 @@ function SidebarAccordion({
                 </span>
             </button>
 
-            {/* Children container with grid animation */}
             <div className={`sidebar-accordion-content ${open ? 'is-open' : ''}`}>
                 <div>
                     <div className="ml-4 mt-0.5 border-l border-[hsl(var(--sidebar-divider)/0.1)] pl-2 flex flex-col gap-0.5">
@@ -153,57 +146,107 @@ function SidebarAccordion({
     );
 }
 
-/* ── User popover (floating card above footer) ── */
+/* ── Floating user popover — portal-rendered to avoid clipping ── */
 function UserPopover({
-    user, role, tenantName, tenantSlug, basePath,
+    user, role, tenantName, basePath,
     currentRole, allRoles, onRoleSwitch, onProfileClick, onClose,
+    anchorRef,
 }: {
-    user?: any; role?: string; tenantName: string; tenantSlug: string; basePath: string;
+    user?: any; role?: string; tenantName: string; basePath: string;
     currentRole?: UserRoleAssignment; allRoles?: UserRoleAssignment[];
     onRoleSwitch?: (role: UserRoleAssignment) => void;
     onProfileClick?: () => void; onClose: () => void;
+    anchorRef: React.RefObject<HTMLDivElement | null>;
 }) {
     const router = useRouter();
     const { logout } = useAuth();
     const popoverRef = useRef<HTMLDivElement>(null);
+    const [pos, setPos] = useState({ left: 0, bottom: 0, width: 260 });
 
     const displayName = user?.displayName || user?.first_name || 'User';
     const displayEmail = user?.email || '';
     const roleMeta = role ? getRoleMetadata(role) : null;
 
+    // Position relative to anchor
+    useEffect(() => {
+        if (anchorRef.current) {
+            const rect = anchorRef.current.getBoundingClientRect();
+            setPos({
+                left: rect.left,
+                bottom: window.innerHeight - rect.top + 8,
+                width: Math.max(rect.width, 260),
+            });
+        }
+    }, [anchorRef]);
+
+    // Close on outside click or Escape
     useEffect(() => {
         const handleClick = (e: MouseEvent) => {
-            if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
+            if (
+                popoverRef.current && !popoverRef.current.contains(e.target as Node) &&
+                anchorRef.current && !anchorRef.current.contains(e.target as Node)
+            ) {
                 onClose();
             }
         };
         const handleKey = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onClose();
         };
-        document.addEventListener('mousedown', handleClick);
+        // Delay listener to avoid immediate close from the triggering click
+        const timer = setTimeout(() => {
+            document.addEventListener('mousedown', handleClick);
+        }, 10);
         document.addEventListener('keydown', handleKey);
         return () => {
+            clearTimeout(timer);
             document.removeEventListener('mousedown', handleClick);
             document.removeEventListener('keydown', handleKey);
         };
-    }, [onClose]);
+    }, [onClose, anchorRef]);
 
     const handleSignOut = async () => {
+        onClose();
         await logout();
         const slug = basePath.split('/tenant/')[1]?.split('/')[0] || '';
         router.push(`/tenant/${slug}/login`);
     };
 
-    return (
-        <div ref={popoverRef} className="sidebar-user-popover">
+    if (typeof window === 'undefined') return null;
+
+    return createPortal(
+        <div
+            ref={popoverRef}
+            className="fixed z-[200] rounded-2xl shadow-2xl overflow-hidden"
+            style={{
+                left: pos.left,
+                bottom: pos.bottom,
+                width: pos.width,
+                background: 'hsl(225 15% 16% / 0.97)',
+                backdropFilter: 'blur(24px) saturate(180%)',
+                WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+                border: '1px solid hsl(0 0% 100% / 0.08)',
+                animation: 'sidebar-popover-in 0.2s cubic-bezier(0.32, 0.72, 0, 1)',
+            }}
+        >
             {/* User info */}
-            <div className="px-3 py-3 border-b border-[hsl(var(--sidebar-divider)/0.1)]">
-                <p className="text-[14px] font-semibold text-white truncate">{displayName}</p>
-                {displayEmail && (
-                    <p className="text-[12px] text-[hsl(var(--sidebar-text-muted))] truncate mt-0.5">{displayEmail}</p>
-                )}
+            <div className="px-4 py-3 border-b border-[hsl(0_0%_100%/0.08)]">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500/30 to-purple-500/30 flex items-center justify-center flex-shrink-0 border border-[hsl(0_0%_100%/0.1)]">
+                        {user?.photoURL ? (
+                            <img src={user.photoURL} alt={displayName} className="w-full h-full object-cover rounded-full" />
+                        ) : (
+                            <span className="text-[15px] font-bold text-white">{displayName.charAt(0).toUpperCase()}</span>
+                        )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                        <p className="text-[14px] font-semibold text-white truncate">{displayName}</p>
+                        {displayEmail && (
+                            <p className="text-[12px] text-[hsl(0_0%_55%)] truncate mt-0.5">{displayEmail}</p>
+                        )}
+                    </div>
+                </div>
                 {roleMeta && (
-                    <div className="mt-2 inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-[hsl(0_0%_100%/0.06)] text-[11px] font-medium text-[hsl(var(--sidebar-text))]">
+                    <div className="mt-2.5 inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-[hsl(0_0%_100%/0.06)] text-[11px] font-medium text-[hsl(0_0%_75%)]">
                         <span className="material-symbols-outlined text-[14px]">{roleMeta.icon}</span>
                         <span>{roleMeta.shortName}</span>
                     </div>
@@ -212,34 +255,29 @@ function UserPopover({
 
             {/* Role switcher */}
             {allRoles && allRoles.length > 1 && currentRole && onRoleSwitch && (
-                <div className="px-2 py-2 border-b border-[hsl(var(--sidebar-divider)/0.1)]">
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-[hsl(var(--sidebar-text-muted))] px-2 mb-1">
+                <div className="px-2 py-2 border-b border-[hsl(0_0%_100%/0.08)]">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-[hsl(0_0%_45%)] px-2 mb-1">
                         Switch Role
                     </p>
                     {allRoles.map((r) => {
                         const meta = getRoleMetadata(r.role);
-                        const isActive = r.id === currentRole.id;
+                        const active = r.id === currentRole.id;
                         return (
                             <button
                                 key={r.id}
+                                type="button"
                                 onClick={() => { onRoleSwitch(r); onClose(); }}
-                                className={`w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-left transition-colors ${isActive
+                                className={`w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-left transition-colors ${active
                                     ? 'bg-[hsl(var(--admin-primary)/0.15)] text-[hsl(210_100%_70%)]'
-                                    : 'text-[hsl(var(--sidebar-text))] hover:bg-[hsl(0_0%_100%/0.06)]'
+                                    : 'text-[hsl(0_0%_75%)] hover:bg-[hsl(0_0%_100%/0.06)]'
                                     }`}
                             >
-                                <span className="material-symbols-outlined text-[18px]">
-                                    {meta?.icon || 'person'}
-                                </span>
+                                <span className="material-symbols-outlined text-[18px]">{meta?.icon || 'person'}</span>
                                 <div className="flex-1 min-w-0">
                                     <p className="text-[12px] font-medium truncate">{meta?.displayName || r.role}</p>
-                                    <p className="text-[10px] text-[hsl(var(--sidebar-text-muted))] truncate">
-                                        {r.tenant_name || tenantName}
-                                    </p>
+                                    <p className="text-[10px] text-[hsl(0_0%_45%)] truncate">{r.tenant_name || tenantName}</p>
                                 </div>
-                                {isActive && (
-                                    <span className="material-symbols-outlined text-[16px] text-[hsl(210_100%_70%)]">check</span>
-                                )}
+                                {active && <span className="material-symbols-outlined text-[16px] text-[hsl(210_100%_70%)]">check</span>}
                             </button>
                         );
                     })}
@@ -249,21 +287,24 @@ function UserPopover({
             {/* Quick links */}
             <div className="px-2 py-1.5">
                 <button
+                    type="button"
                     onClick={() => { onProfileClick?.(); onClose(); }}
-                    className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-[hsl(var(--sidebar-text))] hover:bg-[hsl(0_0%_100%/0.06)] transition-colors"
+                    className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-[hsl(0_0%_75%)] hover:bg-[hsl(0_0%_100%/0.06)] transition-colors"
                 >
                     <span className="material-symbols-outlined text-[18px]">person</span>
                     <span className="text-[12px] font-medium">My Profile</span>
                 </button>
                 <button
+                    type="button"
                     onClick={() => { router.push(basePath + '/control'); onClose(); }}
-                    className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-[hsl(var(--sidebar-text))] hover:bg-[hsl(0_0%_100%/0.06)] transition-colors"
+                    className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-[hsl(0_0%_75%)] hover:bg-[hsl(0_0%_100%/0.06)] transition-colors"
                 >
                     <span className="material-symbols-outlined text-[18px]">settings</span>
                     <span className="text-[12px] font-medium">Settings</span>
                 </button>
-                <div className="my-1 border-t border-[hsl(var(--sidebar-divider)/0.1)]" />
+                <div className="my-1 border-t border-[hsl(0_0%_100%/0.08)]" />
                 <button
+                    type="button"
                     onClick={handleSignOut}
                     className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors"
                 >
@@ -271,7 +312,8 @@ function UserPopover({
                     <span className="text-[12px] font-medium">Sign Out</span>
                 </button>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
 
@@ -302,14 +344,10 @@ export function AppNavRail({
     const pathname = usePathname();
     const [isIconOnly, setIsIconOnly] = useState(false);
     const [popoverOpen, setPopoverOpen] = useState(false);
-    const year = new Date().getFullYear();
+    const footerRef = useRef<HTMLDivElement>(null);
 
-    // Build sections: prefer explicit sidebarSections, fallback to flat allItems
-    const sections: NavSection[] = sidebarSections || [
-        { title: '', items: allItems },
-    ];
+    const sections: NavSection[] = sidebarSections || [{ title: '', items: allItems }];
 
-    // Detect icon-only mode: tablet always, desktop when collapsed
     useEffect(() => {
         const check = () => {
             const isDesktop = window.matchMedia('(min-width: 1025px)').matches;
@@ -320,13 +358,17 @@ export function AppNavRail({
         return () => window.removeEventListener('resize', check);
     }, [isCollapsed]);
 
+    // Close popover on route change
+    useEffect(() => {
+        setPopoverOpen(false);
+    }, [pathname]);
+
     const isActive = useCallback((href: string) => {
         const full = basePath + href;
         if (href === '') return pathname === basePath || pathname === basePath + '/';
         return pathname?.startsWith(full) || false;
     }, [basePath, pathname]);
 
-    // Check if any child of an item is active
     const hasActiveChild = useCallback((item: NavItem) => {
         if (!item.children) return false;
         return item.children.some((child) => isActive(child.href));
@@ -335,78 +377,74 @@ export function AppNavRail({
     const displayName = user?.displayName || user?.first_name || 'User';
     const displayInitial = displayName.charAt(0).toUpperCase();
     const roleMeta = role ? getRoleMetadata(role) : null;
-    const tenantSlug = basePath.split('/tenant/')[1]?.split('/')[0] || '';
 
     return (
         <aside className={`admin-nav-rail ${isCollapsed ? 'is-collapsed' : ''}`}>
+            {/* ── Chevron collapse handle — attached to outer right edge ── */}
+            <button
+                type="button"
+                onClick={onToggleCollapse}
+                className="sidebar-collapse-handle hidden lg:flex"
+                aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+                <span className="material-symbols-outlined text-[14px]">
+                    {isCollapsed ? 'chevron_right' : 'chevron_left'}
+                </span>
+            </button>
+
             {/* ── ZONE 1: Brand block ── */}
             <div className="sidebar-top">
                 {isIconOnly ? (
-                    /* Collapsed: logo + toggle */
-                    <div className="flex flex-col items-center gap-2">
-                        {tenantLogo ? (
-                            <div className="w-9 h-9 rounded-xl overflow-hidden bg-[hsl(0_0%_100%/0.08)] flex-shrink-0">
-                                <img src={tenantLogo} alt={tenantName} className="w-full h-full object-cover" />
-                            </div>
-                        ) : (
-                            <div className="w-9 h-9 rounded-xl bg-[hsl(var(--admin-primary)/0.2)] flex items-center justify-center flex-shrink-0">
-                                <span className="material-symbols-outlined text-[hsl(210_100%_70%)] text-lg">school</span>
-                            </div>
-                        )}
-                        <button
-                            type="button"
-                            onClick={onToggleCollapse}
-                            className="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg text-[hsl(var(--sidebar-text-muted))] hover:bg-[hsl(0_0%_100%/0.06)] hover:text-white transition-colors active:scale-[0.92]"
-                            aria-label="Expand sidebar"
-                        >
-                            <span className="material-symbols-outlined text-[18px]">dock_to_right</span>
-                        </button>
-                    </div>
-                ) : (
-                    /* Expanded: logo + tenant name + subtitle + collapse toggle */
-                    <div>
-                        <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                    <div className="flex flex-col items-center">
+                        <RailTooltip text={tenantName} show={isIconOnly}>
+                            <div className="flex justify-center">
                                 {tenantLogo ? (
-                                    <div className="w-9 h-9 rounded-xl overflow-hidden bg-[hsl(0_0%_100%/0.08)] flex-shrink-0 border border-[hsl(0_0%_100%/0.06)]">
+                                    <div className="w-10 h-10 rounded-xl overflow-hidden bg-[hsl(0_0%_100%/0.08)] flex-shrink-0">
                                         <img src={tenantLogo} alt={tenantName} className="w-full h-full object-cover" />
                                     </div>
                                 ) : (
-                                    <div className="w-9 h-9 rounded-xl bg-[hsl(var(--admin-primary)/0.2)] flex items-center justify-center flex-shrink-0">
-                                        <span className="material-symbols-outlined text-[hsl(210_100%_70%)] text-lg">school</span>
+                                    <div className="w-10 h-10 rounded-xl bg-[hsl(var(--admin-primary)/0.2)] flex items-center justify-center flex-shrink-0">
+                                        <span className="material-symbols-outlined text-[hsl(210_100%_70%)] text-xl">school</span>
                                     </div>
                                 )}
-                                <div className="min-w-0 flex-1">
-                                    <p className="text-[14px] font-semibold text-white truncate leading-tight" title={tenantName}>
-                                        {tenantName}
-                                    </p>
-                                    {tenantSubtitle && (
-                                        <p className="text-[11px] text-[hsl(var(--sidebar-text-muted))] truncate leading-tight mt-0.5">
-                                            {tenantSubtitle}
-                                        </p>
-                                    )}
-                                </div>
                             </div>
-                            <button
-                                type="button"
-                                onClick={onToggleCollapse}
-                                className="hidden lg:flex items-center justify-center w-7 h-7 rounded-lg text-[hsl(var(--sidebar-text-muted))] hover:bg-[hsl(0_0%_100%/0.06)] hover:text-white transition-colors active:scale-[0.92] flex-shrink-0"
-                                aria-label="Collapse sidebar"
-                            >
-                                <span className="material-symbols-outlined text-[18px]">dock_to_left</span>
-                            </button>
+                        </RailTooltip>
+                    </div>
+                ) : (
+                    <div>
+                        {/* Tenant identity row */}
+                        <div className="flex items-center gap-2.5 mb-4">
+                            {tenantLogo ? (
+                                <div className="w-10 h-10 rounded-xl overflow-hidden bg-[hsl(0_0%_100%/0.08)] flex-shrink-0 border border-[hsl(0_0%_100%/0.06)]">
+                                    <img src={tenantLogo} alt={tenantName} className="w-full h-full object-cover" />
+                                </div>
+                            ) : (
+                                <div className="w-10 h-10 rounded-xl bg-[hsl(var(--admin-primary)/0.2)] flex items-center justify-center flex-shrink-0">
+                                    <span className="material-symbols-outlined text-[hsl(210_100%_70%)] text-xl">school</span>
+                                </div>
+                            )}
+                            <div className="min-w-0 flex-1">
+                                <p className="text-[14px] font-semibold text-white truncate leading-tight" title={tenantName}>
+                                    {tenantName}
+                                </p>
+                                {tenantSubtitle && (
+                                    <p className="text-[11px] text-[hsl(var(--sidebar-text-muted))] truncate leading-tight mt-0.5">
+                                        {tenantSubtitle}
+                                    </p>
+                                )}
+                            </div>
                         </div>
 
-                        {/* Search bar */}
+                        {/* Search field — fixed alignment */}
                         {onSearch && (
                             <button
                                 type="button"
                                 onClick={onSearch}
-                                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg bg-[hsl(0_0%_100%/0.05)] hover:bg-[hsl(0_0%_100%/0.08)] text-[hsl(var(--sidebar-text-muted))] transition-colors text-left"
+                                className="w-full flex items-center gap-3 h-9 px-3 rounded-lg bg-[hsl(0_0%_100%/0.06)] hover:bg-[hsl(0_0%_100%/0.1)] text-[hsl(var(--sidebar-text-muted))] transition-colors text-left"
                             >
-                                <span className="material-symbols-outlined text-[18px]">search</span>
-                                <span className="text-[12px] font-medium truncate">Search...</span>
-                                <kbd className="ml-auto text-[10px] font-mono bg-[hsl(0_0%_100%/0.06)] px-1.5 py-0.5 rounded text-[hsl(var(--sidebar-text-muted))]">
+                                <span className="material-symbols-outlined text-[20px] leading-none flex-shrink-0">search</span>
+                                <span className="text-[13px] font-medium leading-none flex-1">Search...</span>
+                                <kbd className="text-[10px] font-mono bg-[hsl(0_0%_100%/0.08)] px-1.5 py-0.5 rounded text-[hsl(0_0%_45%)] leading-none flex-shrink-0">
                                     /K
                                 </kbd>
                             </button>
@@ -418,14 +456,12 @@ export function AppNavRail({
             {/* ── ZONE 2: Scrollable nav sections ── */}
             <nav className="sidebar-menu sidebar-scroll-stable">
                 {sections.map((section, si) => (
-                    <div key={si} className={si > 0 ? 'mt-4' : ''}>
-                        {/* Section label — only in expanded mode */}
+                    <div key={si} className={si > 0 ? 'mt-5' : ''}>
                         {!isIconOnly && section.title && (
-                            <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-[hsl(var(--sidebar-section-label))] px-3 mb-1.5">
+                            <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-[hsl(var(--sidebar-section-label))] px-3 mb-2">
                                 {section.title}
                             </p>
                         )}
-                        {/* Divider in collapsed mode between sections */}
                         {isIconOnly && si > 0 && (
                             <div className="mx-3 mb-2 border-t border-[hsl(var(--sidebar-divider)/0.08)]" />
                         )}
@@ -434,7 +470,6 @@ export function AppNavRail({
                             {section.items.map((item) => {
                                 const childActive = hasActiveChild(item);
 
-                                // Accordion items (have children)
                                 if (item.children && item.children.length > 0) {
                                     return (
                                         <SidebarAccordion
@@ -444,12 +479,10 @@ export function AppNavRail({
                                             isIconOnly={isIconOnly}
                                             isActive={isActive}
                                             isChildActive={childActive}
-                                            pathname={pathname || ''}
                                         />
                                     );
                                 }
 
-                                // Leaf items
                                 const active = isActive(item.href);
                                 const linkContent = (
                                     <a
@@ -486,9 +519,8 @@ export function AppNavRail({
             </nav>
 
             {/* ── ZONE 3: Pinned user area ── */}
-            <div className="sidebar-footer relative">
+            <div className="sidebar-footer" ref={footerRef}>
                 {isIconOnly ? (
-                    /* Collapsed: avatar only */
                     <RailTooltip text={displayName} show={isIconOnly}>
                         <button
                             type="button"
@@ -506,7 +538,6 @@ export function AppNavRail({
                         </button>
                     </RailTooltip>
                 ) : (
-                    /* Expanded: full user row */
                     <button
                         type="button"
                         onClick={() => setPopoverOpen(!popoverOpen)}
@@ -533,23 +564,23 @@ export function AppNavRail({
                         </span>
                     </button>
                 )}
-
-                {/* User popover */}
-                {popoverOpen && (
-                    <UserPopover
-                        user={user}
-                        role={role}
-                        tenantName={tenantName}
-                        tenantSlug={tenantSlug}
-                        basePath={basePath}
-                        currentRole={currentRole}
-                        allRoles={allRoles}
-                        onRoleSwitch={onRoleSwitch}
-                        onProfileClick={onProfileClick}
-                        onClose={() => setPopoverOpen(false)}
-                    />
-                )}
             </div>
+
+            {/* Portal-rendered user popover */}
+            {popoverOpen && (
+                <UserPopover
+                    user={user}
+                    role={role}
+                    tenantName={tenantName}
+                    basePath={basePath}
+                    currentRole={currentRole}
+                    allRoles={allRoles}
+                    onRoleSwitch={onRoleSwitch}
+                    onProfileClick={onProfileClick}
+                    onClose={() => setPopoverOpen(false)}
+                    anchorRef={footerRef}
+                />
+            )}
         </aside>
     );
 }

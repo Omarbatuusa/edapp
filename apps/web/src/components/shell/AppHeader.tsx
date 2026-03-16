@@ -3,7 +3,7 @@
 import React from 'react';
 
 interface AppHeaderProps {
-    title: string;
+    title?: string;
     subtitle?: string;
     logoUrl?: string | null;
     isScrolled?: boolean;
@@ -22,15 +22,13 @@ interface AppHeaderProps {
 }
 
 /**
- * Minimal AppHeader — icon-only left, action icons right.
+ * Utility-only AppHeader — no tenant identity.
+ * Tenant identity lives exclusively in the sidebar.
  *
- * Mobile:   [≡ trigger] [Logo] ··· [Search] [Safety] [Bell] [Avatar ▾]
- * Desktop:  [Logo] [TenantName] ··· [Search] [Safety] [Bell] [Avatar ▾]
+ * Mobile:   [≡ trigger] ··· [Search] [Safety] [Bell] [Avatar ▾]
+ * Desktop:  (empty left) ··· [Search] [Safety] [Bell] [Avatar ▾]
  */
 export function AppHeader({
-    title,
-    subtitle,
-    logoUrl,
     onSearch,
     onNotificationClick,
     onAvatarClick,
@@ -47,9 +45,8 @@ export function AppHeader({
     return (
         <header className="admin-header" id="app-header">
             <div className="flex items-center justify-between gap-2">
-                {/* Left: Drawer trigger (mobile) + Logo icon */}
+                {/* Left: mobile drawer trigger only */}
                 <div className="flex items-center gap-2 flex-shrink-0">
-                    {/* Drawer trigger — mobile only */}
                     {onMenuOpen && (
                         <button
                             type="button"
@@ -60,34 +57,11 @@ export function AppHeader({
                             <span className="material-symbols-outlined text-[20px] text-[hsl(var(--admin-text-sub))]">menu</span>
                         </button>
                     )}
-
-                    {/* Logo icon — always visible */}
-                    <div className="flex-shrink-0">
-                        {logoUrl ? (
-                            <div className="w-8 h-8 rounded-lg overflow-hidden bg-[hsl(var(--admin-surface-alt))] border border-[hsl(var(--admin-border)/0.3)]">
-                                <img src={logoUrl} alt="" className="w-full h-full object-cover" />
-                            </div>
-                        ) : (
-                            <div className="w-8 h-8 rounded-lg bg-[hsl(var(--admin-primary))] flex items-center justify-center">
-                                <span className="material-symbols-outlined text-white text-base">school</span>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Tenant identity — desktop only */}
-                    {title && (
-                        <div className="hidden md:block min-w-0">
-                            <p className="text-[14px] font-semibold text-[hsl(var(--admin-text-main))] leading-tight">{title}</p>
-                            {subtitle && (
-                                <p className="text-[11px] text-[hsl(var(--admin-text-muted))] leading-tight mt-0.5">{subtitle}</p>
-                            )}
-                        </div>
-                    )}
                 </div>
 
-                {/* Right: Icon cluster */}
+                {/* Right: utility icon cluster */}
                 <div className="flex items-center gap-1 flex-shrink-0">
-                    {/* Switch School — only if user has linked tenants */}
+                    {/* Switch School */}
                     {onSwitchSchool && (
                         <button
                             type="button"
@@ -99,7 +73,7 @@ export function AppHeader({
                         </button>
                     )}
 
-                    {/* Search — visible on all sizes */}
+                    {/* Search */}
                     {onSearch && (
                         <button
                             type="button"
@@ -111,7 +85,7 @@ export function AppHeader({
                         </button>
                     )}
 
-                    {/* Safety — emergency/incident access */}
+                    {/* Safety */}
                     {showSafety && onSafetyClick && (
                         <button
                             type="button"
@@ -140,7 +114,7 @@ export function AppHeader({
                         </button>
                     )}
 
-                    {/* Avatar with chevron */}
+                    {/* Avatar */}
                     {onAvatarClick && (
                         <button
                             type="button"
@@ -157,7 +131,6 @@ export function AppHeader({
                                     </span>
                                 )}
                             </div>
-                            {/* Small chevron badge */}
                             <div className="absolute -bottom-[2px] -right-[2px] w-[15px] h-[15px] rounded-full bg-[hsl(var(--admin-border))] border-[1.5px] border-[hsl(var(--admin-surface))] flex items-center justify-center shadow-sm">
                                 <span className="material-symbols-outlined text-[9px] text-[hsl(var(--admin-text-main))]">expand_more</span>
                             </div>
