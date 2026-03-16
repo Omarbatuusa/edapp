@@ -17,7 +17,7 @@ export function CoverUpload({ label = 'Cover Photo', value, onChange }: CoverUpl
 
     const handleFile = async (file: File) => {
         if (!file.type.startsWith('image/')) { setError('Please select an image file'); return; }
-        if (file.size > 10 * 1024 * 1024) { setError('File must be under 10MB'); return; }
+        if (file.size > 10 * 1024 * 1024) { setError('File must be under 10 MB'); return; }
         setError('');
         setUploading(true);
         const blobUrl = URL.createObjectURL(file);
@@ -40,41 +40,44 @@ export function CoverUpload({ label = 'Cover Photo', value, onChange }: CoverUpl
     const displaySrc = previewUrl || (value && !value.startsWith('uploads/') ? value : '');
 
     return (
-        <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">{label} <span className="text-slate-400 font-normal">(optional)</span></label>
+        <div className="flex flex-col gap-1.5">
+            <label className="text-[13px] font-medium text-[hsl(var(--admin-text-sub))] px-1">
+                {label} <span className="text-[hsl(var(--admin-text-muted))] font-normal">(optional)</span>
+            </label>
             <div
-                className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 aspect-[16/5] group cursor-pointer"
+                className="relative rounded-2xl overflow-hidden border border-[hsl(var(--admin-border)/0.4)] aspect-[16/5] group cursor-pointer active:scale-[0.98] transition-transform"
                 onClick={() => !uploading && inputRef.current?.click()}
             >
                 {displaySrc ? (
                     <img src={displaySrc} alt="Cover" className="w-full h-full object-cover" />
                 ) : (
-                    <div className="w-full h-full bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center">
-                        <span className="text-white/70 text-xs font-medium">Default gradient · click to upload</span>
+                    <div className="w-full h-full bg-gradient-to-r from-[hsl(var(--admin-primary)/0.08)] to-[hsl(210_100%_50%/0.15)] flex items-center justify-center">
+                        <div className="flex flex-col items-center gap-1">
+                            <span className="material-symbols-outlined text-[20px] text-[hsl(var(--admin-text-muted))]">panorama</span>
+                            <span className="text-[11px] font-medium text-[hsl(var(--admin-text-muted))]">Tap to upload cover</span>
+                        </div>
                     </div>
                 )}
                 {uploading && (
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                        <div className="w-8 h-8 border-2 border-white/50 border-t-white rounded-full animate-spin" />
+                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                        <div className="w-6 h-6 border-2 border-white/40 border-t-white rounded-full animate-spin" />
                     </div>
                 )}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
-                    <span className="px-4 py-2 bg-white text-slate-800 text-sm font-medium rounded-xl">
-                        {hasCustomCover ? 'Change cover' : 'Upload cover'}
-                    </span>
-                    {hasCustomCover && (
+                {!uploading && hasCustomCover && (
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                        <span className="px-3 py-1.5 bg-white/90 text-[hsl(var(--admin-text-main))] text-[12px] font-medium rounded-lg">Change</span>
                         <button
                             type="button"
                             onClick={e => { e.stopPropagation(); onChange(''); setPreviewUrl(''); }}
-                            className="px-4 py-2 bg-white/80 text-red-600 text-sm font-medium rounded-xl hover:bg-white transition-colors"
+                            className="px-3 py-1.5 bg-white/90 text-red-500 text-[12px] font-medium rounded-lg"
                         >
                             Remove
                         </button>
-                    )}
-                </div>
-                <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} />
+                    </div>
+                )}
+                <input ref={inputRef} type="file" accept="image/*" className="hidden" aria-label="Upload cover image" onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} />
             </div>
-            {error && <p className="text-xs text-red-500">{error}</p>}
+            {error && <p className="text-[12px] text-red-500 font-medium px-1">{error}</p>}
         </div>
     );
 }

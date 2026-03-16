@@ -14,36 +14,32 @@ interface FieldWrapperProps {
     className?: string;
 }
 
-const borderClass: Record<FieldState, string> = {
-    idle: 'border-[#e2e8f0]',
-    success: 'border-[#2563eb] border-[3px]',
-    error: 'border-red-500 border-[3px]',
-};
-
 export function FieldWrapper({ label, required, state = 'idle', error, helper, children, className = '' }: FieldWrapperProps) {
     return (
-        <div className={`flex flex-col gap-1.5 ${className}`}>
-            <label className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1">
+        <div className={`flex flex-col gap-1 ${className}`}>
+            {/* Label */}
+            <label className="text-[13px] font-medium text-[hsl(var(--admin-text-sub))] flex items-center gap-1 px-1">
                 {label}
-                {required && <span className="text-red-500">*</span>}
+                {required && <span className="text-red-500 text-[11px]">*</span>}
             </label>
-            <div className={`rounded-xl border bg-white dark:bg-slate-900 transition-all duration-150 overflow-hidden ${borderClass[state]}`}>
+
+            {/* Input container — iOS grouped row style */}
+            <div className={`rounded-[12px] border transition-colors duration-150 overflow-hidden bg-[hsl(var(--admin-surface-alt)/0.5)] ${
+                state === 'error'
+                    ? 'border-red-400'
+                    : state === 'success'
+                    ? 'border-[hsl(var(--admin-primary)/0.4)]'
+                    : 'border-[hsl(var(--admin-border)/0.6)]'
+            }`}>
                 {children}
             </div>
-            {state === 'success' && (
-                <div className="flex items-center gap-1 text-[#2563eb] text-xs">
-                    <span className="material-symbols-outlined text-sm">check_circle</span>
-                    <span>Looks good</span>
-                </div>
-            )}
+
+            {/* Feedback row */}
             {state === 'error' && error && (
-                <div className="flex items-center gap-1 text-red-500 text-xs">
-                    <span className="material-symbols-outlined text-sm">error</span>
-                    <span>{error}</span>
-                </div>
+                <p className="text-[12px] text-red-500 font-medium px-1">{error}</p>
             )}
-            {state === 'idle' && helper && (
-                <p className="text-xs text-slate-400">{helper}</p>
+            {state !== 'error' && helper && (
+                <p className="text-[11px] text-[hsl(var(--admin-text-muted))] px-1 leading-snug">{helper}</p>
             )}
         </div>
     );

@@ -41,42 +41,46 @@ export function LogoUpload({ label = 'School Logo', value, onChange, required }:
     const imgSrc = previewUrl || value;
 
     return (
-        <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                {label}{required && <span className="text-red-500 ml-1">*</span>}
+        <div className="flex flex-col gap-1.5">
+            <label className="text-[13px] font-medium text-[hsl(var(--admin-text-sub))] px-1">
+                {label}{required && <span className="text-red-500 text-[11px] ml-0.5">*</span>}
             </label>
             <div
                 onClick={() => !uploading && inputRef.current?.click()}
-                className={`relative border-2 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition-colors ${hasImage ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/10' : 'border-slate-200 dark:border-slate-700 hover:border-blue-400 bg-slate-50 dark:bg-slate-800/50'}`}
+                className={`relative rounded-2xl border-2 border-dashed p-5 flex flex-col items-center justify-center cursor-pointer transition-all active:scale-[0.98] min-h-[120px] ${
+                    hasImage
+                        ? 'border-[hsl(var(--admin-primary)/0.3)] bg-[hsl(var(--admin-primary)/0.03)]'
+                        : 'border-[hsl(var(--admin-border)/0.5)] hover:border-[hsl(var(--admin-primary)/0.4)] bg-[hsl(var(--admin-surface-alt)/0.3)]'
+                }`}
             >
                 {uploading && (
-                    <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 rounded-2xl flex items-center justify-center z-10">
-                        <div className="w-8 h-8 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin" />
+                    <div className="absolute inset-0 bg-white/80 rounded-2xl flex items-center justify-center z-10">
+                        <div className="w-6 h-6 border-2 border-[hsl(var(--admin-primary)/0.2)] border-t-[hsl(var(--admin-primary))] rounded-full animate-spin" />
                     </div>
                 )}
                 {hasImage ? (
-                    <div className="flex flex-col items-center gap-2">
-                        <img src={imgSrc} alt="Logo preview" className="w-24 h-24 object-contain rounded-xl border border-slate-200 bg-white" />
+                    <div className="flex flex-col items-center gap-2.5">
+                        <img src={imgSrc} alt="Logo preview" className="w-20 h-20 object-contain rounded-xl border border-[hsl(var(--admin-border)/0.3)] bg-white" />
                         <button
                             type="button"
                             onClick={e => { e.stopPropagation(); onChange(''); setPreviewUrl(''); }}
-                            className="text-xs text-red-500 hover:text-red-700 font-medium"
+                            className="text-[12px] text-red-500 font-medium"
                         >
                             Remove
                         </button>
                     </div>
                 ) : (
                     <>
-                        <div className="w-14 h-14 bg-slate-100 dark:bg-slate-700 rounded-2xl flex items-center justify-center mb-3">
-                            <span className="material-symbols-outlined text-slate-400 text-3xl">add_photo_alternate</span>
+                        <div className="w-11 h-11 bg-[hsl(var(--admin-surface-alt))] rounded-xl flex items-center justify-center mb-2">
+                            <span className="material-symbols-outlined text-[22px] text-[hsl(var(--admin-text-muted))]">add_photo_alternate</span>
                         </div>
-                        <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Click to upload logo</p>
-                        <p className="text-xs text-slate-400 mt-1">PNG, JPG or SVG · Max 5MB</p>
+                        <p className="text-[13px] font-medium text-[hsl(var(--admin-text-sub))]">Tap to upload</p>
+                        <p className="text-[11px] text-[hsl(var(--admin-text-muted))] mt-0.5">PNG, JPG or SVG · Max 5 MB</p>
                     </>
                 )}
                 <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} />
             </div>
-            {error && <p className="text-xs text-red-500">{error}</p>}
+            {error && <p className="text-[12px] text-red-500 font-medium px-1">{error}</p>}
         </div>
     );
 }
