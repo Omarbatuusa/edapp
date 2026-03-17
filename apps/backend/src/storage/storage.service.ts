@@ -10,14 +10,27 @@ export class StorageService {
     private storage: Storage;
     private bucket: string;
 
+    private configured: boolean;
+
     constructor(private configService: ConfigService) {
-        // Uses VM attached service account automatically (ADC)
-        // No JSON key file needed - GCP org policy blocks key creation
-        this.storage = new Storage({
-            projectId: this.configService.get('GCS_PROJECT_ID'),
-        });
+        const projectId = this.configService.get('GCS_PROJECT_ID');
         this.bucket = this.configService.get('GCS_BUCKET') || 'edapp-uploads';
-        this.logger.log(`GCS Storage initialized for bucket: ${this.bucket}`);
+        this.configured = !!projectId;
+
+        if (this.configured) {
+            // Uses VM attached service account automatically (ADC)
+            this.storage = new Storage({ projectId });
+            this.logger.log(`GCS Storage initialized for bucket: ${this.bucket}`);
+        } else {
+            // Fallback: initialize without project ID (will fail on signed URLs but won't crash on startup)
+            this.storage = new Storage();
+            this.logger.warn('GCS_PROJECT_ID not set — file uploads will fail. Set GCS_PROJECT_ID and GCS_BUCKET env vars.');
+        }
+    }
+
+    /** Check if GCS is properly configured */
+    isConfigured(): boolean {
+        return this.configured;
     }
 
     /**

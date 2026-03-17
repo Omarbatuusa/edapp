@@ -9,6 +9,7 @@ import {
     HttpStatus,
     BadRequestException,
     UseGuards,
+    Logger,
 } from '@nestjs/common';
 import { StorageService } from './storage.service';
 import { SvgSanitizerService } from './svg-sanitizer.service';
@@ -82,6 +83,8 @@ interface ConfirmUploadDto {
 @Controller('storage')
 @UseGuards(FirebaseAuthGuard)
 export class StorageController {
+    private readonly logger = new Logger(StorageController.name);
+
     constructor(
         private readonly storageService: StorageService,
         private readonly svgSanitizer: SvgSanitizerService,
@@ -162,12 +165,25 @@ export class StorageController {
             );
         }
 
-        return this.storageService.generateSignedUploadUrl(
-            slug,
-            body.category,
-            body.filename,
-            contentType,
-        );
+        if (!this.storageService.isConfigured()) {
+            throw new BadRequestException(
+                'File storage is not configured. Please contact your administrator to set up GCS_PROJECT_ID and GCS_BUCKET.',
+            );
+        }
+
+        try {
+            return await this.storageService.generateSignedUploadUrl(
+                slug,
+                body.category,
+                body.filename,
+                contentType,
+            );
+        } catch (err: any) {
+            this.logger.error(`Upload URL generation failed: ${err.message}`, err.stack);
+            throw new BadRequestException(
+                `Upload service error: ${err.message || 'Could not generate upload URL'}. Please try again.`,
+            );
+        }
     }
 
     /**
@@ -183,24 +199,30 @@ export class StorageController {
             throw new BadRequestException('Object key is required');
         }
 
-        // Platform admins can read any object (platform-scoped or any tenant)
-        if (this.hasPlatformAccess(req)) {
+        try {
+            // Any authenticated user with an allowed role can read any object
+            if (this.hasPlatformAccess(req)) {
+                const readUrl = await this.storageService.generateSignedReadUrl(objectKey);
+                return { readUrl };
+            }
+
+            // Tenant users can only read their own objects
+            const tenantSlug = req.tenant?.slug;
+            if (tenantSlug) {
+                const expectedPrefix = `uploads/${tenantSlug}/`;
+                if (!objectKey.startsWith(expectedPrefix)) {
+                    throw new BadRequestException('Access denied: object belongs to another tenant');
+                }
+            }
+            // If no tenant slug but user is authenticated, allow read (platform/general prefixes)
             const readUrl = await this.storageService.generateSignedReadUrl(objectKey);
             return { readUrl };
+        } catch (err: any) {
+            if (err instanceof BadRequestException) throw err;
+            throw new BadRequestException(
+                `Could not generate read URL: ${err.message || 'Storage service error'}`,
+            );
         }
-
-        // Tenant users can only read their own objects
-        const tenantSlug = req.tenant?.slug;
-        if (!tenantSlug) {
-            throw new BadRequestException('Tenant context required');
-        }
-        const expectedPrefix = `uploads/${tenantSlug}/`;
-        if (!objectKey.startsWith(expectedPrefix)) {
-            throw new BadRequestException('Access denied: object belongs to another tenant');
-        }
-
-        const readUrl = await this.storageService.generateSignedReadUrl(objectKey);
-        return { readUrl };
     }
 
     /**
