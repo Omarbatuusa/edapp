@@ -42,6 +42,8 @@ function extractComponent(components: google.maps.GeocoderAddressComponent[], ty
     return comp?.long_name || '';
 }
 
+const fieldCls = 'w-full h-[44px] px-4 text-[15px] bg-transparent outline-none text-[hsl(var(--admin-text-main))] placeholder:text-[hsl(var(--admin-text-muted)/0.6)]';
+
 export function AddressInput({ label, value, onChange, required }: AddressInputProps) {
     const [manual, setManual] = useState(false);
     const [fieldState, setFieldState] = useState<'idle' | 'success' | 'error'>('idle');
@@ -92,28 +94,32 @@ export function AddressInput({ label, value, onChange, required }: AddressInputP
                     <input
                         type="text"
                         value={value.street}
-                        onChange={e => onChange({ ...value, street: e.target.value })}
+                        onChange={e => onChange({ ...value, street: e.target.value, formatted_address: e.target.value })}
                         placeholder="Street address"
-                        className="w-full px-3 py-3 text-sm bg-transparent outline-none"
+                        className={fieldCls}
                     />
                 </FieldWrapper>
                 <div className="grid grid-cols-2 gap-3">
-                    {(['suburb', 'city', 'province', 'postal_code', 'country'] as const).map(field => (
-                        <FieldWrapper key={field} label={field.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase())} state="idle">
-                            <input
-                                type="text"
-                                value={value[field]}
-                                onChange={e => onChange({ ...value, [field]: e.target.value })}
-                                placeholder={field.replace('_', ' ')}
-                                className="w-full px-3 py-2 text-sm bg-transparent outline-none"
-                            />
-                        </FieldWrapper>
-                    ))}
+                    <FieldWrapper label="Suburb" state="idle">
+                        <input type="text" value={value.suburb} onChange={e => onChange({ ...value, suburb: e.target.value })} placeholder="Suburb" className={fieldCls} />
+                    </FieldWrapper>
+                    <FieldWrapper label="City" state="idle">
+                        <input type="text" value={value.city} onChange={e => onChange({ ...value, city: e.target.value })} placeholder="City" className={fieldCls} />
+                    </FieldWrapper>
+                    <FieldWrapper label="Province" state="idle">
+                        <input type="text" value={value.province} onChange={e => onChange({ ...value, province: e.target.value })} placeholder="Province" className={fieldCls} />
+                    </FieldWrapper>
+                    <FieldWrapper label="Postal Code" state="idle">
+                        <input type="text" value={value.postal_code} onChange={e => onChange({ ...value, postal_code: e.target.value })} placeholder="Postal code" className={fieldCls} />
+                    </FieldWrapper>
+                    <FieldWrapper label="Country" state="idle">
+                        <input type="text" value={value.country} onChange={e => onChange({ ...value, country: e.target.value })} placeholder="Country" className={fieldCls} />
+                    </FieldWrapper>
                 </div>
                 <button
                     type="button"
                     onClick={() => setManual(false)}
-                    className="text-xs text-blue-600 hover:underline self-start"
+                    className="text-[12px] text-[hsl(var(--admin-primary))] hover:underline self-start px-1"
                 >
                     Use address search instead
                 </button>
@@ -125,7 +131,7 @@ export function AddressInput({ label, value, onChange, required }: AddressInputP
         <div className="relative">
             <FieldWrapper label={label} required={required} state={value.formatted_address ? 'success' : fieldState}>
                 <div className="flex items-center">
-                    <span className="material-symbols-outlined text-slate-400 text-lg pl-3">location_on</span>
+                    <span className="material-symbols-outlined text-[hsl(var(--admin-text-muted))] text-[18px] pl-3">location_on</span>
                     <input
                         type="text"
                         value={inputValue}
@@ -135,35 +141,36 @@ export function AddressInput({ label, value, onChange, required }: AddressInputP
                         }}
                         disabled={!ready}
                         placeholder="Search for an address..."
-                        className="flex-1 px-3 py-3 text-sm bg-transparent outline-none text-slate-800 dark:text-slate-100 placeholder:text-slate-400"
+                        className="flex-1 h-[44px] px-3 text-[15px] bg-transparent outline-none text-[hsl(var(--admin-text-main))] placeholder:text-[hsl(var(--admin-text-muted)/0.6)]"
                     />
                     {value.formatted_address && (
                         <button
                             type="button"
                             onClick={() => { setValue(''); onChange(EMPTY_ADDRESS); setFieldState('idle'); }}
-                            className="pr-3 text-slate-400 hover:text-slate-600"
+                            className="pr-3 text-[hsl(var(--admin-text-muted))] hover:text-[hsl(var(--admin-text-main))]"
+                            aria-label="Clear address"
                         >
-                            <span className="material-symbols-outlined text-sm">close</span>
+                            <span className="material-symbols-outlined text-[16px]">close</span>
                         </button>
                     )}
                 </div>
             </FieldWrapper>
 
             {status === 'OK' && (
-                <ul className="absolute top-full left-0 right-0 z-40 mt-1 bg-white dark:bg-slate-800 border border-[#e2e8f0] dark:border-slate-700 rounded-xl shadow-xl overflow-hidden">
+                <ul className="absolute top-full left-0 right-0 z-40 mt-1 bg-white border border-[hsl(var(--admin-border)/0.5)] rounded-xl shadow-xl overflow-hidden">
                     {data.map(suggestion => (
                         <li key={suggestion.place_id}>
                             <button
                                 type="button"
                                 onClick={() => handleSelect(suggestion)}
-                                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-left hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                                className="w-full flex items-center gap-2 px-4 py-3 text-[13px] text-left hover:bg-[hsl(var(--admin-surface-alt))] transition-colors"
                             >
-                                <span className="material-symbols-outlined text-slate-400 text-sm flex-shrink-0">location_on</span>
+                                <span className="material-symbols-outlined text-[hsl(var(--admin-text-muted))] text-[16px] flex-shrink-0">location_on</span>
                                 <div>
-                                    <span className="font-medium text-slate-800 dark:text-slate-100">
+                                    <span className="font-medium text-[hsl(var(--admin-text-main))]">
                                         {suggestion.structured_formatting.main_text}
                                     </span>
-                                    <span className="text-slate-400 ml-1">
+                                    <span className="text-[hsl(var(--admin-text-muted))] ml-1">
                                         {suggestion.structured_formatting.secondary_text}
                                     </span>
                                 </div>
@@ -176,9 +183,9 @@ export function AddressInput({ label, value, onChange, required }: AddressInputP
             <button
                 type="button"
                 onClick={() => setManual(true)}
-                className="mt-1.5 text-xs text-slate-400 hover:text-blue-600 transition-colors"
+                className="mt-1.5 text-[12px] text-[hsl(var(--admin-text-muted))] hover:text-[hsl(var(--admin-primary))] transition-colors px-1"
             >
-                Can't find your address? Enter it manually
+                Enter address manually
             </button>
         </div>
     );

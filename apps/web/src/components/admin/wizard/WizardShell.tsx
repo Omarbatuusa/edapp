@@ -286,7 +286,8 @@ export function WizardShell({
                 {submitError && (
                     <p className="text-[12px] text-red-500 text-center mb-2 px-4">{submitError}</p>
                 )}
-                <div className="px-4 flex gap-3">
+                {/* Constrained footer actions — matches form content width */}
+                <div className="wizard-footer-actions">
                     {currentStep > 0 && (
                         <button type="button" onClick={handleBack} className="wizard-secondary-btn">
                             Back

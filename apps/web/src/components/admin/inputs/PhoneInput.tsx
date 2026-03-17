@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FieldWrapper } from './FieldWrapper';
 
 interface CountryOption {
@@ -60,6 +60,7 @@ export function PhoneInput({ label, value, onChange, required, placeholder = 'e.
     const [errorMsg, setErrorMsg] = useState('');
     const [search, setSearch] = useState('');
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const triggerRef = useRef<HTMLButtonElement>(null);
 
     const selected = ALL_COUNTRIES.find(c => c.iso2 === (value.country_iso2 || 'ZA')) || PRIORITY_COUNTRIES[0];
 
@@ -68,6 +69,22 @@ export function PhoneInput({ label, value, onChange, required, placeholder = 'e.
         c.dialCode.includes(search) ||
         c.iso2.toLowerCase().includes(search.toLowerCase())
     );
+
+    // Close dropdown on outside click
+    useEffect(() => {
+        if (!isOpen) return;
+        const handleClick = (e: MouseEvent) => {
+            if (
+                dropdownRef.current && !dropdownRef.current.contains(e.target as Node) &&
+                triggerRef.current && !triggerRef.current.contains(e.target as Node)
+            ) {
+                setIsOpen(false);
+                setSearch('');
+            }
+        };
+        document.addEventListener('mousedown', handleClick);
+        return () => document.removeEventListener('mousedown', handleClick);
+    }, [isOpen]);
 
     const handleCountrySelect = (country: CountryOption) => {
         onChange({ ...value, country_iso2: country.iso2, dial_code: country.dialCode });
@@ -116,26 +133,29 @@ export function PhoneInput({ label, value, onChange, required, placeholder = 'e.
                 {/* Country selector */}
                 <div className="relative">
                     <button
+                        ref={triggerRef}
                         type="button"
-                        onClick={() => setIsOpen(!isOpen)}
-                        className="flex items-center gap-1.5 px-3 h-full border-r border-[#e2e8f0] dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors min-w-[80px]"
+                        onClick={() => { setIsOpen(!isOpen); setSearch(''); }}
+                        className="flex items-center gap-1.5 px-3 h-full border-r border-[hsl(var(--admin-border)/0.5)] bg-[hsl(var(--admin-surface-alt)/0.3)] text-[13px] font-medium hover:bg-[hsl(var(--admin-surface-alt))] transition-colors min-w-[80px]"
+                        aria-label="Select country code"
                     >
-                        <span className="text-base">{selected.flag}</span>
-                        <span className="text-slate-500 text-xs">{selected.dialCode}</span>
-                        <span className="material-symbols-outlined text-xs text-slate-400">expand_more</span>
+                        <span className="text-base leading-none">{selected.flag}</span>
+                        <span className="text-[hsl(var(--admin-text-muted))] text-[12px]">{selected.dialCode}</span>
+                        <span className="material-symbols-outlined text-[12px] text-[hsl(var(--admin-text-muted))]">expand_more</span>
                     </button>
                     {isOpen && (
                         <div
                             ref={dropdownRef}
-                            className="absolute top-full left-0 z-50 bg-white dark:bg-slate-800 border border-[#e2e8f0] dark:border-slate-700 rounded-xl shadow-xl w-64 mt-1 overflow-hidden"
+                            className="absolute top-full left-0 z-50 bg-white border border-[hsl(var(--admin-border)/0.5)] rounded-xl shadow-xl w-64 mt-1 overflow-hidden"
                         >
-                            <div className="p-2 border-b border-slate-100 dark:border-slate-700">
+                            <div className="p-2 border-b border-[hsl(var(--admin-border)/0.3)]">
                                 <input
                                     type="text"
                                     value={search}
                                     onChange={e => setSearch(e.target.value)}
                                     placeholder="Search country..."
-                                    className="w-full px-3 py-1.5 text-sm bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-600 outline-none"
+                                    aria-label="Search countries"
+                                    className="w-full px-3 py-1.5 text-[13px] bg-[hsl(var(--admin-surface-alt)/0.5)] rounded-lg border border-[hsl(var(--admin-border)/0.4)] outline-none text-[hsl(var(--admin-text-main))] placeholder:text-[hsl(var(--admin-text-muted))]"
                                     autoFocus
                                 />
                             </div>
@@ -145,11 +165,11 @@ export function PhoneInput({ label, value, onChange, required, placeholder = 'e.
                                         key={c.iso2}
                                         type="button"
                                         onClick={() => handleCountrySelect(c)}
-                                        className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors ${c.iso2 === selected.iso2 ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' : 'text-slate-700 dark:text-slate-300'}`}
+                                        className={`w-full flex items-center gap-2 px-3 py-2.5 text-[13px] hover:bg-[hsl(var(--admin-surface-alt))] transition-colors ${c.iso2 === selected.iso2 ? 'bg-[hsl(var(--admin-primary)/0.08)] text-[hsl(var(--admin-primary))]' : 'text-[hsl(var(--admin-text-main))]'}`}
                                     >
-                                        <span className="text-base">{c.flag}</span>
+                                        <span className="text-base leading-none">{c.flag}</span>
                                         <span className="flex-1 text-left">{c.name}</span>
-                                        <span className="text-slate-400 text-xs">{c.dialCode}</span>
+                                        <span className="text-[hsl(var(--admin-text-muted))] text-[11px]">{c.dialCode}</span>
                                     </button>
                                 ))}
                             </div>
@@ -166,7 +186,7 @@ export function PhoneInput({ label, value, onChange, required, placeholder = 'e.
                     }}
                     onBlur={handleBlur}
                     placeholder={placeholder}
-                    className="flex-1 px-3 py-3 text-sm bg-transparent outline-none text-slate-800 dark:text-slate-100 placeholder:text-slate-400"
+                    className="flex-1 h-[44px] px-3 text-[15px] bg-transparent outline-none text-[hsl(var(--admin-text-main))] placeholder:text-[hsl(var(--admin-text-muted)/0.6)]"
                 />
             </div>
         </FieldWrapper>

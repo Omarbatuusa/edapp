@@ -1213,6 +1213,27 @@
   pointer-events: none;
 }
 
+/* Footer actions — constrained width on desktop */
+.wizard-footer-actions {
+  display: flex;
+  gap: 12px;
+  padding: 0 16px;
+  width: 100%;
+  max-width: 100%;
+}
+@media (min-width: 641px) {
+  .wizard-footer-actions {
+    padding: 0 24px;
+  }
+}
+@media (min-width: 1025px) {
+  .wizard-footer-actions {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0;
+  }
+}
+
 /* Secondary button (Back) */
 .wizard-secondary-btn {
   display: flex;
