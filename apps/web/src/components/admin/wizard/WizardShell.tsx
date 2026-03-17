@@ -185,12 +185,23 @@ export function WizardShell({
                         <div className="w-9" /> /* spacer */
                     )}
 
-                    {/* Step info — centered */}
+                    {/* Step info — centered title + visual pills */}
                     <div className="flex-1 min-w-0 text-center">
                         <p className="text-[13px] font-semibold text-[hsl(var(--admin-text-main))] truncate">{step.title}</p>
-                        <p className="text-[10px] font-medium text-[hsl(var(--admin-text-muted))]">
-                            Step {currentStep + 1} of {steps.length}
-                        </p>
+                        <div className="flex items-center justify-center gap-1.5 mt-1">
+                            {steps.map((_, i) => (
+                                <div
+                                    key={i}
+                                    className={`h-[5px] rounded-full transition-all duration-300 ${
+                                        i === currentStep
+                                            ? 'w-5 bg-[hsl(var(--admin-primary))]'
+                                            : i < currentStep
+                                            ? 'w-2 bg-[hsl(var(--admin-primary)/0.5)]'
+                                            : 'w-2 bg-[hsl(var(--admin-border))]'
+                                    }`}
+                                />
+                            ))}
+                        </div>
                     </div>
 
                     {/* Saving indicator / spacer */}
@@ -276,6 +287,11 @@ export function WizardShell({
                     <p className="text-[12px] text-red-500 text-center mb-2 px-4">{submitError}</p>
                 )}
                 <div className="px-4 flex gap-3">
+                    {currentStep > 0 && (
+                        <button type="button" onClick={handleBack} className="wizard-secondary-btn">
+                            Back
+                        </button>
+                    )}
                     {isLast ? (
                         <button
                             type="button"

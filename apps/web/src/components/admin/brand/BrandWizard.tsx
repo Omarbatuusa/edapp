@@ -282,6 +282,7 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
     }
 
     return (
+        <div className="brand-wizard-container">
         <WizardShell
             steps={steps}
             formType={mode === 'edit' ? `BRAND_EDIT_${brandId}` : 'BRAND'}
@@ -292,5 +293,6 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
             hideCancel
             sidePanel={<BrandSidePanel mode={mode} brandData={brandMeta} />}
         />
+        </div>
     );
 }

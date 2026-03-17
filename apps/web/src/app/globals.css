@@ -1089,9 +1089,19 @@
 .wizard-sheet {
   display: flex;
   flex-direction: column;
-  height: 100dvh;
+  height: 100%;
+  min-height: 100dvh;  /* fallback for standalone (non-dashboard) usage */
   background: white;
   overflow: hidden;
+}
+/* Inside dashboard shell, wizard fills admin-main exactly */
+.admin-main .wizard-sheet {
+  min-height: 0;
+  height: 100%;
+}
+/* Hide duplicate SubpageBar when wizard is active */
+.admin-main:has(.wizard-sheet) > .sticky {
+  display: none;
 }
 
 /* Sticky header: back + title + progress */
@@ -1099,6 +1109,7 @@
   flex-shrink: 0;
   background: white;
   z-index: 20;
+  border-bottom: 0.5px solid hsl(var(--admin-border) / 0.3);
 }
 
 /* Scrollable content body */
@@ -1187,6 +1198,35 @@
 .wizard-primary-btn:disabled {
   opacity: 0.55;
   pointer-events: none;
+}
+
+/* Secondary button (Back) */
+.wizard-secondary-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 0 20px;
+  border-radius: 14px;
+  background-color: hsl(var(--admin-surface-alt));
+  color: hsl(var(--admin-text-sub));
+  font-size: 15px;
+  font-weight: 600;
+  transition: background-color 0.15s, transform 0.1s;
+}
+.wizard-secondary-btn:hover {
+  background-color: hsl(var(--admin-border));
+}
+.wizard-secondary-btn:active {
+  transform: scale(0.97);
+}
+
+/* Brand wizard — tighter content width */
+.brand-wizard-container {
+  height: 100%;
+}
+.brand-wizard-container .wizard-sheet-content {
+  max-width: 48rem; /* 768px — bounded for 3-field brand form */
 }
 
 /* ── Illustration gentle float animation ── */
