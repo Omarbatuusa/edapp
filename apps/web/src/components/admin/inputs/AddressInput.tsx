@@ -45,7 +45,9 @@ function extractComponent(components: google.maps.GeocoderAddressComponent[], ty
 const fieldCls = 'w-full h-[44px] px-4 text-[15px] bg-transparent outline-none text-[hsl(var(--admin-text-main))] placeholder:text-[hsl(var(--admin-text-muted)/0.6)]';
 
 export function AddressInput({ label, value, onChange, required }: AddressInputProps) {
-    const [manual, setManual] = useState(false);
+    // Start in manual mode if Google Places API isn't loaded
+    const placesAvailable = typeof window !== 'undefined' && !!(window as any).google?.maps?.places;
+    const [manual, setManual] = useState(!placesAvailable);
     const [fieldState, setFieldState] = useState<'idle' | 'success' | 'error'>('idle');
 
     const {

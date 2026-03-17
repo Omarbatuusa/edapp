@@ -89,35 +89,49 @@ export class StorageController {
      * 1. req.tenant (set by TenantsMiddleware from hostname)
      * 2. Platform admin roles → 'platform' prefix
      * 3. x-tenant-id header → look up tenant slug from DB
-     * 4. Session JWT tenant claim → use as tenant ID
+     * 4. Session JWT tenant claim → look up tenant slug from DB
      */
     private async resolveStorageScope(req: any): Promise<{ slug: string; tenantId: string | null }> {
         // 1. Tenant from middleware (hostname-based)
         if (req.tenant?.slug) {
             return { slug: req.tenant.slug, tenantId: req.tenant_id || req.tenant.id };
         }
-        // 2. Platform admin roles
+        // 2. Platform admin roles → platform-scoped uploads
         const role = req.user?.role || req.user?.customClaims?.role || '';
         if (PLATFORM_ROLES.some(r => role.includes(r))) {
             return { slug: 'platform', tenantId: null };
         }
-        // 3. x-tenant-id header (sent by frontend when on platform admin domain)
+        // 3. x-tenant-id header (sent by frontend)
         const headerTenantId = req.headers?.['x-tenant-id'];
-        if (headerTenantId) {
-            const tenant = await this.tenantRepo.findOne({ where: { id: headerTenantId } });
-            if (tenant) {
-                return { slug: tenant.tenant_slug, tenantId: tenant.id };
-            }
+        if (headerTenantId && headerTenantId.length > 10) {
+            try {
+                const tenant = await this.tenantRepo.findOne({
+                    where: { id: headerTenantId },
+                    select: ['id', 'tenant_slug'],
+                });
+                if (tenant) {
+                    return { slug: tenant.tenant_slug, tenantId: tenant.id };
+                }
+            } catch { /* invalid UUID format — skip */ }
         }
         // 4. Tenant ID from session JWT
         const jwtTenantId = req.user?.tenant;
-        if (jwtTenantId) {
-            const tenant = await this.tenantRepo.findOne({ where: { id: jwtTenantId } });
-            if (tenant) {
-                return { slug: tenant.tenant_slug, tenantId: tenant.id };
-            }
+        if (jwtTenantId && jwtTenantId.length > 10) {
+            try {
+                const tenant = await this.tenantRepo.findOne({
+                    where: { id: jwtTenantId },
+                    select: ['id', 'tenant_slug'],
+                });
+                if (tenant) {
+                    return { slug: tenant.tenant_slug, tenantId: tenant.id };
+                }
+            } catch { /* invalid UUID format — skip */ }
         }
-        throw new BadRequestException('Unable to determine storage scope. Please ensure you are logged in with a valid tenant context.');
+        // 5. Any authenticated user can upload to 'general' scope as last resort
+        if (req.user?.uid) {
+            return { slug: 'general', tenantId: null };
+        }
+        throw new BadRequestException('Unable to determine storage scope. Please log in and try again.');
     }
 
     /**
