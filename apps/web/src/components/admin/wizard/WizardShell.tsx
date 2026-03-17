@@ -172,13 +172,13 @@ export function WizardShell({
             {/* ── STICKY HEADER: back + progress bar + saving indicator ── */}
             <div className="wizard-sheet-header">
                 <div className="flex items-center gap-3 px-4 py-3">
-                    {/* Back / Cancel button */}
+                    {/* Back / Close button — always show close on step 1 if onCancel exists */}
                     {currentStep > 0 ? (
                         <button type="button" onClick={handleBack} className="wizard-header-btn" aria-label="Go back">
                             <span className="material-symbols-outlined text-[20px]">arrow_back</span>
                         </button>
-                    ) : !hideCancel && onCancel ? (
-                        <button type="button" onClick={onCancel} className="wizard-header-btn" aria-label="Cancel">
+                    ) : onCancel ? (
+                        <button type="button" onClick={onCancel} className="wizard-header-btn" aria-label="Close">
                             <span className="material-symbols-outlined text-[20px]">close</span>
                         </button>
                     ) : (
@@ -270,9 +270,9 @@ export function WizardShell({
                                 </div>
                             </div>
 
-                            {/* Desktop side panel */}
+                            {/* Side panel — below form on mobile/tablet, beside on desktop */}
                             {sidePanel && (
-                                <div className="hidden lg:flex lg:col-span-2 flex-col gap-5 mt-0">
+                                <div className="mt-6 lg:mt-0 lg:col-span-2 flex flex-col gap-5">
                                     {sidePanel}
                                 </div>
                             )}

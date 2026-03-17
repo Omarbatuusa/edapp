@@ -290,7 +290,6 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
             onComplete={handleComplete}
             onCancel={() => router.push(`/tenant/${tenantSlug}/admin/brands`)}
             initialData={initialData}
-            hideCancel
             sidePanel={<BrandSidePanel mode={mode} brandData={brandMeta} />}
         />
         </div>

@@ -1,6 +1,6 @@
 export function BrandingIllustration() {
     return (
-        <svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full max-w-[200px] gentle-float">
+        <svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full max-w-[200px]">
             <defs>
                 <linearGradient id="branding-card" x1="30" y1="18" x2="170" y2="130" gradientUnits="userSpaceOnUse">
                     <stop stopColor="white" />

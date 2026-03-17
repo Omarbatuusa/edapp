@@ -1099,6 +1099,19 @@
   min-height: 0;
   height: 100%;
 }
+/* The flex-1 wrapper must also constrain height for the wizard */
+.admin-main > .flex-1:has(.wizard-sheet) {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+.admin-main > .flex-1:has(.wizard-sheet) > .brand-wizard-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
 /* Hide duplicate SubpageBar when wizard is active */
 .admin-main:has(.wizard-sheet) > .sticky {
   display: none;
@@ -1223,6 +1236,10 @@
 
 /* Brand wizard — tighter content width */
 .brand-wizard-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
   height: 100%;
 }
 .brand-wizard-container .wizard-sheet-content {

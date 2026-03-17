@@ -1,6 +1,6 @@
 export function ReviewIllustration() {
     return (
-        <svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full max-w-[200px] gentle-float">
+        <svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full max-w-[200px]">
             <defs>
                 <linearGradient id="review-card" x1="38" y1="22" x2="162" y2="148" gradientUnits="userSpaceOnUse">
                     <stop stopColor="white" />

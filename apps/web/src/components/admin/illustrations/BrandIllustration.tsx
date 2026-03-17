@@ -1,6 +1,6 @@
 export function BrandIllustration() {
     return (
-        <svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full max-w-[200px] gentle-float">
+        <svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full max-w-[200px]">
             <defs>
                 <linearGradient id="brand-bg" x1="40" y1="20" x2="160" y2="140" gradientUnits="userSpaceOnUse">
                     <stop stopColor="hsl(211 100% 92%)" />
