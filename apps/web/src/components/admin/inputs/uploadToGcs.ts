@@ -3,8 +3,11 @@ export async function uploadToGcs(
     category: string = 'logos',
 ): Promise<{ objectKey: string; previewUrl: string }> {
     const token = typeof window !== 'undefined' ? localStorage.getItem('session_token') : null;
+    const tenantId = typeof window !== 'undefined' ? localStorage.getItem('admin_tenant_id') : null;
+
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
     if (token) headers['Authorization'] = `Bearer ${token}`;
+    if (tenantId) headers['x-tenant-id'] = tenantId;
 
     // 1. Get signed upload URL from backend
     const urlRes = await fetch('/v1/storage/upload-url', {
@@ -29,6 +32,7 @@ export async function uploadToGcs(
     // 3. Fetch a short-lived signed read URL for preview
     const readHeaders: Record<string, string> = {};
     if (token) readHeaders['Authorization'] = `Bearer ${token}`;
+    if (tenantId) readHeaders['x-tenant-id'] = tenantId;
     const readRes = await fetch(`/v1/storage/read-url?key=${encodeURIComponent(objectKey)}`, { headers: readHeaders });
     const { readUrl } = readRes.ok ? await readRes.json() as { readUrl: string } : { readUrl: '' };
 

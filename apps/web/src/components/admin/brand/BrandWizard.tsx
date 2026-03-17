@@ -10,6 +10,8 @@ import { CoverUpload } from '../inputs/CoverUpload';
 import { BrandIllustration } from '../illustrations/BrandIllustration';
 import { BrandingIllustration } from '../illustrations/BrandingIllustration';
 import { ReviewIllustration } from '../illustrations/ReviewIllustration';
+import { MiniCalendar } from '@/components/dashboard/MiniCalendar';
+import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 
 interface BrandWizardProps {
     tenantSlug: string;
@@ -272,6 +274,17 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
         );
     }
 
+    const dashboardPanel = (
+        <div className="flex flex-col gap-4">
+            <div className="bg-white rounded-2xl border border-[hsl(var(--admin-border)/0.4)] p-4">
+                <MiniCalendar />
+            </div>
+            <div className="bg-white rounded-2xl border border-[hsl(var(--admin-border)/0.4)] overflow-hidden">
+                <ActivityFeed role="admin" />
+            </div>
+        </div>
+    );
+
     return (
         <div className="brand-wizard-container">
             <WizardShell
@@ -281,6 +294,7 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
                 onComplete={handleComplete}
                 onCancel={() => router.push(`/tenant/${tenantSlug}/admin/brands`)}
                 initialData={initialData}
+                sidePanel={dashboardPanel}
             />
         </div>
     );

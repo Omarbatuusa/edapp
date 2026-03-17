@@ -5,9 +5,10 @@ import { StorageService } from './storage.service';
 import { StorageController } from './storage.controller';
 import { SvgSanitizerService } from './svg-sanitizer.service';
 import { FileObject } from './file-object.entity';
+import { Tenant } from '../tenants/tenant.entity';
 
 @Module({
-    imports: [ConfigModule, TypeOrmModule.forFeature([FileObject])],
+    imports: [ConfigModule, TypeOrmModule.forFeature([FileObject, Tenant])],
     controllers: [StorageController],
     providers: [StorageService, SvgSanitizerService],
     exports: [StorageService, SvgSanitizerService],

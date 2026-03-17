@@ -16,6 +16,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FileObject, FileVisibility, FileCategory } from './file-object.entity';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
+import { Tenant } from '../tenants/tenant.entity';
 
 interface UploadRequestDto {
     category: string;
@@ -80,21 +81,43 @@ export class StorageController {
         private readonly storageService: StorageService,
         private readonly svgSanitizer: SvgSanitizerService,
         @InjectRepository(FileObject) private readonly fileRepo: Repository<FileObject>,
+        @InjectRepository(Tenant) private readonly tenantRepo: Repository<Tenant>,
     ) { }
 
     /**
      * Resolve storage scope from request.
-     * Tenant-scoped requests use tenant slug; platform admin requests use 'platform'.
+     * 1. req.tenant (set by TenantsMiddleware from hostname)
+     * 2. Platform admin roles → 'platform' prefix
+     * 3. x-tenant-id header → look up tenant slug from DB
+     * 4. Session JWT tenant claim → use as tenant ID
      */
-    private resolveStorageScope(req: any): { slug: string; tenantId: string | null } {
+    private async resolveStorageScope(req: any): Promise<{ slug: string; tenantId: string | null }> {
+        // 1. Tenant from middleware (hostname-based)
         if (req.tenant?.slug) {
             return { slug: req.tenant.slug, tenantId: req.tenant_id || req.tenant.id };
         }
+        // 2. Platform admin roles
         const role = req.user?.role || req.user?.customClaims?.role || '';
         if (PLATFORM_ROLES.some(r => role.includes(r))) {
             return { slug: 'platform', tenantId: null };
         }
-        throw new BadRequestException('Tenant context required');
+        // 3. x-tenant-id header (sent by frontend when on platform admin domain)
+        const headerTenantId = req.headers?.['x-tenant-id'];
+        if (headerTenantId) {
+            const tenant = await this.tenantRepo.findOne({ where: { id: headerTenantId } });
+            if (tenant) {
+                return { slug: tenant.tenant_slug, tenantId: tenant.id };
+            }
+        }
+        // 4. Tenant ID from session JWT
+        const jwtTenantId = req.user?.tenant;
+        if (jwtTenantId) {
+            const tenant = await this.tenantRepo.findOne({ where: { id: jwtTenantId } });
+            if (tenant) {
+                return { slug: tenant.tenant_slug, tenantId: tenant.id };
+            }
+        }
+        throw new BadRequestException('Unable to determine storage scope. Please ensure you are logged in with a valid tenant context.');
     }
 
     /**
@@ -115,7 +138,7 @@ export class StorageController {
         @Body() body: UploadRequestDto,
         @Req() req: any,
     ): Promise<SignedUrlResponseDto> {
-        const { slug } = this.resolveStorageScope(req);
+        const { slug } = await this.resolveStorageScope(req);
 
         if (!body.category || !body.filename) {
             throw new BadRequestException('Category and filename are required');
@@ -197,7 +220,7 @@ export class StorageController {
         @Body() body: ConfirmUploadDto,
         @Req() req: any,
     ) {
-        const { slug, tenantId } = this.resolveStorageScope(req);
+        const { slug, tenantId } = await this.resolveStorageScope(req);
 
         if (!body.objectKey || !body.contentType) {
             throw new BadRequestException('objectKey and contentType are required');
