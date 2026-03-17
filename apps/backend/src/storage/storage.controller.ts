@@ -16,7 +16,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FileObject, FileVisibility, FileCategory } from './file-object.entity';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
-import { Tenant } from '../tenants/tenant.entity';
 
 interface UploadRequestDto {
     category: string;
@@ -29,12 +28,18 @@ interface SignedUrlResponseDto {
     objectKey: string;
 }
 
-const PLATFORM_ROLES = [
+const ALLOWED_UPLOAD_ROLES = [
     'platform_super_admin',
     'app_super_admin',
     'brand_admin',
     'platform_secretary',
     'app_secretary',
+    'platform_support',
+    'tenant_admin',
+    'main_branch_admin',
+    'branch_admin',
+    'finance_officer',
+    'admissions_officer',
 ];
 
 const CATEGORY_RULES: Record<string, { mimeTypes: string[]; maxSizeMB: number }> = {
@@ -81,57 +86,32 @@ export class StorageController {
         private readonly storageService: StorageService,
         private readonly svgSanitizer: SvgSanitizerService,
         @InjectRepository(FileObject) private readonly fileRepo: Repository<FileObject>,
-        @InjectRepository(Tenant) private readonly tenantRepo: Repository<Tenant>,
     ) { }
 
     /**
      * Resolve storage scope from request.
      * 1. req.tenant (set by TenantsMiddleware from hostname)
-     * 2. Platform admin roles → 'platform' prefix
-     * 3. x-tenant-id header → look up tenant slug from DB
-     * 4. Session JWT tenant claim → look up tenant slug from DB
+     * 2. Allowed role check → use 'platform' prefix or tenant ID from JWT/header
+     * 3. Any authenticated user → 'general' prefix as last resort
      */
-    private async resolveStorageScope(req: any): Promise<{ slug: string; tenantId: string | null }> {
-        // 1. Tenant from middleware (hostname-based)
+    private resolveStorageScope(req: any): { slug: string; tenantId: string | null } {
+        // 1. Tenant from middleware (hostname-based) — most reliable
         if (req.tenant?.slug) {
             return { slug: req.tenant.slug, tenantId: req.tenant_id || req.tenant.id };
         }
-        // 2. Platform admin roles → platform-scoped uploads
+        // 2. Check if user has an allowed role
         const role = req.user?.role || req.user?.customClaims?.role || '';
-        if (PLATFORM_ROLES.some(r => role.includes(r))) {
-            return { slug: 'platform', tenantId: null };
+        const hasAllowedRole = ALLOWED_UPLOAD_ROLES.some(r => role.includes(r));
+        if (hasAllowedRole) {
+            // Use tenant ID from JWT or header for tracking, 'platform' as GCS prefix
+            const tenantId = req.user?.tenant || req.headers?.['x-tenant-id'] || null;
+            return { slug: 'platform', tenantId: tenantId && tenantId.length > 10 ? tenantId : null };
         }
-        // 3. x-tenant-id header (sent by frontend)
-        const headerTenantId = req.headers?.['x-tenant-id'];
-        if (headerTenantId && headerTenantId.length > 10) {
-            try {
-                const tenant = await this.tenantRepo.findOne({
-                    where: { id: headerTenantId },
-                    select: ['id', 'tenant_slug'],
-                });
-                if (tenant) {
-                    return { slug: tenant.tenant_slug, tenantId: tenant.id };
-                }
-            } catch { /* invalid UUID format — skip */ }
-        }
-        // 4. Tenant ID from session JWT
-        const jwtTenantId = req.user?.tenant;
-        if (jwtTenantId && jwtTenantId.length > 10) {
-            try {
-                const tenant = await this.tenantRepo.findOne({
-                    where: { id: jwtTenantId },
-                    select: ['id', 'tenant_slug'],
-                });
-                if (tenant) {
-                    return { slug: tenant.tenant_slug, tenantId: tenant.id };
-                }
-            } catch { /* invalid UUID format — skip */ }
-        }
-        // 5. Any authenticated user can upload to 'general' scope as last resort
+        // 3. Any authenticated user — general uploads
         if (req.user?.uid) {
             return { slug: 'general', tenantId: null };
         }
-        throw new BadRequestException('Unable to determine storage scope. Please log in and try again.');
+        throw new BadRequestException('Please log in to upload files.');
     }
 
     /**
@@ -139,7 +119,7 @@ export class StorageController {
      */
     private hasPlatformAccess(req: any): boolean {
         const role = req.user?.role || req.user?.customClaims?.role || '';
-        return PLATFORM_ROLES.some(r => role.includes(r));
+        return ALLOWED_UPLOAD_ROLES.some(r => role.includes(r));
     }
 
     /**
@@ -152,7 +132,7 @@ export class StorageController {
         @Body() body: UploadRequestDto,
         @Req() req: any,
     ): Promise<SignedUrlResponseDto> {
-        const { slug } = await this.resolveStorageScope(req);
+        const { slug } = this.resolveStorageScope(req);
 
         if (!body.category || !body.filename) {
             throw new BadRequestException('Category and filename are required');
@@ -234,7 +214,7 @@ export class StorageController {
         @Body() body: ConfirmUploadDto,
         @Req() req: any,
     ) {
-        const { slug, tenantId } = await this.resolveStorageScope(req);
+        const { slug, tenantId } = this.resolveStorageScope(req);
 
         if (!body.objectKey || !body.contentType) {
             throw new BadRequestException('objectKey and contentType are required');
