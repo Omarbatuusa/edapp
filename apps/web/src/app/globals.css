@@ -1106,7 +1106,8 @@
   min-height: 0;
   flex: 1;
 }
-.admin-main > .flex-1:has(.wizard-sheet) > .brand-wizard-container {
+.admin-main > .flex-1:has(.wizard-sheet) > .brand-wizard-container,
+.admin-main > .flex-1:has(.wizard-sheet) > .wizard-with-sidebar {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -1255,6 +1256,41 @@
   transform: scale(0.97);
 }
 
+/* ── Wizard with sidebar — desktop two-column layout ── */
+.wizard-with-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+.wizard-with-sidebar > .wizard-sheet {
+  flex: 1;
+  min-height: 0;
+}
+.wizard-sidebar {
+  flex-shrink: 0;
+  padding: 16px;
+  border-top: 1px solid hsl(var(--admin-border) / 0.3);
+  background: hsl(var(--admin-background));
+}
+@media (min-width: 1025px) {
+  .wizard-with-sidebar {
+    flex-direction: row;
+    height: 100%;
+  }
+  .wizard-with-sidebar > .wizard-sheet {
+    flex: 1;
+    min-width: 0;
+  }
+  .wizard-sidebar {
+    width: 320px;
+    border-top: none;
+    border-left: 1px solid hsl(var(--admin-border) / 0.3);
+    overflow-y: auto;
+    padding: 20px 16px;
+  }
+}
+
 /* Brand wizard — tighter content width */
 .brand-wizard-container {
   display: flex;
@@ -1264,7 +1300,7 @@
   height: 100%;
 }
 .brand-wizard-container .wizard-sheet-content {
-  max-width: 48rem; /* 768px — bounded for 3-field brand form */
+  max-width: 48rem;
 }
 
 /* ── Illustration gentle float animation ── */

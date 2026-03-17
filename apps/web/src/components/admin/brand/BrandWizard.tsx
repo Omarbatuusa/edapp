@@ -10,6 +10,7 @@ import { CoverUpload } from '../inputs/CoverUpload';
 import { BrandIllustration } from '../illustrations/BrandIllustration';
 import { BrandingIllustration } from '../illustrations/BrandingIllustration';
 import { ReviewIllustration } from '../illustrations/ReviewIllustration';
+import { IllustrationSlot } from '../illustrations/IllustrationSlot';
 import { MiniCalendar } from '@/components/dashboard/MiniCalendar';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 
@@ -77,7 +78,7 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
         {
             title: 'Brand Identity',
             helper: 'Give your brand a name. This will group schools under a single identity.',
-            illustration: <BrandIllustration />,
+            illustration: <IllustrationSlot slotKey="brand_step_1" fallback={<BrandIllustration />} />,
             schema: step1Schema,
             content: ({ data, onChange, errors }) => (
                 <div className="flex flex-col gap-4">
@@ -146,7 +147,7 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
         {
             title: 'Brand Assets',
             helper: 'Upload a logo and cover image. These appear on all schools within this brand.',
-            illustration: <BrandingIllustration />,
+            illustration: <IllustrationSlot slotKey="brand_step_2" fallback={<BrandingIllustration />} />,
             content: ({ data, onChange }) => (
                 <div className="flex flex-col gap-5">
                     <LogoUpload
@@ -165,7 +166,7 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
         {
             title: 'Review',
             helper: 'Review',
-            illustration: <ReviewIllustration />,
+            illustration: <IllustrationSlot slotKey="brand_step_3" fallback={<ReviewIllustration />} />,
             content: ({ data }) => (
                 <div className="flex flex-col gap-4">
                     {/* Brand identity card */}

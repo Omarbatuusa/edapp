@@ -168,6 +168,7 @@ export function WizardShell({
     };
 
     return (
+        <div className={sidePanel ? 'wizard-with-sidebar' : ''}>
         <div className="wizard-sheet">
             {/* ── STICKY HEADER: back + progress bar + saving indicator ── */}
             <div className="wizard-sheet-header">
@@ -259,23 +260,13 @@ export function WizardShell({
 
                     {/* Form area */}
                     <div className="wizard-form-area">
-                        <div className="lg:grid lg:grid-cols-5 lg:gap-8 lg:items-start">
-                            {/* Main form — single column mobile, 3/5 desktop */}
-                            <div className={`${sidePanel ? 'lg:col-span-3' : 'lg:col-span-5 lg:max-w-2xl lg:mx-auto'}`}>
-                                {step.helper && (
-                                    <p className="text-[13px] text-[hsl(var(--admin-text-muted))] mb-5 leading-relaxed">{step.helper}</p>
-                                )}
-                                <div className="flex flex-col gap-5">
-                                    {step.content({ data, onChange: patchData, errors, draftId })}
-                                </div>
-                            </div>
-
-                            {/* Side panel — below form on mobile/tablet, beside on desktop */}
-                            {sidePanel && (
-                                <div className="mt-6 lg:mt-0 lg:col-span-2 flex flex-col gap-5">
-                                    {sidePanel}
-                                </div>
+                        <div className="lg:max-w-2xl lg:mx-auto">
+                            {step.helper && (
+                                <p className="text-[13px] text-[hsl(var(--admin-text-muted))] mb-5 leading-relaxed">{step.helper}</p>
                             )}
+                            <div className="flex flex-col gap-5">
+                                {step.content({ data, onChange: patchData, errors, draftId })}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -314,6 +305,13 @@ export function WizardShell({
                     )}
                 </div>
             </div>
+        </div>
+        {/* ── SIDEBAR: separate column on desktop, below on mobile ── */}
+        {sidePanel && (
+            <div className="wizard-sidebar">
+                {sidePanel}
+            </div>
+        )}
         </div>
     );
 }
