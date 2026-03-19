@@ -81,8 +81,8 @@ export class AdminBrandsController {
         // Generate BRD-XXXX code
         const brand_code = await this.generateBrandCode(body.brand_name);
 
-        // Slug: first 3 letters of name, lowercased
-        let brand_slug = body.brand_slug || body.brand_name
+        // Slug: always first 3 letters of name, lowercased (ignore frontend value)
+        let brand_slug = body.brand_name
             .toLowerCase()
             .replace(/[^a-z]/g, '')
             .substring(0, 3)

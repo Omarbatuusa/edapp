@@ -61,16 +61,15 @@ export class AdminIllustrationsController {
         @Body() body: { object_key: string },
     ) {
         this.checkSuperAdmin(req);
-        let override = await this.repo.findOne({ where: { slot_key: slotKey } });
-        if (override) {
-            override.object_key = body.object_key;
-        } else {
-            override = this.repo.create({
-                slot_key: slotKey,
-                object_key: body.object_key,
-            } as any);
+        const existing = await this.repo.findOne({ where: { slot_key: slotKey } });
+        if (existing) {
+            existing.object_key = body.object_key;
+            return this.repo.save(existing);
         }
-        return this.repo.save(override);
+        const fresh = new IllustrationOverride();
+        fresh.slot_key = slotKey;
+        fresh.object_key = body.object_key;
+        return this.repo.save(fresh);
     }
 
     /** Remove an illustration override (revert to default) */

@@ -101,7 +101,7 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
                                 onChange({
                                     brand_name: name,
                                     brand_slug: slugify(name),
-                                    brand_code: data.brand_code || generateCode(name),
+                                    brand_code: generateCode(name),
                                 });
                             }}
                             placeholder="e.g. Rainbow City Schools"
@@ -122,7 +122,7 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
                     </FieldWrapper>
 
                     {/* Brand Code — auto-generated, read-only */}
-                    <FieldWrapper label="Brand Code" state="idle" helper="Auto-generated unique code">
+                    <FieldWrapper label="Brand Code" state="idle" helper="Preview — final code assigned on save">
                         <input
                             type="text"
                             readOnly
