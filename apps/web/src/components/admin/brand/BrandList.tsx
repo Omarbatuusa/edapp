@@ -3,13 +3,16 @@
 import { useState, useEffect } from 'react';
 import { Search, Plus } from 'lucide-react';
 import Link from 'next/link';
+import { useRole } from '@/contexts/RoleContext';
 
 interface Brand {
   id: string; brand_name: string; brand_code: string;
-  status: string; connected_branch_count: number; created_at: string;
+  status: string; connected_school_count: number; created_at: string;
   logo_url?: string | null;
 }
 interface BrandListProps { tenantSlug: string; }
+
+const DELETE_ROLES = ['platform_super_admin', 'app_super_admin'];
 
 function BrandLogo({ url, name }: { url?: string | null; name: string }) {
   const [failed, setFailed] = useState(false);
@@ -37,9 +40,12 @@ const ST: Record<string, string> = {
 };
 
 export function BrandList({ tenantSlug }: BrandListProps) {
+  const { fullRole } = useRole();
+  const canDelete = DELETE_ROLES.some(r => fullRole.includes(r));
   const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('session_token');
@@ -49,6 +55,28 @@ export function BrandList({ tenantSlug }: BrandListProps) {
       .catch(() => setBrands([]))
       .finally(() => setLoading(false));
   }, []);
+
+  const handleDelete = async (brand: Brand) => {
+    if (!confirm(`Delete "${brand.brand_name}"? This cannot be undone.`)) return;
+    setDeleting(brand.id);
+    try {
+      const token = localStorage.getItem('session_token');
+      const res = await fetch(`/v1/admin/brands/${brand.id}`, {
+        method: 'DELETE',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) {
+        const json = await res.json();
+        alert(json.message || 'Failed to delete brand');
+        return;
+      }
+      setBrands(prev => prev.filter(b => b.id !== brand.id));
+    } catch {
+      alert('Failed to delete brand');
+    } finally {
+      setDeleting(null);
+    }
+  };
 
   const filtered = brands.filter(b =>
     b.brand_name.toLowerCase().includes(search.toLowerCase()) ||
@@ -114,15 +142,31 @@ export function BrandList({ tenantSlug }: BrandListProps) {
                   <p className="text-[12px] font-medium text-[hsl(var(--admin-text-sub))] mt-0.5">
                     <span className="font-mono font-bold">{brand.brand_code}</span>
                     <span className="mx-1.5 text-[hsl(var(--admin-border))]">·</span>
-                    {brand.connected_branch_count} {brand.connected_branch_count === 1 ? 'branch' : 'branches'}
+                    {brand.connected_school_count} {brand.connected_school_count === 1 ? 'school' : 'schools'}
                   </p>
                 </div>
-                <Link
-                  href={`/tenant/${tenantSlug}/admin/brands/${brand.id}/edit`}
-                  className="w-9 h-9 rounded-full bg-[hsl(var(--admin-surface-alt))] flex items-center justify-center flex-shrink-0 hover:bg-[hsl(var(--admin-primary)/0.1)] active:scale-90 transition-all"
-                >
-                  <span className="material-symbols-outlined text-[17px] text-[hsl(var(--admin-text-sub))]">edit</span>
-                </Link>
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  <Link
+                    href={`/tenant/${tenantSlug}/admin/brands/${brand.id}/edit`}
+                    className="w-9 h-9 rounded-full bg-[hsl(var(--admin-surface-alt))] flex items-center justify-center hover:bg-[hsl(var(--admin-primary)/0.1)] active:scale-90 transition-all"
+                  >
+                    <span className="material-symbols-outlined text-[17px] text-[hsl(var(--admin-text-sub))]">edit</span>
+                  </Link>
+                  {canDelete && (
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(brand)}
+                      disabled={deleting === brand.id}
+                      className="w-9 h-9 rounded-full bg-[hsl(var(--admin-surface-alt))] flex items-center justify-center hover:bg-red-50 active:scale-90 transition-all disabled:opacity-50"
+                    >
+                      {deleting === brand.id ? (
+                        <div className="w-4 h-4 border-2 border-red-200 border-t-red-500 rounded-full animate-spin" />
+                      ) : (
+                        <span className="material-symbols-outlined text-[17px] text-red-400 hover:text-red-600">delete</span>
+                      )}
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>

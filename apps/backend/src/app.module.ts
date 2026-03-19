@@ -36,6 +36,7 @@ import { BranchSecurityPolicy } from './security/branch-security-policy.entity';
 import { IpAllowlist } from './security/ip-allowlist.entity';
 import { GeoZone } from './security/geo-zone.entity';
 import { AdminDraft } from './admin/admin-draft.entity';
+import { IllustrationOverride } from './admin/illustration-override.entity';
 import { DictPhase } from './admin/entities/dict-phase.entity';
 import { DictGrade } from './admin/entities/dict-grade.entity';
 import { DictClassGender } from './admin/entities/dict-class-gender.entity';
@@ -242,6 +243,7 @@ import { ScheduleModule } from '@nestjs/schedule';
           IpAllowlist,
           GeoZone,
           AdminDraft,
+          IllustrationOverride,
           DictPhase,
           DictGrade,
           DictClassGender,

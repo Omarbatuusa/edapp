@@ -1,17 +1,17 @@
 import {
-    Controller, Post, Put, Get, Param, Body, Req,
+    Controller, Post, Put, Get, Delete, Param, Body, Req,
     UseGuards, NotFoundException, ForbiddenException, BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Brand } from '../brands/brand.entity';
 import { Tenant } from '../tenants/tenant.entity';
-import { Branch } from '../branches/branch.entity';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { StorageService } from '../storage/storage.service';
-import { generateSlug, ensureUniqueSlug } from './utils/slug-generator';
+import { ensureUniqueSlug } from './utils/slug-generator';
 
 const BRAND_ROLES = ['platform_super_admin', 'app_super_admin', 'brand_admin', 'app_secretary', 'platform_secretary'];
+const DELETE_ROLES = ['platform_super_admin', 'app_super_admin'];
 
 @Controller('admin/brands')
 @UseGuards(FirebaseAuthGuard)
@@ -19,18 +19,50 @@ export class AdminBrandsController {
     constructor(
         @InjectRepository(Brand)
         private readonly brandRepo: Repository<Brand>,
-        @InjectRepository(Branch)
-        private readonly branchRepo: Repository<Branch>,
         @InjectRepository(Tenant)
         private readonly tenantRepo: Repository<Tenant>,
         private readonly storageService: StorageService,
     ) {}
 
+    private getRole(req: any): string {
+        return req.user?.role || req.user?.customClaims?.role || '';
+    }
+
     private checkRole(req: any) {
-        const role = req.user?.role || req.user?.customClaims?.role || '';
+        const role = this.getRole(req);
         if (!BRAND_ROLES.some(r => role.includes(r) || r.includes(role))) {
             throw new ForbiddenException('Only platform admins and secretaries can manage brands');
         }
+    }
+
+    private checkDeleteRole(req: any) {
+        const role = this.getRole(req);
+        if (!DELETE_ROLES.some(r => role.includes(r))) {
+            throw new ForbiddenException('Only super admins can delete brands');
+        }
+    }
+
+    /**
+     * Generate a brand code in BRD-XXXX format.
+     * Takes first 3 letters of name uppercase + random 4-char suffix.
+     */
+    private async generateBrandCode(name: string): Promise<string> {
+        const prefix = name
+            .replace(/[^a-zA-Z]/g, '')
+            .substring(0, 3)
+            .toUpperCase()
+            .padEnd(3, 'X');
+
+        // Try up to 50 times to find a unique code
+        for (let i = 0; i < 50; i++) {
+            const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
+            const code = `${prefix}-${rand}`;
+            const exists = await this.brandRepo.findOne({ where: { brand_code: code } });
+            if (!exists) return code;
+        }
+        // Fallback with timestamp
+        const ts = Date.now().toString(36).toUpperCase().slice(-4);
+        return `${prefix}-${ts}`;
     }
 
     @Post()
@@ -46,16 +78,15 @@ export class AdminBrandsController {
 
         if (!body.brand_name) throw new BadRequestException('brand_name is required');
 
-        const brand_code = (body.brand_code || body.brand_name)
-            .toUpperCase()
-            .replace(/[^A-Z0-9]/g, '_')
-            .slice(0, 20);
+        // Generate BRD-XXXX code
+        const brand_code = await this.generateBrandCode(body.brand_name);
 
-        const existing = await this.brandRepo.findOne({ where: { brand_code } });
-        if (existing) throw new BadRequestException('Brand code already exists. Choose a different name.');
-
-        // Auto-generate brand_slug if not provided
-        let brand_slug = body.brand_slug || generateSlug(body.brand_name);
+        // Slug: first 3 letters of name, lowercased
+        let brand_slug = body.brand_slug || body.brand_name
+            .toLowerCase()
+            .replace(/[^a-z]/g, '')
+            .substring(0, 3)
+            .padEnd(3, 'x');
         brand_slug = await ensureUniqueSlug(brand_slug, this.brandRepo, 'brand_slug');
 
         const brand = this.brandRepo.create({
@@ -70,14 +101,13 @@ export class AdminBrandsController {
     }
 
     @Get()
-    async findAll(@Req() req: any) {
+    async findAll() {
         const brands = await this.brandRepo.find({ order: { brand_name: 'ASC' } });
 
         const results = await Promise.all(
             brands.map(async (brand) => {
                 const tenantCount = await this.tenantRepo.count({ where: { brand_id: brand.id } });
 
-                // Generate signed URLs for logo/cover if present
                 let logoUrl: string | null = null;
                 let coverUrl: string | null = null;
                 try {
@@ -91,7 +121,7 @@ export class AdminBrandsController {
 
                 return {
                     ...brand,
-                    connected_tenant_count: tenantCount,
+                    connected_school_count: tenantCount,
                     logo_url: logoUrl,
                     cover_url: coverUrl,
                 };
@@ -108,7 +138,6 @@ export class AdminBrandsController {
         const brand = await this.brandRepo.findOne({ where: { id } });
         if (!brand) throw new NotFoundException('Brand not found');
 
-        // Get linked tenants
         const tenants = await this.tenantRepo.find({
             where: { brand_id: id },
             order: { school_name: 'ASC' },
@@ -142,5 +171,24 @@ export class AdminBrandsController {
 
         Object.assign(brand, body);
         return this.brandRepo.save(brand);
+    }
+
+    @Delete(':id')
+    async remove(@Req() req: any, @Param('id') id: string) {
+        this.checkDeleteRole(req);
+
+        const brand = await this.brandRepo.findOne({ where: { id } });
+        if (!brand) throw new NotFoundException('Brand not found');
+
+        // Check for linked tenants
+        const tenantCount = await this.tenantRepo.count({ where: { brand_id: id } });
+        if (tenantCount > 0) {
+            throw new BadRequestException(
+                `Cannot delete brand "${brand.brand_name}" — it has ${tenantCount} linked school${tenantCount > 1 ? 's' : ''}. Unlink them first.`,
+            );
+        }
+
+        await this.brandRepo.remove(brand);
+        return { deleted: true, id };
     }
 }

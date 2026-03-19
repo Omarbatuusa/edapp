@@ -27,21 +27,21 @@ const step1Schema = z.object({
     brand_name: z.string().min(2, 'Brand name must be at least 2 characters'),
 });
 
-/** Generate a short slug (max 6 chars) from a name */
+/** Generate a short slug (first 3 letters of name) */
 function slugify(name: string): string {
     return name
         .toLowerCase()
         .trim()
-        .replace(/[^a-z0-9\s]/g, '')
-        .replace(/\s+/g, '')
-        .substring(0, 6);
+        .replace(/[^a-z]/g, '')
+        .substring(0, 3)
+        .padEnd(3, 'x');
 }
 
-/** Generate a brand code like BRD-XXXXXX */
+/** Generate a brand code like RAI-K7M2 */
 function generateCode(name: string): string {
-    const base = name.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().substring(0, 4);
+    const prefix = name.replace(/[^a-zA-Z]/g, '').substring(0, 3).toUpperCase().padEnd(3, 'X');
     const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
-    return `${base || 'BRD'}-${rand}`;
+    return `${prefix}-${rand}`;
 }
 
 /* iOS-style text input class */
@@ -110,7 +110,7 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
                     </FieldWrapper>
 
                     {/* Slug — auto-generated, read-only */}
-                    <FieldWrapper label="Slug" state="idle" helper="Auto-generated (max 6 characters)">
+                    <FieldWrapper label="Slug" state="idle" helper="Auto-generated (first 3 letters)">
                         <input
                             type="text"
                             readOnly

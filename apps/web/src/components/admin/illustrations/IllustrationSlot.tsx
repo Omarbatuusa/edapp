@@ -15,8 +15,8 @@ interface IllustrationSlotProps {
 
 /**
  * Wraps an illustration SVG with super-admin replace functionality.
- * Stores the GCS object key in localStorage (not the signed URL, which expires).
- * Fetches a fresh signed read URL each time the component mounts.
+ * Stores overrides in the backend (illustration_overrides table)
+ * so changes sync across all devices — not just the browser that made the change.
  */
 export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
     const { fullRole } = useRole();
@@ -29,6 +29,11 @@ export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
     const [showControls, setShowControls] = useState(false);
     const hideTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
+    const getAuthHeaders = useCallback((): Record<string, string> => {
+        const token = localStorage.getItem('session_token');
+        return token ? { Authorization: `Bearer ${token}` } : {};
+    }, []);
+
     // Auto-dismiss touch overlay after 3 seconds
     useEffect(() => {
         if (showControls) {
@@ -37,32 +42,43 @@ export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
         }
     }, [showControls]);
 
-    // Fetch a fresh signed read URL for a stored object key
-    const fetchReadUrl = useCallback(async (key: string) => {
-        try {
-            const token = localStorage.getItem('session_token');
-            const headers: Record<string, string> = {};
-            if (token) headers['Authorization'] = `Bearer ${token}`;
-            const res = await fetch(`/v1/storage/read-url?key=${encodeURIComponent(key)}`, { headers });
-            if (res.ok) {
-                const { readUrl } = await res.json();
-                if (readUrl) setDisplayUrl(readUrl);
-            }
-        } catch {
-            // Silently fail — will show fallback
-        }
-    }, []);
-
-    // Load stored object key and fetch fresh URL on mount
+    // Load override from backend API on mount
     useEffect(() => {
-        const storedKey = localStorage.getItem(`illustration_key_${slotKey}`);
-        if (storedKey) {
-            setObjectKey(storedKey);
-            fetchReadUrl(storedKey);
-        }
-        // Migrate: remove old signed URL entries
-        localStorage.removeItem(`illustration_${slotKey}`);
-    }, [slotKey, fetchReadUrl]);
+        const load = async () => {
+            try {
+                const res = await fetch(`/v1/admin/illustrations/${slotKey}`, {
+                    headers: getAuthHeaders(),
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.url) {
+                        setDisplayUrl(data.url);
+                        setObjectKey(data.object_key || null);
+                    }
+                }
+            } catch {
+                // Silently fail — will show fallback
+            }
+
+            // Migrate old localStorage entries to backend
+            const oldKey = localStorage.getItem(`illustration_key_${slotKey}`);
+            if (oldKey) {
+                try {
+                    const token = localStorage.getItem('session_token');
+                    if (token) {
+                        await fetch(`/v1/admin/illustrations/${slotKey}`, {
+                            method: 'PUT',
+                            headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ object_key: oldKey }),
+                        });
+                    }
+                } catch { /* best-effort migration */ }
+                localStorage.removeItem(`illustration_key_${slotKey}`);
+                localStorage.removeItem(`illustration_${slotKey}`);
+            }
+        };
+        load();
+    }, [slotKey, getAuthHeaders]);
 
     const handleUpload = async (file: File) => {
         if (!file.type.includes('svg')) {
@@ -78,11 +94,24 @@ export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
         try {
             const { objectKey: newKey, previewUrl } = await uploadToGcs(file, 'logos');
             if (newKey) {
-                localStorage.setItem(`illustration_key_${slotKey}`, newKey);
+                // Save override to backend
+                await fetch(`/v1/admin/illustrations/${slotKey}`, {
+                    method: 'PUT',
+                    headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ object_key: newKey }),
+                });
                 setObjectKey(newKey);
                 setDisplayUrl(previewUrl || null);
-                // If no preview URL came back, fetch one
-                if (!previewUrl) fetchReadUrl(newKey);
+                // If no preview URL came back, fetch fresh from backend
+                if (!previewUrl) {
+                    const res = await fetch(`/v1/admin/illustrations/${slotKey}`, {
+                        headers: getAuthHeaders(),
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.url) setDisplayUrl(data.url);
+                    }
+                }
             }
         } catch (err: any) {
             setError(err.message || 'Upload failed');
@@ -91,12 +120,17 @@ export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
         }
     };
 
-    const handleRevert = () => {
-        localStorage.removeItem(`illustration_key_${slotKey}`);
-        localStorage.removeItem(`illustration_${slotKey}`); // cleanup old format
+    const handleRevert = async () => {
         setObjectKey(null);
         setDisplayUrl(null);
         setError('');
+        // Remove override from backend
+        try {
+            await fetch(`/v1/admin/illustrations/${slotKey}`, {
+                method: 'DELETE',
+                headers: getAuthHeaders(),
+            });
+        } catch { /* best effort */ }
     };
 
     return (
@@ -110,7 +144,7 @@ export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
                     src={displayUrl}
                     alt="Custom illustration"
                     className="w-full max-w-[200px] max-h-[160px] object-contain mx-auto"
-                    onError={() => handleRevert()}
+                    onError={() => { setDisplayUrl(null); }}
                 />
             ) : (
                 fallback
@@ -126,7 +160,7 @@ export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
                             <>
                                 <button
                                     type="button"
-                                    onClick={() => inputRef.current?.click()}
+                                    onClick={(e) => { e.stopPropagation(); inputRef.current?.click(); }}
                                     className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-[hsl(var(--admin-primary))] hover:bg-[hsl(var(--admin-primary)/0.08)] rounded transition-colors"
                                 >
                                     <span className="material-symbols-outlined text-[14px]">upload</span>
@@ -135,7 +169,7 @@ export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
                                 {objectKey && (
                                     <button
                                         type="button"
-                                        onClick={handleRevert}
+                                        onClick={(e) => { e.stopPropagation(); handleRevert(); }}
                                         className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-[hsl(var(--admin-text-muted))] hover:bg-[hsl(var(--admin-surface-alt))] rounded transition-colors"
                                     >
                                         <span className="material-symbols-outlined text-[14px]">restart_alt</span>

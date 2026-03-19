@@ -6,6 +6,8 @@ import { AdminPhoneController } from './admin-phone.controller';
 import { AdminEmailVerifyController } from './admin-email-verify.controller';
 import { AdminBranchesController } from './admin-branches.controller';
 import { AdminBrandsController } from './admin-brands.controller';
+import { AdminIllustrationsController } from './admin-illustrations.controller';
+import { IllustrationOverride } from './illustration-override.entity';
 import { Branch } from '../branches/branch.entity';
 import { Brand } from '../brands/brand.entity';
 import { AuthModule } from '../auth/auth.module';
@@ -14,7 +16,7 @@ import { Tenant } from '../tenants/tenant.entity';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([AdminDraft, Branch, Brand, Tenant]),
+        TypeOrmModule.forFeature([AdminDraft, Branch, Brand, Tenant, IllustrationOverride]),
         AuthModule,
         StorageModule,
     ],
@@ -24,6 +26,7 @@ import { Tenant } from '../tenants/tenant.entity';
         AdminEmailVerifyController,
         AdminBranchesController,
         AdminBrandsController,
+        AdminIllustrationsController,
     ],
 })
 export class AdminModule {}
