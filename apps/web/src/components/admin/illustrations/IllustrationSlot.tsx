@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useState, useRef, useEffect, useCallback, useId } from 'react';
+import { ReactNode, useState, useRef, useEffect, useCallback } from 'react';
 import { useRole } from '@/contexts/RoleContext';
 import { uploadToGcs } from '../inputs/uploadToGcs';
 
@@ -27,7 +27,7 @@ export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState('');
     const [showControls, setShowControls] = useState(false);
-    const hideTimer = useRef<ReturnType<typeof setTimeout>>();
+    const hideTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
     // Auto-dismiss touch overlay after 3 seconds
     useEffect(() => {
