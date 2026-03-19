@@ -90,20 +90,24 @@ export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
             return;
         }
         setError('');
+        // Clear existing display immediately so old image doesn't linger
+        setDisplayUrl(null);
+        setObjectKey(null);
         setUploading(true);
         try {
             const { objectKey: newKey, previewUrl } = await uploadToGcs(file, 'logos');
             if (newKey) {
-                // Save override to backend
+                // Save override to backend — replaces any existing override for this slot
                 await fetch(`/v1/admin/illustrations/${slotKey}`, {
                     method: 'PUT',
                     headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
                     body: JSON.stringify({ object_key: newKey }),
                 });
                 setObjectKey(newKey);
-                setDisplayUrl(previewUrl || null);
-                // If no preview URL came back, fetch fresh from backend
-                if (!previewUrl) {
+                if (previewUrl) {
+                    setDisplayUrl(previewUrl);
+                } else {
+                    // Fetch fresh signed URL from backend
                     const res = await fetch(`/v1/admin/illustrations/${slotKey}`, {
                         headers: getAuthHeaders(),
                     });
@@ -117,6 +121,8 @@ export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
             setError(err.message || 'Upload failed');
         } finally {
             setUploading(false);
+            // Reset file input so same file can be re-selected
+            if (inputRef.current) inputRef.current.value = '';
         }
     };
 

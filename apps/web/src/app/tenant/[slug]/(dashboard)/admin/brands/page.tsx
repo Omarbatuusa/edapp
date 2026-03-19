@@ -11,7 +11,7 @@ export default function BrandsPage({ params }: Props) {
         <div className="p-4 md:p-6 space-y-5">
             <div>
                 <h1 className="text-xl font-bold tracking-tight">Brand Management</h1>
-                <p className="text-sm text-muted-foreground">Manage school brands and their connected branches.</p>
+                <p className="text-sm text-muted-foreground">Manage school brands and their connected schools.</p>
             </div>
             <BrandList tenantSlug={slug} />
         </div>

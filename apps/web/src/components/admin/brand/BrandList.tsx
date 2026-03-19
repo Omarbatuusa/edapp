@@ -7,7 +7,9 @@ import { useRole } from '@/contexts/RoleContext';
 
 interface Brand {
   id: string; brand_name: string; brand_code: string;
-  status: string; connected_school_count: number; created_at: string;
+  status: string; created_at: string;
+  connected_school_count?: number;
+  connected_tenant_count?: number;
   logo_url?: string | null;
 }
 interface BrandListProps { tenantSlug: string; }
@@ -142,7 +144,7 @@ export function BrandList({ tenantSlug }: BrandListProps) {
                   <p className="text-[12px] font-medium text-[hsl(var(--admin-text-sub))] mt-0.5">
                     <span className="font-mono font-bold">{brand.brand_code}</span>
                     <span className="mx-1.5 text-[hsl(var(--admin-border))]">·</span>
-                    {brand.connected_school_count} {brand.connected_school_count === 1 ? 'school' : 'schools'}
+                    {brand.connected_school_count ?? brand.connected_tenant_count ?? 0} {(brand.connected_school_count ?? brand.connected_tenant_count ?? 0) === 1 ? 'school' : 'schools'}
                   </p>
                 </div>
                 <div className="flex items-center gap-1.5 flex-shrink-0">

@@ -100,7 +100,7 @@ export function AppShell({
     const hasLinkedTenants = useHasLinkedTenants();
 
     // Subpage detection + chrome flag
-    const { isSubpage, isFullscreen, chrome } = useSubpageDetection(navConfig.bottomTabs, basePath);
+    const { isSubpage, isFullscreen, chrome, parentTabPath } = useSubpageDetection(navConfig.bottomTabs, basePath);
 
     // Notification count
     const notificationsCount = countUnread(MOCK_NOTIFICATIONS);
@@ -217,7 +217,9 @@ export function AppShell({
                             onScroll={handleScroll}
                         >
                             {/* Subpage takeover: only SubpageBar, no AppHeader */}
-                            {chrome === 'takeover' && <SubpageBar />}
+                            {chrome === 'takeover' && (
+                                <SubpageBar onBack={() => router.push(parentTabPath || basePath)} />
+                            )}
                             <div className="flex-1">
                                 {children}
                             </div>
