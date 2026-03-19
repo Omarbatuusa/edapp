@@ -1,6 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, ILike } from 'typeorm';
 import { AuthService } from './auth.service';
 import { SessionTokenService } from './session-token.service';
 import { User } from '../users/user.entity';
@@ -55,7 +55,7 @@ export class FirebaseAuthGuard implements CanActivate {
             // Only link if the Firebase email is verified to prevent account takeover
             if (!dbUser && decoded.email) {
                 dbUser = await this.userRepo.findOne({
-                    where: { email: decoded.email },
+                    where: { email: ILike(decoded.email) },
                 });
                 if (dbUser && !dbUser.firebase_uid && decoded.email_verified) {
                     await this.userRepo.update(dbUser.id, { firebase_uid: decoded.uid });

@@ -1,6 +1,6 @@
 import { Controller, Post, Body, UnauthorizedException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
+import { Repository, In, ILike } from 'typeorm';
 import { AuthService } from './auth.service';
 import { SessionTokenService } from './session-token.service';
 import { EmailAuthService } from './email-auth.service';
@@ -95,7 +95,7 @@ export class AdminLoginController {
         // 2. Find user by firebase_uid or email
         let user = await this.userRepo.findOne({ where: { firebase_uid: decoded.uid } });
         if (!user && decoded.email) {
-            user = await this.userRepo.findOne({ where: { email: decoded.email } });
+            user = await this.userRepo.findOne({ where: { email: ILike(decoded.email) } });
             if (user && !user.firebase_uid) {
                 await this.userRepo.update(user.id, { firebase_uid: decoded.uid });
             }
@@ -205,8 +205,8 @@ export class AdminLoginController {
             throw new UnauthorizedException('Invalid or expired code');
         }
 
-        // 2. Find user by email
-        const user = await this.userRepo.findOne({ where: { email } });
+        // 2. Find user by email (case-insensitive)
+        const user = await this.userRepo.findOne({ where: { email: ILike(email) } });
         if (!user) {
             throw new UnauthorizedException('No account found. Contact your administrator.');
         }

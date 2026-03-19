@@ -1,8 +1,8 @@
-import { Controller, Post, Get, Body, Query, Param, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Controller, Post, Get, Body, Query, Param, BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { EmailAuthService } from './email-auth.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, ILike } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import * as firebaseAdmin from 'firebase-admin';
 import { TenantSettings } from '../tenants/tenant-settings.entity';
@@ -109,7 +109,7 @@ export class EmailAuthController {
     }
 
     /**
-     * Send OTP to email
+     * Send OTP to email — only if user account exists
      */
     @Post('otp/send')
     async sendOTP(@Body() dto: SendOTPDto) {
@@ -117,7 +117,15 @@ export class EmailAuthController {
             throw new BadRequestException('Email is required');
         }
 
-        const result = await this.emailAuthService.sendOTP(dto.email);
+        const normalizedEmail = dto.email.toLowerCase().trim();
+
+        // Only send OTP if user exists (case-insensitive)
+        const user = await this.userRepository.findOne({ where: { email: ILike(normalizedEmail) } });
+        if (!user) {
+            throw new UnauthorizedException('No account found with this email.');
+        }
+
+        const result = await this.emailAuthService.sendOTP(user.email);
 
         return {
             success: true,
