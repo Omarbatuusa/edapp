@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { uploadToGcs } from './uploadToGcs';
 
 interface LogoUploadProps {
@@ -10,15 +10,37 @@ interface LogoUploadProps {
     required?: boolean;
 }
 
+/** Fetch a fresh signed read URL for an existing objectKey */
+async function fetchReadUrl(objectKey: string): Promise<string> {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('session_token') : null;
+    const headers: Record<string, string> = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    const res = await fetch(`/v1/storage/read-url?key=${encodeURIComponent(objectKey)}`, { headers });
+    if (res.ok) {
+        const { readUrl } = await res.json();
+        return readUrl || '';
+    }
+    return '';
+}
+
 export function LogoUpload({ label = 'School Logo', value, onChange, required }: LogoUploadProps) {
     const [uploading, setUploading] = useState(false);
     const [previewUrl, setPreviewUrl] = useState('');
     const [error, setError] = useState('');
     const inputRef = useRef<HTMLInputElement>(null);
 
+    // When value (objectKey) is set but no preview — fetch a signed URL (draft resume case)
+    useEffect(() => {
+        if (value && !previewUrl) {
+            fetchReadUrl(value).then(url => {
+                if (url) setPreviewUrl(url);
+            });
+        }
+    }, [value, previewUrl]);
+
     const handleFile = async (file: File) => {
         if (!file.type.startsWith('image/')) { setError('Please select an image file'); return; }
-        if (file.size > 5 * 1024 * 1024) { setError('File must be under 5MB'); return; }
+        if (file.size > 5 * 1024 * 1024) { setError('File must be under 5 MB'); return; }
         setError('');
         setUploading(true);
         const blobUrl = URL.createObjectURL(file);
@@ -37,8 +59,8 @@ export function LogoUpload({ label = 'School Logo', value, onChange, required }:
         }
     };
 
-    const hasImage = previewUrl || (value && !value.startsWith('uploads/'));
-    const imgSrc = previewUrl || value;
+    const hasImage = !!(previewUrl || value);
+    const imgSrc = previewUrl;
 
     return (
         <div className="flex flex-col gap-1.5">
@@ -60,7 +82,13 @@ export function LogoUpload({ label = 'School Logo', value, onChange, required }:
                 )}
                 {hasImage ? (
                     <div className="flex flex-col items-center gap-2.5">
-                        <img src={imgSrc} alt="Logo preview" className="w-20 h-20 object-contain rounded-xl border border-[hsl(var(--admin-border)/0.3)] bg-white" />
+                        {imgSrc ? (
+                            <img src={imgSrc} alt="Logo preview" className="w-20 h-20 object-contain rounded-xl border border-[hsl(var(--admin-border)/0.3)] bg-white" />
+                        ) : (
+                            <div className="w-20 h-20 rounded-xl bg-green-50 border border-green-200 flex items-center justify-center">
+                                <span className="material-symbols-outlined text-green-500 text-[24px]">check_circle</span>
+                            </div>
+                        )}
                         <button
                             type="button"
                             onClick={e => { e.stopPropagation(); onChange(''); setPreviewUrl(''); }}

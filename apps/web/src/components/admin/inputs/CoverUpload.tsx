@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { uploadToGcs } from './uploadToGcs';
 
 interface CoverUploadProps {
@@ -9,11 +9,33 @@ interface CoverUploadProps {
     onChange: (objectKey: string) => void;
 }
 
+/** Fetch a fresh signed read URL for an existing objectKey */
+async function fetchReadUrl(objectKey: string): Promise<string> {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('session_token') : null;
+    const headers: Record<string, string> = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    const res = await fetch(`/v1/storage/read-url?key=${encodeURIComponent(objectKey)}`, { headers });
+    if (res.ok) {
+        const { readUrl } = await res.json();
+        return readUrl || '';
+    }
+    return '';
+}
+
 export function CoverUpload({ label = 'Cover Photo', value, onChange }: CoverUploadProps) {
     const [uploading, setUploading] = useState(false);
     const [previewUrl, setPreviewUrl] = useState('');
     const [error, setError] = useState('');
     const inputRef = useRef<HTMLInputElement>(null);
+
+    // Fetch preview when value (objectKey) exists but no previewUrl (draft resume)
+    useEffect(() => {
+        if (value && !previewUrl) {
+            fetchReadUrl(value).then(url => {
+                if (url) setPreviewUrl(url);
+            });
+        }
+    }, [value, previewUrl]);
 
     const handleFile = async (file: File) => {
         if (!file.type.startsWith('image/')) { setError('Please select an image file'); return; }
@@ -36,8 +58,8 @@ export function CoverUpload({ label = 'Cover Photo', value, onChange }: CoverUpl
         }
     };
 
-    const hasCustomCover = previewUrl || value;
-    const displaySrc = previewUrl || (value && !value.startsWith('uploads/') ? value : '');
+    const hasCover = !!(previewUrl || value);
+    const displaySrc = previewUrl;
 
     return (
         <div className="flex flex-col gap-1.5">
@@ -50,6 +72,11 @@ export function CoverUpload({ label = 'Cover Photo', value, onChange }: CoverUpl
             >
                 {displaySrc ? (
                     <img src={displaySrc} alt="Cover" className="w-full h-full object-cover" />
+                ) : hasCover ? (
+                    /* Has objectKey but no preview yet — show uploaded indicator */
+                    <div className="w-full h-full bg-green-50 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-green-500 text-[28px]">check_circle</span>
+                    </div>
                 ) : (
                     <div className="w-full h-full bg-gradient-to-r from-[hsl(var(--admin-primary)/0.08)] to-[hsl(210_100%_50%/0.15)] flex items-center justify-center">
                         <div className="flex flex-col items-center gap-1">
@@ -63,7 +90,7 @@ export function CoverUpload({ label = 'Cover Photo', value, onChange }: CoverUpl
                         <div className="w-6 h-6 border-2 border-white/40 border-t-white rounded-full animate-spin" />
                     </div>
                 )}
-                {!uploading && hasCustomCover && (
+                {!uploading && hasCover && (
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
                         <span className="px-3 py-1.5 bg-white/90 text-[hsl(var(--admin-text-main))] text-[12px] font-medium rounded-lg">Change</span>
                         <button
