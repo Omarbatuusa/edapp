@@ -39,7 +39,7 @@ export function CoverUpload({ label = 'Cover Photo', value, onChange }: CoverUpl
 
     const handleFile = async (file: File) => {
         if (!file.type.startsWith('image/')) { setError('Please select an image file'); return; }
-        if (file.size > 10 * 1024 * 1024) { setError('File must be under 10 MB'); return; }
+        if (file.size > 5 * 1024 * 1024) { setError('File must be under 5 MB'); return; }
         setError('');
         setUploading(true);
         const blobUrl = URL.createObjectURL(file);
@@ -79,9 +79,11 @@ export function CoverUpload({ label = 'Cover Photo', value, onChange }: CoverUpl
                     </div>
                 ) : (
                     <div className="w-full h-full bg-gradient-to-r from-[hsl(var(--admin-primary)/0.08)] to-[hsl(210_100%_50%/0.15)] flex items-center justify-center">
-                        <div className="flex flex-col items-center gap-1">
+                        <div className="flex flex-col items-center gap-1.5 px-4 text-center">
                             <span className="material-symbols-outlined text-[20px] text-[hsl(var(--admin-text-muted))]">panorama</span>
                             <span className="text-[11px] font-medium text-[hsl(var(--admin-text-muted))]">Tap to upload cover</span>
+                            <span className="text-[10px] text-[hsl(var(--admin-text-muted))]">1200 × 400px recommended · PNG, JPG or WebP · Max 5 MB</span>
+                            <span className="text-[9px] text-[hsl(var(--admin-text-muted))]">Auto-optimized for fast loading</span>
                         </div>
                     </div>
                 )}

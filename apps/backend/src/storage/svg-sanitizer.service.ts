@@ -52,6 +52,9 @@ export class SvgSanitizerService {
                 'stdDeviation', 'in', 'in2', 'result', 'mode', 'values', 'type',
                 'flood-color', 'flood-opacity',
                 'color-interpolation-filters',
+                'fill-rule', 'clip-rule', 'color', 'overflow',
+                'display', 'visibility', 'paint-order',
+                'marker-start', 'marker-mid', 'marker-end',
             ],
             // Block dangerous elements
             FORBID_TAGS: [

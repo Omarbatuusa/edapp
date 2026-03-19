@@ -13,6 +13,9 @@ import { ReviewIllustration } from '../illustrations/ReviewIllustration';
 import { IllustrationSlot } from '../illustrations/IllustrationSlot';
 import { MiniCalendar } from '@/components/dashboard/MiniCalendar';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
+import { TaskItem } from '@/components/dashboard/TaskItem';
+import { NotifItem } from '@/components/dashboard/NotifItem';
+import { MOCK_ADMIN_EVENTS } from '@/lib/calendar-events';
 
 interface BrandWizardProps {
     tenantSlug: string;
@@ -277,12 +280,35 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
 
     const dashboardPanel = (
         <div className="flex flex-col gap-4">
-            <div className="bg-white rounded-2xl border border-[hsl(var(--admin-border)/0.4)] p-4">
-                <MiniCalendar />
+            <MiniCalendar events={MOCK_ADMIN_EVENTS} />
+
+            {/* Urgent Tasks */}
+            <div className="ios-card">
+                <h3 className="type-card-title text-[hsl(var(--admin-text-main))] mb-3 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-danger))]">priority_high</span>
+                    Urgent Tasks
+                </h3>
+                <div className="space-y-1">
+                    <TaskItem title="Approve Leave Request" time="2h ago" urgent />
+                    <TaskItem title="Review Incident Report #102" time="4h ago" urgent />
+                    <TaskItem title="Monthly Fee Reconciliation" time="1d ago" />
+                </div>
             </div>
-            <div className="bg-white rounded-2xl border border-[hsl(var(--admin-border)/0.4)] overflow-hidden">
-                <ActivityFeed role="admin" />
+
+            {/* Recent Notifications */}
+            <div className="ios-card">
+                <h3 className="type-card-title text-[hsl(var(--admin-text-main))] mb-3 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-primary))]">notifications</span>
+                    Recent Notifications
+                </h3>
+                <div className="space-y-2">
+                    <NotifItem icon="person_add" text="New enrollment application received" time="10m ago" />
+                    <NotifItem icon="event_available" text="Staff meeting confirmed for tomorrow" time="1h ago" />
+                    <NotifItem icon="payments" text="3 fee payments processed" time="2h ago" />
+                </div>
             </div>
+
+            <ActivityFeed role="admin" />
         </div>
     );
 

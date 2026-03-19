@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useState, useRef, useEffect, useCallback } from 'react';
+import { ReactNode, useState, useRef, useEffect, useCallback, useId } from 'react';
 import { useRole } from '@/contexts/RoleContext';
 import { uploadToGcs } from '../inputs/uploadToGcs';
 
@@ -26,6 +26,16 @@ export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
     const [objectKey, setObjectKey] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState('');
+    const [showControls, setShowControls] = useState(false);
+    const hideTimer = useRef<ReturnType<typeof setTimeout>>();
+
+    // Auto-dismiss touch overlay after 3 seconds
+    useEffect(() => {
+        if (showControls) {
+            hideTimer.current = setTimeout(() => setShowControls(false), 3000);
+            return () => clearTimeout(hideTimer.current);
+        }
+    }, [showControls]);
 
     // Fetch a fresh signed read URL for a stored object key
     const fetchReadUrl = useCallback(async (key: string) => {
@@ -90,7 +100,10 @@ export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
     };
 
     return (
-        <div className="relative group">
+        <div
+            className="relative group"
+            onClick={() => { if (isSuperAdmin) setShowControls(prev => !prev); }}
+        >
             {/* Render custom SVG or default fallback */}
             {displayUrl ? (
                 <img
@@ -105,7 +118,7 @@ export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
 
             {/* Super admin overlay controls */}
             {isSuperAdmin && (
-                <div className="absolute inset-0 flex items-end justify-center pb-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className={`absolute inset-0 flex items-end justify-center pb-1 transition-opacity ${showControls ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
                     <div className="flex items-center gap-1 bg-white/90 rounded-lg shadow-sm border border-[hsl(var(--admin-border)/0.4)] px-1.5 py-1">
                         {uploading ? (
                             <div className="w-4 h-4 border-2 border-[hsl(var(--admin-primary)/0.2)] border-t-[hsl(var(--admin-primary))] rounded-full animate-spin mx-2" />

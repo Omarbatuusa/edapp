@@ -7,8 +7,28 @@ import Link from 'next/link';
 interface Brand {
   id: string; brand_name: string; brand_code: string;
   status: string; connected_branch_count: number; created_at: string;
+  logo_url?: string | null;
 }
 interface BrandListProps { tenantSlug: string; }
+
+function BrandLogo({ url, name }: { url?: string | null; name: string }) {
+  const [failed, setFailed] = useState(false);
+  if (url && !failed) {
+    return (
+      <img
+        src={url}
+        alt={`${name} logo`}
+        className="w-11 h-11 rounded-[13px] object-contain bg-white border border-[hsl(var(--admin-border)/0.3)] flex-shrink-0"
+        onError={() => setFailed(true)}
+      />
+    );
+  }
+  return (
+    <div className="w-11 h-11 rounded-[13px] bg-[hsl(var(--admin-primary)/0.12)] flex items-center justify-center flex-shrink-0">
+      <span className="material-symbols-outlined text-[22px] text-[hsl(var(--admin-primary))]">category</span>
+    </div>
+  );
+}
 
 const ST: Record<string, string> = {
   active: 'text-green-600 bg-green-100',
@@ -83,9 +103,7 @@ export function BrandList({ tenantSlug }: BrandListProps) {
           <div className="divide-y divide-[hsl(var(--admin-border))]">
             {filtered.map(brand => (
               <div key={brand.id} className="flex items-center gap-3.5 px-4 py-4">
-                <div className="w-11 h-11 rounded-[13px] bg-[hsl(var(--admin-primary)/0.12)] flex items-center justify-center flex-shrink-0">
-                  <span className="material-symbols-outlined text-[22px] text-[hsl(var(--admin-primary))]">category</span>
-                </div>
+                <BrandLogo url={brand.logo_url} name={brand.brand_name} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <p className="text-[15px] font-bold text-[hsl(var(--admin-text-main))] tracking-tight truncate">{brand.brand_name}</p>

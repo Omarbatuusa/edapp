@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { StorageService } from './storage.service';
 import { SvgSanitizerService } from './svg-sanitizer.service';
+import { ImageProcessingService } from './image-processing.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FileObject, FileVisibility, FileCategory } from './file-object.entity';
@@ -54,11 +55,11 @@ const CATEGORY_RULES: Record<string, { mimeTypes: string[]; maxSizeMB: number }>
     },
     logos: {
         mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'],
-        maxSizeMB: 5,
+        maxSizeMB: 2,
     },
     covers: {
         mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
-        maxSizeMB: 10,
+        maxSizeMB: 5,
     },
     reports: {
         mimeTypes: ['application/pdf', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/csv'],
@@ -88,6 +89,7 @@ export class StorageController {
     constructor(
         private readonly storageService: StorageService,
         private readonly svgSanitizer: SvgSanitizerService,
+        private readonly imageProcessor: ImageProcessingService,
         @InjectRepository(FileObject) private readonly fileRepo: Repository<FileObject>,
     ) { }
 
@@ -259,6 +261,32 @@ export class StorageController {
                 await this.storageService.uploadBuffer(body.objectKey, sanitized, body.contentType);
             } catch (err) {
                 throw new BadRequestException('SVG sanitization failed — file may be invalid or contain unsafe content');
+            }
+        }
+
+        // Image processing — resize, convert to WebP, generate thumbnails
+        if (!this.svgSanitizer.isSvg(body.contentType) && this.imageProcessor.isProcessable(body.contentType)) {
+            try {
+                const rawBuffer = await this.storageService.downloadObject(body.objectKey);
+                const category = body.category || '';
+
+                if (category === 'logos') {
+                    const processed = await this.imageProcessor.processLogo(rawBuffer);
+                    await this.storageService.uploadBuffer(body.objectKey, processed.buffer, processed.contentType);
+                    body.contentType = processed.contentType;
+
+                    // Generate 96x96 thumbnail for list views
+                    const thumbKey = body.objectKey.replace(/(\.[^.]+)$/, '_thumb.webp');
+                    const thumb = await this.imageProcessor.generateThumbnail(rawBuffer, 96);
+                    await this.storageService.uploadBuffer(thumbKey, thumb.buffer, thumb.contentType);
+                } else if (category === 'covers') {
+                    const processed = await this.imageProcessor.processCover(rawBuffer);
+                    await this.storageService.uploadBuffer(body.objectKey, processed.buffer, processed.contentType);
+                    body.contentType = processed.contentType;
+                }
+            } catch (err: any) {
+                this.logger.warn(`Image processing failed for ${body.objectKey}: ${err.message}`);
+                // Non-fatal — keep original image if processing fails
             }
         }
 

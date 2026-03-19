@@ -173,6 +173,7 @@ export class StorageService {
             await file.save(buffer, {
                 contentType,
                 resumable: false,
+                metadata: { contentType },
             });
             this.logger.debug(`Uploaded buffer to: ${objectKey}`);
         } catch (error) {

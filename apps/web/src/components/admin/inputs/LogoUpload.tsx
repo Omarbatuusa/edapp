@@ -40,7 +40,7 @@ export function LogoUpload({ label = 'School Logo', value, onChange, required }:
 
     const handleFile = async (file: File) => {
         if (!file.type.startsWith('image/')) { setError('Please select an image file'); return; }
-        if (file.size > 5 * 1024 * 1024) { setError('File must be under 5 MB'); return; }
+        if (file.size > 2 * 1024 * 1024) { setError('File must be under 2 MB'); return; }
         setError('');
         setUploading(true);
         const blobUrl = URL.createObjectURL(file);
@@ -102,11 +102,12 @@ export function LogoUpload({ label = 'School Logo', value, onChange, required }:
                         <div className="w-11 h-11 bg-[hsl(var(--admin-surface-alt))] rounded-xl flex items-center justify-center mb-2">
                             <span className="material-symbols-outlined text-[22px] text-[hsl(var(--admin-text-muted))]">add_photo_alternate</span>
                         </div>
-                        <p className="text-[13px] font-medium text-[hsl(var(--admin-text-sub))]">Tap to upload</p>
-                        <p className="text-[11px] text-[hsl(var(--admin-text-muted))] mt-0.5">PNG, JPG or SVG · Max 5 MB</p>
+                        <p className="text-[13px] font-medium text-[hsl(var(--admin-text-sub))]">Tap to upload logo</p>
+                        <p className="text-[11px] text-[hsl(var(--admin-text-muted))] mt-0.5">512 × 512px recommended · PNG, JPG or SVG</p>
+                        <p className="text-[10px] text-[hsl(var(--admin-text-muted))]">Max 2 MB · Auto-optimized for fast loading</p>
                     </>
                 )}
-                <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} />
+                <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/svg+xml" className="hidden" onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} />
             </div>
             {error && <p className="text-[12px] text-red-500 font-medium px-1">{error}</p>}
         </div>

@@ -13,6 +13,8 @@ import { AddEventSheet } from '../../../../../components/dashboard/AddEventSheet
 import { ProfileCompletionCard } from '../../../../../components/dashboard/ProfileCompletionCard';
 import { GroupsChannelsCard } from '../../../../../components/dashboard/GroupsChannelsCard';
 import { ActivityFeed } from '../../../../../components/dashboard/ActivityFeed';
+import { TaskItem } from '../../../../../components/dashboard/TaskItem';
+import { NotifItem } from '../../../../../components/dashboard/NotifItem';
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -451,29 +453,6 @@ function AttendanceStat({ icon, value, label, color }: { icon: string; value: st
     );
 }
 
-function TaskItem({ title, time, urgent }: { title: string; time: string; urgent?: boolean }) {
-    return (
-        <div className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-[hsl(var(--admin-surface-alt))] active:scale-[0.98] transition-all cursor-pointer">
-            <div className={`w-2 h-2 mt-1.5 rounded-full flex-shrink-0 ${urgent ? 'bg-[hsl(var(--admin-danger))]' : 'bg-[hsl(var(--admin-primary))]'}`} />
-            <div className="flex-1 min-w-0">
-                <p className="type-muted text-[hsl(var(--admin-text-main))] truncate">{title}</p>
-                <p className="type-metadata text-[hsl(var(--admin-text-muted))]">{time}</p>
-            </div>
-        </div>
-    );
-}
-
-function NotifItem({ icon, text, time }: { icon: string; text: string; time: string }) {
-    return (
-        <div className="flex items-start gap-2.5 p-2 rounded-xl hover:bg-[hsl(var(--admin-surface-alt))] transition-colors cursor-pointer">
-            <span className="material-symbols-outlined text-[16px] text-[hsl(var(--admin-primary))] mt-0.5">{icon}</span>
-            <div className="flex-1 min-w-0">
-                <p className="type-muted text-[hsl(var(--admin-text-main))] leading-snug">{text}</p>
-                <p className="type-metadata text-[hsl(var(--admin-text-muted))]">{time}</p>
-            </div>
-        </div>
-    );
-}
 
 function SubscriptionCard({
     status, plan, endsAt, suspendedAt, suspensionReason, basePath, isPlatform,
