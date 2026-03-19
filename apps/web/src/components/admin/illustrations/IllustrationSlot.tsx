@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useState, useRef, useEffect } from 'react';
+import { ReactNode, useState, useRef, useEffect, useCallback } from 'react';
 import { useRole } from '@/contexts/RoleContext';
 import { uploadToGcs } from '../inputs/uploadToGcs';
 
@@ -15,22 +15,44 @@ interface IllustrationSlotProps {
 
 /**
  * Wraps an illustration SVG with super-admin replace functionality.
- * Super admins see an edit button overlay. Custom SVGs are stored in
- * localStorage keyed by slotKey and uploaded to GCS.
+ * Stores the GCS object key in localStorage (not the signed URL, which expires).
+ * Fetches a fresh signed read URL each time the component mounts.
  */
 export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
     const { fullRole } = useRole();
     const isSuperAdmin = SUPER_ADMIN_ROLES.some(r => fullRole.includes(r));
     const inputRef = useRef<HTMLInputElement>(null);
-    const [customUrl, setCustomUrl] = useState<string | null>(null);
+    const [displayUrl, setDisplayUrl] = useState<string | null>(null);
+    const [objectKey, setObjectKey] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState('');
 
-    // Load custom illustration from localStorage on mount
+    // Fetch a fresh signed read URL for a stored object key
+    const fetchReadUrl = useCallback(async (key: string) => {
+        try {
+            const token = localStorage.getItem('session_token');
+            const headers: Record<string, string> = {};
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+            const res = await fetch(`/v1/storage/read-url?key=${encodeURIComponent(key)}`, { headers });
+            if (res.ok) {
+                const { readUrl } = await res.json();
+                if (readUrl) setDisplayUrl(readUrl);
+            }
+        } catch {
+            // Silently fail — will show fallback
+        }
+    }, []);
+
+    // Load stored object key and fetch fresh URL on mount
     useEffect(() => {
-        const stored = localStorage.getItem(`illustration_${slotKey}`);
-        if (stored) setCustomUrl(stored);
-    }, [slotKey]);
+        const storedKey = localStorage.getItem(`illustration_key_${slotKey}`);
+        if (storedKey) {
+            setObjectKey(storedKey);
+            fetchReadUrl(storedKey);
+        }
+        // Migrate: remove old signed URL entries
+        localStorage.removeItem(`illustration_${slotKey}`);
+    }, [slotKey, fetchReadUrl]);
 
     const handleUpload = async (file: File) => {
         if (!file.type.includes('svg')) {
@@ -44,10 +66,13 @@ export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
         setError('');
         setUploading(true);
         try {
-            const { previewUrl } = await uploadToGcs(file, 'logos');
-            if (previewUrl) {
-                localStorage.setItem(`illustration_${slotKey}`, previewUrl);
-                setCustomUrl(previewUrl);
+            const { objectKey: newKey, previewUrl } = await uploadToGcs(file, 'logos');
+            if (newKey) {
+                localStorage.setItem(`illustration_key_${slotKey}`, newKey);
+                setObjectKey(newKey);
+                setDisplayUrl(previewUrl || null);
+                // If no preview URL came back, fetch one
+                if (!previewUrl) fetchReadUrl(newKey);
             }
         } catch (err: any) {
             setError(err.message || 'Upload failed');
@@ -57,17 +82,19 @@ export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
     };
 
     const handleRevert = () => {
-        localStorage.removeItem(`illustration_${slotKey}`);
-        setCustomUrl(null);
+        localStorage.removeItem(`illustration_key_${slotKey}`);
+        localStorage.removeItem(`illustration_${slotKey}`); // cleanup old format
+        setObjectKey(null);
+        setDisplayUrl(null);
         setError('');
     };
 
     return (
         <div className="relative group">
             {/* Render custom SVG or default fallback */}
-            {customUrl ? (
+            {displayUrl ? (
                 <img
-                    src={customUrl}
+                    src={displayUrl}
                     alt="Custom illustration"
                     className="w-full max-w-[200px] max-h-[160px] object-contain mx-auto"
                     onError={() => handleRevert()}
@@ -92,7 +119,7 @@ export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
                                     <span className="material-symbols-outlined text-[14px]">upload</span>
                                     Replace
                                 </button>
-                                {customUrl && (
+                                {objectKey && (
                                     <button
                                         type="button"
                                         onClick={handleRevert}
