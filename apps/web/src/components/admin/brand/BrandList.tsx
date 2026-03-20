@@ -79,8 +79,10 @@ export function BrandList({ tenantSlug }: BrandListProps) {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       if (!res.ok) {
-        const json = await res.json();
+        const json = await res.json().catch(() => ({}));
         alert(json.message || 'Failed to delete brand');
+        // Refetch anyway — brand may have already been removed externally
+        await loadBrands();
         return;
       }
       // Refetch from server so list is always authoritative

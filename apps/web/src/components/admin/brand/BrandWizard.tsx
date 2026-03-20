@@ -109,7 +109,7 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
                                     brand_code: previewCode(name),
                                 });
                             }}
-                            placeholder="e.g. Rainbow City Schools"
+                            placeholder="Brand name"
                             className={inputCls}
                         />
                     </FieldWrapper>
@@ -145,7 +145,7 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
                             value={data.description || ''}
                             onChange={e => onChange({ description: e.target.value })}
                             rows={3}
-                            placeholder="A short description of this brand group..."
+                            placeholder="Optional description"
                             className={textareaCls}
                         />
                     </FieldWrapper>
