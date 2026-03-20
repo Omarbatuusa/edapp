@@ -9,19 +9,17 @@ interface Props { params: Promise<{ slug: string }> }
 export default function BrandsPage({ params }: Props) {
     const { slug } = use(params);
     return (
-        <div className="pb-24">
-            {/* Back navigation bar */}
-            <div className="sticky top-0 z-20 bg-[hsl(var(--admin-background)/0.80)] backdrop-blur-[20px] border-b border-[hsl(var(--admin-border)/0.5)] px-4 py-2.5 flex items-center gap-3">
+        <div className="min-h-screen bg-white">
+            {/* Sticky nav bar — pure white, no blur */}
+            <div className="sticky top-0 z-20 bg-white border-b border-[hsl(var(--admin-border)/0.5)] px-2 py-2 flex items-center">
                 <Link
                     href={`/tenant/${slug}/admin`}
-                    className="w-9 h-9 flex items-center justify-center rounded-full text-[hsl(var(--admin-text-sub))] hover:bg-[hsl(var(--admin-surface-alt))] transition-colors active:scale-[0.92]"
+                    className="flex items-center gap-1 px-2 py-2 rounded-xl text-[hsl(var(--admin-primary))] hover:bg-[hsl(var(--admin-primary)/0.06)] active:scale-[0.95] transition-all"
                     aria-label="Back to dashboard"
                 >
                     <span className="material-symbols-outlined text-[20px]">arrow_back</span>
+                    <span className="text-[15px] font-semibold">Brands</span>
                 </Link>
-                <h1 className="text-[17px] font-semibold text-[hsl(var(--admin-text-main))] truncate flex-1">
-                    Brands
-                </h1>
             </div>
 
             <div className="p-4 md:p-6 space-y-4">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
 import { WizardShell, WizardStep } from '../wizard/WizardShell';
@@ -50,19 +50,23 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
     const router = useRouter();
     const [initialData, setInitialData] = useState<Record<string, any>>({});
     const [loading, setLoading] = useState(mode === 'edit');
-    // Unique wizard key per session so drafts never bleed between separate brand creations
-    const wizardKey = useRef(
-        mode === 'edit' ? `BRAND_EDIT_${brandId}` : `BRAND_NEW_${Date.now()}`
-    ).current;
+    const [loadError, setLoadError] = useState('');
+    // Static form key: 'BRAND' for new (enables draft resume), 'BRAND_EDIT_<id>' for edit
+    const wizardKey = mode === 'edit' ? `BRAND_EDIT_${brandId}` : 'BRAND';
 
     useEffect(() => {
         if (mode !== 'edit' || !brandId) return;
         const token = localStorage.getItem('session_token');
         fetch(`/v1/admin/brands/${brandId}`, {
             headers: token ? { Authorization: `Bearer ${token}` } : {},
+            cache: 'no-store',
         })
-            .then(r => r.json())
-            .then(data => {
+            .then(async r => {
+                const data = await r.json();
+                if (!r.ok) {
+                    setLoadError(data.message || 'Brand not found');
+                    return;
+                }
                 setInitialData({
                     brand_name: data.brand_name || '',
                     brand_slug: data.brand_slug || '',
@@ -74,7 +78,7 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
                     _cover_preview: data.cover_url || '',
                 });
             })
-            .catch(() => {})
+            .catch(() => setLoadError('Could not load brand. Please try again.'))
             .finally(() => setLoading(false));
     }, [mode, brandId]);
 
@@ -282,6 +286,25 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
         return (
             <div className="min-h-screen bg-white flex items-center justify-center">
                 <div className="w-7 h-7 border-2 border-[hsl(var(--admin-primary)/0.2)] border-t-[hsl(var(--admin-primary))] rounded-full animate-spin" />
+            </div>
+        );
+    }
+
+    if (loadError) {
+        return (
+            <div className="min-h-screen bg-white flex flex-col items-center justify-center gap-4 p-6 text-center">
+                <span className="material-symbols-outlined text-[48px] text-[hsl(var(--admin-text-muted))]">error_outline</span>
+                <div>
+                    <p className="text-[16px] font-semibold text-[hsl(var(--admin-text-main))]">{loadError}</p>
+                    <p className="text-[13px] text-[hsl(var(--admin-text-muted))] mt-1">This brand may have been deleted or you may not have access.</p>
+                </div>
+                <button
+                    type="button"
+                    onClick={() => router.push(`/tenant/${tenantSlug}/admin/brands`)}
+                    className="px-5 py-2.5 bg-[hsl(var(--admin-primary))] text-white text-[14px] font-semibold rounded-xl"
+                >
+                    Back to Brands
+                </button>
             </div>
         );
     }

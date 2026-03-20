@@ -49,14 +49,25 @@ export function BrandList({ tenantSlug }: BrandListProps) {
   const [search, setSearch] = useState('');
   const [deleting, setDeleting] = useState<string | null>(null);
 
-  useEffect(() => {
-    const token = localStorage.getItem('session_token');
-    fetch('/v1/admin/brands', { headers: token ? { Authorization: `Bearer ${token}` } : {} })
-      .then(r => r.json())
-      .then(data => setBrands(Array.isArray(data) ? data : []))
-      .catch(() => setBrands([]))
-      .finally(() => setLoading(false));
-  }, []);
+  const loadBrands = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('session_token');
+      const r = await fetch('/v1/admin/brands', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        cache: 'no-store',
+      });
+      const data = await r.json();
+      setBrands(Array.isArray(data) ? data : []);
+    } catch {
+      setBrands([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Always refetch from server on mount — prevents stale data after back-navigation
+  useEffect(() => { loadBrands(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDelete = async (brand: Brand) => {
     if (!confirm(`Delete "${brand.brand_name}"? This cannot be undone.`)) return;
@@ -72,7 +83,8 @@ export function BrandList({ tenantSlug }: BrandListProps) {
         alert(json.message || 'Failed to delete brand');
         return;
       }
-      setBrands(prev => prev.filter(b => b.id !== brand.id));
+      // Refetch from server so list is always authoritative
+      await loadBrands();
     } catch {
       alert('Failed to delete brand');
     } finally {
