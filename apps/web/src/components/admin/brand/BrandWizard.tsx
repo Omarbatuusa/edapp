@@ -1,15 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
 import { WizardShell, WizardStep } from '../wizard/WizardShell';
 import { FieldWrapper } from '../inputs/FieldWrapper';
 import { LogoUpload } from '../inputs/LogoUpload';
 import { CoverUpload } from '../inputs/CoverUpload';
-import { BrandIllustration } from '../illustrations/BrandIllustration';
-import { BrandingIllustration } from '../illustrations/BrandingIllustration';
-import { ReviewIllustration } from '../illustrations/ReviewIllustration';
 import { IllustrationSlot } from '../illustrations/IllustrationSlot';
 import { MiniCalendar } from '@/components/dashboard/MiniCalendar';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
@@ -27,7 +24,7 @@ const step1Schema = z.object({
     brand_name: z.string().min(2, 'Brand name must be at least 2 characters'),
 });
 
-/** Generate a short slug (first 3 letters of name) */
+/** Preview slug (first 3 letters, server is authoritative on save) */
 function slugify(name: string): string {
     return name
         .toLowerCase()
@@ -37,11 +34,11 @@ function slugify(name: string): string {
         .padEnd(3, 'x');
 }
 
-/** Generate a brand code like RAI-K7M2 */
-function generateCode(name: string): string {
-    const prefix = name.replace(/[^a-zA-Z]/g, '').substring(0, 3).toUpperCase().padEnd(3, 'X');
-    const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
-    return `${prefix}-${rand}`;
+/** Preview code: 1 letter + 3 digits — server generates the real one on save */
+function previewCode(name: string): string {
+    const letter = name.replace(/[^a-zA-Z]/g, '').substring(0, 1).toUpperCase() || 'B';
+    const num = Math.floor(Math.random() * 900) + 100;
+    return `${letter}${num}`;
 }
 
 /* iOS-style text input class */
@@ -53,6 +50,10 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
     const router = useRouter();
     const [initialData, setInitialData] = useState<Record<string, any>>({});
     const [loading, setLoading] = useState(mode === 'edit');
+    // Unique wizard key per session so drafts never bleed between separate brand creations
+    const wizardKey = useRef(
+        mode === 'edit' ? `BRAND_EDIT_${brandId}` : `BRAND_NEW_${Date.now()}`
+    ).current;
 
     useEffect(() => {
         if (mode !== 'edit' || !brandId) return;
@@ -81,7 +82,7 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
         {
             title: 'Brand Identity',
             helper: 'Give your brand a name. This will group schools under a single identity.',
-            illustration: <IllustrationSlot slotKey="brand_step_1" fallback={<BrandIllustration />} />,
+            illustration: <IllustrationSlot slotKey="brand_step_1" />,
             schema: step1Schema,
             content: ({ data, onChange, errors }) => (
                 <div className="flex flex-col gap-4">
@@ -101,7 +102,7 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
                                 onChange({
                                     brand_name: name,
                                     brand_slug: slugify(name),
-                                    brand_code: generateCode(name),
+                                    brand_code: previewCode(name),
                                 });
                             }}
                             placeholder="e.g. Rainbow City Schools"
@@ -150,7 +151,7 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
         {
             title: 'Brand Assets',
             helper: 'Upload a logo and cover image. These appear on all schools within this brand.',
-            illustration: <IllustrationSlot slotKey="brand_step_2" fallback={<BrandingIllustration />} />,
+            illustration: <IllustrationSlot slotKey="brand_step_2" />,
             content: ({ data, onChange }) => (
                 <div className="flex flex-col gap-5">
                     <LogoUpload
@@ -169,7 +170,7 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
         {
             title: 'Review',
             helper: 'Review',
-            illustration: <IllustrationSlot slotKey="brand_step_3" fallback={<ReviewIllustration />} />,
+            illustration: <IllustrationSlot slotKey="brand_step_3" />,
             content: ({ data }) => (
                 <div className="flex flex-col gap-4">
                     {/* Brand identity card */}
@@ -248,10 +249,17 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
 
     const handleComplete = async (data: Record<string, any>) => {
         const token = localStorage.getItem('session_token');
-        const payload = {
+        // On create: send slug so server can use it as base (server still ensures uniqueness)
+        // On edit: never send slug or code — they're immutable
+        const payload = mode === 'edit' ? {
+            brand_name: data.brand_name,
+            description: data.description ?? null,
+            logo_file_id: data.logo_file_id || null,
+            cover_file_id: data.cover_file_id || null,
+        } : {
             brand_name: data.brand_name,
             brand_slug: data.brand_slug,
-            description: data.description,
+            description: data.description ?? null,
             logo_file_id: data.logo_file_id || null,
             cover_file_id: data.cover_file_id || null,
         };
@@ -316,7 +324,7 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
         <div className="brand-wizard-container">
             <WizardShell
                 steps={steps}
-                formType={mode === 'edit' ? `BRAND_EDIT_${brandId}` : 'BRAND'}
+                formType={wizardKey}
                 submitLabel={mode === 'edit' ? 'Save Changes' : 'Create Brand'}
                 onComplete={handleComplete}
                 onCancel={() => router.push(`/tenant/${tenantSlug}/admin/brands`)}

@@ -165,6 +165,13 @@ export function useWizardAutosave(formType: string, tenantId?: string, options?:
     };
 
     const clearDraft = () => {
+        // Delete from backend so stale drafts don't resurface on next visit
+        if (draftId) {
+            fetch(`/v1/admin/drafts/${draftId}`, {
+                method: 'DELETE',
+                headers: getHeaders(),
+            }).catch(() => {});
+        }
         setDraftId(null);
         setExistingDraft(null);
         sessionStorage.removeItem(`wizard_draft_${formType}_${tenantId || ''}`);

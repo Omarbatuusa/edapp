@@ -249,12 +249,10 @@ export function WizardShell({
                 )}
 
                 <div className="wizard-sheet-content">
-                    {/* Illustration — always visible, centered above form */}
+                    {/* Illustration — rendered only when truthy; no fixed height so empty slot collapses */}
                     {step.illustration && (
-                        <div className="flex justify-center py-4 lg:py-6">
-                            <div className="w-[140px] h-[112px] sm:w-[160px] sm:h-[128px] lg:w-[180px] lg:h-[144px] flex items-center justify-center">
-                                {step.illustration}
-                            </div>
+                        <div className="flex justify-center pt-4 pb-2 lg:pt-6 lg:pb-3 empty:hidden">
+                            {step.illustration}
                         </div>
                     )}
 

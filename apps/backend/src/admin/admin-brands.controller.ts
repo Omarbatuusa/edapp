@@ -43,26 +43,19 @@ export class AdminBrandsController {
     }
 
     /**
-     * Generate a brand code in BRD-XXXX format.
-     * Takes first 3 letters of name uppercase + random 4-char suffix.
+     * Generate a brand code: 1 uppercase letter (initial) + 3 digits, no hyphen.
+     * e.g., "Rainbow City" → R083, "Allied Schools" → A247
      */
     private async generateBrandCode(name: string): Promise<string> {
-        const prefix = name
-            .replace(/[^a-zA-Z]/g, '')
-            .substring(0, 3)
-            .toUpperCase()
-            .padEnd(3, 'X');
-
-        // Try up to 50 times to find a unique code
-        for (let i = 0; i < 50; i++) {
-            const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
-            const code = `${prefix}-${rand}`;
+        const letter = name.replace(/[^a-zA-Z]/g, '').substring(0, 1).toUpperCase() || 'B';
+        for (let i = 0; i < 99; i++) {
+            const num = String(Math.floor(Math.random() * 900) + 100); // 100–999
+            const code = `${letter}${num}`;
             const exists = await this.brandRepo.findOne({ where: { brand_code: code } });
             if (!exists) return code;
         }
-        // Fallback with timestamp
-        const ts = Date.now().toString(36).toUpperCase().slice(-4);
-        return `${prefix}-${ts}`;
+        // Fallback: use timestamp mod
+        return `${letter}${((Date.now() % 900) + 100)}`;
     }
 
     @Post()
@@ -169,7 +162,9 @@ export class AdminBrandsController {
         const brand = await this.brandRepo.findOne({ where: { id } });
         if (!brand) throw new NotFoundException('Brand not found');
 
-        Object.assign(brand, body);
+        // Never allow overwriting the unique identifiers via PUT
+        const { brand_code, brand_slug, id: _id, created_at, ...safeBody } = body as any;
+        Object.assign(brand, safeBody);
         return this.brandRepo.save(brand);
     }
 

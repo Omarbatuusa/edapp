@@ -1,40 +1,42 @@
 'use client';
 
-import { ReactNode, useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRole } from '@/contexts/RoleContext';
 import { uploadToGcs } from '../inputs/uploadToGcs';
 
 const SUPER_ADMIN_ROLES = ['platform_super_admin', 'app_super_admin'];
 
 interface IllustrationSlotProps {
-    /** Unique key for this illustration (e.g. 'brand_step_1') */
+    /** Unique key for this illustration slot (e.g. 'brand_step_1') */
     slotKey: string;
-    /** Default inline SVG component */
-    fallback: ReactNode;
 }
 
 /**
- * Wraps an illustration SVG with super-admin replace functionality.
- * Stores overrides in the backend (illustration_overrides table)
- * so changes sync across all devices — not just the browser that made the change.
+ * Illustration slot backed by the backend illustration_overrides table.
+ * - Super admin: sees an upload placeholder when no override exists,
+ *   and Replace / Remove controls when one is set.
+ * - Everyone else: renders the override image if one exists, nothing if not.
+ * Changes sync across all devices because the source of truth is the DB,
+ * not localStorage.
  */
-export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
+export function IllustrationSlot({ slotKey }: IllustrationSlotProps) {
     const { fullRole } = useRole();
     const isSuperAdmin = SUPER_ADMIN_ROLES.some(r => fullRole.includes(r));
     const inputRef = useRef<HTMLInputElement>(null);
     const [displayUrl, setDisplayUrl] = useState<string | null>(null);
     const [objectKey, setObjectKey] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState('');
     const [showControls, setShowControls] = useState(false);
     const hideTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
     const getAuthHeaders = useCallback((): Record<string, string> => {
-        const token = localStorage.getItem('session_token');
+        const token = typeof window !== 'undefined' ? localStorage.getItem('session_token') : null;
         return token ? { Authorization: `Bearer ${token}` } : {};
     }, []);
 
-    // Auto-dismiss touch overlay after 3 seconds
+    // Auto-dismiss touch overlay after 3 s
     useEffect(() => {
         if (showControls) {
             hideTimer.current = setTimeout(() => setShowControls(false), 3000);
@@ -42,7 +44,7 @@ export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
         }
     }, [showControls]);
 
-    // Load override from backend API on mount
+    // Fetch current override from backend on mount
     useEffect(() => {
         const load = async () => {
             try {
@@ -56,12 +58,12 @@ export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
                         setObjectKey(data.object_key || null);
                     }
                 }
-            } catch {
-                // Silently fail — will show fallback
-            }
+            } catch { /* silent fail — no override shown */ }
 
-            // Migrate old localStorage entries to backend
-            const oldKey = localStorage.getItem(`illustration_key_${slotKey}`);
+            // One-time migration: move old localStorage key to backend
+            const oldKey = typeof window !== 'undefined'
+                ? localStorage.getItem(`illustration_key_${slotKey}`)
+                : null;
             if (oldKey) {
                 try {
                     const token = localStorage.getItem('session_token');
@@ -72,32 +74,27 @@ export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
                             body: JSON.stringify({ object_key: oldKey }),
                         });
                     }
-                } catch { /* best-effort migration */ }
+                } catch { /* best-effort */ }
                 localStorage.removeItem(`illustration_key_${slotKey}`);
                 localStorage.removeItem(`illustration_${slotKey}`);
             }
+
+            setLoading(false);
         };
         load();
     }, [slotKey, getAuthHeaders]);
 
     const handleUpload = async (file: File) => {
-        if (!file.type.includes('svg')) {
-            setError('Only SVG files are allowed');
-            return;
-        }
-        if (file.size > 2 * 1024 * 1024) {
-            setError('SVG must be under 2 MB');
-            return;
-        }
+        if (!file.type.includes('svg')) { setError('Only SVG files are allowed'); return; }
+        if (file.size > 2 * 1024 * 1024) { setError('SVG must be under 2 MB'); return; }
         setError('');
-        // Clear existing display immediately so old image doesn't linger
+        // Clear immediately so old image doesn't linger while uploading
         setDisplayUrl(null);
         setObjectKey(null);
         setUploading(true);
         try {
             const { objectKey: newKey, previewUrl } = await uploadToGcs(file, 'logos');
             if (newKey) {
-                // Save override to backend — replaces any existing override for this slot
                 await fetch(`/v1/admin/illustrations/${slotKey}`, {
                     method: 'PUT',
                     headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
@@ -108,12 +105,10 @@ export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
                     setDisplayUrl(previewUrl);
                 } else {
                     // Fetch fresh signed URL from backend
-                    const res = await fetch(`/v1/admin/illustrations/${slotKey}`, {
-                        headers: getAuthHeaders(),
-                    });
-                    if (res.ok) {
-                        const data = await res.json();
-                        if (data.url) setDisplayUrl(data.url);
+                    const r = await fetch(`/v1/admin/illustrations/${slotKey}`, { headers: getAuthHeaders() });
+                    if (r.ok) {
+                        const d = await r.json();
+                        if (d.url) setDisplayUrl(d.url);
                     }
                 }
             }
@@ -121,16 +116,15 @@ export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
             setError(err.message || 'Upload failed');
         } finally {
             setUploading(false);
-            // Reset file input so same file can be re-selected
             if (inputRef.current) inputRef.current.value = '';
         }
     };
 
-    const handleRevert = async () => {
+    const handleRemove = async () => {
         setObjectKey(null);
         setDisplayUrl(null);
         setError('');
-        // Remove override from backend
+        setShowControls(false);
         try {
             await fetch(`/v1/admin/illustrations/${slotKey}`, {
                 method: 'DELETE',
@@ -139,66 +133,95 @@ export function IllustrationSlot({ slotKey, fallback }: IllustrationSlotProps) {
         } catch { /* best effort */ }
     };
 
+    // Still fetching initial state — render nothing to avoid flash
+    if (loading) return null;
+
+    // No override set
+    if (!displayUrl) {
+        // Non-super-admin: render nothing
+        if (!isSuperAdmin) return null;
+
+        // Super admin: render upload placeholder
+        return (
+            <div className="w-full max-w-[220px] mx-auto">
+                <div className="h-[100px] rounded-2xl border-2 border-dashed border-[hsl(var(--admin-border)/0.45)] bg-[hsl(var(--admin-surface-alt)/0.25)] flex flex-col items-center justify-center">
+                    {uploading ? (
+                        <div className="w-7 h-7 border-2 border-[hsl(var(--admin-primary)/0.2)] border-t-[hsl(var(--admin-primary))] rounded-full animate-spin" />
+                    ) : (
+                        <button
+                            type="button"
+                            onClick={() => inputRef.current?.click()}
+                            className="flex flex-col items-center gap-1.5 px-4 py-2 text-[hsl(var(--admin-text-muted))] hover:text-[hsl(var(--admin-primary))] transition-colors"
+                        >
+                            <span className="material-symbols-outlined text-[26px]">add_photo_alternate</span>
+                            <span className="text-[11px] font-medium">Add illustration</span>
+                        </button>
+                    )}
+                </div>
+                {error && <p className="text-[11px] text-red-500 text-center mt-1">{error}</p>}
+                <input
+                    ref={inputRef}
+                    type="file"
+                    accept="image/svg+xml"
+                    className="hidden"
+                    aria-label="Upload custom illustration"
+                    onChange={e => e.target.files?.[0] && handleUpload(e.target.files[0])}
+                />
+            </div>
+        );
+    }
+
+    // Override exists — render image with super-admin controls
     return (
         <div
-            className="relative group"
+            className="relative group w-full max-w-[220px] mx-auto"
             onClick={() => { if (isSuperAdmin) setShowControls(prev => !prev); }}
         >
-            {/* Render custom SVG or default fallback */}
-            {displayUrl ? (
-                <img
-                    src={displayUrl}
-                    alt="Custom illustration"
-                    className="w-full max-w-[200px] max-h-[160px] object-contain mx-auto"
-                    onError={() => { setDisplayUrl(null); }}
-                />
-            ) : (
-                fallback
-            )}
+            <img
+                src={displayUrl}
+                alt="Custom illustration"
+                className="w-full max-h-[160px] object-contain"
+                onError={() => { setDisplayUrl(null); }}
+            />
 
-            {/* Super admin overlay controls */}
             {isSuperAdmin && (
-                <div className={`absolute inset-0 flex items-end justify-center pb-1 transition-opacity ${showControls ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
-                    <div className="flex items-center gap-1 bg-white/90 rounded-lg shadow-sm border border-[hsl(var(--admin-border)/0.4)] px-1.5 py-1">
+                <div className={`absolute inset-0 flex items-end justify-center pb-1.5 transition-opacity duration-150 ${showControls ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                    <div className="flex items-center gap-0.5 bg-white/95 rounded-xl shadow border border-[hsl(var(--admin-border)/0.35)] px-1 py-1">
                         {uploading ? (
                             <div className="w-4 h-4 border-2 border-[hsl(var(--admin-primary)/0.2)] border-t-[hsl(var(--admin-primary))] rounded-full animate-spin mx-2" />
                         ) : (
                             <>
                                 <button
                                     type="button"
-                                    onClick={(e) => { e.stopPropagation(); inputRef.current?.click(); }}
-                                    className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-[hsl(var(--admin-primary))] hover:bg-[hsl(var(--admin-primary)/0.08)] rounded transition-colors"
+                                    onClick={e => { e.stopPropagation(); inputRef.current?.click(); }}
+                                    className="flex items-center gap-1 px-2 py-1 text-[11px] font-semibold text-[hsl(var(--admin-primary))] hover:bg-[hsl(var(--admin-primary)/0.08)] rounded-lg transition-colors"
                                 >
-                                    <span className="material-symbols-outlined text-[14px]">upload</span>
+                                    <span className="material-symbols-outlined text-[13px]">upload</span>
                                     Replace
                                 </button>
-                                {objectKey && (
-                                    <button
-                                        type="button"
-                                        onClick={(e) => { e.stopPropagation(); handleRevert(); }}
-                                        className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium text-[hsl(var(--admin-text-muted))] hover:bg-[hsl(var(--admin-surface-alt))] rounded transition-colors"
-                                    >
-                                        <span className="material-symbols-outlined text-[14px]">restart_alt</span>
-                                        Default
-                                    </button>
-                                )}
+                                <button
+                                    type="button"
+                                    onClick={e => { e.stopPropagation(); handleRemove(); }}
+                                    className="flex items-center gap-1 px-2 py-1 text-[11px] font-semibold text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                >
+                                    <span className="material-symbols-outlined text-[13px]">delete</span>
+                                    Remove
+                                </button>
                             </>
                         )}
                     </div>
-                    <input
-                        ref={inputRef}
-                        type="file"
-                        accept="image/svg+xml"
-                        className="hidden"
-                        aria-label="Upload custom illustration"
-                        onChange={e => e.target.files?.[0] && handleUpload(e.target.files[0])}
-                    />
                 </div>
             )}
 
-            {error && (
-                <p className="text-[11px] text-red-500 text-center mt-1">{error}</p>
-            )}
+            <input
+                ref={inputRef}
+                type="file"
+                accept="image/svg+xml"
+                className="hidden"
+                aria-label="Upload custom illustration"
+                onChange={e => e.target.files?.[0] && handleUpload(e.target.files[0])}
+            />
+            {error && <p className="text-[11px] text-red-500 text-center mt-1">{error}</p>}
         </div>
     );
 }
