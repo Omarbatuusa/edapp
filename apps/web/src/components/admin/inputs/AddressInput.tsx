@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import usePlacesAutocomplete, { getGeocode, getLatLng } from 'use-places-autocomplete';
 import { FieldWrapper } from './FieldWrapper';
+import { ALL_COUNTRIES } from './PhoneInput';
 
 export interface AddressValue {
     formatted_address: string;
@@ -115,7 +116,17 @@ export function AddressInput({ label, value, onChange, required }: AddressInputP
                         <input type="text" value={value.postal_code} onChange={e => onChange({ ...value, postal_code: e.target.value })} placeholder="Postal code" className={fieldCls} />
                     </FieldWrapper>
                     <FieldWrapper label="Country" state="idle">
-                        <input type="text" value={value.country} onChange={e => onChange({ ...value, country: e.target.value })} placeholder="Country" className={fieldCls} />
+                        <select
+                            value={value.country}
+                            onChange={e => onChange({ ...value, country: e.target.value })}
+                            aria-label="Country"
+                            className={fieldCls}
+                        >
+                            <option value="">— Select country —</option>
+                            {ALL_COUNTRIES.slice().sort((a, b) => a.name.localeCompare(b.name)).map(c => (
+                                <option key={c.iso2} value={c.name}>{c.name}</option>
+                            ))}
+                        </select>
                     </FieldWrapper>
                 </div>
                 <button

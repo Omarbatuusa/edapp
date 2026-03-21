@@ -7,6 +7,9 @@ import { authFetch } from '@/lib/authFetch';
 
 const SUPER_ADMIN_ROLES = ['platform_super_admin', 'app_super_admin'];
 
+// Module-level cache: slotKey → signed URL (or null = no override confirmed)
+const urlCache = new Map<string, string | null>();
+
 interface IllustrationSlotProps {
     /** Unique key for this illustration slot (e.g. 'brand_step_1') */
     slotKey: string;
@@ -40,19 +43,38 @@ export function IllustrationSlot({ slotKey }: IllustrationSlotProps) {
         }
     }, [showControls]);
 
-    // Fetch current override from backend on mount
+    // On slotKey change: instantly show cached URL (or clear to null) to prevent flash
     useEffect(() => {
+        if (urlCache.has(slotKey)) {
+            setDisplayUrl(urlCache.get(slotKey) ?? null);
+            setObjectKey(null);
+            setLoading(false);
+        } else {
+            setDisplayUrl(null);
+            setObjectKey(null);
+            setLoading(true);
+        }
+    }, [slotKey]);
+
+    // Fetch current override from backend when slotKey changes and not cached
+    useEffect(() => {
+        if (urlCache.has(slotKey)) return; // already populated by cache effect
+
         const load = async () => {
             try {
                 const res = await authFetch(`/v1/admin/illustrations/${slotKey}`);
                 if (res.ok) {
                     const data = await res.json();
-                    if (data.url) {
-                        setDisplayUrl(data.url);
-                        setObjectKey(data.object_key || null);
-                    }
+                    const url = data.url || null;
+                    urlCache.set(slotKey, url);
+                    setDisplayUrl(url);
+                    setObjectKey(data.object_key || null);
+                } else {
+                    urlCache.set(slotKey, null);
                 }
-            } catch { /* silent fail — no override shown */ }
+            } catch {
+                urlCache.set(slotKey, null);
+            }
 
             // One-time migration: move old localStorage key to backend
             const oldKey = typeof window !== 'undefined'
@@ -93,13 +115,16 @@ export function IllustrationSlot({ slotKey }: IllustrationSlotProps) {
                 });
                 setObjectKey(newKey);
                 if (previewUrl) {
+                    urlCache.set(slotKey, previewUrl);
                     setDisplayUrl(previewUrl);
                 } else {
                     // Fetch fresh signed URL from backend
                     const r = await authFetch(`/v1/admin/illustrations/${slotKey}`);
                     if (r.ok) {
                         const d = await r.json();
-                        if (d.url) setDisplayUrl(d.url);
+                        const url = d.url || null;
+                        urlCache.set(slotKey, url);
+                        if (url) setDisplayUrl(url);
                     }
                 }
             }
@@ -112,6 +137,7 @@ export function IllustrationSlot({ slotKey }: IllustrationSlotProps) {
     };
 
     const handleRemove = async () => {
+        urlCache.set(slotKey, null);
         setObjectKey(null);
         setDisplayUrl(null);
         setError('');

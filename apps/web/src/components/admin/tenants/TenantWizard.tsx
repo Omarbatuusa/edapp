@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
 import { WizardShell, WizardStep } from '../wizard/WizardShell';
@@ -10,13 +11,7 @@ import { PhoneInput, PhoneValue } from '../inputs/PhoneInput';
 import { LogoUpload } from '../inputs/LogoUpload';
 import { CoverUpload } from '../inputs/CoverUpload';
 import { GalleryUpload } from '../inputs/GalleryUpload';
-import { TenantIllustration } from '../illustrations/TenantIllustration';
-import { BrandIllustration } from '../illustrations/BrandIllustration';
-import { SchoolIllustration } from '../illustrations/SchoolIllustration';
-import { ContactIllustration } from '../illustrations/ContactIllustration';
-import { BrandingIllustration } from '../illustrations/BrandingIllustration';
-import { PersonalIllustration } from '../illustrations/PersonalIllustration';
-import { ReviewIllustration } from '../illustrations/ReviewIllustration';
+import { IllustrationSlot } from '../illustrations/IllustrationSlot';
 import { MiniCalendar } from '@/components/dashboard/MiniCalendar';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 import { TaskItem } from '@/components/dashboard/TaskItem';
@@ -35,17 +30,20 @@ const TENANT_TYPES = [
     { key: 'campus', label: 'Campus', icon: 'location_city', desc: 'A satellite campus within a school group' },
 ];
 
-function slugify(name: string): string {
-    return name.toLowerCase().trim()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '')
-        .substring(0, 60);
+/** Mirror of backend generateTenantSlug — 3-6 alpha chars for preview */
+function tenantSlugPreview(name: string): string {
+    const words = name.trim().split(/\s+/).filter(w => /[a-zA-Z]/.test(w));
+    let slug = words.length >= 3
+        ? words.map(w => w.replace(/[^a-zA-Z]/g, '')[0] || '').join('').toLowerCase()
+        : (words[0] || '').replace(/[^a-zA-Z]/g, '').toLowerCase();
+    slug = slug.substring(0, 6);
+    if (slug.length < 3) slug = slug.padEnd(3, 'x');
+    return slug;
 }
 
-function codeify(name: string): string {
-    return name.replace(/[^a-zA-Z]/g, '').substring(0, 3).toUpperCase().padEnd(3, 'X') + '01';
+/** Mirror of backend generateSchoolCode — 3-letter prefix + 3-digit number */
+function codePreview(name: string): string {
+    return name.replace(/[^a-zA-Z]/g, '').substring(0, 3).toUpperCase().padEnd(3, 'X') + '001';
 }
 
 const EMPTY_PHONE: PhoneValue = { raw: '', e164: '', country_iso2: 'ZA', dial_code: '+27' };
@@ -73,13 +71,14 @@ const step6Schema = z.object({
 
 export function TenantWizard({ tenantSlug }: TenantWizardProps) {
     const router = useRouter();
+    const [createdTenant, setCreatedTenant] = useState<{ slug: string; school_name: string } | null>(null);
 
     const steps: WizardStep[] = [
         // Step 1: School Type
         {
             title: 'School Type',
             helper: 'What type of school are you creating?',
-            illustration: <TenantIllustration />,
+            illustration: <IllustrationSlot slotKey="tenant_step_1" />,
             schema: step1Schema,
             content: ({ data, onChange, errors }) => (
                 <div className="flex flex-col gap-3">
@@ -124,7 +123,7 @@ export function TenantWizard({ tenantSlug }: TenantWizardProps) {
         {
             title: 'Brand & Group',
             helper: 'Link this school to a brand and optionally to a parent school.',
-            illustration: <BrandIllustration />,
+            illustration: <IllustrationSlot slotKey="tenant_step_2" />,
             content: ({ data, onChange }) => (
                 <>
                     <LookupSelect
@@ -158,7 +157,7 @@ export function TenantWizard({ tenantSlug }: TenantWizardProps) {
         {
             title: 'School Details',
             helper: 'Enter the core information about this school.',
-            illustration: <SchoolIllustration />,
+            illustration: <IllustrationSlot slotKey="tenant_step_3" />,
             schema: step3Schema,
             content: ({ data, onChange, errors }) => (
                 <>
@@ -173,10 +172,11 @@ export function TenantWizard({ tenantSlug }: TenantWizardProps) {
                             value={data.school_name || ''}
                             onChange={e => {
                                 const name = e.target.value;
-                                const patch: Record<string, any> = { school_name: name };
-                                if (!data._slugEdited) patch.tenant_slug = slugify(name);
-                                if (!data._codeEdited) patch.school_code = codeify(name);
-                                onChange(patch);
+                                onChange({
+                                    school_name: name,
+                                    tenant_slug: tenantSlugPreview(name),
+                                    school_code: codePreview(name),
+                                });
                             }}
                             placeholder="Enter school name"
                             className={inputCls}
@@ -186,12 +186,23 @@ export function TenantWizard({ tenantSlug }: TenantWizardProps) {
                         <input type="text" value={data.legal_name || ''} onChange={e => onChange({ legal_name: e.target.value })} placeholder="e.g. Rainbow City Schools (Pty) Ltd" className={inputCls} />
                     </FieldWrapper>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <FieldWrapper label="URL Slug" state={data.tenant_slug ? 'success' : 'idle'} helper="Auto-generated from school name">
-                            <input type="text" value={data.tenant_slug || ''} onChange={e => onChange({ tenant_slug: slugify(e.target.value), _slugEdited: true })} placeholder="e.g. rainbow-primary" className={readOnlyCls} />
-                        </FieldWrapper>
-                        <FieldWrapper label="School Code" state={data.school_code ? 'success' : 'idle'} helper="Auto-generated unique code">
-                            <input type="text" value={data.school_code || ''} onChange={e => onChange({ school_code: e.target.value.toUpperCase(), _codeEdited: true })} placeholder="e.g. RAI01" maxLength={10} className={`${readOnlyCls} uppercase`} />
-                        </FieldWrapper>
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-[13px] font-medium text-[hsl(var(--admin-text-sub))] px-1">Subdomain</label>
+                            <div className={`${readOnlyCls} flex items-center gap-2 rounded-xl border border-[hsl(var(--admin-border)/0.5)]`}>
+                                <span className="material-symbols-outlined text-[15px] text-[hsl(var(--admin-text-muted))] flex-shrink-0">lock</span>
+                                <span className="flex-1 truncate">{data.tenant_slug || '—'}</span>
+                                <span className="text-[11px] text-[hsl(var(--admin-text-muted))] flex-shrink-0">.edapp.co.za</span>
+                            </div>
+                            <p className="text-[11px] text-[hsl(var(--admin-text-muted))] px-1">Auto-generated from school name</p>
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-[13px] font-medium text-[hsl(var(--admin-text-sub))] px-1">School Code</label>
+                            <div className={`${readOnlyCls} flex items-center gap-2 rounded-xl border border-[hsl(var(--admin-border)/0.5)]`}>
+                                <span className="material-symbols-outlined text-[15px] text-[hsl(var(--admin-text-muted))] flex-shrink-0">lock</span>
+                                <span className="font-mono">{data.school_code || '—'}</span>
+                            </div>
+                            <p className="text-[11px] text-[hsl(var(--admin-text-muted))] px-1">Auto-generated from school name</p>
+                        </div>
                     </div>
                     <FieldWrapper label="About" state="idle" helper="A short description of this school">
                         <textarea value={data.about || ''} onChange={e => onChange({ about: e.target.value })} rows={3} placeholder="Describe this school..." className={textareaCls} />
@@ -212,7 +223,7 @@ export function TenantWizard({ tenantSlug }: TenantWizardProps) {
         {
             title: 'Contact & Location',
             helper: 'Add contact details and the physical address for this school.',
-            illustration: <ContactIllustration />,
+            illustration: <IllustrationSlot slotKey="tenant_step_4" />,
             content: ({ data, onChange }) => (
                 <>
                     <FieldWrapper label="Contact Email" state={data.contact_email ? 'success' : 'idle'}>
@@ -239,7 +250,7 @@ export function TenantWizard({ tenantSlug }: TenantWizardProps) {
         {
             title: 'Branding & Media',
             helper: 'Upload the school logo, cover image, and optional gallery photos.',
-            illustration: <BrandingIllustration />,
+            illustration: <IllustrationSlot slotKey="tenant_step_5" />,
             content: ({ data, onChange }) => (
                 <>
                     <LogoUpload
@@ -266,7 +277,7 @@ export function TenantWizard({ tenantSlug }: TenantWizardProps) {
         {
             title: 'Initial Admin',
             helper: 'Invite the first administrator for this school. They will receive an email to set up their account.',
-            illustration: <PersonalIllustration />,
+            illustration: <IllustrationSlot slotKey="tenant_step_6" />,
             schema: step6Schema,
             content: ({ data, onChange, errors }) => (
                 <>
@@ -316,7 +327,7 @@ export function TenantWizard({ tenantSlug }: TenantWizardProps) {
         {
             title: 'Review & Create',
             helper: 'Review all details before creating this school.',
-            illustration: <ReviewIllustration />,
+            illustration: <IllustrationSlot slotKey="tenant_step_7" />,
             content: ({ data }) => {
                 const typeLabel = TENANT_TYPES.find(t => t.key === data.tenant_type)?.label || data.tenant_type;
                 return (
@@ -403,7 +414,7 @@ export function TenantWizard({ tenantSlug }: TenantWizardProps) {
             }
         }
 
-        router.push(`/tenant/${tenantSlug}/admin/tenants`);
+        setCreatedTenant({ slug: tenant.tenant_slug, school_name: tenant.school_name });
     };
 
     const dashboardPanel = (
@@ -434,6 +445,47 @@ export function TenantWizard({ tenantSlug }: TenantWizardProps) {
             <ActivityFeed role="admin" />
         </div>
     );
+
+    if (createdTenant) {
+        return (
+            <div className="brand-wizard-container">
+                <div className="flex flex-col items-center gap-5 p-8 text-center max-w-sm mx-auto">
+                    <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-green-600 text-[32px]">check_circle</span>
+                    </div>
+                    <div>
+                        <h2 className="text-[20px] font-bold text-[hsl(var(--admin-text-main))]">
+                            {createdTenant.school_name} created!
+                        </h2>
+                        <p className="text-[14px] text-[hsl(var(--admin-text-muted))] mt-1">
+                            The school is now active on the platform.
+                        </p>
+                    </div>
+                    <div className="w-full ios-card p-4 text-left space-y-2">
+                        <p className="text-[11px] font-bold text-[hsl(var(--admin-text-muted))] uppercase tracking-wider">Tenant Login Link</p>
+                        <p className="text-[15px] font-mono font-bold text-[hsl(var(--admin-primary))] break-all">
+                            {createdTenant.slug}.edapp.co.za
+                        </p>
+                        <button
+                            type="button"
+                            onClick={() => navigator.clipboard?.writeText(`https://${createdTenant.slug}.edapp.co.za`)}
+                            className="text-[12px] text-[hsl(var(--admin-primary))] font-semibold flex items-center gap-1 mt-1"
+                        >
+                            <span className="material-symbols-outlined text-[14px]">content_copy</span>
+                            Copy link
+                        </button>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => router.push(`/tenant/${tenantSlug}/admin/tenants`)}
+                        className="h-11 px-6 bg-[hsl(var(--admin-primary))] text-white text-[14px] font-bold rounded-xl active:scale-95 transition-all"
+                    >
+                        Back to Schools
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="brand-wizard-container">

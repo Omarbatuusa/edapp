@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { FieldWrapper } from './FieldWrapper';
+import { authFetch } from '@/lib/authFetch';
 
 interface LookupOption {
     code?: string;
@@ -23,11 +24,6 @@ interface LookupSelectProps {
     error?: string;
     labelKey?: string;
     valueKey?: string;
-}
-
-function getAuthHeaders(): Record<string, string> {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('session_token') : null;
-    return token ? { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
 }
 
 export function LookupSelect({
@@ -73,7 +69,7 @@ export function LookupSelect({
                 url += `?${params}`;
             }
 
-            const res = await fetch(url, { headers: getAuthHeaders() });
+            const res = await authFetch(url);
             if (res.ok) {
                 const data = await res.json();
                 setOptions(Array.isArray(data) ? data : data.items || data.data || []);

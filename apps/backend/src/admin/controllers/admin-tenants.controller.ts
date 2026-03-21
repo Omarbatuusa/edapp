@@ -14,7 +14,7 @@ import { TenantDomain } from '../../tenants/tenant-domain.entity';
 import { User, UserStatus } from '../../users/user.entity';
 import { RoleAssignment } from '../../users/role-assignment.entity';
 import { TenantMembership } from '../../auth/entities/tenant-membership.entity';
-import { generateSlug, generateSchoolCode, ensureUniqueSlug, ensureUniqueCode } from '../utils/slug-generator';
+import { generateTenantSlug, generateSchoolCode, ensureUniqueSlug, ensureUniqueCode } from '../utils/slug-generator';
 import { EmailAuthService } from '../../auth/email-auth.service';
 import { PasswordHistory } from '../../users/password-history.entity';
 
@@ -139,7 +139,7 @@ export class AdminTenantsController {
     }
 
     // Auto-generate slug and school_code if not provided
-    let tenant_slug = body.tenant_slug || generateSlug(body.school_name);
+    let tenant_slug = body.tenant_slug || generateTenantSlug(body.school_name);
     tenant_slug = await ensureUniqueSlug(tenant_slug, this.tenantRepo, 'tenant_slug');
 
     let school_code = body.school_code || generateSchoolCode(body.school_name);

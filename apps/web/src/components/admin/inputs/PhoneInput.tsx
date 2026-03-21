@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { FieldWrapper } from './FieldWrapper';
+import { authFetch } from '@/lib/authFetch';
 
 interface CountryOption {
     iso2: string;
@@ -23,7 +24,7 @@ const PRIORITY_COUNTRIES: CountryOption[] = [
     { iso2: 'US', name: 'United States', dialCode: '+1', flag: '🇺🇸' },
 ];
 
-const ALL_COUNTRIES: CountryOption[] = [
+export const ALL_COUNTRIES: CountryOption[] = [
     ...PRIORITY_COUNTRIES,
     { iso2: 'AO', name: 'Angola', dialCode: '+244', flag: '🇦🇴' },
     { iso2: 'CM', name: 'Cameroon', dialCode: '+237', flag: '🇨🇲' },
@@ -102,7 +103,7 @@ export function PhoneInput({ label, value, onChange, required, placeholder = 'e.
         }
 
         try {
-            const res = await fetch('/v1/admin/phone/validate', {
+            const res = await authFetch('/v1/admin/phone/validate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ phone: value.raw, country_iso2: selected.iso2 }),
