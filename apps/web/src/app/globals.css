@@ -1091,7 +1091,7 @@
   flex-direction: column;
   height: 100%;
   min-height: 100dvh;  /* fallback for standalone (non-dashboard) usage */
-  background: white;
+  background: hsl(var(--admin-background));
   overflow: hidden;
 }
 /* Inside dashboard shell, wizard fills admin-main exactly */
@@ -1121,9 +1121,11 @@
 /* Sticky header: back + title + progress */
 .wizard-sheet-header {
   flex-shrink: 0;
-  background: white;
+  background: hsl(var(--admin-background) / 0.88);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
   z-index: 20;
-  border-bottom: 0.5px solid hsl(var(--admin-border) / 0.3);
+  border-bottom: 1px solid hsl(var(--admin-border) / 0.5);
 }
 
 /* Scrollable content body */
@@ -1161,7 +1163,9 @@
 /* Sticky footer with CTA */
 .wizard-sheet-footer {
   flex-shrink: 0;
-  background: white;
+  background: hsl(var(--admin-background) / 0.88);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
   border-top: 1px solid hsl(var(--admin-border) / 0.4);
   padding: 12px 0;
   padding-bottom: max(12px, env(safe-area-inset-bottom, 12px));
