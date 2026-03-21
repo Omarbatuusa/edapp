@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRole } from '@/contexts/RoleContext';
 import { uploadToGcs } from '../inputs/uploadToGcs';
+import { authFetch } from '@/lib/authFetch';
 
 const SUPER_ADMIN_ROLES = ['platform_super_admin', 'app_super_admin'];
 
@@ -31,11 +32,6 @@ export function IllustrationSlot({ slotKey }: IllustrationSlotProps) {
     const [showControls, setShowControls] = useState(false);
     const hideTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-    const getAuthHeaders = useCallback((): Record<string, string> => {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('session_token') : null;
-        return token ? { Authorization: `Bearer ${token}` } : {};
-    }, []);
-
     // Auto-dismiss touch overlay after 3 s
     useEffect(() => {
         if (showControls) {
@@ -48,9 +44,7 @@ export function IllustrationSlot({ slotKey }: IllustrationSlotProps) {
     useEffect(() => {
         const load = async () => {
             try {
-                const res = await fetch(`/v1/admin/illustrations/${slotKey}`, {
-                    headers: getAuthHeaders(),
-                });
+                const res = await authFetch(`/v1/admin/illustrations/${slotKey}`);
                 if (res.ok) {
                     const data = await res.json();
                     if (data.url) {
@@ -66,14 +60,11 @@ export function IllustrationSlot({ slotKey }: IllustrationSlotProps) {
                 : null;
             if (oldKey) {
                 try {
-                    const token = localStorage.getItem('session_token');
-                    if (token) {
-                        await fetch(`/v1/admin/illustrations/${slotKey}`, {
-                            method: 'PUT',
-                            headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ object_key: oldKey }),
-                        });
-                    }
+                    await authFetch(`/v1/admin/illustrations/${slotKey}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ object_key: oldKey }),
+                    });
                 } catch { /* best-effort */ }
                 localStorage.removeItem(`illustration_key_${slotKey}`);
                 localStorage.removeItem(`illustration_${slotKey}`);
@@ -82,7 +73,7 @@ export function IllustrationSlot({ slotKey }: IllustrationSlotProps) {
             setLoading(false);
         };
         load();
-    }, [slotKey, getAuthHeaders]);
+    }, [slotKey]);
 
     const handleUpload = async (file: File) => {
         if (!file.type.includes('svg')) { setError('Only SVG files are allowed'); return; }
@@ -95,9 +86,9 @@ export function IllustrationSlot({ slotKey }: IllustrationSlotProps) {
         try {
             const { objectKey: newKey, previewUrl } = await uploadToGcs(file, 'logos');
             if (newKey) {
-                await fetch(`/v1/admin/illustrations/${slotKey}`, {
+                await authFetch(`/v1/admin/illustrations/${slotKey}`, {
                     method: 'PUT',
-                    headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ object_key: newKey }),
                 });
                 setObjectKey(newKey);
@@ -105,7 +96,7 @@ export function IllustrationSlot({ slotKey }: IllustrationSlotProps) {
                     setDisplayUrl(previewUrl);
                 } else {
                     // Fetch fresh signed URL from backend
-                    const r = await fetch(`/v1/admin/illustrations/${slotKey}`, { headers: getAuthHeaders() });
+                    const r = await authFetch(`/v1/admin/illustrations/${slotKey}`);
                     if (r.ok) {
                         const d = await r.json();
                         if (d.url) setDisplayUrl(d.url);
@@ -126,10 +117,7 @@ export function IllustrationSlot({ slotKey }: IllustrationSlotProps) {
         setError('');
         setShowControls(false);
         try {
-            await fetch(`/v1/admin/illustrations/${slotKey}`, {
-                method: 'DELETE',
-                headers: getAuthHeaders(),
-            });
+            await authFetch(`/v1/admin/illustrations/${slotKey}`, { method: 'DELETE' });
         } catch { /* best effort */ }
     };
 

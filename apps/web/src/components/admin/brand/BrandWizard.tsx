@@ -13,6 +13,7 @@ import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 import { TaskItem } from '@/components/dashboard/TaskItem';
 import { NotifItem } from '@/components/dashboard/NotifItem';
 import { MOCK_ADMIN_EVENTS } from '@/lib/calendar-events';
+import { authFetch } from '@/lib/authFetch';
 
 interface BrandWizardProps {
     tenantSlug: string;
@@ -56,11 +57,7 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
 
     useEffect(() => {
         if (mode !== 'edit' || !brandId) return;
-        const token = localStorage.getItem('session_token');
-        fetch(`/v1/admin/brands/${brandId}`, {
-            headers: token ? { Authorization: `Bearer ${token}` } : {},
-            cache: 'no-store',
-        })
+        authFetch(`/v1/admin/brands/${brandId}`, { cache: 'no-store' })
             .then(async r => {
                 const data = await r.json();
                 if (!r.ok) {
@@ -252,7 +249,6 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
     ];
 
     const handleComplete = async (data: Record<string, any>) => {
-        const token = localStorage.getItem('session_token');
         // On create: send slug so server can use it as base (server still ensures uniqueness)
         // On edit: never send slug or code — they're immutable
         const payload = mode === 'edit' ? {
@@ -269,12 +265,9 @@ export function BrandWizard({ tenantSlug, mode = 'create', brandId }: BrandWizar
         };
         const url = mode === 'edit' ? `/v1/admin/brands/${brandId}` : '/v1/admin/brands';
         const method = mode === 'edit' ? 'PUT' : 'POST';
-        const res = await fetch(url, {
+        const res = await authFetch(url, {
             method,
-            headers: {
-                'Content-Type': 'application/json',
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         });
         const json = await res.json();

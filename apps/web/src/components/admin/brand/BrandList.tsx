@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Search, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useRole } from '@/contexts/RoleContext';
+import { authFetch } from '@/lib/authFetch';
 
 interface Brand {
   id: string;
@@ -68,12 +69,8 @@ export function BrandList({ tenantSlug }: BrandListProps) {
   const loadBrands = useCallback(async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('session_token');
       const qs = statusFilter ? `?status=${statusFilter}` : '';
-      const r = await fetch(`/v1/admin/brands${qs}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        cache: 'no-store',
-      });
+      const r = await authFetch(`/v1/admin/brands${qs}`, { cache: 'no-store' });
       const data = await r.json();
       setBrands(Array.isArray(data) ? data : []);
     } catch {
@@ -89,11 +86,7 @@ export function BrandList({ tenantSlug }: BrandListProps) {
     if (!confirm(`Delete "${brand.brand_name}"? This cannot be undone.`)) return;
     setDeleting(brand.id);
     try {
-      const token = localStorage.getItem('session_token');
-      const res = await fetch(`/v1/admin/brands/${brand.id}`, {
-        method: 'DELETE',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const res = await authFetch(`/v1/admin/brands/${brand.id}`, { method: 'DELETE' });
       if (!res.ok) {
         const json = await res.json().catch(() => ({}));
         alert(json.message || 'Failed to delete brand');
@@ -110,11 +103,7 @@ export function BrandList({ tenantSlug }: BrandListProps) {
     if (!confirm(`Archive "${brand.brand_name}"? Schools stay linked but the brand will be hidden.`)) return;
     setArchiving(brand.id);
     try {
-      const token = localStorage.getItem('session_token');
-      const res = await fetch(`/v1/admin/brands/${brand.id}/archive`, {
-        method: 'PATCH',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const res = await authFetch(`/v1/admin/brands/${brand.id}/archive`, { method: 'PATCH' });
       if (!res.ok) {
         const json = await res.json().catch(() => ({}));
         alert(json.message || 'Failed to archive brand');
@@ -128,11 +117,7 @@ export function BrandList({ tenantSlug }: BrandListProps) {
   const handleRestore = async (brand: Brand) => {
     setArchiving(brand.id);
     try {
-      const token = localStorage.getItem('session_token');
-      await fetch(`/v1/admin/brands/${brand.id}/restore`, {
-        method: 'PATCH',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      await authFetch(`/v1/admin/brands/${brand.id}/restore`, { method: 'PATCH' });
       await loadBrands();
     } finally {
       setArchiving(null);

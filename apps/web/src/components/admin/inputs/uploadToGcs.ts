@@ -1,18 +1,13 @@
+import { authFetch } from '@/lib/authFetch';
+
 export async function uploadToGcs(
     file: File,
     category: string = 'logos',
 ): Promise<{ objectKey: string; previewUrl: string }> {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('session_token') : null;
-    const tenantId = typeof window !== 'undefined' ? localStorage.getItem('admin_tenant_id') : null;
-
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-    if (tenantId) headers['x-tenant-id'] = tenantId;
-
-    // 1. Get signed upload URL from backend
-    const urlRes = await fetch('/v1/storage/upload-url', {
+    // 1. Get signed upload URL from backend (needs auth)
+    const urlRes = await authFetch('/v1/storage/upload-url', {
         method: 'POST',
-        headers,
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ category, filename: file.name, contentType: file.type }),
     });
     if (!urlRes.ok) {
@@ -24,7 +19,7 @@ export async function uploadToGcs(
     }
     const { uploadUrl, objectKey } = await urlRes.json() as { uploadUrl: string; objectKey: string };
 
-    // 2. PUT file directly to GCS signed URL
+    // 2. PUT file directly to GCS signed URL (no auth — signed URL already has credentials)
     const putRes = await fetch(uploadUrl, {
         method: 'PUT',
         headers: { 'Content-Type': file.type },
@@ -32,11 +27,8 @@ export async function uploadToGcs(
     });
     if (!putRes.ok) throw new Error('Upload failed. Please try again.');
 
-    // 3. Fetch a short-lived signed read URL for preview
-    const readHeaders: Record<string, string> = {};
-    if (token) readHeaders['Authorization'] = `Bearer ${token}`;
-    if (tenantId) readHeaders['x-tenant-id'] = tenantId;
-    const readRes = await fetch(`/v1/storage/read-url?key=${encodeURIComponent(objectKey)}`, { headers: readHeaders });
+    // 3. Fetch a short-lived signed read URL for preview (needs auth)
+    const readRes = await authFetch(`/v1/storage/read-url?key=${encodeURIComponent(objectKey)}`);
     const { readUrl } = readRes.ok ? await readRes.json() as { readUrl: string } : { readUrl: '' };
 
     return { objectKey, previewUrl: readUrl };
