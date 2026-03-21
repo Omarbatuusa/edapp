@@ -475,6 +475,29 @@ export function TenantWizard({ tenantSlug }: TenantWizardProps) {
                             Copy link
                         </button>
                     </div>
+                    <div className="flex gap-2 w-full">
+                        {typeof navigator !== 'undefined' && 'share' in navigator && (
+                            <button
+                                type="button"
+                                onClick={() => (navigator as any).share({
+                                    title: createdTenant.school_name,
+                                    url: `https://${createdTenant.slug}.edapp.co.za`,
+                                })}
+                                className="flex-1 h-10 rounded-xl border border-[hsl(var(--admin-border)/0.6)] text-[13px] font-medium text-[hsl(var(--admin-text-main))] flex items-center justify-center gap-1.5 active:bg-[hsl(var(--admin-surface-alt))]"
+                            >
+                                <span className="material-symbols-outlined text-[15px]">share</span>
+                                Share
+                            </button>
+                        )}
+                        <button
+                            type="button"
+                            onClick={() => window.open(`https://${createdTenant.slug}.edapp.co.za`, '_blank')}
+                            className="flex-1 h-10 rounded-xl border border-[hsl(var(--admin-border)/0.6)] text-[13px] font-medium text-[hsl(var(--admin-text-main))] flex items-center justify-center gap-1.5 active:bg-[hsl(var(--admin-surface-alt))]"
+                        >
+                            <span className="material-symbols-outlined text-[15px]">open_in_new</span>
+                            Open
+                        </button>
+                    </div>
                     <button
                         type="button"
                         onClick={() => router.push(`/tenant/${tenantSlug}/admin/tenants`)}

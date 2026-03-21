@@ -12,9 +12,11 @@ interface FieldWrapperProps {
     helper?: string;
     children: ReactNode;
     className?: string;
+    /** Set false to suppress the success/error icon (e.g. fields with custom trailing controls) */
+    showIcon?: boolean;
 }
 
-export function FieldWrapper({ label, required, state = 'idle', error, helper, children, className = '' }: FieldWrapperProps) {
+export function FieldWrapper({ label, required, state = 'idle', error, helper, children, className = '', showIcon = true }: FieldWrapperProps) {
     return (
         <div className={`flex flex-col gap-1 ${className}`}>
             {/* Label */}
@@ -24,7 +26,7 @@ export function FieldWrapper({ label, required, state = 'idle', error, helper, c
             </label>
 
             {/* Input container — iOS grouped row style */}
-            <div className={`rounded-[12px] border transition-colors duration-150 overflow-hidden bg-[hsl(var(--admin-surface-alt)/0.5)] ${
+            <div className={`relative rounded-[12px] border transition-colors duration-150 overflow-hidden bg-[hsl(var(--admin-surface-alt)/0.5)] ${
                 state === 'error'
                     ? 'border-red-400'
                     : state === 'success'
@@ -32,6 +34,16 @@ export function FieldWrapper({ label, required, state = 'idle', error, helper, c
                     : 'border-[hsl(var(--admin-border)/0.6)]'
             }`}>
                 {children}
+                {showIcon && state === 'success' && (
+                    <span className="material-symbols-outlined text-[16px] text-[hsl(var(--admin-primary))] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                        check_circle
+                    </span>
+                )}
+                {showIcon && state === 'error' && (
+                    <span className="material-symbols-outlined text-[16px] text-red-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                        error
+                    </span>
+                )}
             </div>
 
             {/* Feedback row */}

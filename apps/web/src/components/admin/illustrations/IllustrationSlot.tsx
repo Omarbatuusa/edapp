@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRole } from '@/contexts/RoleContext';
-import { uploadToGcs } from '../inputs/uploadToGcs';
+import { uploadDirect } from '../inputs/uploadDirect';
 import { authFetch } from '@/lib/authFetch';
 
 const SUPER_ADMIN_ROLES = ['platform_super_admin', 'app_super_admin'];
@@ -106,7 +106,7 @@ export function IllustrationSlot({ slotKey }: IllustrationSlotProps) {
         setObjectKey(null);
         setUploading(true);
         try {
-            const { objectKey: newKey, previewUrl } = await uploadToGcs(file, 'logos');
+            const { objectKey: newKey, serveUrl } = await uploadDirect(file, 'logos');
             if (newKey) {
                 await authFetch(`/v1/admin/illustrations/${slotKey}`, {
                     method: 'PUT',
@@ -114,19 +114,8 @@ export function IllustrationSlot({ slotKey }: IllustrationSlotProps) {
                     body: JSON.stringify({ object_key: newKey }),
                 });
                 setObjectKey(newKey);
-                if (previewUrl) {
-                    urlCache.set(slotKey, previewUrl);
-                    setDisplayUrl(previewUrl);
-                } else {
-                    // Fetch fresh signed URL from backend
-                    const r = await authFetch(`/v1/admin/illustrations/${slotKey}`);
-                    if (r.ok) {
-                        const d = await r.json();
-                        const url = d.url || null;
-                        urlCache.set(slotKey, url);
-                        if (url) setDisplayUrl(url);
-                    }
-                }
+                urlCache.set(slotKey, serveUrl);
+                setDisplayUrl(serveUrl);
             }
         } catch (err: any) {
             setError(err.message || 'Upload failed');

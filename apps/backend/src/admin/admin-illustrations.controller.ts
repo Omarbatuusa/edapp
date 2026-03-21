@@ -6,7 +6,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { IllustrationOverride } from './illustration-override.entity';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
-import { StorageService } from '../storage/storage.service';
 
 const SUPER_ADMIN_ROLES = ['platform_super_admin', 'app_super_admin'];
 
@@ -16,7 +15,6 @@ export class AdminIllustrationsController {
     constructor(
         @InjectRepository(IllustrationOverride)
         private readonly repo: Repository<IllustrationOverride>,
-        private readonly storageService: StorageService,
     ) {}
 
     private checkSuperAdmin(req: any) {
@@ -26,31 +24,24 @@ export class AdminIllustrationsController {
         }
     }
 
-    /** Get all overrides with fresh signed URLs */
+    /** Get all overrides as serve URLs (no signed URL — works without iam.serviceAccountTokenCreator) */
     @Get()
     async findAll() {
         const overrides = await this.repo.find();
         const results: Record<string, string> = {};
         for (const o of overrides) {
-            try {
-                const url = await this.storageService.generateSignedReadUrl(o.object_key);
-                if (url) results[o.slot_key] = url;
-            } catch { /* skip if GCS unavailable */ }
+            results[o.slot_key] = `/v1/storage/serve?key=${encodeURIComponent(o.object_key)}`;
         }
         return results;
     }
 
-    /** Get a single override's signed URL */
+    /** Get a single override's serve URL */
     @Get(':slotKey')
     async findOne(@Param('slotKey') slotKey: string) {
         const override = await this.repo.findOne({ where: { slot_key: slotKey } });
         if (!override) return { url: null, object_key: null };
-        try {
-            const url = await this.storageService.generateSignedReadUrl(override.object_key);
-            return { url, object_key: override.object_key };
-        } catch {
-            return { url: null, object_key: override.object_key };
-        }
+        const url = `/v1/storage/serve?key=${encodeURIComponent(override.object_key)}`;
+        return { url, object_key: override.object_key };
     }
 
     /** Set or update an illustration override */

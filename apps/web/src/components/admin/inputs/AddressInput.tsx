@@ -46,9 +46,7 @@ function extractComponent(components: google.maps.GeocoderAddressComponent[], ty
 const fieldCls = 'w-full h-[44px] px-4 text-[15px] bg-transparent outline-none text-[hsl(var(--admin-text-main))] placeholder:text-[hsl(var(--admin-text-muted)/0.6)]';
 
 export function AddressInput({ label, value, onChange, required }: AddressInputProps) {
-    // Start in manual mode if Google Places API isn't loaded
-    const placesAvailable = typeof window !== 'undefined' && !!(window as any).google?.maps?.places;
-    const [manual, setManual] = useState(!placesAvailable);
+    const [manual, setManual] = useState(false);
     const [fieldState, setFieldState] = useState<'idle' | 'success' | 'error'>('idle');
 
     const {
@@ -153,7 +151,7 @@ export function AddressInput({ label, value, onChange, required }: AddressInputP
                             if (!e.target.value) onChange(EMPTY_ADDRESS);
                         }}
                         disabled={!ready}
-                        placeholder="Search for an address..."
+                        placeholder={ready ? 'Search for an address...' : 'Loading address search...'}
                         className="flex-1 h-[44px] px-3 text-[15px] bg-transparent outline-none text-[hsl(var(--admin-text-main))] placeholder:text-[hsl(var(--admin-text-muted)/0.6)]"
                     />
                     {value.formatted_address && (
@@ -191,6 +189,18 @@ export function AddressInput({ label, value, onChange, required }: AddressInputP
                         </li>
                     ))}
                 </ul>
+            )}
+
+            {/* Map preview after a valid address is selected */}
+            {value.lat && value.lng && process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY && (
+                <div className="mt-2 rounded-xl overflow-hidden border border-[hsl(var(--admin-border)/0.4)]">
+                    <img
+                        src={`https://maps.googleapis.com/maps/api/staticmap?center=${value.lat},${value.lng}&zoom=15&size=600x140&markers=color:red%7C${value.lat},${value.lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&scale=2`}
+                        alt="Map preview"
+                        className="w-full h-[70px] object-cover"
+                        loading="lazy"
+                    />
+                </div>
             )}
 
             <button

@@ -9,8 +9,16 @@ import {
     HttpStatus,
     BadRequestException,
     UseGuards,
+    UseInterceptors,
+    UploadedFile,
+    Res,
     Logger,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
+import type { Response } from 'express';
+import * as path from 'path';
+import { v4 as uuidv4 } from 'uuid';
 import { StorageService } from './storage.service';
 import { SvgSanitizerService } from './svg-sanitizer.service';
 import { ImageProcessingService } from './image-processing.service';
@@ -82,7 +90,6 @@ interface ConfirmUploadDto {
 }
 
 @Controller('storage')
-@UseGuards(FirebaseAuthGuard)
 export class StorageController {
     private readonly logger = new Logger(StorageController.name);
 
@@ -131,6 +138,7 @@ export class StorageController {
      * Generate a signed URL for uploading a file.
      * Supports both tenant-scoped and platform-scoped uploads.
      */
+    @UseGuards(FirebaseAuthGuard)
     @Post('upload-url')
     @HttpCode(HttpStatus.OK)
     async getUploadUrl(
@@ -192,6 +200,7 @@ export class StorageController {
      * Generate a signed URL for reading/downloading a file.
      * Tenant users can only read their own objects; platform admins can read any.
      */
+    @UseGuards(FirebaseAuthGuard)
     @Get('read-url')
     async getReadUrl(
         @Query('key') objectKey: string,
@@ -232,6 +241,7 @@ export class StorageController {
      * For SVGs: downloads, sanitizes, re-uploads the sanitized version.
      * Creates a file_objects record for tracking.
      */
+    @UseGuards(FirebaseAuthGuard)
     @Post('confirm-upload')
     @HttpCode(HttpStatus.OK)
     async confirmUpload(
@@ -323,5 +333,107 @@ export class StorageController {
             objectKey: body.objectKey,
             sanitized: this.svgSanitizer.isSvg(body.contentType),
         };
+    }
+
+    /**
+     * Direct proxy upload — bypasses signed-URL generation entirely.
+     * Frontend sends the file as multipart/form-data; backend writes
+     * the buffer to GCS using the VM's ADC credentials (no signing needed).
+     */
+    @UseGuards(FirebaseAuthGuard)
+    @Post('upload')
+    @HttpCode(HttpStatus.OK)
+    @UseInterceptors(FileInterceptor('file', { storage: memoryStorage(), limits: { fileSize: 20 * 1024 * 1024 } }))
+    async proxyUpload(
+        @UploadedFile() file: Express.Multer.File,
+        @Body('category') category: string,
+        @Req() req: any,
+    ): Promise<{ objectKey: string; contentType: string }> {
+        if (!file) throw new BadRequestException('No file provided');
+        if (!category) throw new BadRequestException('Category is required');
+
+        const validCategories = ['documents', 'avatars', 'logos', 'covers', 'reports', 'attachments'];
+        if (!validCategories.includes(category)) {
+            throw new BadRequestException(`Invalid category. Must be one of: ${validCategories.join(', ')}`);
+        }
+
+        const rules = CATEGORY_RULES[category];
+        if (rules && !rules.mimeTypes.includes(file.mimetype)) {
+            throw new BadRequestException(
+                `File type "${file.mimetype}" is not allowed for category "${category}". Allowed: ${rules.mimeTypes.join(', ')}`,
+            );
+        }
+
+        if (!this.storageService.isConfigured()) {
+            throw new BadRequestException('File storage is not configured.');
+        }
+
+        const { slug } = this.resolveStorageScope(req);
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const ext = path.extname(file.originalname) || '';
+        const objectKey = `uploads/${slug}/${category}/${year}/${month}/${uuidv4()}${ext}`;
+
+        let buffer = file.buffer;
+        if (this.svgSanitizer.isSvg(file.mimetype)) {
+            try {
+                buffer = this.svgSanitizer.sanitize(buffer);
+            } catch {
+                throw new BadRequestException('SVG sanitization failed — file may be invalid or contain unsafe content');
+            }
+        }
+
+        try {
+            await this.storageService.uploadBuffer(objectKey, buffer, file.mimetype);
+        } catch (err: any) {
+            this.logger.error(`Proxy upload failed: ${err.message}`, err.stack);
+            throw new BadRequestException(`Upload failed: ${err.message}`);
+        }
+
+        this.logger.log(`Proxy upload succeeded: ${objectKey}`);
+        return { objectKey, contentType: file.mimetype };
+    }
+
+    /**
+     * Serve a GCS object directly (no signed URL).
+     * Public — no auth guard — limited to logos/ and illustrations/ prefixes only.
+     * Browser can use this URL directly in <img src>.
+     */
+    @Get('serve')
+    async serveFile(
+        @Query('key') objectKey: string,
+        @Res() res: Response,
+    ): Promise<void> {
+        if (!objectKey || !objectKey.startsWith('uploads/')) {
+            res.status(400).json({ message: 'Invalid object key' });
+            return;
+        }
+
+        const pathParts = objectKey.split('/');
+        const category = pathParts[2]; // uploads/<tenant>/<category>/...
+        if (!['logos', 'illustrations'].includes(category)) {
+            res.status(400).json({ message: 'Direct serving not allowed for this category' });
+            return;
+        }
+
+        try {
+            const buffer = await this.storageService.downloadObject(objectKey);
+            const ext = path.extname(objectKey).toLowerCase();
+            const mimeMap: Record<string, string> = {
+                '.svg': 'image/svg+xml',
+                '.png': 'image/png',
+                '.jpg': 'image/jpeg',
+                '.jpeg': 'image/jpeg',
+                '.webp': 'image/webp',
+            };
+            const contentType = mimeMap[ext] || 'application/octet-stream';
+            res.set('Content-Type', contentType);
+            res.set('Cache-Control', 'public, max-age=3600');
+            res.send(buffer);
+        } catch (err: any) {
+            this.logger.error(`Serve failed for ${objectKey}: ${err.message}`);
+            res.status(404).json({ message: 'File not found' });
+        }
     }
 }

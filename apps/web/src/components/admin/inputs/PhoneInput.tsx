@@ -60,10 +60,25 @@ export function PhoneInput({ label, value, onChange, required, placeholder = 'e.
     const [validationState, setValidationState] = useState<'idle' | 'success' | 'error'>('idle');
     const [errorMsg, setErrorMsg] = useState('');
     const [search, setSearch] = useState('');
+    const [countryManuallySet, setCountryManuallySet] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const triggerRef = useRef<HTMLButtonElement>(null);
 
     const selected = ALL_COUNTRIES.find(c => c.iso2 === (value.country_iso2 || 'ZA')) || PRIORITY_COUNTRIES[0];
+
+    // Detect user's country from IP on mount (best-effort, only if not already set)
+    useEffect(() => {
+        if (countryManuallySet || (value.country_iso2 && value.country_iso2 !== 'ZA')) return;
+        fetch('https://ipapi.co/json/')
+            .then(r => r.json())
+            .then((d: { country_code?: string }) => {
+                const detected = ALL_COUNTRIES.find(c => c.iso2 === d.country_code);
+                if (detected && !countryManuallySet) {
+                    onChange({ ...value, country_iso2: detected.iso2, dial_code: detected.dialCode });
+                }
+            })
+            .catch(() => { /* best-effort */ });
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const filtered = ALL_COUNTRIES.filter(c =>
         c.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -88,6 +103,7 @@ export function PhoneInput({ label, value, onChange, required, placeholder = 'e.
     }, [isOpen]);
 
     const handleCountrySelect = (country: CountryOption) => {
+        setCountryManuallySet(true);
         onChange({ ...value, country_iso2: country.iso2, dial_code: country.dialCode });
         setIsOpen(false);
         setSearch('');
@@ -120,7 +136,12 @@ export function PhoneInput({ label, value, onChange, required, placeholder = 'e.
                 });
             } else {
                 setValidationState('error');
-                setErrorMsg('Invalid phone number for selected country');
+                const startsWithZero = value.raw.trimStart().startsWith('0');
+                setErrorMsg(
+                    startsWithZero
+                        ? 'Remove the leading 0 — enter digits after the country code (e.g. 72 234 5678)'
+                        : 'Invalid phone number for selected country'
+                );
             }
         } catch {
             // Network error — keep idle, don't block user
@@ -129,7 +150,7 @@ export function PhoneInput({ label, value, onChange, required, placeholder = 'e.
     };
 
     return (
-        <FieldWrapper label={label} required={required} state={validationState} error={errorMsg}>
+        <FieldWrapper label={label} required={required} state={validationState} error={errorMsg} showIcon={false}>
             <div className="flex items-stretch">
                 {/* Country selector */}
                 <div className="relative">
