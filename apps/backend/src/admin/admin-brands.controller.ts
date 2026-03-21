@@ -96,6 +96,7 @@ export class AdminBrandsController {
             description: body.description || null,
             logo_file_id: body.logo_file_id || null,
             cover_file_id: body.cover_file_id || null,
+            status: BrandStatus.ACTIVE,
         } as any);
         return this.brandRepo.save(brand);
     }

@@ -17,7 +17,7 @@ interface Brand {
   logo_url?: string | null;
 }
 
-interface BrandListProps { tenantSlug: string; }
+interface BrandListProps { tenantSlug: string; showNewButton?: boolean; }
 
 const DELETE_ROLES = ['platform_super_admin', 'app_super_admin'];
 const MANAGE_ROLES = ['platform_super_admin', 'app_super_admin', 'brand_admin', 'app_secretary', 'platform_secretary'];
@@ -54,7 +54,7 @@ function BrandLogo({ url, name }: { url?: string | null; name: string }) {
   );
 }
 
-export function BrandList({ tenantSlug }: BrandListProps) {
+export function BrandList({ tenantSlug, showNewButton = true }: BrandListProps) {
   const { fullRole } = useRole();
   const canDelete = DELETE_ROLES.some(r => fullRole.includes(r));
   const canManage = MANAGE_ROLES.some(r => fullRole.includes(r));
@@ -164,13 +164,15 @@ export function BrandList({ tenantSlug }: BrandListProps) {
             className="w-full pl-10 pr-4 h-11 rounded-xl bg-[hsl(var(--admin-surface-alt))] text-[14px] text-[hsl(var(--admin-text-main))] placeholder:text-[hsl(var(--admin-text-muted))] border border-[hsl(var(--admin-border))] outline-none focus:border-[hsl(var(--admin-primary))] focus:ring-2 focus:ring-[hsl(var(--admin-primary)/0.15)] transition-all"
           />
         </div>
-        <Link
-          href={`/tenant/${tenantSlug}/admin/brands/new`}
-          className="h-11 px-4 bg-[hsl(var(--admin-primary))] text-white text-[14px] font-bold rounded-xl flex items-center gap-2 active:scale-95 transition-all"
-        >
-          <Plus size={16} />
-          <span className="hidden sm:inline">New Brand</span>
-        </Link>
+        {showNewButton && (
+          <Link
+            href={`/tenant/${tenantSlug}/admin/brands/new`}
+            className="h-11 px-4 bg-[hsl(var(--admin-primary))] text-white text-[14px] font-bold rounded-xl flex items-center gap-2 active:scale-95 transition-all"
+          >
+            <Plus size={16} />
+            <span className="hidden sm:inline">New Brand</span>
+          </Link>
+        )}
       </div>
 
       {/* Brand list card */}

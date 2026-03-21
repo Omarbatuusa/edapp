@@ -30,7 +30,7 @@ export class Brand {
     @Column({ nullable: true })
     cover_file_id: string;
 
-    @Column({ type: 'enum', enum: BrandStatus, default: BrandStatus.ACTIVE })
+    @Column({ type: 'varchar', length: 20, default: BrandStatus.ACTIVE })
     status: BrandStatus;
 
     @CreateDateColumn()

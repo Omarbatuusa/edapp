@@ -20,13 +20,6 @@ interface SubpageDetection {
 
 const FULLSCREEN_PATTERNS = ['/chat'];
 
-/** Routes where the wizard provides its own chrome — hide SubpageBar + bottom nav */
-const WIZARD_PATTERNS = [
-    /\/brands\/new$/,
-    /\/brands\/[^/]+\/edit$/,
-    /\/staff\/new$/,
-];
-
 /**
  * Detects whether the current route is a "subpage" (not a primary bottom tab).
  * When on a subpage, the bottom nav should be hidden and a SubpageBar shown.
@@ -40,9 +33,6 @@ export function useSubpageDetection(bottomTabs: NavItem[], basePath: string): Su
 
         // Check fullscreen patterns
         const isFullscreen = FULLSCREEN_PATTERNS.some(p => pathname.includes(p));
-
-        // Check wizard patterns — these have their own header chrome
-        const isWizard = WIZARD_PATTERNS.some(rx => rx.test(pathname));
 
         // Build absolute tab paths
         const tabPaths = bottomTabs
@@ -76,8 +66,11 @@ export function useSubpageDetection(bottomTabs: NavItem[], basePath: string): Su
             }
         }
 
-        // Derive chrome mode — wizards get modal (they have their own header)
-        const chrome: ChromeMode = isFullscreen || isWizard ? 'modal' : isSubpage ? 'takeover' : 'default';
+        // Derive chrome mode
+        // Wizard pages use 'takeover' so AppNavRail stays visible on desktop.
+        // WizardShell provides its own header; the SubpageBar AppShell injects
+        // is suppressed by .admin-main:has(.wizard-sheet) > .sticky CSS rule.
+        const chrome: ChromeMode = isFullscreen ? 'modal' : isSubpage ? 'takeover' : 'default';
 
         return { isSubpage, isFullscreen, parentTabPath, chrome };
     }, [pathname, bottomTabs, basePath]);

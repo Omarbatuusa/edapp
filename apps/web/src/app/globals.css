@@ -1128,7 +1128,7 @@
   border-bottom: 1px solid hsl(var(--admin-border) / 0.5);
 }
 
-/* Scrollable content body */
+/* Scrollable content body — the premium white card inside the sheet */
 .wizard-sheet-body {
   flex: 1;
   overflow-y: auto;
@@ -1136,6 +1136,23 @@
   overscroll-behavior-y: contain;
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
+  /* Card styling: white surface floating in app background */
+  background: hsl(var(--admin-surface));
+  margin: 8px 10px 8px;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+@media (min-width: 641px) {
+  .wizard-sheet-body {
+    margin: 10px 14px 10px;
+  }
+}
+@media (min-width: 1025px) {
+  .wizard-sheet-body {
+    margin: 12px 16px 12px;
+    border-radius: 18px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05), 0 6px 24px rgba(0, 0, 0, 0.06);
+  }
 }
 
 /* Content wrapper inside body */
