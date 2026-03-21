@@ -1,7 +1,7 @@
 import { Controller, Post, Put, Get, Delete, Param, Body, Query, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { AdminDraft, DraftFormType } from './admin-draft.entity';
+import { AdminDraft } from './admin-draft.entity';
 
 @Controller('admin/drafts')
 export class AdminDraftsController {
@@ -12,10 +12,10 @@ export class AdminDraftsController {
 
     @Post()
     async create(
-        @Body() body: { form_type: DraftFormType; tenant_id?: string; user_id?: string; data?: Record<string, any> },
+        @Body() body: { form_type: string; tenant_id?: string; user_id?: string; data?: Record<string, any> },
     ) {
-        if (!body.form_type || !Object.values(DraftFormType).includes(body.form_type)) {
-            throw new BadRequestException('Invalid form_type');
+        if (!body.form_type) {
+            throw new BadRequestException('form_type is required');
         }
 
         const expiresAt = new Date();
@@ -41,7 +41,7 @@ export class AdminDraftsController {
         @Query('tenant_id') tenantId?: string,
     ) {
         const where: any = {};
-        if (formType) where.form_type = formType as DraftFormType;
+        if (formType) where.form_type = formType;
         if (tenantId) where.tenant_id = tenantId;
 
         const drafts = await this.draftRepo.find({ where, order: { updated_at: 'DESC' } });

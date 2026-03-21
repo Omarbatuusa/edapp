@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { uploadToGcs } from './uploadToGcs';
+import { authFetch } from '@/lib/authFetch';
 
 interface LogoUploadProps {
     label?: string;
@@ -12,10 +13,7 @@ interface LogoUploadProps {
 
 /** Fetch a fresh signed read URL for an existing objectKey */
 async function fetchReadUrl(objectKey: string): Promise<string> {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('session_token') : null;
-    const headers: Record<string, string> = {};
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-    const res = await fetch(`/v1/storage/read-url?key=${encodeURIComponent(objectKey)}`, { headers });
+    const res = await authFetch(`/v1/storage/read-url?key=${encodeURIComponent(objectKey)}`);
     if (res.ok) {
         const { readUrl } = await res.json();
         return readUrl || '';
@@ -107,7 +105,7 @@ export function LogoUpload({ label = 'School Logo', value, onChange, required }:
                         <p className="text-[10px] text-[hsl(var(--admin-text-muted))]">Max 2 MB · Auto-optimized for fast loading</p>
                     </>
                 )}
-                <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/svg+xml" className="hidden" onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} />
+                <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/svg+xml" className="hidden" aria-label="Upload logo image" onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} />
             </div>
             {error && <p className="text-[12px] text-red-500 font-medium px-1">{error}</p>}
         </div>

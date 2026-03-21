@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { authFetch } from '@/lib/authFetch';
 
 interface AutosaveOptions {
   schemaVersion?: string;
@@ -21,14 +22,6 @@ export function useWizardAutosave(formType: string, tenantId?: string, options?:
     const [versionMismatch, setVersionMismatch] = useState(false);
     const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-    const getHeaders = (): Record<string, string> => {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('session_token') : null;
-        return {
-            'Content-Type': 'application/json',
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        };
-    };
-
     // Check for existing draft on mount
     useEffect(() => {
         const stored = typeof window !== 'undefined'
@@ -36,10 +29,8 @@ export function useWizardAutosave(formType: string, tenantId?: string, options?:
             : null;
 
         if (stored) {
-            // Try to load the existing draft
             loadDraft(stored);
         } else {
-            // Check server for existing draft
             checkExistingDraft();
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -47,9 +38,8 @@ export function useWizardAutosave(formType: string, tenantId?: string, options?:
 
     const checkExistingDraft = async () => {
         try {
-            const res = await fetch(
-                `/v1/admin/drafts?form_type=${formType}${tenantId ? `&tenant_id=${tenantId}` : ''}`,
-                { headers: getHeaders() },
+            const res = await authFetch(
+                `/v1/admin/drafts?form_type=${encodeURIComponent(formType)}${tenantId ? `&tenant_id=${tenantId}` : ''}`,
             );
             if (res.ok) {
                 const drafts = await res.json();
@@ -73,7 +63,7 @@ export function useWizardAutosave(formType: string, tenantId?: string, options?:
 
     const loadDraft = async (id: string) => {
         try {
-            const res = await fetch(`/v1/admin/drafts/${id}`, { headers: getHeaders() });
+            const res = await authFetch(`/v1/admin/drafts/${id}`);
             if (res.ok) {
                 const draft = await res.json();
                 setDraftId(id);
@@ -87,7 +77,6 @@ export function useWizardAutosave(formType: string, tenantId?: string, options?:
                     setVersionMismatch(true);
                 }
             } else {
-                // Draft expired or deleted, create new one
                 sessionStorage.removeItem(`wizard_draft_${formType}_${tenantId || ''}`);
                 createDraft();
             }
@@ -98,9 +87,9 @@ export function useWizardAutosave(formType: string, tenantId?: string, options?:
 
     const createDraft = async () => {
         try {
-            const res = await fetch('/v1/admin/drafts', {
+            const res = await authFetch('/v1/admin/drafts', {
                 method: 'POST',
-                headers: getHeaders(),
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     form_type: formType,
                     tenant_id: tenantId,
@@ -125,9 +114,9 @@ export function useWizardAutosave(formType: string, tenantId?: string, options?:
         debounceRef.current = setTimeout(async () => {
             setSaving(true);
             try {
-                await fetch(`/v1/admin/drafts/${draftId}`, {
+                await authFetch(`/v1/admin/drafts/${draftId}`, {
                     method: 'PUT',
-                    headers: getHeaders(),
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         current_step: step,
                         data,
@@ -152,10 +141,7 @@ export function useWizardAutosave(formType: string, tenantId?: string, options?:
     const discardDraft = async () => {
         if (existingDraft) {
             try {
-                await fetch(`/v1/admin/drafts/${existingDraft.draftId}`, {
-                    method: 'DELETE',
-                    headers: getHeaders(),
-                });
+                await authFetch(`/v1/admin/drafts/${existingDraft.draftId}`, { method: 'DELETE' });
             } catch { /* silent */ }
         }
         setExistingDraft(null);
@@ -165,12 +151,8 @@ export function useWizardAutosave(formType: string, tenantId?: string, options?:
     };
 
     const clearDraft = () => {
-        // Delete from backend so stale drafts don't resurface on next visit
         if (draftId) {
-            fetch(`/v1/admin/drafts/${draftId}`, {
-                method: 'DELETE',
-                headers: getHeaders(),
-            }).catch(() => {});
+            authFetch(`/v1/admin/drafts/${draftId}`, { method: 'DELETE' }).catch(() => {});
         }
         setDraftId(null);
         setExistingDraft(null);

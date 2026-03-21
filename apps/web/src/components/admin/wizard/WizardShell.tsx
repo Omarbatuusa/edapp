@@ -227,21 +227,38 @@ export function WizardShell({
                 {/* Draft Resume Banner */}
                 {showDraftBanner && (
                     <div className="px-4 pt-4">
-                        <div className="flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl bg-amber-50 border border-amber-200">
-                            <div className="flex items-center gap-2 min-w-0">
-                                <span className="material-symbols-outlined text-amber-600 text-[18px] flex-shrink-0">drafts</span>
-                                <p className="text-[12px] font-semibold text-amber-800 truncate">
-                                    {versionMismatch ? 'Older draft found' : 'Resume draft?'}
-                                </p>
+                        <div className="rounded-2xl bg-amber-50 border border-amber-200 overflow-hidden">
+                            <div className="flex items-center gap-3 px-4 py-3">
+                                <div className="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
+                                    <span className="material-symbols-outlined text-amber-600 text-[20px]">edit_note</span>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-[13px] font-bold text-amber-900 leading-tight">
+                                        {versionMismatch ? 'Older draft found' : 'You have an unsaved draft'}
+                                    </p>
+                                    <p className="text-[11px] text-amber-700 mt-0.5">
+                                        {versionMismatch
+                                            ? 'This draft was made with an older form version'
+                                            : 'Pick up where you left off'}
+                                    </p>
+                                </div>
                             </div>
-                            <div className="flex items-center gap-1.5 shrink-0">
-                                <button type="button" onClick={handleDiscardDraft}
-                                    className="px-2.5 py-1 text-[11px] font-semibold text-amber-700 hover:bg-amber-100 rounded-lg transition-colors">
-                                    Discard
+                            <div className="flex border-t border-amber-200">
+                                <button
+                                    type="button"
+                                    onClick={handleDiscardDraft}
+                                    className="flex-1 py-2.5 text-[12px] font-semibold text-amber-700 hover:bg-amber-100 transition-colors"
+                                >
+                                    Start fresh
                                 </button>
-                                <button type="button" onClick={handleResumeDraft}
-                                    className="px-2.5 py-1 text-[11px] font-bold text-white bg-amber-600 hover:bg-amber-700 rounded-lg transition-colors">
-                                    Resume
+                                <div className="w-px bg-amber-200" />
+                                <button
+                                    type="button"
+                                    onClick={handleResumeDraft}
+                                    className="flex-1 py-2.5 text-[12px] font-bold text-amber-900 hover:bg-amber-100 transition-colors flex items-center justify-center gap-1.5"
+                                >
+                                    <span className="material-symbols-outlined text-[14px]">play_arrow</span>
+                                    Resume draft
                                 </button>
                             </div>
                         </div>

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { uploadToGcs } from './uploadToGcs';
+import { authFetch } from '@/lib/authFetch';
 
 interface CoverUploadProps {
     label?: string;
@@ -11,10 +12,7 @@ interface CoverUploadProps {
 
 /** Fetch a fresh signed read URL for an existing objectKey */
 async function fetchReadUrl(objectKey: string): Promise<string> {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('session_token') : null;
-    const headers: Record<string, string> = {};
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-    const res = await fetch(`/v1/storage/read-url?key=${encodeURIComponent(objectKey)}`, { headers });
+    const res = await authFetch(`/v1/storage/read-url?key=${encodeURIComponent(objectKey)}`);
     if (res.ok) {
         const { readUrl } = await res.json();
         return readUrl || '';
@@ -28,7 +26,7 @@ export function CoverUpload({ label = 'Cover Photo', value, onChange }: CoverUpl
     const [error, setError] = useState('');
     const inputRef = useRef<HTMLInputElement>(null);
 
-    // Fetch preview when value (objectKey) exists but no previewUrl (draft resume)
+    // When value (objectKey) is set but no preview — fetch a signed URL (draft resume case)
     useEffect(() => {
         if (value && !previewUrl) {
             fetchReadUrl(value).then(url => {
@@ -58,8 +56,8 @@ export function CoverUpload({ label = 'Cover Photo', value, onChange }: CoverUpl
         }
     };
 
-    const hasCover = !!(previewUrl || value);
-    const displaySrc = previewUrl;
+    const hasImage = !!(previewUrl || value);
+    const imgSrc = previewUrl;
 
     return (
         <div className="flex flex-col gap-1.5">
@@ -67,44 +65,46 @@ export function CoverUpload({ label = 'Cover Photo', value, onChange }: CoverUpl
                 {label} <span className="text-[hsl(var(--admin-text-muted))] font-normal">(optional)</span>
             </label>
             <div
-                className="relative rounded-2xl overflow-hidden border border-[hsl(var(--admin-border)/0.4)] aspect-[16/5] group cursor-pointer active:scale-[0.98] transition-transform"
                 onClick={() => !uploading && inputRef.current?.click()}
+                className={`relative rounded-2xl border-2 border-dashed p-5 flex flex-col items-center justify-center cursor-pointer transition-all active:scale-[0.98] min-h-[120px] ${
+                    hasImage
+                        ? 'border-[hsl(var(--admin-primary)/0.3)] bg-[hsl(var(--admin-primary)/0.03)]'
+                        : 'border-[hsl(var(--admin-border)/0.5)] hover:border-[hsl(var(--admin-primary)/0.4)] bg-[hsl(var(--admin-surface-alt)/0.3)]'
+                }`}
             >
-                {displaySrc ? (
-                    <img src={displaySrc} alt="Cover" className="w-full h-full object-cover" />
-                ) : hasCover ? (
-                    /* Has objectKey but no preview yet — show uploaded indicator */
-                    <div className="w-full h-full bg-green-50 flex items-center justify-center">
-                        <span className="material-symbols-outlined text-green-500 text-[28px]">check_circle</span>
-                    </div>
-                ) : (
-                    <div className="w-full h-full bg-gradient-to-r from-[hsl(var(--admin-primary)/0.08)] to-[hsl(210_100%_50%/0.15)] flex items-center justify-center">
-                        <div className="flex flex-col items-center gap-1.5 px-4 text-center">
-                            <span className="material-symbols-outlined text-[20px] text-[hsl(var(--admin-text-muted))]">panorama</span>
-                            <span className="text-[11px] font-medium text-[hsl(var(--admin-text-muted))]">Tap to upload cover</span>
-                            <span className="text-[10px] text-[hsl(var(--admin-text-muted))]">1200 × 400px recommended · PNG, JPG or WebP · Max 5 MB</span>
-                            <span className="text-[9px] text-[hsl(var(--admin-text-muted))]">Auto-optimized for fast loading</span>
-                        </div>
-                    </div>
-                )}
                 {uploading && (
-                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                        <div className="w-6 h-6 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                    <div className="absolute inset-0 bg-white/80 rounded-2xl flex items-center justify-center z-10">
+                        <div className="w-6 h-6 border-2 border-[hsl(var(--admin-primary)/0.2)] border-t-[hsl(var(--admin-primary))] rounded-full animate-spin" />
                     </div>
                 )}
-                {!uploading && hasCover && (
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
-                        <span className="px-3 py-1.5 bg-white/90 text-[hsl(var(--admin-text-main))] text-[12px] font-medium rounded-lg">Change</span>
+                {hasImage ? (
+                    <div className="flex flex-col items-center gap-2.5 w-full">
+                        {imgSrc ? (
+                            <img src={imgSrc} alt="Cover preview" className="w-full h-24 object-cover rounded-xl border border-[hsl(var(--admin-border)/0.3)] bg-white" />
+                        ) : (
+                            <div className="w-full h-24 rounded-xl bg-green-50 border border-green-200 flex items-center justify-center">
+                                <span className="material-symbols-outlined text-green-500 text-[24px]">check_circle</span>
+                            </div>
+                        )}
                         <button
                             type="button"
                             onClick={e => { e.stopPropagation(); onChange(''); setPreviewUrl(''); }}
-                            className="px-3 py-1.5 bg-white/90 text-red-500 text-[12px] font-medium rounded-lg"
+                            className="text-[12px] text-red-500 font-medium"
                         >
                             Remove
                         </button>
                     </div>
+                ) : (
+                    <>
+                        <div className="w-11 h-11 bg-[hsl(var(--admin-surface-alt))] rounded-xl flex items-center justify-center mb-2">
+                            <span className="material-symbols-outlined text-[22px] text-[hsl(var(--admin-text-muted))]">panorama</span>
+                        </div>
+                        <p className="text-[13px] font-medium text-[hsl(var(--admin-text-sub))]">Tap to upload cover photo</p>
+                        <p className="text-[11px] text-[hsl(var(--admin-text-muted))] mt-0.5">1200 × 400px recommended · PNG, JPG or WebP</p>
+                        <p className="text-[10px] text-[hsl(var(--admin-text-muted))]">Max 5 MB · Auto-optimized for fast loading</p>
+                    </>
                 )}
-                <input ref={inputRef} type="file" accept="image/*" className="hidden" aria-label="Upload cover image" onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} />
+                <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" aria-label="Upload cover photo" onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} />
             </div>
             {error && <p className="text-[12px] text-red-500 font-medium px-1">{error}</p>}
         </div>

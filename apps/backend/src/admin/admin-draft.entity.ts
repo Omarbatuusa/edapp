@@ -25,11 +25,8 @@ export class AdminDraft {
     @Column({ nullable: true })
     user_id: string;
 
-    @Column({
-        type: 'enum',
-        enum: DraftFormType,
-    })
-    form_type: DraftFormType;
+    @Column({ type: 'varchar', length: 50 })
+    form_type: string;
 
     @Column({ default: 1 })
     current_step: number;
