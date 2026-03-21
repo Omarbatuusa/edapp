@@ -1,10 +1,10 @@
 import {
-    Controller, Post, Put, Get, Delete, Param, Body, Req,
+    Controller, Post, Put, Patch, Get, Delete, Param, Body, Req, Query,
     UseGuards, NotFoundException, ForbiddenException, BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Brand } from '../brands/brand.entity';
+import { Brand, BrandStatus } from '../brands/brand.entity';
 import { Tenant } from '../tenants/tenant.entity';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { StorageService } from '../storage/storage.service';
@@ -54,8 +54,18 @@ export class AdminBrandsController {
             const exists = await this.brandRepo.findOne({ where: { brand_code: code } });
             if (!exists) return code;
         }
-        // Fallback: use timestamp mod
         return `${letter}${((Date.now() % 900) + 100)}`;
+    }
+
+    private async enrichBrand(brand: Brand) {
+        const tenantCount = await this.tenantRepo.count({ where: { brand_id: brand.id } });
+        let logoUrl: string | null = null;
+        let coverUrl: string | null = null;
+        try {
+            if (brand.logo_file_id) logoUrl = await this.storageService.generateSignedReadUrl(brand.logo_file_id);
+            if (brand.cover_file_id) coverUrl = await this.storageService.generateSignedReadUrl(brand.cover_file_id);
+        } catch (_) { /* GCS may not be available in dev */ }
+        return { ...brand, connected_school_count: tenantCount, logo_url: logoUrl, cover_url: coverUrl };
     }
 
     @Post()
@@ -68,13 +78,10 @@ export class AdminBrandsController {
         cover_file_id?: string;
     }) {
         this.checkRole(req);
-
         if (!body.brand_name) throw new BadRequestException('brand_name is required');
 
-        // Generate BRD-XXXX code
         const brand_code = await this.generateBrandCode(body.brand_name);
 
-        // Slug: always first 3 letters of name, lowercased (ignore frontend value)
         let brand_slug = body.brand_name
             .toLowerCase()
             .replace(/[^a-z]/g, '')
@@ -94,40 +101,18 @@ export class AdminBrandsController {
     }
 
     @Get()
-    async findAll() {
-        const brands = await this.brandRepo.find({ order: { brand_name: 'ASC' } });
-
-        const results = await Promise.all(
-            brands.map(async (brand) => {
-                const tenantCount = await this.tenantRepo.count({ where: { brand_id: brand.id } });
-
-                let logoUrl: string | null = null;
-                let coverUrl: string | null = null;
-                try {
-                    if (brand.logo_file_id) {
-                        logoUrl = await this.storageService.generateSignedReadUrl(brand.logo_file_id);
-                    }
-                    if (brand.cover_file_id) {
-                        coverUrl = await this.storageService.generateSignedReadUrl(brand.cover_file_id);
-                    }
-                } catch (_) { /* GCS may not be available in dev */ }
-
-                return {
-                    ...brand,
-                    connected_school_count: tenantCount,
-                    logo_url: logoUrl,
-                    cover_url: coverUrl,
-                };
-            }),
-        );
-
-        return results;
+    async findAll(@Query('status') status?: string) {
+        const where: any = {};
+        if (status && Object.values(BrandStatus).includes(status as BrandStatus)) {
+            where.status = status as BrandStatus;
+        }
+        const brands = await this.brandRepo.find({ where, order: { brand_name: 'ASC' } });
+        return Promise.all(brands.map(b => this.enrichBrand(b)));
     }
 
     @Get(':id')
     async findOne(@Req() req: any, @Param('id') id: string) {
         this.checkRole(req);
-
         const brand = await this.brandRepo.findOne({ where: { id } });
         if (!brand) throw new NotFoundException('Brand not found');
 
@@ -139,32 +124,41 @@ export class AdminBrandsController {
         let logoUrl: string | null = null;
         let coverUrl: string | null = null;
         try {
-            if (brand.logo_file_id) {
-                logoUrl = await this.storageService.generateSignedReadUrl(brand.logo_file_id);
-            }
-            if (brand.cover_file_id) {
-                coverUrl = await this.storageService.generateSignedReadUrl(brand.cover_file_id);
-            }
+            if (brand.logo_file_id) logoUrl = await this.storageService.generateSignedReadUrl(brand.logo_file_id);
+            if (brand.cover_file_id) coverUrl = await this.storageService.generateSignedReadUrl(brand.cover_file_id);
         } catch (_) {}
 
-        return {
-            ...brand,
-            tenants,
-            logo_url: logoUrl,
-            cover_url: coverUrl,
-        };
+        return { ...brand, tenants, logo_url: logoUrl, cover_url: coverUrl };
     }
 
     @Put(':id')
     async update(@Req() req: any, @Param('id') id: string, @Body() body: Partial<Brand>) {
         this.checkRole(req);
-
         const brand = await this.brandRepo.findOne({ where: { id } });
         if (!brand) throw new NotFoundException('Brand not found');
 
-        // Never allow overwriting the unique identifiers via PUT
-        const { brand_code, brand_slug, id: _id, created_at, ...safeBody } = body as any;
+        // Never allow overwriting immutable fields via PUT
+        const { brand_code, brand_slug, id: _id, created_at, status: _status, ...safeBody } = body as any;
         Object.assign(brand, safeBody);
+        return this.brandRepo.save(brand);
+    }
+
+    @Patch(':id/archive')
+    async archive(@Req() req: any, @Param('id') id: string) {
+        this.checkRole(req);
+        const brand = await this.brandRepo.findOne({ where: { id } });
+        if (!brand) throw new NotFoundException('Brand not found');
+        if (brand.status === BrandStatus.ARCHIVED) return brand; // idempotent
+        brand.status = BrandStatus.ARCHIVED;
+        return this.brandRepo.save(brand);
+    }
+
+    @Patch(':id/restore')
+    async restore(@Req() req: any, @Param('id') id: string) {
+        this.checkRole(req);
+        const brand = await this.brandRepo.findOne({ where: { id } });
+        if (!brand) throw new NotFoundException('Brand not found');
+        brand.status = BrandStatus.ACTIVE;
         return this.brandRepo.save(brand);
     }
 
@@ -175,7 +169,14 @@ export class AdminBrandsController {
         const brand = await this.brandRepo.findOne({ where: { id } });
         if (!brand) throw new NotFoundException('Brand not found');
 
-        // Check for linked tenants
+        // Must be archived first
+        if (brand.status !== BrandStatus.ARCHIVED) {
+            throw new BadRequestException(
+                `Archive "${brand.brand_name}" before deleting. Change its status to Archived first.`,
+            );
+        }
+
+        // Must have no linked schools
         const tenantCount = await this.tenantRepo.count({ where: { brand_id: id } });
         if (tenantCount > 0) {
             throw new BadRequestException(

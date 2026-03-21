@@ -3,7 +3,8 @@ import { Tenant } from '../tenants/tenant.entity';
 
 export enum BrandStatus {
     ACTIVE = 'active',
-    PAUSED = 'paused'
+    PAUSED = 'paused',
+    ARCHIVED = 'archived',
 }
 
 @Entity('brands')

@@ -1,8 +1,7 @@
-import { Controller, Post, Put, Get, Param, Body, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Put, Get, Delete, Param, Body, Query, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AdminDraft, DraftFormType } from './admin-draft.entity';
-import { DeepPartial } from 'typeorm';
 
 @Controller('admin/drafts')
 export class AdminDraftsController {
@@ -35,6 +34,41 @@ export class AdminDraftsController {
         return { draft_id: (saved as AdminDraft).id };
     }
 
+    /** List drafts by form_type and/or tenant_id — must be declared BEFORE :id route */
+    @Get()
+    async findByFormType(
+        @Query('form_type') formType?: string,
+        @Query('tenant_id') tenantId?: string,
+    ) {
+        const where: any = {};
+        if (formType) where.form_type = formType as DraftFormType;
+        if (tenantId) where.tenant_id = tenantId;
+
+        const drafts = await this.draftRepo.find({ where, order: { updated_at: 'DESC' } });
+
+        const now = new Date();
+        const valid: AdminDraft[] = [];
+        const expired: AdminDraft[] = [];
+        for (const d of drafts) {
+            (d.expires_at > now ? valid : expired).push(d);
+        }
+        if (expired.length) await this.draftRepo.remove(expired);
+        return valid;
+    }
+
+    @Get(':id')
+    async findOne(@Param('id') id: string) {
+        const draft = await this.draftRepo.findOne({ where: { id } });
+        if (!draft) throw new NotFoundException('Draft not found');
+
+        if (draft.expires_at < new Date()) {
+            await this.draftRepo.remove(draft);
+            throw new NotFoundException('Draft has expired');
+        }
+
+        return draft;
+    }
+
     @Put(':id')
     async update(
         @Param('id') id: string,
@@ -55,16 +89,11 @@ export class AdminDraftsController {
         return { ok: true };
     }
 
-    @Get(':id')
-    async findOne(@Param('id') id: string) {
+    /** Delete a draft — silent success if not found (frontend clears sessionStorage either way) */
+    @Delete(':id')
+    async remove(@Param('id') id: string) {
         const draft = await this.draftRepo.findOne({ where: { id } });
-        if (!draft) throw new NotFoundException('Draft not found');
-
-        if (draft.expires_at < new Date()) {
-            await this.draftRepo.remove(draft);
-            throw new NotFoundException('Draft has expired');
-        }
-
-        return draft;
+        if (draft) await this.draftRepo.remove(draft);
+        return { deleted: true };
     }
 }

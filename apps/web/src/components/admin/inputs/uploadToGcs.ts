@@ -16,6 +16,9 @@ export async function uploadToGcs(
         body: JSON.stringify({ category, filename: file.name, contentType: file.type }),
     });
     if (!urlRes.ok) {
+        if (urlRes.status === 401) {
+            throw new Error('Your session has expired. Please refresh the page and log in again.');
+        }
         const err = await urlRes.json().catch(() => ({}));
         throw new Error((err as any).message || 'Failed to get upload URL');
     }
