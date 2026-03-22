@@ -49,7 +49,7 @@ function codePreview(name: string): string {
 const EMPTY_PHONE: PhoneValue = { raw: '', e164: '', country_iso2: 'ZA', dial_code: '+27' };
 const EMPTY_ADDRESS: AddressValue = {
     formatted_address: '', google_place_id: '', street: '', suburb: '',
-    city: '', province: '', postal_code: '', country: '', lat: null, lng: null,
+    city: '', province: '', postal_code: '', country: '', country_iso2: '', lat: null, lng: null,
 };
 
 /* iOS-style input classes — matches BrandWizard */
@@ -391,6 +391,7 @@ export function TenantWizard({ tenantSlug }: TenantWizardProps) {
                 contact_phone: data.contact_phone || null,
                 secondary_email: data.secondary_email || null,
                 physical_address: data.physical_address?.formatted_address ? data.physical_address : null,
+                country_code: data.physical_address?.country_iso2 || 'ZA',
                 logo_file_id: data.logo_file_id || null,
                 cover_file_id: data.cover_file_id || null,
                 gallery_file_ids: data.gallery_file_ids || [],

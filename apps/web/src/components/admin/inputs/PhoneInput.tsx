@@ -1,44 +1,13 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { isValidPhoneNumber } from 'libphonenumber-js';
 import { FieldWrapper } from './FieldWrapper';
 import { authFetch } from '@/lib/authFetch';
+import { CountryOption, ALL_COUNTRIES } from './countries';
 
-interface CountryOption {
-    iso2: string;
-    name: string;
-    dialCode: string;
-    flag: string;
-}
-
-const PRIORITY_COUNTRIES: CountryOption[] = [
-    { iso2: 'ZA', name: 'South Africa', dialCode: '+27', flag: '🇿🇦' },
-    { iso2: 'ZW', name: 'Zimbabwe', dialCode: '+263', flag: '🇿🇼' },
-    { iso2: 'MZ', name: 'Mozambique', dialCode: '+258', flag: '🇲🇿' },
-    { iso2: 'NA', name: 'Namibia', dialCode: '+264', flag: '🇳🇦' },
-    { iso2: 'BW', name: 'Botswana', dialCode: '+267', flag: '🇧🇼' },
-    { iso2: 'GH', name: 'Ghana', dialCode: '+233', flag: '🇬🇭' },
-    { iso2: 'NG', name: 'Nigeria', dialCode: '+234', flag: '🇳🇬' },
-    { iso2: 'KE', name: 'Kenya', dialCode: '+254', flag: '🇰🇪' },
-    { iso2: 'UG', name: 'Uganda', dialCode: '+256', flag: '🇺🇬' },
-    { iso2: 'US', name: 'United States', dialCode: '+1', flag: '🇺🇸' },
-];
-
-export const ALL_COUNTRIES: CountryOption[] = [
-    ...PRIORITY_COUNTRIES,
-    { iso2: 'AO', name: 'Angola', dialCode: '+244', flag: '🇦🇴' },
-    { iso2: 'CM', name: 'Cameroon', dialCode: '+237', flag: '🇨🇲' },
-    { iso2: 'CD', name: 'DR Congo', dialCode: '+243', flag: '🇨🇩' },
-    { iso2: 'ET', name: 'Ethiopia', dialCode: '+251', flag: '🇪🇹' },
-    { iso2: 'GB', name: 'United Kingdom', dialCode: '+44', flag: '🇬🇧' },
-    { iso2: 'IN', name: 'India', dialCode: '+91', flag: '🇮🇳' },
-    { iso2: 'LS', name: 'Lesotho', dialCode: '+266', flag: '🇱🇸' },
-    { iso2: 'MW', name: 'Malawi', dialCode: '+265', flag: '🇲🇼' },
-    { iso2: 'RW', name: 'Rwanda', dialCode: '+250', flag: '🇷🇼' },
-    { iso2: 'SZ', name: 'Eswatini', dialCode: '+268', flag: '🇸🇿' },
-    { iso2: 'TZ', name: 'Tanzania', dialCode: '+255', flag: '🇹🇿' },
-    { iso2: 'ZM', name: 'Zambia', dialCode: '+260', flag: '🇿🇲' },
-];
+export type { CountryOption };
+export { ALL_COUNTRIES };
 
 export interface PhoneValue {
     raw: string;
@@ -55,7 +24,7 @@ interface PhoneInputProps {
     placeholder?: string;
 }
 
-export function PhoneInput({ label, value, onChange, required, placeholder = 'e.g. 081 234 5678' }: PhoneInputProps) {
+export function PhoneInput({ label, value, onChange, required, placeholder = 'e.g. 81 234 5678' }: PhoneInputProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [validationState, setValidationState] = useState<'idle' | 'success' | 'error'>('idle');
     const [errorMsg, setErrorMsg] = useState('');
@@ -64,7 +33,7 @@ export function PhoneInput({ label, value, onChange, required, placeholder = 'e.
     const dropdownRef = useRef<HTMLDivElement>(null);
     const triggerRef = useRef<HTMLButtonElement>(null);
 
-    const selected = ALL_COUNTRIES.find(c => c.iso2 === (value.country_iso2 || 'ZA')) || PRIORITY_COUNTRIES[0];
+    const selected = ALL_COUNTRIES.find(c => c.iso2 === (value.country_iso2 || 'ZA')) || ALL_COUNTRIES[0];
 
     // Detect user's country from IP on mount (best-effort, only if not already set)
     useEffect(() => {
@@ -107,6 +76,8 @@ export function PhoneInput({ label, value, onChange, required, placeholder = 'e.
         onChange({ ...value, country_iso2: country.iso2, dial_code: country.dialCode });
         setIsOpen(false);
         setSearch('');
+        // Re-validate if there's an existing number
+        if (value.raw) setValidationState('idle');
     };
 
     const handleBlur = async () => {
@@ -118,11 +89,27 @@ export function PhoneInput({ label, value, onChange, required, placeholder = 'e.
             return;
         }
 
+        const raw = value.raw.trim();
+        const startsWithZero = raw.startsWith('0');
+
+        // Client-side pre-validation — instant feedback, no network round-trip needed
+        const clientValid = isValidPhoneNumber(raw, selected.iso2 as any);
+        if (!clientValid) {
+            setValidationState('error');
+            setErrorMsg(
+                startsWithZero
+                    ? 'Enter a valid number with no leading zero after the country code.'
+                    : 'Number does not match selected country.'
+            );
+            return;
+        }
+
+        // Backend call only when client-side passes — needed for E.164 normalisation
         try {
             const res = await authFetch('/v1/admin/phone/validate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ phone: value.raw, country_iso2: selected.iso2 }),
+                body: JSON.stringify({ phone: raw, country_iso2: selected.iso2 }),
             });
             const data = await res.json();
             if (data.valid) {
@@ -136,11 +123,10 @@ export function PhoneInput({ label, value, onChange, required, placeholder = 'e.
                 });
             } else {
                 setValidationState('error');
-                const startsWithZero = value.raw.trimStart().startsWith('0');
                 setErrorMsg(
                     startsWithZero
-                        ? 'Remove the leading 0 — enter digits after the country code (e.g. 72 234 5678)'
-                        : 'Invalid phone number for selected country'
+                        ? 'Enter a valid number with no leading zero after the country code.'
+                        : 'Number does not match selected country.'
                 );
             }
         } catch {
@@ -168,7 +154,7 @@ export function PhoneInput({ label, value, onChange, required, placeholder = 'e.
                     {isOpen && (
                         <div
                             ref={dropdownRef}
-                            className="absolute top-full left-0 z-50 bg-white border border-[hsl(var(--admin-border)/0.5)] rounded-xl shadow-xl w-64 mt-1 overflow-hidden"
+                            className="absolute top-full left-0 z-50 bg-white border border-[hsl(var(--admin-border)/0.5)] rounded-xl shadow-xl w-72 mt-1 overflow-hidden"
                         >
                             <div className="p-2 border-b border-[hsl(var(--admin-border)/0.3)]">
                                 <input
@@ -181,35 +167,49 @@ export function PhoneInput({ label, value, onChange, required, placeholder = 'e.
                                     autoFocus
                                 />
                             </div>
-                            <div className="max-h-48 overflow-y-auto">
-                                {filtered.map(c => (
+                            <div className="max-h-52 overflow-y-auto">
+                                {filtered.length === 0 ? (
+                                    <p className="px-4 py-3 text-[13px] text-[hsl(var(--admin-text-muted))]">No results</p>
+                                ) : filtered.map(c => (
                                     <button
                                         key={c.iso2}
                                         type="button"
                                         onClick={() => handleCountrySelect(c)}
                                         className={`w-full flex items-center gap-2 px-3 py-2.5 text-[13px] hover:bg-[hsl(var(--admin-surface-alt))] transition-colors ${c.iso2 === selected.iso2 ? 'bg-[hsl(var(--admin-primary)/0.08)] text-[hsl(var(--admin-primary))]' : 'text-[hsl(var(--admin-text-main))]'}`}
                                     >
-                                        <span className="text-base leading-none">{c.flag}</span>
-                                        <span className="flex-1 text-left">{c.name}</span>
-                                        <span className="text-[hsl(var(--admin-text-muted))] text-[11px]">{c.dialCode}</span>
+                                        <span className="text-base leading-none flex-shrink-0">{c.flag}</span>
+                                        <span className="flex-1 text-left truncate">{c.name}</span>
+                                        <span className="text-[hsl(var(--admin-text-muted))] text-[11px] flex-shrink-0">{c.dialCode}</span>
                                     </button>
                                 ))}
                             </div>
                         </div>
                     )}
                 </div>
-                {/* Phone input */}
-                <input
-                    type="tel"
-                    value={value.raw}
-                    onChange={e => {
-                        onChange({ ...value, raw: e.target.value });
-                        setValidationState('idle');
-                    }}
-                    onBlur={handleBlur}
-                    placeholder={placeholder}
-                    className="flex-1 h-[44px] px-3 text-[15px] bg-transparent outline-none text-[hsl(var(--admin-text-main))] placeholder:text-[hsl(var(--admin-text-muted)/0.6)]"
-                />
+                {/* Phone number input + inline validation icon */}
+                <div className="flex flex-1 items-center">
+                    <input
+                        type="tel"
+                        value={value.raw}
+                        onChange={e => {
+                            onChange({ ...value, raw: e.target.value });
+                            setValidationState('idle');
+                        }}
+                        onBlur={handleBlur}
+                        placeholder={placeholder}
+                        aria-invalid={validationState === 'error'}
+                        className="flex-1 h-[44px] pl-3 pr-2 text-[15px] bg-transparent outline-none text-[hsl(var(--admin-text-main))] placeholder:text-[hsl(var(--admin-text-muted)/0.6)]"
+                    />
+                    {validationState !== 'idle' && (
+                        <span aria-hidden="true" className={`material-symbols-outlined text-[16px] pr-2.5 flex-shrink-0 ${
+                            validationState === 'success'
+                                ? 'text-green-500'
+                                : 'text-red-500'
+                        }`}>
+                            {validationState === 'success' ? 'check_circle' : 'error'}
+                        </span>
+                    )}
+                </div>
             </div>
         </FieldWrapper>
     );

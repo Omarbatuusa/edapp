@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { RoleProvider } from '@/contexts/RoleContext';
 import { TenantProvider, useTenant } from '@/contexts/TenantContext';
 import { AppShell } from '@/components/shell/AppShell';
+import { SessionExpiredModal } from '@/components/shell/SessionExpiredModal';
 import { OnboardingGate } from '@/components/onboarding/OnboardingGate';
 import { SubscriptionGate } from '@/components/subscription/SubscriptionGate';
 import { getNavConfig } from '@/config/navigation';
@@ -232,6 +233,7 @@ function DashboardLayoutInner({ slug, children }: { slug: string; children: Reac
                     </OnboardingGate>
                 </SubscriptionGate>
             </AppShell>
+            <SessionExpiredModal />
         </RoleProvider>
     );
 }

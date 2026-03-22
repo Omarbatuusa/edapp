@@ -39,7 +39,8 @@ async function resolveToken(): Promise<string | null> {
 }
 
 export async function authFetch(input: string, init: RequestInit = {}): Promise<Response> {
-    const token = await resolveToken();
+    const sessionToken = ls('session_token');
+    const token = sessionToken || await getFirebaseToken(false);
     const res = await fetch(input, withAuth(init, token));
     if (res.status !== 401) return res;
 
@@ -48,6 +49,13 @@ export async function authFetch(input: string, init: RequestInit = {}): Promise<
     if (freshToken) {
         const res2 = await fetch(input, withAuth(init, freshToken));
         if (res2.status !== 401) return res2;
+    }
+
+    // Unrecoverable 401 — if the original request was using a session token, it has
+    // expired or been revoked. Clear it and notify the UI so a modal can appear.
+    if (sessionToken && typeof window !== 'undefined') {
+        localStorage.removeItem('session_token');
+        window.dispatchEvent(new CustomEvent('edapp:session-expired'));
     }
 
     return res;

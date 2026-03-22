@@ -11,14 +11,15 @@ interface LogoUploadProps {
     required?: boolean;
 }
 
-/** Fetch a fresh signed read URL for an existing objectKey */
+/** Fetch a fresh signed read URL; falls back to the public serve endpoint. */
 async function fetchReadUrl(objectKey: string): Promise<string> {
     const res = await authFetch(`/v1/storage/read-url?key=${encodeURIComponent(objectKey)}`);
     if (res.ok) {
         const { readUrl } = await res.json();
-        return readUrl || '';
+        if (readUrl) return readUrl;
     }
-    return '';
+    // Signed URL unavailable (VM lacks signing permission) — serve directly.
+    return `/v1/storage/serve?key=${encodeURIComponent(objectKey)}`;
 }
 
 export function LogoUpload({ label = 'School Logo', value, onChange, required }: LogoUploadProps) {
@@ -46,12 +47,15 @@ export function LogoUpload({ label = 'School Logo', value, onChange, required }:
         try {
             const { objectKey, previewUrl: signedUrl } = await uploadToGcs(file, 'logos');
             onChange(objectKey);
-            if (signedUrl) setPreviewUrl(signedUrl);
+            if (signedUrl) {
+                URL.revokeObjectURL(blobUrl);  // replaced by signed/serve URL — safe to free
+                setPreviewUrl(signedUrl);
+            }
         } catch (err: any) {
             setError(err.message || 'Upload failed');
             onChange('');
-            setPreviewUrl('');
-            URL.revokeObjectURL(blobUrl);
+            // Keep previewUrl (blob URL) so the user can see their selection and tap to retry.
+            // The blob URL is valid for the lifetime of this page session.
         } finally {
             setUploading(false);
         }

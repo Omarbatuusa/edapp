@@ -209,7 +209,13 @@ export default function AdminLoginPage() {
         localStorage.setItem('admin_tenant_slug', slug)
         localStorage.setItem(`edapp_role_${slug}`, selectedRole)
 
-        router.push(`/tenant/${slug}/admin`)
+        const returnTo = sessionStorage.getItem('edapp_return_to');
+        if (returnTo) {
+            sessionStorage.removeItem('edapp_return_to');
+            router.push(returnTo);
+        } else {
+            router.push(`/tenant/${slug}/admin`);
+        }
     }
 
     const handleSelectRole = (roleInfo: RoleInfo) => {

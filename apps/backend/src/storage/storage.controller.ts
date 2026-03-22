@@ -412,7 +412,9 @@ export class StorageController {
 
         const pathParts = objectKey.split('/');
         const category = pathParts[2]; // uploads/<tenant>/<category>/...
-        if (!['logos', 'illustrations'].includes(category)) {
+        // Only publicly servable categories — covers and avatars added alongside logos/illustrations.
+        // Attachments, documents, and reports must go through signed read URLs (private).
+        if (!['logos', 'illustrations', 'covers', 'avatars'].includes(category)) {
             res.status(400).json({ message: 'Direct serving not allowed for this category' });
             return;
         }

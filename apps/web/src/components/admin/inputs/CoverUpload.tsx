@@ -10,14 +10,15 @@ interface CoverUploadProps {
     onChange: (objectKey: string) => void;
 }
 
-/** Fetch a fresh signed read URL for an existing objectKey */
+/** Fetch a fresh signed read URL; falls back to the public serve endpoint. */
 async function fetchReadUrl(objectKey: string): Promise<string> {
     const res = await authFetch(`/v1/storage/read-url?key=${encodeURIComponent(objectKey)}`);
     if (res.ok) {
         const { readUrl } = await res.json();
-        return readUrl || '';
+        if (readUrl) return readUrl;
     }
-    return '';
+    // Signed URL unavailable (VM lacks signing permission) — serve directly.
+    return `/v1/storage/serve?key=${encodeURIComponent(objectKey)}`;
 }
 
 export function CoverUpload({ label = 'Cover Photo', value, onChange }: CoverUploadProps) {
@@ -45,12 +46,14 @@ export function CoverUpload({ label = 'Cover Photo', value, onChange }: CoverUpl
         try {
             const { objectKey, previewUrl: signedUrl } = await uploadToGcs(file, 'covers');
             onChange(objectKey);
-            if (signedUrl) setPreviewUrl(signedUrl);
+            if (signedUrl) {
+                URL.revokeObjectURL(blobUrl);  // replaced by signed/serve URL — safe to free
+                setPreviewUrl(signedUrl);
+            }
         } catch (err: any) {
             setError(err.message || 'Upload failed');
             onChange('');
-            setPreviewUrl('');
-            URL.revokeObjectURL(blobUrl);
+            // Keep previewUrl (blob URL) so the user can see their selection and tap to retry.
         } finally {
             setUploading(false);
         }

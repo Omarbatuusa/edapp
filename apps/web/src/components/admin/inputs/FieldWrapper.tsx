@@ -30,17 +30,17 @@ export function FieldWrapper({ label, required, state = 'idle', error, helper, c
                 state === 'error'
                     ? 'border-red-400'
                     : state === 'success'
-                    ? 'border-[hsl(var(--admin-primary)/0.4)]'
+                    ? 'border-green-400'
                     : 'border-[hsl(var(--admin-border)/0.6)]'
             }`}>
                 {children}
                 {showIcon && state === 'success' && (
-                    <span className="material-symbols-outlined text-[16px] text-[hsl(var(--admin-primary))] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <span aria-hidden="true" className="material-symbols-outlined text-[16px] text-green-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                         check_circle
                     </span>
                 )}
                 {showIcon && state === 'error' && (
-                    <span className="material-symbols-outlined text-[16px] text-red-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <span aria-hidden="true" className="material-symbols-outlined text-[16px] text-red-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                         error
                     </span>
                 )}

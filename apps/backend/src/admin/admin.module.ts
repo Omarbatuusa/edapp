@@ -7,6 +7,7 @@ import { AdminEmailVerifyController } from './admin-email-verify.controller';
 import { AdminBranchesController } from './admin-branches.controller';
 import { AdminBrandsController } from './admin-brands.controller';
 import { AdminIllustrationsController } from './admin-illustrations.controller';
+import { AdminGeocodeController } from './admin-geocode.controller';
 import { IllustrationOverride } from './illustration-override.entity';
 import { Branch } from '../branches/branch.entity';
 import { Brand } from '../brands/brand.entity';
@@ -27,6 +28,7 @@ import { Tenant } from '../tenants/tenant.entity';
         AdminBranchesController,
         AdminBrandsController,
         AdminIllustrationsController,
+        AdminGeocodeController,
     ],
 })
 export class AdminModule {}

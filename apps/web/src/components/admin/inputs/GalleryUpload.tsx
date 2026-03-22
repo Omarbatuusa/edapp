@@ -35,7 +35,9 @@ export function GalleryUpload({ label = 'Image Gallery', value, onChange, max = 
                 const { objectKey, previewUrl } = await uploadToGcs(file, 'logos');
                 newKeys.push(objectKey);
                 newPreviews.push({ objectKey, previewUrl });
-            } catch { /* skip failed uploads */ }
+            } catch (err: any) {
+                setError(err.message || 'Upload failed. Please try again.');
+            }
         }
         onChange([...value, ...newKeys]);
         setPreviews(prev => [...prev, ...newPreviews]);
@@ -55,7 +57,10 @@ export function GalleryUpload({ label = 'Image Gallery', value, onChange, max = 
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                 {value.map((key, idx) => {
                     const preview = previews.find(p => p.objectKey === key);
-                    const src = preview?.previewUrl || (key.startsWith('uploads/') ? '' : key);
+                    // Fall back to serve endpoint for gallery items loaded from a draft/saved state.
+                    // Gallery items are always logos category, which is publicly servable.
+                    const src = preview?.previewUrl
+                        || (key.startsWith('uploads/') ? `/v1/storage/serve?key=${encodeURIComponent(key)}` : key);
                     return (
                     <div key={key} className="relative aspect-square rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 group">
                         {src ? (

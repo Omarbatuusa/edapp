@@ -161,6 +161,7 @@ export class AdminTenantsController {
       contact_phone: body.contact_phone || null,
       secondary_email: body.secondary_email || null,
       physical_address: body.physical_address || null,
+      country_code: (body as any).country_code || 'ZA',
       gallery_file_ids: body.gallery_file_ids || [],
       logo_file_id: body.logo_file_id || null,
       cover_file_id: body.cover_file_id || null,
