@@ -61,6 +61,7 @@ export default function AdminLoginPage() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
     const [showHelp, setShowHelp] = useState(false)
+    const [showPassword, setShowPassword] = useState(false)
     const [rememberDevice, setRememberDevice] = useState(false)
     const [rememberDuration, setRememberDuration] = useState('30')
 
@@ -291,10 +292,15 @@ export default function AdminLoginPage() {
                                     </div>
                                     <div className="relative">
                                         <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xl">lock</span>
-                                        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+                                        <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)}
                                             placeholder="Password"
-                                            className="w-full h-14 rounded-xl bg-slate-100 dark:bg-slate-800 px-5 pl-12 text-base border-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
+                                            className="w-full h-14 rounded-xl bg-slate-100 dark:bg-slate-800 px-5 pl-12 pr-12 text-base border-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
                                             required />
+                                        <button type="button" onClick={() => setShowPassword(v => !v)}
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                                            aria-label={showPassword ? 'Hide password' : 'Show password'}>
+                                            <span className="material-symbols-outlined text-xl">{showPassword ? 'visibility_off' : 'visibility'}</span>
+                                        </button>
                                     </div>
                                     <div className="text-right -mt-1">
                                         <Link href="/admin/forgot-password" className="text-xs text-indigo-600 hover:underline font-medium">Forgot password?</Link>
