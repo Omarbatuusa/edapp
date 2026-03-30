@@ -22,6 +22,7 @@ export default function TenantsList({ slug, readOnly = false, showNewButton = tr
   const router = useRouter();
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [selectedTenant, setSelectedTenant] = useState<Tenant | null>(null);
@@ -29,13 +30,23 @@ export default function TenantsList({ slug, readOnly = false, showNewButton = tr
 
   const fetchTenants = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const params = new URLSearchParams();
       if (search) params.set('search', search);
       if (statusFilter) params.set('status', statusFilter);
       const res = await authFetch(`/v1/admin/tenants?${params}`);
-      if (res.ok) setTenants(await res.json());
-    } catch {}
+      if (res.ok) {
+        setTenants(await res.json());
+      } else {
+        const json = await res.json().catch(() => ({}));
+        setError(json.message || `Failed to load schools (${res.status})`);
+        setTenants([]);
+      }
+    } catch {
+      setError('Unable to connect. Please refresh.');
+      setTenants([]);
+    }
     setLoading(false);
   }, [search, statusFilter]);
 
@@ -97,6 +108,16 @@ export default function TenantsList({ slug, readOnly = false, showNewButton = tr
           <div className="p-10 flex flex-col items-center gap-3">
             <div className="w-7 h-7 border-2 border-[hsl(var(--admin-primary)/0.25)] border-t-[hsl(var(--admin-primary))] rounded-full animate-spin" />
             <p className="text-[14px] font-medium text-[hsl(var(--admin-text-muted))]">Loading tenants…</p>
+          </div>
+        ) : error ? (
+          <div className="p-10 flex flex-col items-center gap-3">
+            <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center">
+              <span className="material-symbols-outlined text-[32px] text-red-400">error</span>
+            </div>
+            <div className="text-center">
+              <p className="text-[15px] font-semibold text-[hsl(var(--admin-text-sub))]">{error}</p>
+              <button type="button" onClick={fetchTenants} className="mt-2 text-[13px] font-medium text-[hsl(var(--admin-primary))] underline">Retry</button>
+            </div>
           </div>
         ) : tenants.length === 0 ? (
           <div className="p-10 flex flex-col items-center gap-3">

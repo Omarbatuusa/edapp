@@ -61,6 +61,7 @@ export function BrandList({ tenantSlug, showNewButton = true }: BrandListProps) 
 
   const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [deleting, setDeleting] = useState<string | null>(null);
@@ -68,12 +69,20 @@ export function BrandList({ tenantSlug, showNewButton = true }: BrandListProps) 
 
   const loadBrands = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const qs = statusFilter ? `?status=${statusFilter}` : '';
       const r = await authFetch(`/v1/admin/brands${qs}`, { cache: 'no-store' });
-      const data = await r.json();
-      setBrands(Array.isArray(data) ? data : []);
+      if (!r.ok) {
+        const json = await r.json().catch(() => ({}));
+        setError(json.message || `Failed to load brands (${r.status})`);
+        setBrands([]);
+      } else {
+        const data = await r.json();
+        setBrands(Array.isArray(data) ? data : []);
+      }
     } catch {
+      setError('Unable to connect. Please refresh.');
       setBrands([]);
     } finally {
       setLoading(false);
@@ -181,6 +190,16 @@ export function BrandList({ tenantSlug, showNewButton = true }: BrandListProps) 
           <div className="p-10 flex flex-col items-center gap-3">
             <div className="w-7 h-7 border-2 border-[hsl(var(--admin-primary)/0.25)] border-t-[hsl(var(--admin-primary))] rounded-full animate-spin" />
             <p className="text-[14px] font-medium text-[hsl(var(--admin-text-muted))]">Loading brands…</p>
+          </div>
+        ) : error ? (
+          <div className="p-10 flex flex-col items-center gap-3">
+            <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center">
+              <span className="material-symbols-outlined text-[32px] text-red-400">error</span>
+            </div>
+            <div className="text-center">
+              <p className="text-[15px] font-semibold text-[hsl(var(--admin-text-sub))]">{error}</p>
+              <button type="button" onClick={loadBrands} className="mt-2 text-[13px] font-medium text-[hsl(var(--admin-primary))] underline">Retry</button>
+            </div>
           </div>
         ) : filtered.length === 0 ? (
           <div className="p-10 flex flex-col items-center gap-3">

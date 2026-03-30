@@ -6,7 +6,9 @@
  *      Always preferred for admin.edapp.co.za where role-gated endpoints are used.
  *   2. Firebase ID token — fallback when no session token exists.
  *
- * On 401: retry with a force-refreshed Firebase token once.
+ * On 401: retry with a force-refreshed Firebase token once, then show
+ * session-expired modal only if the JWT's own exp claim has passed
+ * (prevents premature logout from parallel requests during server restarts).
  */
 
 function ls(key: string): string | null {
@@ -30,13 +32,18 @@ async function getFirebaseToken(forceRefresh = false): Promise<string | null> {
     return null;
 }
 
-async function resolveToken(): Promise<string | null> {
-    // Prefer session_token — it carries the admin role needed for permission checks.
-    const sessionToken = ls('session_token');
-    if (sessionToken) return sessionToken;
-    // Fallback: Firebase ID token (e.g. learner/parent flows without admin login)
-    return getFirebaseToken(false);
+/** Decode JWT exp without a library. Returns true if expired or undecodable. */
+function isJwtExpired(token: string): boolean {
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return typeof payload.exp === 'number' && Date.now() >= payload.exp * 1000;
+    } catch {
+        return true;
+    }
 }
+
+/** Debounce guard — prevents multiple parallel 401s from firing the modal twice. */
+let _sessionExpiredFiredAt = 0;
 
 export async function authFetch(input: string, init: RequestInit = {}): Promise<Response> {
     const sessionToken = ls('session_token');
@@ -51,11 +58,18 @@ export async function authFetch(input: string, init: RequestInit = {}): Promise<
         if (res2.status !== 401) return res2;
     }
 
-    // Unrecoverable 401 — if the original request was using a session token, it has
-    // expired or been revoked. Clear it and notify the UI so a modal can appear.
+    // Unrecoverable 401 — if the original request used a session token, clear it.
+    // Only dispatch the session-expired event if:
+    //  a) the JWT's own exp claim has passed (genuine expiry), OR
+    //  b) the token was already expired when decoded (server restart / secret rotation)
+    // Debounce so parallel requests don't fire the modal multiple times.
     if (sessionToken && typeof window !== 'undefined') {
         localStorage.removeItem('session_token');
-        window.dispatchEvent(new CustomEvent('edapp:session-expired'));
+        const now = Date.now();
+        if (now - _sessionExpiredFiredAt > 5_000 && isJwtExpired(sessionToken)) {
+            _sessionExpiredFiredAt = now;
+            window.dispatchEvent(new CustomEvent('edapp:session-expired'));
+        }
     }
 
     return res;

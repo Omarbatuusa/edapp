@@ -125,11 +125,14 @@ import { PasswordHistory } from '../users/password-history.entity';
 import { TenantSubscription } from '../tenants/tenant-subscription.entity';
 import { TenantPayment } from '../tenants/tenant-payment.entity';
 import { AdminSubscriptionsController } from './controllers/admin-subscriptions.controller';
+import { AdminBrandsController } from './admin-brands.controller';
+import { Brand } from '../brands/brand.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       Tenant,
+      Brand,
       User,
       RoleAssignment,
       PasswordHistory,
@@ -247,6 +250,7 @@ import { AdminSubscriptionsController } from './controllers/admin-subscriptions.
     AdminLinkedAccessController,
     MyLinkedTenantsController,
     AdminSubscriptionsController,
+    AdminBrandsController,
   ],
   providers: [
     BulkImportService,

@@ -29,8 +29,6 @@ export function FieldWrapper({ label, required, state = 'idle', error, helper, c
             <div className={`relative rounded-[12px] border transition-[border-color,box-shadow] duration-150 overflow-hidden bg-[hsl(var(--admin-surface-alt)/0.5)] ${
                 state === 'error'
                     ? 'border-[hsl(var(--admin-danger)/0.55)]'
-                    : state === 'success'
-                    ? 'border-[hsl(var(--admin-success-border))]'
                     : 'border-[hsl(var(--admin-border)/0.6)] field-container'
             }`}>
                 {children}
