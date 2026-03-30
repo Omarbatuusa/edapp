@@ -110,6 +110,12 @@
     /* iOS System Blue #007aff */
     --admin-danger: 0 100% 50%;
     /* iOS System Red #ff3b30 */
+    --admin-success: 142 71% 45%;
+    /* green-500 equivalent */
+    --admin-success-border: 142 71% 65%;
+    /* green-400 equivalent */
+    --admin-focus-ring: 211 100% 50%;
+    /* same as --admin-primary, used for 3px hover/focus ring */
     --spring-ease: cubic-bezier(0.32, 0.72, 0, 1);
 
     /* Viewport */
@@ -173,6 +179,9 @@
     /* #8e8e93 */
     --admin-primary: 210 100% 56%;
     /* #0a84ff */
+    --admin-success: 142 71% 55%;
+    --admin-success-border: 142 71% 70%;
+    --admin-focus-ring: 210 100% 60%;
   }
 
   /* Base body */
@@ -734,6 +743,14 @@
 .surface-card {
   @apply bg-card rounded-2xl p-6 transition-all duration-300;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+/* ── Field container focus/hover ring (used by FieldWrapper idle state) ── */
+.field-container:hover {
+  box-shadow: 0 0 0 3px hsl(var(--admin-focus-ring) / 0.18);
+}
+.field-container:focus-within {
+  box-shadow: 0 0 0 3px hsl(var(--admin-focus-ring) / 0.32);
 }
 
 /* Surface-filled inputs */

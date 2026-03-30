@@ -17,6 +17,7 @@ import { TenantMembership } from '../../auth/entities/tenant-membership.entity';
 import { generateTenantSlug, generateSchoolCode, ensureUniqueSlug, ensureUniqueCode } from '../utils/slug-generator';
 import { EmailAuthService } from '../../auth/email-auth.service';
 import { PasswordHistory } from '../../users/password-history.entity';
+import { FormProvisioningService } from '../services/form-provisioning.service';
 
 const PLATFORM_ROLES = ['platform_super_admin', 'app_super_admin', 'brand_admin'];
 const SECRETARY_ROLES = ['platform_secretary', 'app_secretary'];
@@ -48,6 +49,7 @@ export class AdminTenantsController {
     @InjectRepository(TenantMembership) private membershipRepo: Repository<TenantMembership>,
     @InjectRepository(PasswordHistory) private passwordHistoryRepo: Repository<PasswordHistory>,
     private emailAuthService: EmailAuthService,
+    private formProvisioningService: FormProvisioningService,
   ) {}
 
   private isPlatform(req: any): boolean {
@@ -193,6 +195,13 @@ export class AdminTenantsController {
     // Auto-create default feature flags
     for (const f of DEFAULT_FEATURES) {
       await this.featureRepo.save(this.featureRepo.create({ tenant_id: tenant.id, ...f } as any));
+    }
+
+    // Auto-provision default admissions process cards
+    try {
+      await this.formProvisioningService.provisionTenant(tenant.id, req.user?.sub || req.user?.uid || 'system');
+    } catch (e) {
+      console.warn('[FormProvisioning] Skipped for tenant', tenant.id, (e as any)?.message);
     }
 
     await this.log(req, AuditAction.TENANT_CREATE, tenant.id, null, tenant);

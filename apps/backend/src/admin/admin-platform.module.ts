@@ -119,6 +119,7 @@ import { AdminTemplateController } from './controllers/admin-templates.controlle
 import { AdminLinkedAccessController, MyLinkedTenantsController } from './controllers/admin-linked-access.controller';
 import { BulkImportService } from './services/bulk-import.service';
 import { TemplateGeneratorService } from './services/template-generator.service';
+import { FormProvisioningService } from './services/form-provisioning.service';
 import { ImportAudit } from './entities/import-audit.entity';
 import { PasswordHistory } from '../users/password-history.entity';
 import { TenantSubscription } from '../tenants/tenant-subscription.entity';
@@ -250,10 +251,12 @@ import { AdminSubscriptionsController } from './controllers/admin-subscriptions.
   providers: [
     BulkImportService,
     TemplateGeneratorService,
+    FormProvisioningService,
   ],
   exports: [
     BulkImportService,
     TemplateGeneratorService,
+    FormProvisioningService,
   ],
 })
 export class AdminPlatformModule {}

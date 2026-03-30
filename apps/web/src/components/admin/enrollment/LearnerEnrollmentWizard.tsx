@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { z } from 'zod';
 import { WizardShell, WizardStep } from '../wizard/WizardShell';
 import { FieldWrapper } from '../inputs/FieldWrapper';
+import { TextField } from '../inputs/TextField';
+import { DateField } from '../inputs/DateField';
+import { CheckboxField } from '../inputs/CheckboxField';
 import { PhoneInput, PhoneValue } from '../inputs/PhoneInput';
 import { AddressInput, AddressValue } from '../inputs/AddressInput';
 import { LookupSelect } from '../inputs/LookupSelect';
@@ -242,12 +245,13 @@ export function LearnerEnrollmentWizard({ tenantSlug, tenantId }: LearnerEnrollm
                             <li>Medical aid details (if applicable)</li>
                         </ul>
                     </div>
-                    <FieldWrapper label="" state={errors.document_checklist_ack ? 'error' : data.document_checklist_ack ? 'success' : 'idle'} error={errors.document_checklist_ack}>
-                        <label className="flex items-center gap-3 px-3 py-3 cursor-pointer">
-                            <input type="checkbox" checked={data.document_checklist_ack || false} onChange={e => onChange({ document_checklist_ack: e.target.checked })} className="rounded border-slate-300" />
-                            <span className="text-sm text-slate-700 dark:text-slate-200">I have all the required documents ready</span>
-                        </label>
-                    </FieldWrapper>
+                    <CheckboxField
+                        label="I have all the required documents ready"
+                        checked={!!data.document_checklist_ack}
+                        onChange={v => onChange({ document_checklist_ack: v })}
+                        required
+                        error={errors.document_checklist_ack}
+                    />
                 </div>
             ),
         },
@@ -270,12 +274,13 @@ export function LearnerEnrollmentWizard({ tenantSlug, tenantId }: LearnerEnrollm
                             <li>Fees are payable as per the school's fee structure.</li>
                         </ul>
                     </div>
-                    <FieldWrapper label="" state={errors.acceptance_ack ? 'error' : data.acceptance_ack ? 'success' : 'idle'} error={errors.acceptance_ack}>
-                        <label className="flex items-center gap-3 px-3 py-3 cursor-pointer">
-                            <input type="checkbox" checked={data.acceptance_ack || false} onChange={e => onChange({ acceptance_ack: e.target.checked })} className="rounded border-slate-300" />
-                            <span className="text-sm text-slate-700 dark:text-slate-200">I accept the enrollment terms and conditions</span>
-                        </label>
-                    </FieldWrapper>
+                    <CheckboxField
+                        label="I accept the enrollment terms and conditions"
+                        checked={!!data.acceptance_ack}
+                        onChange={v => onChange({ acceptance_ack: v })}
+                        required
+                        error={errors.acceptance_ack}
+                    />
                 </div>
             ),
         },
@@ -318,20 +323,12 @@ export function LearnerEnrollmentWizard({ tenantSlug, tenantId }: LearnerEnrollm
             content: ({ data, onChange, errors }) => (
                 <>
                     <div className="grid grid-cols-2 gap-4">
-                        <FieldWrapper label="First Name" required state={errors.learner_first_name ? 'error' : data.learner_first_name ? 'success' : 'idle'} error={errors.learner_first_name}>
-                            <input type="text" value={data.learner_first_name || ''} onChange={e => onChange({ learner_first_name: e.target.value })} placeholder="First name" className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
-                        </FieldWrapper>
-                        <FieldWrapper label="Surname" required state={errors.learner_surname ? 'error' : data.learner_surname ? 'success' : 'idle'} error={errors.learner_surname}>
-                            <input type="text" value={data.learner_surname || ''} onChange={e => onChange({ learner_surname: e.target.value })} placeholder="Surname" className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
-                        </FieldWrapper>
+                        <TextField label="First Name" value={data.learner_first_name || ''} onChange={v => onChange({ learner_first_name: v })} placeholder="First name" required error={errors.learner_first_name} />
+                        <TextField label="Surname" value={data.learner_surname || ''} onChange={v => onChange({ learner_surname: v })} placeholder="Surname" required error={errors.learner_surname} />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                        <FieldWrapper label="Preferred Name" state={data.learner_preferred_name ? 'success' : 'idle'}>
-                            <input type="text" value={data.learner_preferred_name || ''} onChange={e => onChange({ learner_preferred_name: e.target.value })} placeholder="Preferred name" className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
-                        </FieldWrapper>
-                        <FieldWrapper label="Date of Birth" required state={errors.learner_dob ? 'error' : data.learner_dob ? 'success' : 'idle'} error={errors.learner_dob}>
-                            <input type="date" aria-label="Date of Birth" value={data.learner_dob || ''} onChange={e => onChange({ learner_dob: e.target.value })} className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
-                        </FieldWrapper>
+                        <TextField label="Preferred Name" value={data.learner_preferred_name || ''} onChange={v => onChange({ learner_preferred_name: v })} placeholder="Preferred name" />
+                        <DateField label="Date of Birth" value={data.learner_dob || ''} onChange={v => onChange({ learner_dob: v })} required error={errors.learner_dob} />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -375,30 +372,24 @@ export function LearnerEnrollmentWizard({ tenantSlug, tenantId }: LearnerEnrollm
                         <input type="date" aria-label="Starting Date" value={data.starting_date || ''} onChange={e => onChange({ starting_date: e.target.value })} className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
                     </FieldWrapper>
 
-                    <FieldWrapper label="" state="idle">
-                        <label className="flex items-center gap-3 px-3 py-3 cursor-pointer">
-                            <input type="checkbox" checked={data.has_previous_school || false} onChange={e => onChange({ has_previous_school: e.target.checked })} className="rounded border-slate-300" />
-                            <span className="text-sm text-slate-700 dark:text-slate-200">Learner attended a previous school</span>
-                        </label>
-                    </FieldWrapper>
+                    <CheckboxField
+                        label="Learner attended a previous school"
+                        checked={!!data.has_previous_school}
+                        onChange={v => onChange({ has_previous_school: v })}
+                    />
 
                     {data.has_previous_school && (
                         <>
-                            <FieldWrapper label="Previous School Name" required state={data.previous_school_name ? 'success' : 'idle'}>
-                                <input type="text" value={data.previous_school_name || ''} onChange={e => onChange({ previous_school_name: e.target.value })} placeholder="School name" className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
-                            </FieldWrapper>
-                            <FieldWrapper label="Last Grade Passed" state={data.last_grade_passed ? 'success' : 'idle'}>
-                                <input type="text" value={data.last_grade_passed || ''} onChange={e => onChange({ last_grade_passed: e.target.value })} placeholder="e.g. Grade 5" className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
-                            </FieldWrapper>
+                            <TextField label="Previous School Name" value={data.previous_school_name || ''} onChange={v => onChange({ previous_school_name: v })} placeholder="School name" />
+                            <TextField label="Last Grade Passed" value={data.last_grade_passed || ''} onChange={v => onChange({ last_grade_passed: v })} placeholder="e.g. Grade 5" />
                         </>
                     )}
 
-                    <FieldWrapper label="" state="idle">
-                        <label className="flex items-center gap-3 px-3 py-3 cursor-pointer">
-                            <input type="checkbox" checked={data.has_repeated_grades || false} onChange={e => onChange({ has_repeated_grades: e.target.checked })} className="rounded border-slate-300" />
-                            <span className="text-sm text-slate-700 dark:text-slate-200">Learner has repeated a grade</span>
-                        </label>
-                    </FieldWrapper>
+                    <CheckboxField
+                        label="Learner has repeated a grade"
+                        checked={!!data.has_repeated_grades}
+                        onChange={v => onChange({ has_repeated_grades: v })}
+                    />
 
                     {data.has_repeated_grades && (
                         <FieldWrapper label="Which grade(s) were repeated?" state={data.repeated_grades ? 'success' : 'idle'}>

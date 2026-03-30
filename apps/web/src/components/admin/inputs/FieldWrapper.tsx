@@ -26,21 +26,21 @@ export function FieldWrapper({ label, required, state = 'idle', error, helper, c
             </label>
 
             {/* Input container — iOS grouped row style */}
-            <div className={`relative rounded-[12px] border transition-colors duration-150 overflow-hidden bg-[hsl(var(--admin-surface-alt)/0.5)] ${
+            <div className={`relative rounded-[12px] border transition-[border-color,box-shadow] duration-150 overflow-hidden bg-[hsl(var(--admin-surface-alt)/0.5)] ${
                 state === 'error'
-                    ? 'border-red-400'
+                    ? 'border-[hsl(var(--admin-danger)/0.55)]'
                     : state === 'success'
-                    ? 'border-green-400'
-                    : 'border-[hsl(var(--admin-border)/0.6)]'
+                    ? 'border-[hsl(var(--admin-success-border))]'
+                    : 'border-[hsl(var(--admin-border)/0.6)] field-container'
             }`}>
                 {children}
                 {showIcon && state === 'success' && (
-                    <span aria-hidden="true" className="material-symbols-outlined text-[16px] text-green-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <span aria-hidden="true" className="material-symbols-outlined text-[16px] text-[hsl(var(--admin-success))] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                         check_circle
                     </span>
                 )}
                 {showIcon && state === 'error' && (
-                    <span aria-hidden="true" className="material-symbols-outlined text-[16px] text-red-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <span aria-hidden="true" className="material-symbols-outlined text-[16px] text-[hsl(var(--admin-danger))] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                         error
                     </span>
                 )}
@@ -48,7 +48,7 @@ export function FieldWrapper({ label, required, state = 'idle', error, helper, c
 
             {/* Feedback row */}
             {state === 'error' && error && (
-                <p className="text-[12px] text-red-500 font-medium px-1">{error}</p>
+                <p className="text-[12px] text-[hsl(var(--admin-danger))] font-medium px-1">{error}</p>
             )}
             {state !== 'error' && helper && (
                 <p className="text-[11px] text-[hsl(var(--admin-text-muted))] px-1 leading-snug">{helper}</p>

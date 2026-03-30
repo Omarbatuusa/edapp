@@ -29,7 +29,7 @@ export function PhoneInput({ label, value, onChange, required, placeholder = 'e.
     const [validationState, setValidationState] = useState<'idle' | 'success' | 'error'>('idle');
     const [errorMsg, setErrorMsg] = useState('');
     const [search, setSearch] = useState('');
-    const [countryManuallySet, setCountryManuallySet] = useState(false);
+    const countryManuallySetRef = useRef(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const triggerRef = useRef<HTMLButtonElement>(null);
 
@@ -37,12 +37,13 @@ export function PhoneInput({ label, value, onChange, required, placeholder = 'e.
 
     // Detect user's country from IP on mount (best-effort, only if not already set)
     useEffect(() => {
-        if (countryManuallySet || (value.country_iso2 && value.country_iso2 !== 'ZA')) return;
+        if (value.country_iso2 && value.country_iso2 !== 'ZA') return;
         fetch('https://ipapi.co/json/')
             .then(r => r.json())
             .then((d: { country_code?: string }) => {
                 const detected = ALL_COUNTRIES.find(c => c.iso2 === d.country_code);
-                if (detected && !countryManuallySet) {
+                // Use ref so stale closure can't overwrite a country the user picked while fetch was in-flight
+                if (detected && !countryManuallySetRef.current) {
                     onChange({ ...value, country_iso2: detected.iso2, dial_code: detected.dialCode });
                 }
             })
@@ -72,7 +73,7 @@ export function PhoneInput({ label, value, onChange, required, placeholder = 'e.
     }, [isOpen]);
 
     const handleCountrySelect = (country: CountryOption) => {
-        setCountryManuallySet(true);
+        countryManuallySetRef.current = true;
         onChange({ ...value, country_iso2: country.iso2, dial_code: country.dialCode });
         setIsOpen(false);
         setSearch('');
@@ -203,8 +204,8 @@ export function PhoneInput({ label, value, onChange, required, placeholder = 'e.
                     {validationState !== 'idle' && (
                         <span aria-hidden="true" className={`material-symbols-outlined text-[16px] pr-2.5 flex-shrink-0 ${
                             validationState === 'success'
-                                ? 'text-green-500'
-                                : 'text-red-500'
+                                ? 'text-[hsl(var(--admin-success))]'
+                                : 'text-[hsl(var(--admin-danger))]'
                         }`}>
                             {validationState === 'success' ? 'check_circle' : 'error'}
                         </span>
