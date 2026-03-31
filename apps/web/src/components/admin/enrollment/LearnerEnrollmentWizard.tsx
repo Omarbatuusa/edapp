@@ -371,7 +371,6 @@ export function LearnerEnrollmentWizard({ tenantSlug, tenantId }: LearnerEnrollm
             content: ({ data, onChange }) => (
                 <>
                     <DateField label="Starting Date" value={data.starting_date || ''} onChange={v => onChange({ starting_date: v })} error={data.starting_date ? (validateDateNotWeekend(data.starting_date) || undefined) : undefined} />
-                    </FieldWrapper>
 
                     <CheckboxField
                         label="Learner attended a previous school"
