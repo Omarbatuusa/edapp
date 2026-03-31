@@ -226,7 +226,7 @@ async function seed() {
 
     const passwordHash = await bcrypt.hash('Janat@2000', 10);
 
-    const superAdmin1 = await userRepo.save({ email: 'umarbatuusa@gmail.com', display_name: 'Umar Batuusa', password_hash: passwordHash, must_change_password: true, status: UserStatus.ACTIVE });
+    const superAdmin1 = await userRepo.save({ email: 'umarbatuusa@gmail.com', display_name: 'Umar Batuusa', password_hash: passwordHash, must_change_password: false, status: UserStatus.ACTIVE });
     const superAdmin2 = await userRepo.save({ email: 'admin@edapp.co.za', display_name: 'EdApp Admin', password_hash: passwordHash, status: UserStatus.ACTIVE });
 
     const lakewoodAdmin = await userRepo.save({ email: 'admin@lakewood.edu', display_name: 'Principal Skinner', first_name: 'Seymour', last_name: 'Skinner', password_hash: passwordHash, status: UserStatus.ACTIVE });
