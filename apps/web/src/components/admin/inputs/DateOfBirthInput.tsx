@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import { FieldWrapper } from './FieldWrapper';
+import { validateLearnerAge, validateAdultAge } from '@/lib/validators';
 
 interface Props {
   label?: string;
@@ -55,22 +56,35 @@ export default function DateOfBirthInput({
     return { ageToday };
   }, [value, context, cutoffDate, employmentStartDate]);
 
+  // Age range enforcement
+  const ageError = useMemo(() => {
+    if (!value) return null;
+    if (context === 'learner') return validateLearnerAge(value);
+    if (context === 'staff') return validateAdultAge(value);
+    return null;
+  }, [value, context]);
+
+  const effectiveError = error || ageError || undefined;
+  const state = effectiveError ? 'error' : value ? 'success' : 'idle';
+  const hasAgeWarning = !!ageError;
+
   return (
-    <FieldWrapper label={label} required={required} error={error}>
+    <FieldWrapper label={label} required={required} state={state} error={effectiveError} icon="cake">
       <input
         type="date"
         value={value}
         onChange={e => onChange(e.target.value)}
         aria-label={label}
-        className="w-full h-10 px-3 rounded-xl bg-[hsl(var(--admin-surface-alt))] text-[14px] text-[hsl(var(--admin-text-main))] border border-[hsl(var(--admin-border))] outline-none focus:border-[hsl(var(--admin-primary))] transition-colors"
+        {...(state === 'error' ? { 'aria-invalid': true } : {})}
+        className="w-full h-[44px] px-3 text-[15px] bg-transparent outline-none text-[hsl(var(--admin-text-main))] [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
       />
 
       {ages && (
-        <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 gap-2">
-          <AgeCard label="Age today" value={ages.ageToday} />
+        <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 gap-2 px-3 pb-3">
+          <AgeCard label="Age today" value={ages.ageToday} warn={hasAgeWarning} />
           {context === 'learner' && 'ageCutoff' in ages && (
             <>
-              <AgeCard label={`Age at cutoff`} value={(ages as any).ageCutoff} sub={cutoffDate.replace('-', '/')} />
+              <AgeCard label="Age at cutoff" value={(ages as any).ageCutoff} sub={cutoffDate.replace('-', '/')} />
               <AgeCard label="Age Dec 31" value={(ages as any).ageDec} />
             </>
           )}
@@ -83,10 +97,12 @@ export default function DateOfBirthInput({
   );
 }
 
-function AgeCard({ label, value, sub }: { label: string; value: number; sub?: string }) {
+function AgeCard({ label, value, sub, warn }: { label: string; value: number; sub?: string; warn?: boolean }) {
+  const numColor = warn ? 'text-[hsl(var(--admin-danger))]' : 'text-[hsl(var(--admin-primary))]';
+  const bgColor = warn ? 'bg-[hsl(var(--admin-danger)/0.06)]' : 'bg-[hsl(var(--admin-primary)/0.06)]';
   return (
-    <div className="flex flex-col items-center justify-center rounded-xl bg-[hsl(var(--admin-primary)/0.06)] px-3 py-2">
-      <span className="text-[20px] font-extrabold text-[hsl(var(--admin-primary))]">{value}</span>
+    <div className={`flex flex-col items-center justify-center rounded-xl ${bgColor} px-3 py-2`}>
+      <span className={`text-[20px] font-extrabold ${numColor}`}>{value}</span>
       <span className="text-[11px] font-medium text-[hsl(var(--admin-text-sub))] leading-tight text-center">{label}</span>
       {sub && <span className="text-[10px] text-[hsl(var(--admin-text-muted))]">{sub}</span>}
     </div>

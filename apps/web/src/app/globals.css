@@ -753,6 +753,28 @@
   box-shadow: 0 0 0 3px hsl(var(--admin-focus-ring) / 0.32);
 }
 
+/* ── Success ring (blue, same as focus — indicates valid field) ── */
+.field-container-success {
+  box-shadow: 0 0 0 3px hsl(var(--admin-focus-ring) / 0.18);
+}
+.field-container-success:hover {
+  box-shadow: 0 0 0 3px hsl(var(--admin-focus-ring) / 0.25);
+}
+.field-container-success:focus-within {
+  box-shadow: 0 0 0 3px hsl(var(--admin-focus-ring) / 0.32);
+}
+
+/* ── Error ring (red — indicates invalid field) ── */
+.field-container-error {
+  box-shadow: 0 0 0 3px hsl(var(--admin-danger) / 0.18);
+}
+.field-container-error:hover {
+  box-shadow: 0 0 0 3px hsl(var(--admin-danger) / 0.25);
+}
+.field-container-error:focus-within {
+  box-shadow: 0 0 0 3px hsl(var(--admin-danger) / 0.32);
+}
+
 /* Surface-filled inputs */
 .surface-input {
   @apply bg-secondary/50 rounded-xl px-4 py-3 text-base outline-none transition-all duration-200;

@@ -128,6 +128,7 @@ import { AdminSubscriptionsController } from './controllers/admin-subscriptions.
 import { AdminBrandsController } from './admin-brands.controller';
 import { Brand } from '../brands/brand.entity';
 import { PhoneNormalizationService } from './services/phone-normalization.service';
+import { ValidationService } from './services/validation.service';
 
 @Module({
   imports: [
@@ -258,6 +259,7 @@ import { PhoneNormalizationService } from './services/phone-normalization.servic
     TemplateGeneratorService,
     FormProvisioningService,
     PhoneNormalizationService,
+    ValidationService,
   ],
   exports: [
     BulkImportService,

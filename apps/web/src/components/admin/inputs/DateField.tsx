@@ -13,14 +13,15 @@ interface DateFieldProps {
     max?: string;
     className?: string;
     disabled?: boolean;
+    icon?: string;
 }
 
 export function DateField({
-    label, value, onChange, required, error, helper, min, max, className, disabled,
+    label, value, onChange, required, error, helper, min, max, className, disabled, icon = 'calendar_today',
 }: DateFieldProps) {
     const state = error ? 'error' : (value ? 'success' : 'idle');
     return (
-        <FieldWrapper label={label} required={required} state={state} error={error} helper={helper} className={className}>
+        <FieldWrapper label={label} required={required} state={state} error={error} helper={helper} className={className} icon={icon}>
             <input
                 type="date"
                 value={value}
@@ -29,8 +30,8 @@ export function DateField({
                 max={max}
                 disabled={disabled}
                 aria-label={label}
-                aria-invalid={state === 'error'}
-                className="w-full h-[44px] px-3 text-[15px] bg-transparent outline-none text-[hsl(var(--admin-text-main))] disabled:opacity-50"
+                {...(state === 'error' ? { 'aria-invalid': true } : {})}
+                className="w-full h-[44px] px-3 text-[15px] bg-transparent outline-none text-[hsl(var(--admin-text-main))] disabled:opacity-50 [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
             />
         </FieldWrapper>
     );

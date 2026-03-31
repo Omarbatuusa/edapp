@@ -13,6 +13,8 @@ import { AddressInput, AddressValue } from '../inputs/AddressInput';
 import { LookupSelect } from '../inputs/LookupSelect';
 import { ConditionalFieldGroup } from '../inputs/ConditionalFieldGroup';
 import { DocumentUpload, DocFile } from '../inputs/DocumentUpload';
+import DateOfBirthInput from '../inputs/DateOfBirthInput';
+import { validateName, validatePreferredName, validateSaId, validateSaIdDobMatch, validatePassport, validatePermit, validateBirthCertificate, validateEmail, validateEmailOptional, validateDateNotWeekend, autoCapitalizeName } from '@/lib/validators';
 import { RepeaterField } from '../inputs/RepeaterField';
 import { EnrollmentIllustration } from '../illustrations/EnrollmentIllustration';
 import { AcademicIllustration } from '../illustrations/AcademicIllustration';
@@ -323,12 +325,12 @@ export function LearnerEnrollmentWizard({ tenantSlug, tenantId }: LearnerEnrollm
             content: ({ data, onChange, errors }) => (
                 <>
                     <div className="grid grid-cols-2 gap-4">
-                        <TextField label="First Name" value={data.learner_first_name || ''} onChange={v => onChange({ learner_first_name: v })} placeholder="First name" required error={errors.learner_first_name} />
-                        <TextField label="Surname" value={data.learner_surname || ''} onChange={v => onChange({ learner_surname: v })} placeholder="Surname" required error={errors.learner_surname} />
+                        <TextField label="First Name" icon="person" value={data.learner_first_name || ''} onChange={v => onChange({ learner_first_name: v })} onBlur={() => { if (data.learner_first_name) onChange({ learner_first_name: autoCapitalizeName(data.learner_first_name) }); }} placeholder="First name" required error={errors.learner_first_name || (data.learner_first_name ? validateName(data.learner_first_name) : undefined) || undefined} />
+                        <TextField label="Surname" icon="person" value={data.learner_surname || ''} onChange={v => onChange({ learner_surname: v })} onBlur={() => { if (data.learner_surname) onChange({ learner_surname: autoCapitalizeName(data.learner_surname) }); }} placeholder="Surname" required error={errors.learner_surname || (data.learner_surname ? validateName(data.learner_surname) : undefined) || undefined} />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                        <TextField label="Preferred Name" value={data.learner_preferred_name || ''} onChange={v => onChange({ learner_preferred_name: v })} placeholder="Preferred name" />
-                        <DateField label="Date of Birth" value={data.learner_dob || ''} onChange={v => onChange({ learner_dob: v })} required error={errors.learner_dob} />
+                        <TextField label="Preferred Name" icon="person" value={data.learner_preferred_name || ''} onChange={v => onChange({ learner_preferred_name: v })} onBlur={() => { if (data.learner_preferred_name) onChange({ learner_preferred_name: autoCapitalizeName(data.learner_preferred_name) }); }} placeholder="Preferred name" error={data.learner_preferred_name ? (validatePreferredName(data.learner_preferred_name) || undefined) : undefined} />
+                        <DateOfBirthInput label="Date of Birth" value={data.learner_dob || ''} onChange={v => onChange({ learner_dob: v })} context="learner" required error={errors.learner_dob} />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -341,18 +343,18 @@ export function LearnerEnrollmentWizard({ tenantSlug, tenantId }: LearnerEnrollm
                     <LookupSelect label="Citizenship Type" value={data.citizenship_type || ''} onChange={v => onChange({ citizenship_type: v as string })} dictName="citizenship_types" required />
 
                     <ConditionalFieldGroup watchValue={data.citizenship_type || ''} showWhen={['SA_CITIZEN', 'SA_PERMANENT_RESIDENT']}>
-                        <FieldWrapper label="SA ID Number" required state={data.sa_id_number ? 'success' : 'idle'}>
-                            <input type="text" value={data.sa_id_number || ''} onChange={e => onChange({ sa_id_number: e.target.value })} placeholder="e.g. 0801015800085" maxLength={13} className="w-full px-3 py-3 text-sm bg-transparent outline-none font-mono" />
+                        <FieldWrapper label="SA ID Number" required icon="badge" state={(() => { const err = data.sa_id_number ? (validateSaId(data.sa_id_number) || validateSaIdDobMatch(data.sa_id_number, data.learner_dob || '')) : null; return err ? 'error' : data.sa_id_number ? 'success' : 'idle'; })()} error={data.sa_id_number ? (validateSaId(data.sa_id_number) || validateSaIdDobMatch(data.sa_id_number, data.learner_dob || '') || undefined) : undefined}>
+                            <input type="text" value={data.sa_id_number || ''} onChange={e => onChange({ sa_id_number: e.target.value.replace(/\D/g, '').slice(0, 13) })} placeholder="e.g. 0801015800085" maxLength={13} className="w-full h-[44px] px-3 text-[15px] bg-transparent outline-none font-mono text-[hsl(var(--admin-text-main))]" />
                         </FieldWrapper>
                     </ConditionalFieldGroup>
 
                     <ConditionalFieldGroup watchValue={data.citizenship_type || ''} showWhen={['FOREIGN_NATIONAL', 'REFUGEE', 'ASYLUM_SEEKER']}>
-                        <FieldWrapper label="Passport Number" required state={data.passport_number ? 'success' : 'idle'}>
-                            <input type="text" value={data.passport_number || ''} onChange={e => onChange({ passport_number: e.target.value })} placeholder="Passport number" className="w-full px-3 py-3 text-sm bg-transparent outline-none font-mono" />
+                        <FieldWrapper label="Passport Number" required icon="flight" state={(() => { const err = data.passport_number ? validatePassport(data.passport_number) : null; return err ? 'error' : data.passport_number ? 'success' : 'idle'; })()} error={data.passport_number ? (validatePassport(data.passport_number) || undefined) : undefined}>
+                            <input type="text" value={data.passport_number || ''} onChange={e => onChange({ passport_number: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 9) })} placeholder="Passport number" className="w-full h-[44px] px-3 text-[15px] bg-transparent outline-none font-mono text-[hsl(var(--admin-text-main))]" />
                         </FieldWrapper>
                         <LookupSelect label="Permit Type" value={data.permit_type_code || ''} onChange={v => onChange({ permit_type_code: v as string })} dictName="permit_types" />
-                        <FieldWrapper label="Permit Number" state={data.permit_number ? 'success' : 'idle'}>
-                            <input type="text" value={data.permit_number || ''} onChange={e => onChange({ permit_number: e.target.value })} placeholder="Permit number" className="w-full px-3 py-3 text-sm bg-transparent outline-none font-mono" />
+                        <FieldWrapper label="Permit Number" icon="description" state={(() => { const err = data.permit_number ? validatePermit(data.permit_number, data.permit_type_code || '') : null; return err ? 'error' : data.permit_number ? 'success' : 'idle'; })()} error={data.permit_number ? (validatePermit(data.permit_number, data.permit_type_code || '') || undefined) : undefined}>
+                            <input type="text" value={data.permit_number || ''} onChange={e => onChange({ permit_number: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 13) })} placeholder="Permit number" className="w-full h-[44px] px-3 text-[15px] bg-transparent outline-none font-mono text-[hsl(var(--admin-text-main))]" />
                         </FieldWrapper>
                     </ConditionalFieldGroup>
 
@@ -368,8 +370,7 @@ export function LearnerEnrollmentWizard({ tenantSlug, tenantId }: LearnerEnrollm
             illustration: <AcademicIllustration />,
             content: ({ data, onChange }) => (
                 <>
-                    <FieldWrapper label="Starting Date" state={data.starting_date ? 'success' : 'idle'}>
-                        <input type="date" aria-label="Starting Date" value={data.starting_date || ''} onChange={e => onChange({ starting_date: e.target.value })} className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
+                    <DateField label="Starting Date" value={data.starting_date || ''} onChange={v => onChange({ starting_date: v })} error={data.starting_date ? (validateDateNotWeekend(data.starting_date) || undefined) : undefined} />
                     </FieldWrapper>
 
                     <CheckboxField

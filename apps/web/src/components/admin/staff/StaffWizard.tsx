@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { z } from 'zod';
 import { WizardShell, WizardStep } from '../wizard/WizardShell';
 import { FieldWrapper } from '../inputs/FieldWrapper';
+import { DateField } from '../inputs/DateField';
 import { PhoneInput, PhoneValue } from '../inputs/PhoneInput';
 import { AddressInput, AddressValue } from '../inputs/AddressInput';
 import { LookupSelect } from '../inputs/LookupSelect';
@@ -16,6 +17,7 @@ import { DocumentIllustration } from '../illustrations/DocumentIllustration';
 import { EnrollmentIllustration } from '../illustrations/EnrollmentIllustration';
 import { MedicalIllustration } from '../illustrations/MedicalIllustration';
 import { initialsFromName } from '@/lib/name-validation';
+import { validateName, validateEmail, validateEmailOptional, validateSaId, validateSaIdDobMatch, validatePassport, validatePermit, validateSace, validateDateNotWeekend, validateJoiningDateNotTooOld, autoCapitalizeName } from '@/lib/validators';
 
 const EMPTY_PHONE: PhoneValue = { raw: '', e164: '', country_iso2: 'ZA', dial_code: '+27' };
 const EMPTY_ADDRESS: AddressValue = { formatted_address: '', google_place_id: '', street: '', suburb: '', city: '', province: '', postal_code: '', country: '', lat: null, lng: null };
@@ -79,16 +81,16 @@ export function StaffWizard({ tenantSlug, tenantId }: StaffWizardProps) {
                         placeholder="-- Select title --"
                     />
 
-                    <FieldWrapper label="First Name" required state={errors.first_name ? 'error' : data.first_name ? 'success' : 'idle'} error={errors.first_name}>
-                        <input type="text" value={data.first_name || ''} onChange={e => onChange({ first_name: e.target.value })} placeholder="First name" aria-label="First Name" className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
+                    <FieldWrapper label="First Name" required icon="person" state={errors.first_name ? 'error' : (data.first_name ? (validateName(data.first_name) ? 'error' : 'success') : 'idle')} error={errors.first_name || (data.first_name ? (validateName(data.first_name) || undefined) : undefined)}>
+                        <input type="text" value={data.first_name || ''} onChange={e => onChange({ first_name: e.target.value })} onBlur={() => { if (data.first_name) onChange({ first_name: autoCapitalizeName(data.first_name) }); }} placeholder="First name" aria-label="First Name" className="w-full h-[44px] px-3 text-[15px] bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
                     </FieldWrapper>
 
-                    <FieldWrapper label="Last Name" required state={errors.last_name ? 'error' : data.last_name ? 'success' : 'idle'} error={errors.last_name}>
-                        <input type="text" value={data.last_name || ''} onChange={e => onChange({ last_name: e.target.value })} placeholder="Last name" aria-label="Last Name" className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
+                    <FieldWrapper label="Last Name" required icon="person" state={errors.last_name ? 'error' : (data.last_name ? (validateName(data.last_name) ? 'error' : 'success') : 'idle')} error={errors.last_name || (data.last_name ? (validateName(data.last_name) || undefined) : undefined)}>
+                        <input type="text" value={data.last_name || ''} onChange={e => onChange({ last_name: e.target.value })} onBlur={() => { if (data.last_name) onChange({ last_name: autoCapitalizeName(data.last_name) }); }} placeholder="Last name" aria-label="Last Name" className="w-full h-[44px] px-3 text-[15px] bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
                     </FieldWrapper>
 
-                    <FieldWrapper label="Preferred Name(s)" state={data.preferred_name ? 'success' : 'idle'}>
-                        <input type="text" value={data.preferred_name || ''} onChange={e => onChange({ preferred_name: e.target.value })} placeholder="Preferred / known-as name" aria-label="Preferred Name" className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
+                    <FieldWrapper label="Preferred Name(s)" icon="person" state={data.preferred_name ? 'success' : 'idle'}>
+                        <input type="text" value={data.preferred_name || ''} onChange={e => onChange({ preferred_name: e.target.value })} onBlur={() => { if (data.preferred_name) onChange({ preferred_name: autoCapitalizeName(data.preferred_name) }); }} placeholder="Preferred / known-as name" aria-label="Preferred Name" className="w-full h-[44px] px-3 text-[15px] bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
                     </FieldWrapper>
 
                     <FieldWrapper label="Initials" state={data.initials ? 'success' : 'idle'} helper="Auto-generated from name">
@@ -103,12 +105,12 @@ export function StaffWizard({ tenantSlug, tenantId }: StaffWizardProps) {
                         />
                     </FieldWrapper>
 
-                    <FieldWrapper label="Email" required state={errors.email ? 'error' : data.email ? 'success' : 'idle'} error={errors.email}>
-                        <input type="email" value={data.email || ''} onChange={e => onChange({ email: e.target.value })} placeholder="email@example.com" aria-label="Email" className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
+                    <FieldWrapper label="Email" required icon="email" state={errors.email ? 'error' : (data.email ? (validateEmail(data.email) ? 'error' : 'success') : 'idle')} error={errors.email || (data.email ? (validateEmail(data.email) || undefined) : undefined)}>
+                        <input type="email" value={data.email || ''} onChange={e => onChange({ email: e.target.value })} placeholder="email@example.com" aria-label="Email" className="w-full h-[44px] px-3 text-[15px] bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
                     </FieldWrapper>
 
-                    <FieldWrapper label="Secondary Email" state={data.secondary_email ? 'success' : 'idle'}>
-                        <input type="email" value={data.secondary_email || ''} onChange={e => onChange({ secondary_email: e.target.value })} placeholder="Personal email" aria-label="Secondary Email" className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
+                    <FieldWrapper label="Secondary Email" icon="email" state={data.secondary_email ? (validateEmailOptional(data.secondary_email) ? 'error' : 'success') : 'idle'} error={data.secondary_email ? (validateEmailOptional(data.secondary_email) || undefined) : undefined}>
+                        <input type="email" value={data.secondary_email || ''} onChange={e => onChange({ secondary_email: e.target.value })} placeholder="Personal email" aria-label="Secondary Email" className="w-full h-[44px] px-3 text-[15px] bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
                     </FieldWrapper>
 
                     <PhoneInput label="Mobile" value={data.mobile || EMPTY_PHONE} onChange={v => onChange({ mobile: v })} placeholder="e.g. 060 000 0000" />
@@ -146,18 +148,18 @@ export function StaffWizard({ tenantSlug, tenantId }: StaffWizardProps) {
                     />
 
                     <ConditionalFieldGroup watchValue={data.citizenship_type || ''} showWhen={['sa_citizen', 'SA_CITIZEN', 'permanent_resident', 'PERMANENT_RESIDENT']}>
-                        <FieldWrapper label="SA ID Number" state={data.sa_id_number ? 'success' : 'idle'}>
-                            <input type="text" value={data.sa_id_number || ''} onChange={e => onChange({ sa_id_number: e.target.value })} placeholder="13-digit SA ID number" maxLength={13} aria-label="SA ID Number" className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
+                        <FieldWrapper label="SA ID Number" icon="badge" state={(() => { const err = data.sa_id_number ? (validateSaId(data.sa_id_number) || validateSaIdDobMatch(data.sa_id_number, data.date_of_birth || '')) : null; return err ? 'error' : data.sa_id_number ? 'success' : 'idle'; })()} error={data.sa_id_number ? (validateSaId(data.sa_id_number) || validateSaIdDobMatch(data.sa_id_number, data.date_of_birth || '') || undefined) : undefined}>
+                            <input type="text" value={data.sa_id_number || ''} onChange={e => onChange({ sa_id_number: e.target.value.replace(/\D/g, '').slice(0, 13) })} placeholder="13-digit SA ID number" maxLength={13} aria-label="SA ID Number" className="w-full h-[44px] px-3 text-[15px] bg-transparent outline-none font-mono text-[hsl(var(--admin-text-main))]" />
                         </FieldWrapper>
                     </ConditionalFieldGroup>
 
                     <ConditionalFieldGroup watchValue={data.citizenship_type || ''} showWhen={['foreign_national', 'FOREIGN_NATIONAL', 'refugee', 'REFUGEE', 'asylum_seeker', 'ASYLUM_SEEKER']}>
-                        <FieldWrapper label="Passport Number" state={data.passport_number ? 'success' : 'idle'}>
-                            <input type="text" value={data.passport_number || ''} onChange={e => onChange({ passport_number: e.target.value })} placeholder="Passport number" aria-label="Passport Number" className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
+                        <FieldWrapper label="Passport Number" icon="flight" state={(() => { const err = data.passport_number ? validatePassport(data.passport_number) : null; return err ? 'error' : data.passport_number ? 'success' : 'idle'; })()} error={data.passport_number ? (validatePassport(data.passport_number) || undefined) : undefined}>
+                            <input type="text" value={data.passport_number || ''} onChange={e => onChange({ passport_number: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 9) })} placeholder="Passport number" aria-label="Passport Number" className="w-full h-[44px] px-3 text-[15px] bg-transparent outline-none font-mono text-[hsl(var(--admin-text-main))]" />
                         </FieldWrapper>
                         <LookupSelect label="Permit Type" value={data.permit_type_code || ''} onChange={v => onChange({ permit_type_code: v as string })} dictName="permit_types" />
-                        <FieldWrapper label="Permit Number" state={data.permit_number ? 'success' : 'idle'}>
-                            <input type="text" value={data.permit_number || ''} onChange={e => onChange({ permit_number: e.target.value })} placeholder="Permit number" aria-label="Permit Number" className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
+                        <FieldWrapper label="Permit Number" icon="description" state={(() => { const err = data.permit_number ? validatePermit(data.permit_number, data.permit_type_code || '') : null; return err ? 'error' : data.permit_number ? 'success' : 'idle'; })()} error={data.permit_number ? (validatePermit(data.permit_number, data.permit_type_code || '') || undefined) : undefined}>
+                            <input type="text" value={data.permit_number || ''} onChange={e => onChange({ permit_number: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 13) })} placeholder="Permit number" aria-label="Permit Number" className="w-full h-[44px] px-3 text-[15px] bg-transparent outline-none font-mono text-[hsl(var(--admin-text-main))]" />
                         </FieldWrapper>
                     </ConditionalFieldGroup>
 
@@ -193,9 +195,7 @@ export function StaffWizard({ tenantSlug, tenantId }: StaffWizardProps) {
                         </select>
                     </FieldWrapper>
 
-                    <FieldWrapper label="Employment Start Date" state={data.joining_date ? 'success' : 'idle'}>
-                        <input type="date" value={data.joining_date || ''} onChange={e => onChange({ joining_date: e.target.value })} aria-label="Employment Start Date" className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
-                    </FieldWrapper>
+                    <DateField label="Employment Start Date" value={data.joining_date || ''} onChange={v => onChange({ joining_date: v })} error={data.joining_date ? (validateDateNotWeekend(data.joining_date) || validateJoiningDateNotTooOld(data.joining_date) || undefined) : undefined} />
 
                     <LookupSelect label="Employment Type" value={data.employment_type_code || ''} onChange={v => onChange({ employment_type_code: v as string })} dictName="employment_types" />
 
@@ -211,8 +211,8 @@ export function StaffWizard({ tenantSlug, tenantId }: StaffWizardProps) {
                         <input type="text" value={data.job_title || ''} onChange={e => onChange({ job_title: e.target.value })} placeholder="e.g. Senior Teacher, Admin Clerk" aria-label="Job Title" className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
                     </FieldWrapper>
 
-                    <FieldWrapper label="SACE Number" state={data.sace_number ? 'success' : 'idle'} helper="South African Council for Educators">
-                        <input type="text" value={data.sace_number || ''} onChange={e => onChange({ sace_number: e.target.value })} placeholder="e.g. 123456" aria-label="SACE Number" className="w-full px-3 py-3 text-sm bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
+                    <FieldWrapper label="SACE Number" icon="school" state={(() => { const err = data.sace_number ? validateSace(data.sace_number) : null; return err ? 'error' : data.sace_number ? 'success' : 'idle'; })()} error={data.sace_number ? (validateSace(data.sace_number) || undefined) : undefined} helper={!data.sace_number || !validateSace(data.sace_number) ? 'South African Council for Educators' : undefined}>
+                        <input type="text" value={data.sace_number || ''} onChange={e => onChange({ sace_number: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10) })} placeholder="e.g. 123456" aria-label="SACE Number" className="w-full h-[44px] px-3 text-[15px] bg-transparent outline-none font-mono text-[hsl(var(--admin-text-main))]" />
                     </FieldWrapper>
 
                     <LookupSelect label="Teaching Level" value={data.teaching_level_code || ''} onChange={v => onChange({ teaching_level_code: v as string })} dictName="teaching_levels" />
