@@ -14,6 +14,7 @@ import { Brand } from '../brands/brand.entity';
 import { AuthModule } from '../auth/auth.module';
 import { StorageModule } from '../storage/storage.module';
 import { Tenant } from '../tenants/tenant.entity';
+import { PhoneNormalizationService } from './services/phone-normalization.service';
 
 @Module({
     imports: [
@@ -30,5 +31,6 @@ import { Tenant } from '../tenants/tenant.entity';
         AdminIllustrationsController,
         AdminGeocodeController,
     ],
+    providers: [PhoneNormalizationService],
 })
 export class AdminModule {}
