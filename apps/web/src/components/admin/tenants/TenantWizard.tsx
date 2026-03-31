@@ -18,6 +18,7 @@ import { TaskItem } from '@/components/dashboard/TaskItem';
 import { NotifItem } from '@/components/dashboard/NotifItem';
 import { MOCK_ADMIN_EVENTS } from '@/lib/calendar-events';
 import { authFetch } from '@/lib/authFetch';
+import { validateEmail, validateEmailOptional } from '@/lib/validators';
 
 interface TenantWizardProps {
     tenantSlug: string;
@@ -226,10 +227,10 @@ export function TenantWizard({ tenantSlug }: TenantWizardProps) {
             illustration: <IllustrationSlot slotKey="tenant_step_4" />,
             content: ({ data, onChange }) => (
                 <>
-                    <FieldWrapper label="Contact Email" state={data.contact_email ? 'success' : 'idle'}>
+                    <FieldWrapper label="Contact Email" icon="email" state={data.contact_email ? (validateEmail(data.contact_email) ? 'error' : 'success') : 'idle'} error={data.contact_email ? (validateEmail(data.contact_email) || undefined) : undefined}>
                         <input type="email" value={data.contact_email || ''} onChange={e => onChange({ contact_email: e.target.value })} placeholder="info@school.co.za" className={inputCls} />
                     </FieldWrapper>
-                    <FieldWrapper label="Secondary Email" state={data.secondary_email ? 'success' : 'idle'}>
+                    <FieldWrapper label="Secondary Email" icon="email" state={data.secondary_email ? (validateEmailOptional(data.secondary_email) ? 'error' : 'success') : 'idle'} error={data.secondary_email ? (validateEmailOptional(data.secondary_email) || undefined) : undefined}>
                         <input type="email" value={data.secondary_email || ''} onChange={e => onChange({ secondary_email: e.target.value })} placeholder="admin@school.co.za" className={inputCls} />
                     </FieldWrapper>
                     <PhoneField
