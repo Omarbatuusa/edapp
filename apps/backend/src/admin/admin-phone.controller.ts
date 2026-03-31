@@ -1,8 +1,10 @@
 import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
-import { parsePhoneNumber, isValidPhoneNumber, CountryCode } from 'libphonenumber-js';
+import { PhoneNormalizationService } from './services/phone-normalization.service';
 
 @Controller('admin/phone')
 export class AdminPhoneController {
+    constructor(private readonly phoneService: PhoneNormalizationService) {}
+
     @Post('validate')
     validate(@Body() body: { phone: string; country_iso2: string }) {
         const { phone, country_iso2 } = body;
@@ -11,24 +13,9 @@ export class AdminPhoneController {
             throw new BadRequestException('phone and country_iso2 are required');
         }
 
-        try {
-            const countryCode = country_iso2.toUpperCase() as CountryCode;
-            const valid = isValidPhoneNumber(phone, countryCode);
+        const result = this.phoneService.normalize(phone, country_iso2);
+        if (!result) return { valid: false };
 
-            if (!valid) {
-                return { valid: false };
-            }
-
-            const parsed = parsePhoneNumber(phone, countryCode);
-            return {
-                valid: true,
-                e164: parsed.format('E.164'),
-                national: parsed.formatNational(),
-                country_iso2: parsed.country,
-                dial_code: `+${parsed.countryCallingCode}`,
-            };
-        } catch {
-            return { valid: false };
-        }
+        return { valid: true, ...result };
     }
 }

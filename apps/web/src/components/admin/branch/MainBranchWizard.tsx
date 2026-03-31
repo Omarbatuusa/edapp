@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { z } from 'zod';
 import { WizardShell, WizardStep } from '../wizard/WizardShell';
 import { FieldWrapper } from '../inputs/FieldWrapper';
-import { PhoneInput, PhoneValue } from '../inputs/PhoneInput';
+import { PhoneField, PhoneFieldValue } from '../inputs/PhoneField';
 import { EmailInput } from '../inputs/EmailInput';
 import { AddressInput, AddressValue } from '../inputs/AddressInput';
 import { LogoUpload } from '../inputs/LogoUpload';
@@ -33,7 +33,7 @@ const CURRICULUM_OPTIONS = [
     { value: 'OTHER', label: 'Other' },
 ];
 
-const EMPTY_PHONE: PhoneValue = { raw: '', e164: '', country_iso2: 'ZA', dial_code: '+27' };
+const EMPTY_PHONE: PhoneFieldValue = { raw: '', e164: '', country_iso2: 'ZA', dial_code: '+27' };
 const EMPTY_ADDRESS: AddressValue = { formatted_address: '', google_place_id: '', street: '', suburb: '', city: '', province: '', postal_code: '', country: '', lat: null, lng: null };
 
 const step1Schema = z.object({ brand_id: z.string().min(1, 'Please select a brand') });
@@ -154,8 +154,8 @@ export function MainBranchWizard({ tenantSlug, tenantId }: MainBranchWizardProps
             schema: step5Schema,
             content: ({ data, onChange, errors, draftId }) => (
                 <>
-                    <PhoneInput label="Mobile / WhatsApp" value={data.mobile || EMPTY_PHONE} onChange={v => onChange({ mobile: v })} required placeholder="e.g. 060 000 0000" />
-                    <PhoneInput label="Landline" value={data.landline || EMPTY_PHONE} onChange={v => onChange({ landline: v })} required placeholder="e.g. 011 000 0000" />
+                    <PhoneField label="Mobile / WhatsApp" value={data.mobile || EMPTY_PHONE} onChange={v => onChange({ mobile: v })} required placeholder="e.g. 060 000 0000" />
+                    <PhoneField label="Landline" value={data.landline || EMPTY_PHONE} onChange={v => onChange({ landline: v })} required placeholder="e.g. 011 000 0000" />
                     <EmailInput label="Branch Email" value={data.branch_email || ''} onChange={v => onChange({ branch_email: v })} draftId={draftId || ''} onVerified={email => onChange({ branch_email: email, branch_email_verified: true })} required />
                     <FieldWrapper label="Secondary Email" state="idle" helper="Optional — billing, admin, or alternative contact">
                         <input type="email" value={data.secondary_email || ''} onChange={e => onChange({ secondary_email: e.target.value })} placeholder="secondary@school.co.za" className="w-full px-3 py-3 text-sm bg-transparent outline-none" />

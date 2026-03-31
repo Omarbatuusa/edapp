@@ -7,7 +7,7 @@ import { WizardShell, WizardStep } from '../wizard/WizardShell';
 import { FieldWrapper } from '../inputs/FieldWrapper';
 import { LookupSelect } from '../inputs/LookupSelect';
 import { AddressInput, AddressValue } from '../inputs/AddressInput';
-import { PhoneInput, PhoneValue } from '../inputs/PhoneInput';
+import { PhoneField, PhoneFieldValue } from '../inputs/PhoneField';
 import { LogoUpload } from '../inputs/LogoUpload';
 import { CoverUpload } from '../inputs/CoverUpload';
 import { GalleryUpload } from '../inputs/GalleryUpload';
@@ -46,7 +46,7 @@ function codePreview(name: string): string {
     return name.replace(/[^a-zA-Z]/g, '').substring(0, 3).toUpperCase().padEnd(3, 'X') + '001';
 }
 
-const EMPTY_PHONE: PhoneValue = { raw: '', e164: '', country_iso2: 'ZA', dial_code: '+27' };
+const EMPTY_PHONE: PhoneFieldValue = { raw: '', e164: '', country_iso2: 'ZA', dial_code: '+27' };
 const EMPTY_ADDRESS: AddressValue = {
     formatted_address: '', google_place_id: '', street: '', suburb: '',
     city: '', province: '', postal_code: '', country: '', country_iso2: '', lat: null, lng: null,
@@ -232,11 +232,52 @@ export function TenantWizard({ tenantSlug }: TenantWizardProps) {
                     <FieldWrapper label="Secondary Email" state={data.secondary_email ? 'success' : 'idle'}>
                         <input type="email" value={data.secondary_email || ''} onChange={e => onChange({ secondary_email: e.target.value })} placeholder="admin@school.co.za" className={inputCls} />
                     </FieldWrapper>
-                    <PhoneInput
+                    <PhoneField
                         label="Contact Phone"
                         value={data.contact_phone_obj || EMPTY_PHONE}
-                        onChange={v => onChange({ contact_phone_obj: v, contact_phone: v.e164 || v.raw })}
+                        onChange={v => onChange({
+                            contact_phone_obj: v,
+                            contact_phone: v.e164 || v.raw,
+                            phone_e164: v.e164 || null,
+                            phone_country_iso2: v.country_iso2 || null,
+                            phone_dial_code: v.dial_code || null,
+                        })}
+                        defaultCountry={data.country_code || 'ZA'}
                     />
+                    <div className="flex items-center gap-2.5 px-1 py-1">
+                        <input
+                            type="checkbox"
+                            aria-label="WhatsApp same as Contact Phone"
+                            checked={data.whatsapp_same_as_phone || false}
+                            onChange={e => {
+                                const same = e.target.checked;
+                                onChange({
+                                    whatsapp_same_as_phone: same,
+                                    ...(same ? {
+                                        whatsapp_obj: data.contact_phone_obj || EMPTY_PHONE,
+                                        whatsapp_e164: data.phone_e164 || null,
+                                        whatsapp_country_iso2: data.phone_country_iso2 || null,
+                                        whatsapp_dial_code: data.phone_dial_code || null,
+                                    } : {}),
+                                });
+                            }}
+                            className="w-4 h-4 rounded accent-[hsl(var(--admin-success))] cursor-pointer"
+                        />
+                        <span className="text-[13px] font-medium text-[hsl(var(--admin-text-sub))]">WhatsApp same as Contact Phone</span>
+                    </div>
+                    {!data.whatsapp_same_as_phone && (
+                        <PhoneField
+                            label="WhatsApp Number"
+                            value={data.whatsapp_obj || EMPTY_PHONE}
+                            onChange={v => onChange({
+                                whatsapp_obj: v,
+                                whatsapp_e164: v.e164 || null,
+                                whatsapp_country_iso2: v.country_iso2 || null,
+                                whatsapp_dial_code: v.dial_code || null,
+                            })}
+                            defaultCountry={data.country_code || 'ZA'}
+                        />
+                    )}
                     <AddressInput
                         label="Physical Address"
                         value={data.physical_address || EMPTY_ADDRESS}
@@ -348,7 +389,10 @@ export function TenantWizard({ tenantSlug }: TenantWizardProps) {
                                 <p className="text-[11px] font-bold text-[hsl(var(--admin-text-muted))] uppercase tracking-wider">Contact</p>
                                 {data.contact_email && <ReviewRow label="Email" value={data.contact_email} />}
                                 {data.secondary_email && <ReviewRow label="Secondary" value={data.secondary_email} />}
-                                {data.contact_phone && <ReviewRow label="Phone" value={data.contact_phone} />}
+                                {data.contact_phone && <ReviewRow label="Phone" value={data.phone_e164 || data.contact_phone} />}
+                                {(data.whatsapp_e164 || data.whatsapp_same_as_phone) && (
+                                    <ReviewRow label="WhatsApp" value={data.whatsapp_same_as_phone ? (data.phone_e164 || data.contact_phone) : data.whatsapp_e164} />
+                                )}
                                 {data.physical_address?.formatted_address && <ReviewRow label="Address" value={data.physical_address.formatted_address} />}
                             </div>
                         )}
@@ -389,6 +433,12 @@ export function TenantWizard({ tenantSlug }: TenantWizardProps) {
                 area_label: data.area_label || null,
                 contact_email: data.contact_email || null,
                 contact_phone: data.contact_phone || null,
+                phone_e164: data.phone_e164 || null,
+                phone_country_iso2: data.phone_country_iso2 || null,
+                phone_dial_code: data.phone_dial_code || null,
+                whatsapp_e164: data.whatsapp_same_as_phone ? (data.phone_e164 || null) : (data.whatsapp_e164 || null),
+                whatsapp_country_iso2: data.whatsapp_same_as_phone ? (data.phone_country_iso2 || null) : (data.whatsapp_country_iso2 || null),
+                whatsapp_dial_code: data.whatsapp_same_as_phone ? (data.phone_dial_code || null) : (data.whatsapp_dial_code || null),
                 secondary_email: data.secondary_email || null,
                 physical_address: data.physical_address?.formatted_address ? data.physical_address : null,
                 country_code: data.physical_address?.country_iso2 || 'ZA',

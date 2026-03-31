@@ -18,6 +18,7 @@ import { generateTenantSlug, generateSchoolCode, ensureUniqueSlug, ensureUniqueC
 import { EmailAuthService } from '../../auth/email-auth.service';
 import { PasswordHistory } from '../../users/password-history.entity';
 import { FormProvisioningService } from '../services/form-provisioning.service';
+import { PhoneNormalizationService } from '../services/phone-normalization.service';
 
 const PLATFORM_ROLES = ['platform_super_admin', 'app_super_admin', 'brand_admin'];
 const SECRETARY_ROLES = ['platform_secretary', 'app_secretary'];
@@ -50,6 +51,7 @@ export class AdminTenantsController {
     @InjectRepository(PasswordHistory) private passwordHistoryRepo: Repository<PasswordHistory>,
     private emailAuthService: EmailAuthService,
     private formProvisioningService: FormProvisioningService,
+    private phoneService: PhoneNormalizationService,
   ) {}
 
   private isPlatform(req: any): boolean {
@@ -147,6 +149,15 @@ export class AdminTenantsController {
     let school_code = body.school_code || generateSchoolCode(body.school_name);
     school_code = await ensureUniqueCode(school_code, this.tenantRepo, 'school_code');
 
+    // Normalize phone fields to E.164
+    const countryHint = (body as any).phone_country_iso2 || (body as any).country_code || 'ZA';
+    const phoneRaw = (body as any).phone_e164 || body.contact_phone;
+    const phoneNorm = phoneRaw ? this.phoneService.normalize(phoneRaw, countryHint) : null;
+
+    const waCountryHint = (body as any).whatsapp_country_iso2 || countryHint;
+    const waRaw = (body as any).whatsapp_e164;
+    const whatsappNorm = waRaw ? this.phoneService.normalize(waRaw, waCountryHint) : null;
+
     const tenant = await this.tenantRepo.save(this.tenantRepo.create({
       school_name: body.school_name,
       tenant_slug,
@@ -160,7 +171,13 @@ export class AdminTenantsController {
       emis_number: body.emis_number || null,
       area_label: body.area_label || null,
       contact_email: body.contact_email || null,
-      contact_phone: body.contact_phone || null,
+      contact_phone: phoneNorm?.e164 || body.contact_phone || null,
+      phone_e164: phoneNorm?.e164 || null,
+      phone_country_iso2: phoneNorm?.country_iso2 || (body as any).phone_country_iso2 || null,
+      phone_dial_code: phoneNorm?.dial_code || (body as any).phone_dial_code || null,
+      whatsapp_e164: whatsappNorm?.e164 || null,
+      whatsapp_country_iso2: whatsappNorm?.country_iso2 || (body as any).whatsapp_country_iso2 || null,
+      whatsapp_dial_code: whatsappNorm?.dial_code || (body as any).whatsapp_dial_code || null,
       secondary_email: body.secondary_email || null,
       physical_address: body.physical_address || null,
       country_code: (body as any).country_code || 'ZA',
@@ -313,6 +330,28 @@ export class AdminTenantsController {
     const tenant = await this.tenantRepo.findOne({ where: { id } });
     if (!tenant) throw new NotFoundException('Tenant not found');
     const before = { ...tenant };
+
+    // Normalize phone fields if present in update body
+    const phoneRaw = (body as any).phone_e164 || body.contact_phone;
+    if (phoneRaw) {
+      const norm = this.phoneService.normalize(phoneRaw, (body as any).phone_country_iso2 || tenant.country_code || 'ZA');
+      if (norm) {
+        (body as any).contact_phone = norm.e164;
+        (body as any).phone_e164 = norm.e164;
+        (body as any).phone_country_iso2 = norm.country_iso2;
+        (body as any).phone_dial_code = norm.dial_code;
+      }
+    }
+    const waRaw = (body as any).whatsapp_e164;
+    if (waRaw) {
+      const norm = this.phoneService.normalize(waRaw, (body as any).whatsapp_country_iso2 || tenant.country_code || 'ZA');
+      if (norm) {
+        (body as any).whatsapp_e164 = norm.e164;
+        (body as any).whatsapp_country_iso2 = norm.country_iso2;
+        (body as any).whatsapp_dial_code = norm.dial_code;
+      }
+    }
+
     Object.assign(tenant, body);
     const updated = await this.tenantRepo.save(tenant);
     await this.log(req, AuditAction.TENANT_EDIT, id, before, updated);

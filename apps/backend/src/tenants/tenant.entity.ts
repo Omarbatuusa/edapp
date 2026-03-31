@@ -122,6 +122,26 @@ export class Tenant {
     @Column({ nullable: true })
     contact_phone: string;
 
+    // Structured phone (E.164)
+    @Column({ nullable: true })
+    phone_e164: string;
+
+    @Column({ nullable: true })
+    phone_country_iso2: string;
+
+    @Column({ nullable: true })
+    phone_dial_code: string;
+
+    // WhatsApp (E.164)
+    @Column({ nullable: true })
+    whatsapp_e164: string;
+
+    @Column({ nullable: true })
+    whatsapp_country_iso2: string;
+
+    @Column({ nullable: true })
+    whatsapp_dial_code: string;
+
     @Column({ nullable: true })
     secondary_email: string;
 

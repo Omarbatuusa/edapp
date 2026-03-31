@@ -127,6 +127,7 @@ import { TenantPayment } from '../tenants/tenant-payment.entity';
 import { AdminSubscriptionsController } from './controllers/admin-subscriptions.controller';
 import { AdminBrandsController } from './admin-brands.controller';
 import { Brand } from '../brands/brand.entity';
+import { PhoneNormalizationService } from './services/phone-normalization.service';
 
 @Module({
   imports: [
@@ -256,6 +257,7 @@ import { Brand } from '../brands/brand.entity';
     BulkImportService,
     TemplateGeneratorService,
     FormProvisioningService,
+    PhoneNormalizationService,
   ],
   exports: [
     BulkImportService,

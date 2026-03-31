@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Branch } from '../branches/branch.entity';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
+import { PhoneNormalizationService } from './services/phone-normalization.service';
 
 const ALLOWED_ROLES = ['tenant_admin', 'main_branch_admin', 'branch_admin', 'platform_super_admin'];
 
@@ -15,6 +16,7 @@ export class AdminBranchesController {
     constructor(
         @InjectRepository(Branch)
         private readonly branchRepo: Repository<Branch>,
+        private readonly phoneService: PhoneNormalizationService,
     ) {}
 
     private checkRole(req: any) {
@@ -40,6 +42,26 @@ export class AdminBranchesController {
             }
         }
 
+        // Normalize phone fields to E.164 before save
+        const mobileRaw = (body as any).mobile_e164 || body.mobile_whatsapp;
+        if (mobileRaw) {
+            const norm = this.phoneService.normalize(mobileRaw, (body as any).mobile_country_iso2 || 'ZA');
+            if (norm) {
+                (body as any).mobile_e164 = norm.e164;
+                (body as any).mobile_country_iso2 = norm.country_iso2;
+                (body as any).mobile_dial_code = norm.dial_code;
+            }
+        }
+        const landlineRaw = (body as any).landline_e164 || body.phone_landline;
+        if (landlineRaw) {
+            const norm = this.phoneService.normalize(landlineRaw, (body as any).landline_country_iso2 || 'ZA');
+            if (norm) {
+                (body as any).landline_e164 = norm.e164;
+                (body as any).landline_country_iso2 = norm.country_iso2;
+                (body as any).landline_dial_code = norm.dial_code;
+            }
+        }
+
         const branch = this.branchRepo.create({ ...body, tenant_id });
         return this.branchRepo.save(branch);
     }
@@ -50,6 +72,26 @@ export class AdminBranchesController {
         const tenant_id = req.tenant_id;
         const branch = await this.branchRepo.findOne({ where: { id, tenant_id } });
         if (!branch) throw new NotFoundException('Branch not found');
+
+        // Normalize phone fields on update
+        const mobileRaw = (body as any).mobile_e164 || body.mobile_whatsapp;
+        if (mobileRaw) {
+            const norm = this.phoneService.normalize(mobileRaw, (body as any).mobile_country_iso2 || branch.mobile_country_iso2 || 'ZA');
+            if (norm) {
+                (body as any).mobile_e164 = norm.e164;
+                (body as any).mobile_country_iso2 = norm.country_iso2;
+                (body as any).mobile_dial_code = norm.dial_code;
+            }
+        }
+        const landlineRaw = (body as any).landline_e164 || body.phone_landline;
+        if (landlineRaw) {
+            const norm = this.phoneService.normalize(landlineRaw, (body as any).landline_country_iso2 || branch.landline_country_iso2 || 'ZA');
+            if (norm) {
+                (body as any).landline_e164 = norm.e164;
+                (body as any).landline_country_iso2 = norm.country_iso2;
+                (body as any).landline_dial_code = norm.dial_code;
+            }
+        }
 
         Object.assign(branch, body);
         return this.branchRepo.save(branch);
