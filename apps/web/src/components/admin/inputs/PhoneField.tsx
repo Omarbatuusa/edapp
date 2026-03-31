@@ -36,6 +36,11 @@ export function PhoneField({
     helper,
     disabled,
 }: PhoneFieldProps) {
+    // Guard against stale/invalid value from autosave drafts
+    if (!value || typeof value !== 'object' || !value.country_iso2) {
+        value = EMPTY;
+    }
+
     const [isOpen, setIsOpen] = useState(false);
     const [validationState, setValidationState] = useState<'idle' | 'success' | 'error'>('idle');
     const [errorMsg, setErrorMsg] = useState('');
