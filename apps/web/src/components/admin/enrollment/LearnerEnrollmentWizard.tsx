@@ -8,7 +8,7 @@ import { FieldWrapper } from '../inputs/FieldWrapper';
 import { TextField } from '../inputs/TextField';
 import { DateField } from '../inputs/DateField';
 import { CheckboxField } from '../inputs/CheckboxField';
-import { PhoneInput, PhoneValue } from '../inputs/PhoneInput';
+import { PhoneField, PhoneFieldValue } from '../inputs/PhoneField';
 import { AddressInput, AddressValue } from '../inputs/AddressInput';
 import { LookupSelect } from '../inputs/LookupSelect';
 import { ConditionalFieldGroup } from '../inputs/ConditionalFieldGroup';
@@ -23,7 +23,7 @@ import { LanguageIllustration } from '../illustrations/LanguageIllustration';
 import { DocumentIllustration } from '../illustrations/DocumentIllustration';
 import { GuardianSubform, GuardianData, createEmptyGuardian } from './GuardianSubform';
 
-const EMPTY_PHONE: PhoneValue = { raw: '', e164: '', country_iso2: 'ZA', dial_code: '+27' };
+const EMPTY_PHONE: PhoneFieldValue = { raw: '', e164: '', country_iso2: 'ZA', dial_code: '+27' };
 const EMPTY_ADDRESS: AddressValue = { formatted_address: '', google_place_id: '', street: '', suburb: '', city: '', province: '', postal_code: '', country: '', lat: null, lng: null };
 
 interface LearnerEnrollmentWizardProps {
@@ -79,8 +79,8 @@ const LEARNER_DOC_TYPES = [
 interface EmergencyContactData {
     full_name: string;
     relationship_code: string;
-    mobile_number: PhoneValue;
-    alternate_number: PhoneValue;
+    mobile_number: PhoneFieldValue;
+    alternate_number: PhoneFieldValue;
     email: string;
     address: AddressValue;
     priority_level: number;
@@ -527,8 +527,8 @@ export function LearnerEnrollmentWizard({ tenantSlug, tenantId }: LearnerEnrollm
                                 <input type="text" value={contact.full_name} onChange={e => update({ full_name: e.target.value })} placeholder="Full name" className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
                             </FieldWrapper>
                             <LookupSelect label="Relationship" value={contact.relationship_code} onChange={v => update({ relationship_code: v as string })} dictName="emergency_relationships" required />
-                            <PhoneInput label="Mobile" value={contact.mobile_number} onChange={v => update({ mobile_number: v })} required />
-                            <PhoneInput label="Alternate Number" value={contact.alternate_number} onChange={v => update({ alternate_number: v })} />
+                            <PhoneField label="Mobile" value={contact.mobile_number} onChange={v => update({ mobile_number: v })} required />
+                            <PhoneField label="Alternate Number" value={contact.alternate_number} onChange={v => update({ alternate_number: v })} />
                             <FieldWrapper label="Email" state={contact.email ? 'success' : 'idle'}>
                                 <input type="email" value={contact.email} onChange={e => update({ email: e.target.value })} placeholder="email@example.com" className="w-full px-3 py-3 text-sm bg-transparent outline-none" />
                             </FieldWrapper>

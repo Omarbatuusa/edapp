@@ -1,7 +1,7 @@
 'use client';
 
 import { FieldWrapper } from '../inputs/FieldWrapper';
-import { PhoneInput, PhoneValue } from '../inputs/PhoneInput';
+import { PhoneField, PhoneFieldValue } from '../inputs/PhoneField';
 import { AddressInput, AddressValue } from '../inputs/AddressInput';
 import { LookupSelect } from '../inputs/LookupSelect';
 import { ConditionalFieldGroup } from '../inputs/ConditionalFieldGroup';
@@ -9,7 +9,7 @@ import { DocumentUpload, DocFile } from '../inputs/DocumentUpload';
 import { DateField } from '../inputs/DateField';
 import { validateName, validateEmail, validateEmailOptional, validateSaId, validateSaIdDobMatch, validatePassport, validatePermit, autoCapitalizeName } from '@/lib/validators';
 
-const EMPTY_PHONE: PhoneValue = { raw: '', e164: '', country_iso2: 'ZA', dial_code: '+27' };
+const EMPTY_PHONE: PhoneFieldValue = { raw: '', e164: '', country_iso2: 'ZA', dial_code: '+27' };
 const EMPTY_ADDRESS: AddressValue = { formatted_address: '', google_place_id: '', street: '', suburb: '', city: '', province: '', postal_code: '', country: '', lat: null, lng: null };
 
 export interface GuardianData {
@@ -18,10 +18,10 @@ export interface GuardianData {
     surname: string;
     preferred_name: string;
     initials: string;
-    mobile_whatsapp: PhoneValue;
-    alt_contact_number: PhoneValue;
-    home_phone: PhoneValue;
-    work_phone: PhoneValue;
+    mobile_whatsapp: PhoneFieldValue;
+    alt_contact_number: PhoneFieldValue;
+    home_phone: PhoneFieldValue;
+    work_phone: PhoneFieldValue;
     email: string;
     secondary_email: string;
     dob: string;
@@ -130,10 +130,10 @@ export function GuardianSubform({ data, onChange, index }: GuardianSubformProps)
             {/* Section: Contact */}
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-2">Contact Details</p>
 
-            <PhoneInput label="Mobile / WhatsApp" value={data.mobile_whatsapp} onChange={v => onChange({ mobile_whatsapp: v })} required />
-            <PhoneInput label="Alternate Number" value={data.alt_contact_number} onChange={v => onChange({ alt_contact_number: v })} />
-            <PhoneInput label="Home Phone" value={data.home_phone} onChange={v => onChange({ home_phone: v })} />
-            <PhoneInput label="Work Phone" value={data.work_phone} onChange={v => onChange({ work_phone: v })} />
+            <PhoneField label="Mobile / WhatsApp" value={data.mobile_whatsapp} onChange={v => onChange({ mobile_whatsapp: v })} required />
+            <PhoneField label="Alternate Number" value={data.alt_contact_number} onChange={v => onChange({ alt_contact_number: v })} />
+            <PhoneField label="Home Phone" value={data.home_phone} onChange={v => onChange({ home_phone: v })} />
+            <PhoneField label="Work Phone" value={data.work_phone} onChange={v => onChange({ work_phone: v })} />
 
             <FieldWrapper label="Email" required icon="email" state={data.email ? (validateEmail(data.email) ? 'error' : 'success') : 'idle'} error={data.email ? (validateEmail(data.email) || undefined) : undefined}>
                 <input type="email" value={data.email} onChange={e => onChange({ email: e.target.value })} placeholder="email@example.com" className="w-full h-[44px] px-3 text-[15px] bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />

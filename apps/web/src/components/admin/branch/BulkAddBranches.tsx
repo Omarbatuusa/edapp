@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { FieldWrapper } from '../inputs/FieldWrapper';
-import { PhoneInput, PhoneValue } from '../inputs/PhoneInput';
+import { PhoneField, PhoneFieldValue } from '../inputs/PhoneField';
 import { AddressInput, AddressValue } from '../inputs/AddressInput';
 import { LogoUpload } from '../inputs/LogoUpload';
 
@@ -11,8 +11,8 @@ interface BranchCard {
     branch_code: string;
     about: string;
     address: AddressValue;
-    mobile: PhoneValue;
-    landline: PhoneValue;
+    mobile: PhoneFieldValue;
+    landline: PhoneFieldValue;
     branch_email: string;
     school_logo_url: string;
 }
@@ -32,7 +32,7 @@ interface BulkAddBranchesProps {
     onSuccess?: (count: number) => void;
 }
 
-const EMPTY_PHONE: PhoneValue = { raw: '', e164: '', country_iso2: 'ZA', dial_code: '+27' };
+const EMPTY_PHONE: PhoneFieldValue = { raw: '', e164: '', country_iso2: 'ZA', dial_code: '+27' };
 const EMPTY_ADDRESS: AddressValue = { formatted_address: '', google_place_id: '', street: '', suburb: '', city: '', province: '', postal_code: '', country: '', lat: null, lng: null };
 
 const EMPTY_CARD: BranchCard = {
@@ -154,8 +154,8 @@ export function BulkAddBranches({ mainBranchId, tenantId, isOpen, onClose, onSuc
                                         <div className="sm:col-span-2">
                                             <AddressInput label="Address" value={card.address} onChange={addr => updateCard(idx, { address: addr })} />
                                         </div>
-                                        <PhoneInput label="Mobile" value={card.mobile} onChange={v => updateCard(idx, { mobile: v })} />
-                                        <PhoneInput label="Landline" value={card.landline} onChange={v => updateCard(idx, { landline: v })} />
+                                        <PhoneField label="Mobile" value={card.mobile} onChange={v => updateCard(idx, { mobile: v })} />
+                                        <PhoneField label="Landline" value={card.landline} onChange={v => updateCard(idx, { landline: v })} />
                                         <div className="sm:col-span-2">
                                             <FieldWrapper label="Email" state="idle">
                                                 <input type="email" value={card.branch_email} onChange={e => updateCard(idx, { branch_email: e.target.value })} placeholder="branch@school.co.za" className="w-full px-3 py-2.5 text-sm bg-transparent outline-none" />

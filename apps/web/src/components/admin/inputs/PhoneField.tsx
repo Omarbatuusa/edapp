@@ -183,11 +183,31 @@ export function PhoneField({
         setSearch('');
     };
 
-    const handleInputChange = (raw: string) => {
+    const handleInputChange = (rawInput: string) => {
         hasInteractedRef.current = true;
         // Clear previous validation on every keystroke
         setValidationState('idle');
         setErrorMsg('');
+
+        // Auto-convert leading zero to international format for validation
+        let raw = rawInput;
+        if (/^0\d/.test(raw.replace(/\s/g, '')) && selected.dialCode) {
+            const stripped = raw.replace(/\s/g, '').replace(/^0+/, '');
+            // Validate with dial code prepended, but keep display as-is
+            const intl = `${selected.dialCode}${stripped}`;
+            const intlResult = validate(intl, value.country_iso2);
+            if (intlResult.valid && intlResult.parsed) {
+                setE164Preview(intlResult.parsed.formatInternational());
+                onChange({
+                    ...value,
+                    raw: rawInput,
+                    e164: intlResult.parsed.format('E.164'),
+                    country_iso2: intlResult.parsed.country || value.country_iso2,
+                    dial_code: `+${intlResult.parsed.countryCallingCode}`,
+                });
+                return;
+            }
+        }
 
         // Client-side live validation (non-blocking)
         const { valid, parsed } = validate(raw, value.country_iso2);

@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { WizardShell, WizardStep } from '../wizard/WizardShell';
 import { FieldWrapper } from '../inputs/FieldWrapper';
 import { DateField } from '../inputs/DateField';
-import { PhoneInput, PhoneValue } from '../inputs/PhoneInput';
+import { PhoneField, PhoneFieldValue } from '../inputs/PhoneField';
 import { AddressInput, AddressValue } from '../inputs/AddressInput';
 import { LookupSelect } from '../inputs/LookupSelect';
 import { ConditionalFieldGroup } from '../inputs/ConditionalFieldGroup';
@@ -19,7 +19,7 @@ import { MedicalIllustration } from '../illustrations/MedicalIllustration';
 import { initialsFromName } from '@/lib/name-validation';
 import { validateName, validateEmail, validateEmailOptional, validateSaId, validateSaIdDobMatch, validatePassport, validatePermit, validateSace, validateDateNotWeekend, validateJoiningDateNotTooOld, autoCapitalizeName } from '@/lib/validators';
 
-const EMPTY_PHONE: PhoneValue = { raw: '', e164: '', country_iso2: 'ZA', dial_code: '+27' };
+const EMPTY_PHONE: PhoneFieldValue = { raw: '', e164: '', country_iso2: 'ZA', dial_code: '+27' };
 const EMPTY_ADDRESS: AddressValue = { formatted_address: '', google_place_id: '', street: '', suburb: '', city: '', province: '', postal_code: '', country: '', lat: null, lng: null };
 
 interface StaffWizardProps {
@@ -113,9 +113,9 @@ export function StaffWizard({ tenantSlug, tenantId }: StaffWizardProps) {
                         <input type="email" value={data.secondary_email || ''} onChange={e => onChange({ secondary_email: e.target.value })} placeholder="Personal email" aria-label="Secondary Email" className="w-full h-[44px] px-3 text-[15px] bg-transparent outline-none text-[hsl(var(--admin-text-main))]" />
                     </FieldWrapper>
 
-                    <PhoneInput label="Mobile" value={data.mobile || EMPTY_PHONE} onChange={v => onChange({ mobile: v })} placeholder="e.g. 060 000 0000" />
-                    <PhoneInput label="Alternate Phone" value={data.alt_phone || EMPTY_PHONE} onChange={v => onChange({ alt_phone: v })} placeholder="e.g. 011 000 0000" />
-                    <PhoneInput label="Home Phone" value={data.home_phone || EMPTY_PHONE} onChange={v => onChange({ home_phone: v })} placeholder="e.g. 012 000 0000" />
+                    <PhoneField label="Mobile" value={data.mobile || EMPTY_PHONE} onChange={v => onChange({ mobile: v })} placeholder="e.g. 060 000 0000" />
+                    <PhoneField label="Alternate Phone" value={data.alt_phone || EMPTY_PHONE} onChange={v => onChange({ alt_phone: v })} placeholder="e.g. 011 000 0000" />
+                    <PhoneField label="Home Phone" value={data.home_phone || EMPTY_PHONE} onChange={v => onChange({ home_phone: v })} placeholder="e.g. 012 000 0000" />
                 </>
             ),
         },
