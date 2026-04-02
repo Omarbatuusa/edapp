@@ -37,8 +37,15 @@ export function PhoneField({
     disabled,
 }: PhoneFieldProps) {
     // Guard against stale/invalid value from autosave drafts
-    if (!value || typeof value !== 'object' || !value.country_iso2) {
-        value = EMPTY;
+    // Must have: raw (string), country_iso2 (2-letter ISO code)
+    if (
+        !value ||
+        typeof value !== 'object' ||
+        typeof value.raw !== 'string' ||
+        typeof value.country_iso2 !== 'string' ||
+        value.country_iso2.length !== 2
+    ) {
+        value = { ...EMPTY };
     }
 
     const [isOpen, setIsOpen] = useState(false);

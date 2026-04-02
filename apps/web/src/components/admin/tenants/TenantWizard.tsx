@@ -48,6 +48,11 @@ function codePreview(name: string): string {
 }
 
 const EMPTY_PHONE: PhoneFieldValue = { raw: '', e164: '', country_iso2: 'ZA', dial_code: '+27' };
+/** Safely extract a PhoneFieldValue from draft data that may be corrupt */
+function safePhone(v: any): PhoneFieldValue {
+    if (v && typeof v === 'object' && typeof v.raw === 'string' && typeof v.country_iso2 === 'string' && v.country_iso2.length === 2) return v;
+    return EMPTY_PHONE;
+}
 const EMPTY_ADDRESS: AddressValue = {
     formatted_address: '', google_place_id: '', street: '', suburb: '',
     city: '', province: '', postal_code: '', country: '', country_iso2: '', lat: null, lng: null,
@@ -235,7 +240,7 @@ export function TenantWizard({ tenantSlug }: TenantWizardProps) {
                     </FieldWrapper>
                     <PhoneField
                         label="Contact Phone"
-                        value={data.contact_phone_obj || EMPTY_PHONE}
+                        value={safePhone(data.contact_phone_obj)}
                         onChange={v => onChange({
                             contact_phone_obj: v,
                             contact_phone: v.e164 || v.raw,
@@ -255,7 +260,7 @@ export function TenantWizard({ tenantSlug }: TenantWizardProps) {
                                 onChange({
                                     whatsapp_same_as_phone: same,
                                     ...(same ? {
-                                        whatsapp_obj: data.contact_phone_obj || EMPTY_PHONE,
+                                        whatsapp_obj: safePhone(data.contact_phone_obj),
                                         whatsapp_e164: data.phone_e164 || null,
                                         whatsapp_country_iso2: data.phone_country_iso2 || null,
                                         whatsapp_dial_code: data.phone_dial_code || null,
@@ -269,7 +274,7 @@ export function TenantWizard({ tenantSlug }: TenantWizardProps) {
                     {!data.whatsapp_same_as_phone && (
                         <PhoneField
                             label="WhatsApp Number"
-                            value={data.whatsapp_obj || EMPTY_PHONE}
+                            value={safePhone(data.whatsapp_obj)}
                             onChange={v => onChange({
                                 whatsapp_obj: v,
                                 whatsapp_e164: v.e164 || null,
