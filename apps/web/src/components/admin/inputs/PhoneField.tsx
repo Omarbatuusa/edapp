@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { parsePhoneNumber, isValidPhoneNumber, CountryCode } from 'libphonenumber-js';
 import { FieldWrapper } from './FieldWrapper';
 import { CountryOption, ALL_COUNTRIES } from './countries';
@@ -275,67 +276,71 @@ export function PhoneField({
             helper={helperText}
             showIcon={false}
         >
-            <div className="flex items-stretch">
-                {/* Country selector */}
-                <div className="relative">
-                    <button
-                        ref={triggerRef}
-                        type="button"
-                        onClick={() => { if (!disabled) { setIsOpen(!isOpen); setSearch(''); } }}
-                        disabled={disabled}
-                        className="flex items-center gap-1.5 px-3 h-full border-r border-[hsl(var(--admin-border)/0.5)] bg-[hsl(var(--admin-surface-alt)/0.3)] text-[13px] font-medium hover:bg-[hsl(var(--admin-surface-alt))] transition-colors min-w-[80px] disabled:opacity-50"
-                        aria-label={`Select country code, currently ${selected.name}`}
-                        aria-expanded={isOpen}
-                        aria-haspopup="listbox"
-                    >
-                        <span className="text-base leading-none">{selected.flag}</span>
-                        <span className="text-[hsl(var(--admin-text-muted))] text-[12px]">{selected.dialCode}</span>
-                        <span className="material-symbols-outlined text-[12px] text-[hsl(var(--admin-text-muted))]">expand_more</span>
-                    </button>
+            <div className="flex items-stretch min-h-[44px]">
+                {/* Country selector — button always visible */}
+                <button
+                    ref={triggerRef}
+                    type="button"
+                    onClick={() => { if (!disabled) { setIsOpen(!isOpen); setSearch(''); } }}
+                    disabled={disabled}
+                    className="flex items-center gap-1.5 px-3 h-[44px] border-r border-[hsl(var(--admin-border)/0.5)] bg-[hsl(var(--admin-surface-alt)/0.3)] text-[13px] font-medium hover:bg-[hsl(var(--admin-surface-alt))] transition-colors min-w-[80px] disabled:opacity-50 flex-shrink-0"
+                    aria-label={`Select country code, currently ${selected.name}`}
+                    aria-haspopup="listbox"
+                >
+                    <span className="text-base leading-none">{selected.flag}</span>
+                    <span className="text-[hsl(var(--admin-text-muted))] text-[12px]">{selected.dialCode}</span>
+                    <span className="material-symbols-outlined text-[12px] text-[hsl(var(--admin-text-muted))]">expand_more</span>
+                </button>
 
-                    {isOpen && (
-                        <div
-                            ref={dropdownRef}
-                            role="listbox"
-                            aria-label="Select country"
-                            className="absolute top-full left-0 z-50 bg-[hsl(var(--admin-surface))] border border-[hsl(var(--admin-border)/0.5)] rounded-xl shadow-xl w-72 mt-1 overflow-hidden"
-                        >
-                            <div className="p-2 border-b border-[hsl(var(--admin-border)/0.3)]">
-                                <input
-                                    ref={searchInputRef}
-                                    type="text"
-                                    value={search}
-                                    onChange={e => setSearch(e.target.value)}
-                                    placeholder="Search country..."
-                                    aria-label="Search countries"
-                                    className="w-full px-3 py-1.5 text-[13px] bg-[hsl(var(--admin-surface-alt)/0.5)] rounded-lg border border-[hsl(var(--admin-border)/0.4)] outline-none text-[hsl(var(--admin-text-main))] placeholder:text-[hsl(var(--admin-text-muted))]"
-                                />
-                            </div>
-                            <div className="max-h-52 overflow-y-auto">
-                                {filtered.length === 0 ? (
-                                    <p className="px-4 py-3 text-[13px] text-[hsl(var(--admin-text-muted))]">No results</p>
-                                ) : filtered.map(c => (
-                                    <button
-                                        key={c.iso2}
-                                        type="button"
-                                        role="option"
-                                        aria-selected={c.iso2 === selected.iso2}
-                                        onClick={() => handleCountrySelect(c)}
-                                        className={`w-full flex items-center gap-2 px-3 py-2.5 text-[13px] hover:bg-[hsl(var(--admin-surface-alt))] transition-colors ${
-                                            c.iso2 === selected.iso2
-                                                ? 'bg-[hsl(var(--admin-primary)/0.08)] text-[hsl(var(--admin-primary))]'
-                                                : 'text-[hsl(var(--admin-text-main))]'
-                                        }`}
-                                    >
-                                        <span className="text-base leading-none flex-shrink-0">{c.flag}</span>
-                                        <span className="flex-1 text-left truncate">{c.name}</span>
-                                        <span className="text-[hsl(var(--admin-text-muted))] text-[11px] flex-shrink-0">{c.dialCode}</span>
-                                    </button>
-                                ))}
-                            </div>
+                {/* Country dropdown — rendered in portal to avoid overflow clipping */}
+                {isOpen && typeof document !== 'undefined' && createPortal(
+                    <div
+                        ref={dropdownRef}
+                        role="listbox"
+                        aria-label="Select country"
+                        style={{
+                            position: 'fixed',
+                            top: (triggerRef.current?.getBoundingClientRect().bottom ?? 0) + 4,
+                            left: triggerRef.current?.getBoundingClientRect().left ?? 0,
+                            zIndex: 9999,
+                        }}
+                        className="bg-[hsl(var(--admin-surface))] border border-[hsl(var(--admin-border)/0.5)] rounded-xl shadow-xl w-72 overflow-hidden"
+                    >
+                        <div className="p-2 border-b border-[hsl(var(--admin-border)/0.3)]">
+                            <input
+                                ref={searchInputRef}
+                                type="text"
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                                placeholder="Search country..."
+                                aria-label="Search countries"
+                                className="w-full px-3 py-1.5 text-[13px] bg-[hsl(var(--admin-surface-alt)/0.5)] rounded-lg border border-[hsl(var(--admin-border)/0.4)] outline-none text-[hsl(var(--admin-text-main))] placeholder:text-[hsl(var(--admin-text-muted))]"
+                            />
                         </div>
-                    )}
-                </div>
+                        <div className="max-h-52 overflow-y-auto">
+                            {filtered.length === 0 ? (
+                                <p className="px-4 py-3 text-[13px] text-[hsl(var(--admin-text-muted))]">No results</p>
+                            ) : filtered.map(c => (
+                                <button
+                                    key={c.iso2}
+                                    type="button"
+                                    role="option"
+                                    onClick={() => handleCountrySelect(c)}
+                                    className={`w-full flex items-center gap-2 px-3 py-2.5 text-[13px] hover:bg-[hsl(var(--admin-surface-alt))] transition-colors ${
+                                        c.iso2 === selected.iso2
+                                            ? 'bg-[hsl(var(--admin-primary)/0.08)] text-[hsl(var(--admin-primary))]'
+                                            : 'text-[hsl(var(--admin-text-main))]'
+                                    }`}
+                                >
+                                    <span className="text-base leading-none flex-shrink-0">{c.flag}</span>
+                                    <span className="flex-1 text-left truncate">{c.name}</span>
+                                    <span className="text-[hsl(var(--admin-text-muted))] text-[11px] flex-shrink-0">{c.dialCode}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>,
+                    document.body,
+                )}
 
                 {/* Phone number input + inline validation icon */}
                 <div className="flex flex-1 items-center">

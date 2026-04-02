@@ -34,7 +34,7 @@ export function FieldWrapper({ label, required, state = 'idle', error, helper, c
             </label>
 
             {/* Input container — iOS grouped row style */}
-            <div className={`relative rounded-[12px] border transition-[border-color,box-shadow] duration-150 overflow-hidden bg-[hsl(var(--admin-surface-alt)/0.5)] ${ringClass}`}>
+            <div className={`relative rounded-[12px] border transition-[border-color,box-shadow] duration-150 bg-[hsl(var(--admin-surface-alt)/0.5)] ${ringClass}`}>
                 {icon ? (
                     <div className="flex items-center">
                         <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-text-muted))] pl-3 flex-shrink-0 pointer-events-none">
