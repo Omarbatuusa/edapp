@@ -287,7 +287,7 @@ export function PhoneField({
                     aria-label={`Select country code, currently ${selected.name}`}
                     aria-haspopup="listbox"
                 >
-                    <span className="text-base leading-none">{selected.flag}</span>
+                    <img src={`https://flagcdn.com/w40/${selected.iso2.toLowerCase()}.png`} alt={selected.name} className="w-5 h-3.5 object-cover rounded-[2px]" />
                     <span className="text-[hsl(var(--admin-text-muted))] text-[12px]">{selected.dialCode}</span>
                     <span className="material-symbols-outlined text-[12px] text-[hsl(var(--admin-text-muted))]">expand_more</span>
                 </button>
@@ -332,7 +332,7 @@ export function PhoneField({
                                             : 'text-[hsl(var(--admin-text-main))]'
                                     }`}
                                 >
-                                    <span className="text-base leading-none flex-shrink-0">{c.flag}</span>
+                                    <img src={`https://flagcdn.com/w40/${c.iso2.toLowerCase()}.png`} alt={c.name} className="w-5 h-3.5 object-cover rounded-[2px] flex-shrink-0" />
                                     <span className="flex-1 text-left truncate">{c.name}</span>
                                     <span className="text-[hsl(var(--admin-text-muted))] text-[11px] flex-shrink-0">{c.dialCode}</span>
                                 </button>
