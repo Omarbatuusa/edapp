@@ -207,13 +207,15 @@ export class OnboardingController {
     const userId = req.user?.dbUserId || req.user?.uid;
     if (!userId) throw new ForbiddenException('Not authenticated');
 
-    if (!body.tenantId || !body.consents) {
-      throw new BadRequestException('tenantId and consents are required');
+    if (!body.consents) {
+      throw new BadRequestException('consents are required');
     }
+    // Platform admins may not have a tenantId — use 'platform' as fallback
+    const effectiveTenantId = body.tenantId || 'platform';
 
     const acceptance = await this.acceptanceRepo.save({
       user_id: userId,
-      tenant_id: body.tenantId,
+      tenant_id: effectiveTenantId,
       intent: UserIntent.APP,
       role: body.role || req.user?.role || 'unknown',
       ip_address: req.ip || '0.0.0.0',
