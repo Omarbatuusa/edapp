@@ -138,9 +138,20 @@ export function PhoneField({
         c.iso2.toLowerCase().includes(search.toLowerCase())
     );
 
-    // ----- Close dropdown on outside click or scroll -----
+    // ----- Dropdown position state (updated on open + scroll) -----
+    const [dropPos, setDropPos] = useState({ top: 0, left: 0 });
+
+    const updateDropdownPos = useCallback(() => {
+        if (triggerRef.current) {
+            const rect = triggerRef.current.getBoundingClientRect();
+            setDropPos({ top: rect.bottom + 4, left: rect.left });
+        }
+    }, []);
+
+    // ----- Close dropdown on outside click, reposition on scroll -----
     useEffect(() => {
         if (!isOpen) return;
+        updateDropdownPos();
         const handleClick = (e: MouseEvent) => {
             if (
                 dropdownRef.current && !dropdownRef.current.contains(e.target as Node) &&
@@ -151,10 +162,8 @@ export function PhoneField({
             }
         };
         const handleScroll = (e: Event) => {
-            // Don't close if scrolling inside the dropdown itself
             if (dropdownRef.current?.contains(e.target as Node)) return;
-            setIsOpen(false);
-            setSearch('');
+            updateDropdownPos();
         };
         document.addEventListener('mousedown', handleClick);
         window.addEventListener('scroll', handleScroll, true);
@@ -162,7 +171,7 @@ export function PhoneField({
             document.removeEventListener('mousedown', handleClick);
             window.removeEventListener('scroll', handleScroll, true);
         };
-    }, [isOpen]);
+    }, [isOpen, updateDropdownPos]);
 
     // Focus search input when dropdown opens
     useEffect(() => {
@@ -310,8 +319,8 @@ export function PhoneField({
                         aria-label="Select country"
                         style={{
                             position: 'fixed',
-                            top: (triggerRef.current?.getBoundingClientRect().bottom ?? 0) + 4,
-                            left: triggerRef.current?.getBoundingClientRect().left ?? 0,
+                            top: dropPos.top,
+                            left: dropPos.left,
                             zIndex: 9999,
                         }}
                         className="bg-[hsl(var(--admin-surface))] border border-[hsl(var(--admin-border)/0.5)] rounded-xl shadow-xl w-72 overflow-hidden"

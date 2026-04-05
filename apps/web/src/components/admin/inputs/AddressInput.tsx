@@ -70,7 +70,6 @@ function InteractiveMap({ lat, lng }: { lat: number; lng: number }) {
     const mapDivRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<google.maps.Map | null>(null);
     const markerRef = useRef<google.maps.Marker | null>(null);
-    const [nearby, setNearby] = useState<google.maps.places.PlaceResult[]>([]);
 
     useEffect(() => {
         if (!mapDivRef.current) return;
@@ -99,39 +98,14 @@ function InteractiveMap({ lat, lng }: { lat: number; lng: number }) {
             position: center,
             map: mapRef.current,
         });
-
-        // Nearby places
-        const svc = new window.google.maps.places.PlacesService(mapRef.current);
-        svc.nearbySearch({ location: center, radius: 1000 }, (results, status) => {
-            if (status === window.google.maps.places.PlacesServiceStatus.OK && results?.length) {
-                setNearby(results.slice(0, 5));
-            } else {
-                setNearby([]);
-            }
-        });
     }, [lat, lng]);
 
     return (
-        <div className="mt-2 flex flex-col gap-2">
+        <div className="mt-2">
             <div
                 ref={mapDivRef}
                 className="h-[180px] w-full rounded-xl overflow-hidden border border-[hsl(var(--admin-border)/0.4)]"
             />
-            {nearby.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                    {nearby.map((place, i) => (
-                        <span
-                            key={place.place_id || i}
-                            className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[hsl(var(--admin-surface-alt)/0.6)] border border-[hsl(var(--admin-border)/0.4)] text-[12px] text-[hsl(var(--admin-text-sub))]"
-                        >
-                            <span className="material-symbols-outlined text-[13px] text-[hsl(var(--admin-text-muted))]">
-                                location_on
-                            </span>
-                            <span className="truncate max-w-[140px]">{place.name}</span>
-                        </span>
-                    ))}
-                </div>
-            )}
         </div>
     );
 }

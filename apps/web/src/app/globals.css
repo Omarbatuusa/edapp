@@ -745,37 +745,36 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
-/* ── Field outline system (Apple HIG inspired) ── */
+/* ── Field outline system (Apple HIG — 1px clean outlines) ── */
 /* Idle: subtle hover, clear focus */
 .field-container:hover {
-  border-color: hsl(var(--admin-focus-ring) / 0.3);
-  box-shadow: 0 0 0 3px hsl(var(--admin-focus-ring) / 0.08);
+  border-color: hsl(var(--admin-focus-ring) / 0.4);
 }
 .field-container:focus-within {
-  border-color: hsl(var(--admin-focus-ring) / 0.7);
-  box-shadow: 0 0 0 3px hsl(var(--admin-focus-ring) / 0.18);
+  border-color: hsl(var(--admin-focus-ring) / 0.8);
+  box-shadow: 0 0 0 1px hsl(var(--admin-focus-ring) / 0.3);
 }
 
-/* Success: persistent blue glow */
+/* Success: blue border */
 .field-container-success {
-  box-shadow: 0 0 0 3px hsl(var(--admin-focus-ring) / 0.12);
+  box-shadow: 0 0 0 1px hsl(var(--admin-focus-ring) / 0.2);
 }
 .field-container-success:hover {
-  box-shadow: 0 0 0 3px hsl(var(--admin-focus-ring) / 0.18);
+  box-shadow: 0 0 0 1px hsl(var(--admin-focus-ring) / 0.3);
 }
 .field-container-success:focus-within {
-  box-shadow: 0 0 0 3px hsl(var(--admin-focus-ring) / 0.25);
+  box-shadow: 0 0 0 1px hsl(var(--admin-focus-ring) / 0.4);
 }
 
-/* Error: persistent red glow */
+/* Error: red border */
 .field-container-error {
-  box-shadow: 0 0 0 3px hsl(var(--admin-danger) / 0.12);
+  box-shadow: 0 0 0 1px hsl(var(--admin-danger) / 0.2);
 }
 .field-container-error:hover {
-  box-shadow: 0 0 0 3px hsl(var(--admin-danger) / 0.18);
+  box-shadow: 0 0 0 1px hsl(var(--admin-danger) / 0.3);
 }
 .field-container-error:focus-within {
-  box-shadow: 0 0 0 3px hsl(var(--admin-danger) / 0.25);
+  box-shadow: 0 0 0 1px hsl(var(--admin-danger) / 0.4);
 }
 
 /* Surface-filled inputs */
