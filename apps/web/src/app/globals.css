@@ -745,34 +745,37 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
-/* ── Field container focus/hover ring (used by FieldWrapper idle state) ── */
+/* ── Field outline system (Apple HIG inspired) ── */
+/* Idle: subtle hover, clear focus */
 .field-container:hover {
-  box-shadow: 0 0 0 3px hsl(var(--admin-focus-ring) / 0.22);
+  border-color: hsl(var(--admin-focus-ring) / 0.3);
+  box-shadow: 0 0 0 3px hsl(var(--admin-focus-ring) / 0.08);
 }
 .field-container:focus-within {
-  box-shadow: 0 0 0 3px hsl(var(--admin-focus-ring) / 0.45);
+  border-color: hsl(var(--admin-focus-ring) / 0.7);
+  box-shadow: 0 0 0 3px hsl(var(--admin-focus-ring) / 0.18);
 }
 
-/* ── Success ring (blue, same as focus — indicates valid field) ── */
+/* Success: persistent blue glow */
 .field-container-success {
-  box-shadow: 0 0 0 3px hsl(var(--admin-focus-ring) / 0.25);
+  box-shadow: 0 0 0 3px hsl(var(--admin-focus-ring) / 0.12);
 }
 .field-container-success:hover {
-  box-shadow: 0 0 0 3px hsl(var(--admin-focus-ring) / 0.35);
+  box-shadow: 0 0 0 3px hsl(var(--admin-focus-ring) / 0.18);
 }
 .field-container-success:focus-within {
-  box-shadow: 0 0 0 3px hsl(var(--admin-focus-ring) / 0.45);
+  box-shadow: 0 0 0 3px hsl(var(--admin-focus-ring) / 0.25);
 }
 
-/* ── Error ring (red — indicates invalid field) ── */
+/* Error: persistent red glow */
 .field-container-error {
-  box-shadow: 0 0 0 3px hsl(var(--admin-danger) / 0.25);
+  box-shadow: 0 0 0 3px hsl(var(--admin-danger) / 0.12);
 }
 .field-container-error:hover {
-  box-shadow: 0 0 0 3px hsl(var(--admin-danger) / 0.35);
+  box-shadow: 0 0 0 3px hsl(var(--admin-danger) / 0.18);
 }
 .field-container-error:focus-within {
-  box-shadow: 0 0 0 3px hsl(var(--admin-danger) / 0.45);
+  box-shadow: 0 0 0 3px hsl(var(--admin-danger) / 0.25);
 }
 
 /* Surface-filled inputs */

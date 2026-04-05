@@ -138,7 +138,7 @@ export function PhoneField({
         c.iso2.toLowerCase().includes(search.toLowerCase())
     );
 
-    // ----- Close dropdown on outside click -----
+    // ----- Close dropdown on outside click or scroll -----
     useEffect(() => {
         if (!isOpen) return;
         const handleClick = (e: MouseEvent) => {
@@ -150,8 +150,18 @@ export function PhoneField({
                 setSearch('');
             }
         };
+        const handleScroll = (e: Event) => {
+            // Don't close if scrolling inside the dropdown itself
+            if (dropdownRef.current?.contains(e.target as Node)) return;
+            setIsOpen(false);
+            setSearch('');
+        };
         document.addEventListener('mousedown', handleClick);
-        return () => document.removeEventListener('mousedown', handleClick);
+        window.addEventListener('scroll', handleScroll, true);
+        return () => {
+            document.removeEventListener('mousedown', handleClick);
+            window.removeEventListener('scroll', handleScroll, true);
+        };
     }, [isOpen]);
 
     // Focus search input when dropdown opens

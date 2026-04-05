@@ -19,25 +19,25 @@ interface FieldWrapperProps {
 }
 
 export function FieldWrapper({ label, required, state = 'idle', error, helper, children, className = '', showIcon = true, icon }: FieldWrapperProps) {
-    const ringClass = state === 'error'
-        ? 'border-[hsl(var(--admin-danger)/0.55)] field-container-error'
+    const containerClass = state === 'error'
+        ? 'border-[hsl(var(--admin-danger)/0.6)] field-container-error'
         : state === 'success'
-        ? 'border-[hsl(var(--admin-focus-ring)/0.3)] field-container-success'
-        : 'border-[hsl(var(--admin-border)/0.6)] field-container';
+        ? 'border-[hsl(var(--admin-focus-ring)/0.35)] field-container-success'
+        : 'border-[hsl(var(--admin-border)/0.55)] field-container';
 
     return (
         <div className={`flex flex-col gap-1 ${className}`}>
             {/* Label */}
-            <label className="text-[13px] font-medium text-[hsl(var(--admin-text-sub))] flex items-center gap-1 px-1">
+            <label className="text-[13px] font-semibold text-[hsl(var(--admin-text-sub))] flex items-center gap-1 px-0.5 tracking-tight">
                 {label}
-                {required && <span className="text-red-500 text-[11px]">*</span>}
+                {required && <span className="text-[hsl(var(--admin-danger))] text-[11px]">*</span>}
             </label>
 
-            {/* Input container — iOS grouped row style */}
-            <div className={`relative rounded-[12px] border transition-[border-color,box-shadow] duration-150 bg-[hsl(var(--admin-surface-alt)/0.5)] ${ringClass}`}>
+            {/* Input container — Apple grouped row style */}
+            <div className={`relative rounded-[10px] border-[1.5px] transition-all duration-200 ease-out bg-[hsl(var(--admin-surface))] ${containerClass}`}>
                 {icon ? (
                     <div className="flex items-center">
-                        <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-text-muted))] pl-3 flex-shrink-0 pointer-events-none">
+                        <span className="material-symbols-outlined text-[18px] text-[hsl(var(--admin-text-muted)/0.7)] pl-3 flex-shrink-0 pointer-events-none">
                             {icon}
                         </span>
                         <div className="flex-1 min-w-0">{children}</div>
@@ -56,9 +56,9 @@ export function FieldWrapper({ label, required, state = 'idle', error, helper, c
             </div>
 
             {/* Feedback row — min-height prevents layout shift */}
-            <div className="min-h-[18px] px-1">
+            <div className="min-h-[18px] px-0.5">
                 {state === 'error' && error ? (
-                    <p className="text-[12px] text-[hsl(var(--admin-danger))] font-medium">{error}</p>
+                    <p className="text-[12px] text-[hsl(var(--admin-danger)/0.85)] font-medium">{error}</p>
                 ) : helper ? (
                     <p className="text-[11px] text-[hsl(var(--admin-text-muted))] leading-snug">{helper}</p>
                 ) : null}
