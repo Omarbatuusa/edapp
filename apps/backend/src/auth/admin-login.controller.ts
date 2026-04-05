@@ -8,7 +8,8 @@ import { User } from '../users/user.entity';
 import { RoleAssignment, UserRole } from '../users/role-assignment.entity';
 import { TenantMembership } from './entities/tenant-membership.entity';
 
-/** Roles allowed to log in via admin.edapp.co.za */
+/** Roles allowed to log in via admin.edapp.co.za — platform-only.
+ *  Tenant-scoped users (tenant_admin, principal, etc.) must use {tenant}.edapp.co.za/login. */
 const ADMIN_ROLES: string[] = [
     UserRole.PLATFORM_SUPER_ADMIN,
     UserRole.APP_SUPER_ADMIN,
@@ -17,22 +18,6 @@ const ADMIN_ROLES: string[] = [
     UserRole.APP_SECRETARY,
     UserRole.PLATFORM_SUPPORT,
     UserRole.APP_SUPPORT,
-    UserRole.TENANT_ADMIN,
-    UserRole.TENANT_BRAND_ADMIN,
-    UserRole.MAIN_BRANCH_ADMIN,
-    UserRole.BRANCH_ADMIN,
-    UserRole.BRANCH_OPERATIONS_ADMIN,
-    UserRole.ADMISSIONS_OFFICER,
-    UserRole.FINANCE_OFFICER,
-    UserRole.HR_ADMIN,
-    UserRole.IT_ADMIN,
-    UserRole.PRINCIPAL,
-    UserRole.DEPUTY_PRINCIPAL,
-    UserRole.SMT,
-    UserRole.HOD,
-    UserRole.RECEPTION,
-    UserRole.SCHOOL_OPERATIONS_MANAGER,
-    UserRole.SCHOOL_ADMINISTRATOR,
 ];
 
 /** Priority order — first match wins */
@@ -44,22 +29,6 @@ const ROLE_PRIORITY: string[] = [
     UserRole.APP_SECRETARY,
     UserRole.PLATFORM_SUPPORT,
     UserRole.APP_SUPPORT,
-    UserRole.TENANT_ADMIN,
-    UserRole.TENANT_BRAND_ADMIN,
-    UserRole.MAIN_BRANCH_ADMIN,
-    UserRole.BRANCH_ADMIN,
-    UserRole.BRANCH_OPERATIONS_ADMIN,
-    UserRole.ADMISSIONS_OFFICER,
-    UserRole.PRINCIPAL,
-    UserRole.DEPUTY_PRINCIPAL,
-    UserRole.SCHOOL_OPERATIONS_MANAGER,
-    UserRole.SCHOOL_ADMINISTRATOR,
-    UserRole.SMT,
-    UserRole.HOD,
-    UserRole.FINANCE_OFFICER,
-    UserRole.HR_ADMIN,
-    UserRole.IT_ADMIN,
-    UserRole.RECEPTION,
 ];
 
 @Controller('auth')

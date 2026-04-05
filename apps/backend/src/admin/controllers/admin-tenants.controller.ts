@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import * as firebaseAdmin from 'firebase-admin';
+import { randomBytes } from 'crypto';
 import { FirebaseAuthGuard } from '../../auth/firebase-auth.guard';
 import { Tenant, TenantStatus } from '../../tenants/tenant.entity';
 import { TenantFeature } from '../entities/tenant-feature.entity';
@@ -191,6 +192,7 @@ export class AdminTenantsController {
         enable_student_pin: true,
         pin_length: 4,
       },
+      qr_token_secret: randomBytes(32).toString('hex'),
     } as any)) as unknown as Tenant;
 
     // Auto-create tenant domains

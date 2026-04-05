@@ -263,24 +263,21 @@ async function seed() {
     const allSdn = tenantMap['allied-sandton'];
 
     await roleRepo.save([
-        // Platform roles
+        // Platform roles — no tenant scope
         { user_id: superAdmin1.id, role: UserRole.PLATFORM_SUPER_ADMIN, is_active: true },
         { user_id: superAdmin2.id, role: UserRole.PLATFORM_SUPER_ADMIN, is_active: true },
         // Lakewood
-        { user_id: superAdmin1.id, tenant_id: lak.id, role: UserRole.MAIN_BRANCH_ADMIN, is_active: true },
         { user_id: lakewoodAdmin.id, tenant_id: lak.id, role: UserRole.TENANT_ADMIN, is_active: true },
         { user_id: lakewoodTeacher.id, tenant_id: lak.id, role: UserRole.TEACHER, is_active: true },
         { user_id: lakewoodParent.id, tenant_id: lak.id, role: UserRole.PARENT, is_active: true },
         { user_id: lakewoodStudent.id, tenant_id: lak.id, role: UserRole.LEARNER, is_active: true },
         { user_id: lakewoodFinance.id, tenant_id: lak.id, role: UserRole.FINANCE_OFFICER, is_active: true },
         // Allied (main)
-        { user_id: superAdmin1.id, tenant_id: allied.id, role: UserRole.MAIN_BRANCH_ADMIN, is_active: true },
         { user_id: alliedParent.id, tenant_id: allied.id, role: UserRole.PARENT, is_active: true },
         { user_id: alliedStaff.id, tenant_id: allied.id, role: UserRole.TENANT_ADMIN, is_active: true },
         { user_id: alliedLearner.id, tenant_id: allied.id, role: UserRole.LEARNER, is_active: true },
         // Allied Sandton
         { user_id: alliedStaff.id, tenant_id: allSdn.id, role: UserRole.TEACHER, is_active: true },
-        { user_id: superAdmin1.id, tenant_id: allSdn.id, role: UserRole.MAIN_BRANCH_ADMIN, is_active: true },
     ]);
 
     const parentChildRepo = AppDataSource.getRepository(ParentChildLink);

@@ -126,6 +126,9 @@ import { TenantSubscription } from '../tenants/tenant-subscription.entity';
 import { TenantPayment } from '../tenants/tenant-payment.entity';
 import { AdminSubscriptionsController } from './controllers/admin-subscriptions.controller';
 import { AdminBrandsController } from './admin-brands.controller';
+import { AdminQrController } from './controllers/admin-qr.controller';
+import { AdminPlatformSettingsController } from './controllers/admin-platform-settings.controller';
+import { PlatformSettings } from './entities/platform-settings.entity';
 import { Brand } from '../brands/brand.entity';
 import { PhoneNormalizationService } from './services/phone-normalization.service';
 import { ValidationService } from './services/validation.service';
@@ -136,6 +139,7 @@ import { ValidationService } from './services/validation.service';
       Tenant,
       Brand,
       User,
+      PlatformSettings,
       RoleAssignment,
       PasswordHistory,
       DictPhase,
@@ -253,6 +257,8 @@ import { ValidationService } from './services/validation.service';
     MyLinkedTenantsController,
     AdminSubscriptionsController,
     AdminBrandsController,
+    AdminQrController,
+    AdminPlatformSettingsController,
   ],
   providers: [
     BulkImportService,

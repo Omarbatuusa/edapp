@@ -73,9 +73,15 @@ export function ProfileSheet({
     const roleMeta = currentRole ? getRoleMetadata(currentRole.role) : null;
 
     const { logout } = useAuth();
+    const PLATFORM_ROLES = ['platform_super_admin', 'app_super_admin', 'platform_secretary', 'app_secretary', 'platform_support', 'app_support', 'brand_admin'];
     const handleSignOut = async () => {
+        const isPlatform = currentRole && PLATFORM_ROLES.includes(currentRole.role);
         await logout();
-        router.push(`/tenant/${tenantSlug}/login`);
+        if (isPlatform) {
+            window.location.href = 'https://app.edapp.co.za';
+        } else {
+            router.push(`/tenant/${tenantSlug}/login`);
+        }
     };
 
     const handleThemeChange = (newTheme: ThemeOption) => {

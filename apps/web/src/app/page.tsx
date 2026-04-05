@@ -115,7 +115,7 @@ export default function DiscoveryPage() {
                 href="https://admin.edapp.co.za"
                 className="text-sm font-medium text-slate-400 hover:text-primary transition-colors mt-2"
               >
-                EdApp Super Admin
+                EdApp Admin Login
               </a>
             </div>
           </div>
