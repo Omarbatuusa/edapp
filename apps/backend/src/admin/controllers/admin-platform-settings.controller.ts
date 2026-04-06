@@ -74,7 +74,7 @@ export class AdminPlatformSettingsController {
         }
 
         // Upload to GCS
-        const objectKey = `platform-logos/${Date.now()}-${file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+        const objectKey = `uploads/platform-logos/${Date.now()}-${file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
         await this.storageService.uploadBuffer(objectKey, file.buffer, file.mimetype);
         const fileKey = objectKey;
 
