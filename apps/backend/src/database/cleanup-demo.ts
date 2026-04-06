@@ -57,105 +57,143 @@ async function cleanup() {
         if (dryRun) {
             console.log('\n🔍 DRY RUN complete. Run with --confirm to execute deletions.');
             await qr.rollbackTransaction();
+            await qr.release();
             await ds.destroy();
             return;
         }
+
+        // Helper: delete from table, skip if table doesn't exist
+        const del = async (table: string) => {
+            try {
+                const r = await qr.query(`DELETE FROM "${table}"`);
+                const count = Array.isArray(r) ? (r[1] ?? 0) : 0;
+                console.log(`   ✅ ${table}: ${count} rows`);
+            } catch (e: any) {
+                if (e?.code === '42P01') { console.log(`   ⏭️  ${table}: not found (skipped)`); }
+                else { console.log(`   ⚠️  ${table}: ${e?.message || 'error'} (skipped)`); }
+            }
+        };
 
         // 4. Delete in FK-safe order
         console.log('\n🗑️  Deleting data...');
 
         // Attendance
-        const r1 = await qr.query(`DELETE FROM attendance_events`);
-        console.log(`   ✅ attendance_events: ${r1[1]} rows`);
-        const r2 = await qr.query(`DELETE FROM kiosk_devices`);
-        console.log(`   ✅ kiosk_devices: ${r2[1]} rows`);
-        const r3 = await qr.query(`DELETE FROM school_classes`);
-        console.log(`   ✅ school_classes: ${r3[1]} rows`);
-        const r4 = await qr.query(`DELETE FROM attendance_policies`);
-        console.log(`   ✅ attendance_policies: ${r4[1]} rows`);
+        await del('attendance_event');
+        await del('attendance_events');
+        await del('kiosk_device');
+        await del('kiosk_devices');
+        await del('school_class');
+        await del('school_classes');
+        await del('attendance_policy');
+        await del('attendance_policies');
 
         // Communication
-        const r5 = await qr.query(`DELETE FROM messages`);
-        console.log(`   ✅ messages: ${r5[1]} rows`);
-        const r6 = await qr.query(`DELETE FROM thread_members`);
-        console.log(`   ✅ thread_members: ${r6[1]} rows`);
-        const r7 = await qr.query(`DELETE FROM threads`);
-        console.log(`   ✅ threads: ${r7[1]} rows`);
+        await del('message');
+        await del('messages');
+        await del('thread_member');
+        await del('thread_members');
+        await del('thread');
+        await del('threads');
 
         // Family
-        const r8 = await qr.query(`DELETE FROM parent_child_links`);
-        console.log(`   ✅ parent_child_links: ${r8[1]} rows`);
+        await del('parent_child_link');
+        await del('parent_child_links');
 
         // Profiles & applications
-        for (const table of ['enrollment_applications', 'learner_profiles', 'staff_profiles', 'guardian_profiles', 'emergency_contacts', 'family_doctors', 'families', 'eldest_learners', 'curricula']) {
-            try {
-                const r = await qr.query(`DELETE FROM ${table}`);
-                console.log(`   ✅ ${table}: ${r[1]} rows`);
-            } catch { console.log(`   ⏭️  ${table}: table not found (skipped)`); }
-        }
+        for (const table of [
+            'enrollment_application', 'enrollment_applications',
+            'learner_profile', 'learner_profiles',
+            'staff_profile', 'staff_profiles',
+            'guardian_profile', 'guardian_profiles',
+            'emergency_contact', 'emergency_contacts',
+            'family_doctor', 'family_doctors',
+            'family', 'families',
+            'eldest_learner', 'eldest_learners',
+            'curriculum', 'curricula',
+        ]) { await del(table); }
 
         // Admin data
-        const r9 = await qr.query(`DELETE FROM admin_drafts`);
-        console.log(`   ✅ admin_drafts: ${r9[1]} rows`);
-        const r10 = await qr.query(`DELETE FROM admissions_process_cards`);
-        console.log(`   ✅ admissions_process_cards: ${r10[1]} rows`);
-        const r11 = await qr.query(`DELETE FROM tenant_features`);
-        console.log(`   ✅ tenant_features: ${r11[1]} rows`);
-        const r12 = await qr.query(`DELETE FROM audit_events`);
-        console.log(`   ✅ audit_events: ${r12[1]} rows`);
+        await del('admin_draft');
+        await del('admin_drafts');
+        await del('admissions_process_card');
+        await del('admissions_process_cards');
+        await del('tenant_feature');
+        await del('tenant_features');
+        await del('audit_event');
+        await del('audit_events');
+        await del('platform_settings');
 
         // Academic
-        for (const table of ['subject_offerings', 'subject_streams', 'tenant_phase_links', 'tenant_grade_links']) {
-            try {
-                const r = await qr.query(`DELETE FROM ${table}`);
-                console.log(`   ✅ ${table}: ${r[1]} rows`);
-            } catch { console.log(`   ⏭️  ${table}: skipped`); }
-        }
+        for (const table of [
+            'subject_offering', 'subject_offerings',
+            'subject_stream', 'subject_streams',
+            'tenant_phase_link', 'tenant_phase_links',
+            'tenant_grade_link', 'tenant_grade_links',
+        ]) { await del(table); }
 
-        // Role assignments — delete tenant-scoped roles for ALL users,
+        // Role assignments — delete tenant-scoped roles for preserved users,
         // and ALL roles for demo users. Keep platform roles for preserved users.
         const preservedIds = preserved.map((u: any) => u.id);
         if (preservedIds.length > 0) {
-            // Delete tenant-scoped role assignments for preserved users
-            const r13 = await qr.query(
-                `DELETE FROM role_assignments WHERE user_id IN (${preservedIds.map((_: any, i: number) => `$${i + 1}`).join(',')}) AND tenant_id IS NOT NULL`,
-                preservedIds,
-            );
-            console.log(`   ✅ role_assignments (preserved users, tenant-scoped): ${r13[1]} rows`);
+            try {
+                const r13 = await qr.query(
+                    `DELETE FROM "role_assignment" WHERE user_id IN (${preservedIds.map((_: any, i: number) => `$${i + 1}`).join(',')}) AND tenant_id IS NOT NULL`,
+                    preservedIds,
+                );
+                console.log(`   ✅ role_assignment (preserved, tenant-scoped): ${r13[1] ?? 0} rows`);
+            } catch {
+                try {
+                    const r13 = await qr.query(
+                        `DELETE FROM "role_assignments" WHERE user_id IN (${preservedIds.map((_: any, i: number) => `$${i + 1}`).join(',')}) AND tenant_id IS NOT NULL`,
+                        preservedIds,
+                    );
+                    console.log(`   ✅ role_assignments (preserved, tenant-scoped): ${r13[1] ?? 0} rows`);
+                } catch { console.log(`   ⏭️  role_assignments (preserved): skipped`); }
+            }
         }
 
-        // Delete ALL role assignments for demo users
         if (demoUsers.length > 0) {
             const demoIds = demoUsers.map((u: any) => u.id);
-            const r14 = await qr.query(
-                `DELETE FROM role_assignments WHERE user_id IN (${demoIds.map((_: any, i: number) => `$${i + 1}`).join(',')})`,
-                demoIds,
-            );
-            console.log(`   ✅ role_assignments (demo users): ${r14[1]} rows`);
+            const placeholders = demoIds.map((_: any, i: number) => `$${i + 1}`).join(',');
+            try {
+                const r14 = await qr.query(`DELETE FROM "role_assignment" WHERE user_id IN (${placeholders})`, demoIds);
+                console.log(`   ✅ role_assignment (demo users): ${r14[1] ?? 0} rows`);
+            } catch {
+                try {
+                    const r14 = await qr.query(`DELETE FROM "role_assignments" WHERE user_id IN (${placeholders})`, demoIds);
+                    console.log(`   ✅ role_assignments (demo users): ${r14[1] ?? 0} rows`);
+                } catch { console.log(`   ⏭️  role_assignments (demo): skipped`); }
+            }
         }
 
         // Tenant infrastructure
-        const r15 = await qr.query(`DELETE FROM tenant_domains`);
-        console.log(`   ✅ tenant_domains: ${r15[1]} rows`);
-        const r16 = await qr.query(`DELETE FROM branches`);
-        console.log(`   ✅ branches: ${r16[1]} rows`);
-        const r17 = await qr.query(`DELETE FROM tenants`);
-        console.log(`   ✅ tenants: ${r17[1]} rows`);
-        const r18 = await qr.query(`DELETE FROM brands`);
-        console.log(`   ✅ brands: ${r18[1]} rows`);
+        await del('tenant_domain');
+        await del('tenant_domains');
+        await del('branch');
+        await del('branches');
+        await del('tenant');
+        await del('tenants');
+        await del('brand');
+        await del('brands');
 
-        // Demo users
+        // Demo users — clean up remaining FK references first
         if (demoUsers.length > 0) {
             const demoIds = demoUsers.map((u: any) => u.id);
-            // Delete any remaining references first
-            try { await qr.query(`DELETE FROM user_policy_acceptances WHERE user_id IN (${demoIds.map((_: any, i: number) => `$${i + 1}`).join(',')})`, demoIds); } catch {}
-            try { await qr.query(`DELETE FROM notification_events WHERE user_id IN (${demoIds.map((_: any, i: number) => `$${i + 1}`).join(',')})`, demoIds); } catch {}
+            const placeholders = demoIds.map((_: any, i: number) => `$${i + 1}`).join(',');
+            try { await qr.query(`DELETE FROM "user_policy_acceptance" WHERE user_id IN (${placeholders})`, demoIds); } catch {}
+            try { await qr.query(`DELETE FROM "user_policy_acceptances" WHERE user_id IN (${placeholders})`, demoIds); } catch {}
+            try { await qr.query(`DELETE FROM "notification_event" WHERE user_id IN (${placeholders})`, demoIds); } catch {}
+            try { await qr.query(`DELETE FROM "notification_events" WHERE user_id IN (${placeholders})`, demoIds); } catch {}
 
-            const r19 = await qr.query(
-                `DELETE FROM users WHERE id IN (${demoIds.map((_: any, i: number) => `$${i + 1}`).join(',')})`,
-                demoIds,
-            );
-            console.log(`   ✅ users (demo): ${r19[1]} rows`);
+            try {
+                const r19 = await qr.query(`DELETE FROM "user" WHERE id IN (${placeholders})`, demoIds);
+                console.log(`   ✅ user (demo): ${r19[1] ?? 0} rows`);
+            } catch {
+                try {
+                    const r19 = await qr.query(`DELETE FROM "users" WHERE id IN (${placeholders})`, demoIds);
+                    console.log(`   ✅ users (demo): ${r19[1] ?? 0} rows`);
+                } catch (e: any) { console.log(`   ⚠️  users: ${e?.message || 'error'}`); }
+            }
         }
 
         await qr.commitTransaction();
