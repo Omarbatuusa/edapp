@@ -45,7 +45,9 @@ export default function TenantsList({ slug, readOnly = false, showNewButton = tr
       if (statusFilter) params.set('status', statusFilter);
       const res = await authFetch(`/v1/admin/tenants?${params}`);
       if (res.ok) {
-        setTenants(await res.json());
+        const all = await res.json();
+        // Hide the edapp platform tenant — it's not a real school
+        setTenants(Array.isArray(all) ? all.filter((t: Tenant) => t.tenant_slug !== 'edapp') : []);
       } else {
         const json = await res.json().catch(() => ({}));
         setError(json.message || `Failed to load schools (${res.status})`);

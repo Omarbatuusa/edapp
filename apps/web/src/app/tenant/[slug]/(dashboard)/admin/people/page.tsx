@@ -14,11 +14,12 @@ export default function PeoplePage({ params }: Props) {
     setTenantId(id);
   }, [slug]);
 
+  const isPlatform = slug === 'edapp';
   return (
     <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-[hsl(var(--admin-text-main))]">People & Roles</h1>
-        <p className="text-[15px] font-medium text-[hsl(var(--admin-text-sub))] mt-1">Manage users and assign roles within your school.</p>
+        <h1 className="text-3xl font-bold tracking-tight text-[hsl(var(--admin-text-main))]">{isPlatform ? 'Platform Admins' : 'People & Roles'}</h1>
+        <p className="text-[15px] font-medium text-[hsl(var(--admin-text-sub))] mt-1">{isPlatform ? 'Manage platform admin users — super admins, secretaries, and support.' : 'Manage users and assign roles within your school.'}</p>
       </div>
       {tenantId ? <PeopleList tenantId={tenantId} /> : (
         <div className="ios-card p-8 text-center text-[hsl(var(--admin-text-muted))] text-[15px] font-medium">

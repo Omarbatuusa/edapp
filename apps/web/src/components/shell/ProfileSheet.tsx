@@ -115,7 +115,7 @@ export function ProfileSheet({
                     inset-x-0 bottom-0 max-h-[85vh] rounded-t-2xl shadow-2xl
                     animate-in slide-in-from-bottom duration-300
                     /* Desktop: right panel */
-                    md:inset-y-0 md:right-0 md:left-auto md:bottom-auto md:top-0 md:w-96 md:max-h-full md:rounded-none
+                    md:inset-y-0 md:right-0 md:left-auto md:bottom-auto md:top-0 md:w-96 md:h-screen md:max-h-screen md:rounded-none
                     md:animate-in md:slide-in-from-right md:duration-300
                 "
                 role="dialog"
