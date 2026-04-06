@@ -107,7 +107,25 @@ export function TenantProvider({ slug, children }: { slug: string; children: Rea
 
     // Derive display values
     const tenantDisplayName = data?.school_name || `${slug.charAt(0).toUpperCase()}${slug.slice(1)} School`;
-    const tenantLogoUrl = data?.branches?.find(b => b.is_main_branch)?.school_logo_url || null;
+    const [platformLogoUrl, setPlatformLogoUrl] = useState<string | null>(null);
+
+    // For edapp platform slug, fetch platform logo from settings
+    useEffect(() => {
+        if (slug !== 'edapp') return;
+        fetch('/v1/admin/platform-settings/platform_logo')
+            .then(r => r.ok ? r.json() : null)
+            .then((d: any) => {
+                if (d?.value?.file_key) {
+                    fetch(`/v1/storage/read-url?key=${encodeURIComponent(d.value.file_key)}`)
+                        .then(r => r.ok ? r.json() : null)
+                        .then((u: any) => { if (u?.url) setPlatformLogoUrl(u.url); })
+                        .catch(() => {});
+                }
+            })
+            .catch(() => {});
+    }, [slug]);
+
+    const tenantLogoUrl = (slug === 'edapp' ? platformLogoUrl : null) || data?.branches?.find((b: any) => b.is_main_branch)?.school_logo_url || null;
     const branches = data?.branches || [];
 
     const scopeLabel = scope

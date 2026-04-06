@@ -53,7 +53,7 @@ const PLATFORM_ADMIN_CONFIG: RoleNavConfig = {
         { id: 'dictionaries', icon: 'dictionary', label: 'Dictionaries', href: '/dictionaries' },
         { id: 'people', icon: 'group', label: 'People', href: '/people' },
         { id: 'audit', icon: 'history', label: 'Audit Log', href: '/audit' },
-        { id: 'settings', icon: 'settings', label: 'Settings', href: '/control' },
+        { id: 'settings', icon: 'settings', label: 'Settings', href: '/settings' },
     ],
     menuSections: [
         {
@@ -66,7 +66,7 @@ const PLATFORM_ADMIN_CONFIG: RoleNavConfig = {
         {
             title: 'System',
             items: [
-                { id: 'settings', icon: 'settings', label: 'Settings', href: '/control' },
+                { id: 'settings', icon: 'settings', label: 'Settings', href: '/settings' },
             ],
         },
     ],
@@ -82,7 +82,7 @@ const PLATFORM_ADMIN_CONFIG: RoleNavConfig = {
         ]},
         { title: 'System', items: [
             { id: 'audit', icon: 'history', label: 'Audit Log', href: '/audit' },
-            { id: 'settings', icon: 'settings', label: 'Settings', href: '/control' },
+            { id: 'settings', icon: 'settings', label: 'Settings', href: '/settings' },
         ]},
     ],
     getBasePath: (slug) => `/tenant/${slug}/admin`,
