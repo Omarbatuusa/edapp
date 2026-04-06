@@ -38,7 +38,7 @@ export default function SettingsHub() {
             // Load platform settings
             authFetch('/v1/admin/platform-settings')
                 .then(r => r.ok ? r.json() : {})
-                .then(data => {
+                .then((data: any) => {
                     if (data.platform_name) setPlatformName(data.platform_name);
                     if (data.platform_logo?.file_key) {
                         authFetch(`/v1/storage/read-url?key=${encodeURIComponent(data.platform_logo.file_key)}`)
