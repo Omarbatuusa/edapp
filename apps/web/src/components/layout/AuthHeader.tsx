@@ -27,16 +27,31 @@ export function AuthHeader({
     const { resolvedTheme } = useTheme()
     const [mounted, setMounted] = useState(false)
 
+    const [platformLogoUrl, setPlatformLogoUrl] = useState<string | null>(null)
+
     useEffect(() => {
         setMounted(true)
+        // Fetch platform logo from settings API
+        fetch('/v1/admin/platform-settings/platform_logo')
+            .then(r => r.ok ? r.json() : null)
+            .then(data => {
+                if (data?.value?.file_key) {
+                    fetch(`/v1/storage/read-url?key=${encodeURIComponent(data.value.file_key)}`)
+                        .then(r => r.ok ? r.json() : null)
+                        .then(urlData => { if (urlData?.url) setPlatformLogoUrl(urlData.url) })
+                        .catch(() => {})
+                }
+            })
+            .catch(() => {})
     }, [])
 
     const handleChangeSchool = () => {
         window.location.href = 'https://app.edapp.co.za'
     }
 
-    // Determine which logo to use based on theme
-    const edAppLogo = mounted && resolvedTheme === 'dark' ? '/edapp-logo-white.png' : '/edapp-logo.png'
+    // Determine which logo to use: platform custom logo > theme-based static
+    const staticLogo = mounted && resolvedTheme === 'dark' ? '/edapp-logo-white.png' : '/edapp-logo.png'
+    const edAppLogo = platformLogoUrl || staticLogo
 
     return (
         <header

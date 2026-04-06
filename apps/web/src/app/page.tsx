@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { AuthFooter } from "@/components/layout/AuthFooter"
 import { AuthHeader } from "@/components/layout/AuthHeader"
 import { HelpPopup } from "@/components/discovery/help-popup"
+import { QrScanModal } from "@/components/discovery/QrScanModal"
 
 export default function DiscoveryPage() {
   const router = useRouter()
@@ -13,6 +14,7 @@ export default function DiscoveryPage() {
   const [error, setError] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
+  const [showQrScan, setShowQrScan] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -106,7 +108,7 @@ export default function DiscoveryPage() {
 
             {/* Secondary Actions */}
             <div className="mt-6 flex flex-col items-center gap-3">
-              <button className="flex items-center gap-2 px-5 py-2.5 rounded-full text-primary font-medium hover:bg-primary/5 active:bg-primary/10 transition-colors">
+              <button type="button" onClick={() => setShowQrScan(true)} className="flex items-center gap-2 px-5 py-2.5 rounded-full text-primary font-medium hover:bg-primary/5 active:bg-primary/10 transition-colors">
                 <span className="material-symbols-outlined text-xl">qr_code_scanner</span>
                 <span>Scan QR Code</span>
               </button>
@@ -126,6 +128,9 @@ export default function DiscoveryPage() {
 
       {/* Help Popup */}
       <HelpPopup isOpen={showHelp} onClose={() => setShowHelp(false)} />
+
+      {/* QR Scan Modal */}
+      <QrScanModal open={showQrScan} onClose={() => setShowQrScan(false)} />
 
       {/* Decorative Gradients */}
       <div className="fixed top-0 right-0 -z-10 opacity-30 dark:opacity-10 pointer-events-none">

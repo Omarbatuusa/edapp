@@ -74,7 +74,9 @@ export class AdminPlatformSettingsController {
         }
 
         // Upload to GCS
-        const fileKey = await this.storageService.uploadToGcs(file, 'platform-logos');
+        const objectKey = `platform-logos/${Date.now()}-${file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+        await this.storageService.uploadBuffer(objectKey, file.buffer, file.mimetype);
+        const fileKey = objectKey;
 
         // Save setting
         let setting = await this.settingsRepo.findOne({ where: { key: 'platform_logo' } });

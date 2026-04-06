@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Res, UseGuards, NotFoundException, ForbiddenException, Req } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Response } from 'express';
+import type { Response } from 'express';
 import * as QRCode from 'qrcode';
 import { FirebaseAuthGuard } from '../../auth/firebase-auth.guard';
 import { Tenant } from '../../tenants/tenant.entity';
