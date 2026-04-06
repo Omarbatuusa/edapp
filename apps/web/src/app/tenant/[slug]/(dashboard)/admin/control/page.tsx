@@ -7,11 +7,12 @@ interface Props { params: Promise<{ slug: string }> }
 
 export default function ControlPage({ params }: Props) {
   const { slug } = use(params);
+  const isPlatform = slug === 'edapp';
   return (
     <div className="p-4 md:p-6 space-y-5">
       <div>
-        <h1 className="text-xl font-bold tracking-tight">Control Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Overview of your school configuration and quick links.</p>
+        <h1 className="text-xl font-bold tracking-tight">{isPlatform ? 'Platform Control' : 'Control Dashboard'}</h1>
+        <p className="text-sm text-muted-foreground">{isPlatform ? 'Platform administration and configuration.' : 'Overview of your school configuration and quick links.'}</p>
       </div>
       <ControlDashboard slug={slug} />
     </div>

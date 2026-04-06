@@ -36,7 +36,55 @@ export default function ControlDashboard({ slug, tenantId }: Props) {
     load();
   }, []);
 
-  const cards = [
+  const isPlatform = slug === 'edapp';
+
+  const platformCards = [
+    {
+      title: 'Platform Profile',
+      icon: Building2,
+      color: 'text-blue-600 bg-blue-50',
+      content: (
+        <div className="space-y-1 text-sm">
+          <p className="font-medium">EdApp Platform</p>
+          <p className="text-muted-foreground text-xs">Manage platform-wide settings, branding, and configuration.</p>
+        </div>
+      ),
+      link: `/tenant/${slug}/admin/settings`,
+      linkLabel: 'Platform Settings',
+    },
+    {
+      title: 'Platform Admins',
+      icon: Users,
+      color: 'text-teal-600 bg-teal-50',
+      content: (
+        <p className="text-sm text-muted-foreground">Manage platform admin users — super admins, secretaries, and brand admins.</p>
+      ),
+      link: `/tenant/${slug}/admin/people`,
+      linkLabel: 'Manage Admins',
+    },
+    {
+      title: 'Tenant Management',
+      icon: GitBranch,
+      color: 'text-green-600 bg-green-50',
+      content: (
+        <p className="text-sm text-muted-foreground">Create and manage school tenants, brands, and their subscriptions.</p>
+      ),
+      link: `/tenant/${slug}/admin/tenants`,
+      linkLabel: 'Manage Tenants',
+    },
+    {
+      title: 'Subscriptions',
+      icon: Award,
+      color: 'text-amber-600 bg-amber-50',
+      content: (
+        <p className="text-sm text-muted-foreground">Manage tenant subscription plans, billing, and activation status.</p>
+      ),
+      link: `/tenant/${slug}/admin/subscriptions`,
+      linkLabel: 'View Subscriptions',
+    },
+  ];
+
+  const schoolCards = [
     {
       title: 'School Profile',
       icon: Building2,
@@ -88,6 +136,8 @@ export default function ControlDashboard({ slug, tenantId }: Props) {
       linkLabel: 'View Branches',
     },
   ];
+
+  const cards = isPlatform ? platformCards : schoolCards;
 
   return (
     <div className="space-y-6">
