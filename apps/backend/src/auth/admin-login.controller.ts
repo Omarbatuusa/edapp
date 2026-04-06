@@ -102,11 +102,10 @@ export class AdminLoginController {
         }
 
         const role = bestAssignment.role;
-        // For platform roles (no tenant_id), fall back to first tenant from other assignments
+        // For platform roles (no tenant_id), use 'edapp' as the platform tenant slug
         let tenantSlug = bestAssignment.tenant?.tenant_slug || null;
         if (!tenantSlug) {
-            const fallback = assignments.find(a => a.tenant?.tenant_slug);
-            tenantSlug = fallback?.tenant?.tenant_slug || 'allied';
+            tenantSlug = 'edapp';
         }
 
         // 5. Activate INVITED memberships on login (transition to ACTIVE)
@@ -209,8 +208,7 @@ export class AdminLoginController {
         const role = bestAssignment.role;
         let tenantSlug = bestAssignment.tenant?.tenant_slug || null;
         if (!tenantSlug) {
-            const fallback = assignments.find(a => a.tenant?.tenant_slug);
-            tenantSlug = fallback?.tenant?.tenant_slug || 'allied';
+            tenantSlug = 'edapp';
         }
 
         // 5. Activate INVITED memberships
